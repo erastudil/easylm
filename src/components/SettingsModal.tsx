@@ -7,7 +7,7 @@ export const SYSTEM_PRESETS: Preset[] = [
     id: 'general',
     name: 'General Assistant',
     description: 'Helpful, clean, balanced conversational AI.',
-    systemPrompt: 'You are EasyLM, an intelligent, private, and helpful AI assistant running locally in the user browser via WebGPU. Deliver clear, high-quality, and direct answers in markdown.'
+    systemPrompt: 'You are EasyLM, an intelligent, private, and helpful AI assistant running locally in your browser via WebGPU. Deliver clear, high-quality, and direct answers in markdown.'
   },
   {
     id: 'progen',
@@ -50,6 +50,8 @@ interface SettingsModalProps {
   onToggleExtendedThinking: () => void;
   temperature: number;
   onChangeTemperature: (t: number) => void;
+  searxngUrl: string;
+  onChangeSearxngUrl: (url: string) => void;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -66,7 +68,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   extendedThinking,
   onToggleExtendedThinking,
   temperature,
-  onChangeTemperature
+  onChangeTemperature,
+  searxngUrl,
+  onChangeSearxngUrl
 }) => {
   if (!isOpen) return null;
 
@@ -74,8 +78,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     <div style={{
       position: 'fixed',
       inset: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.75)',
-      backdropFilter: 'blur(4px)',
+      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+      backdropFilter: 'blur(6px)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -83,12 +87,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     }}>
       <div className="card-panel" style={{ width: '90%', maxWidth: '580px', padding: '1.75rem', maxHeight: '90vh', overflowY: 'auto' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
-          <h2 style={{ margin: 0, fontSize: '1.2rem', fontFamily: 'var(--font-mono)' }}>
-            ⚙️ EasyLM Configuration
+          <h2 style={{ margin: 0, fontSize: '1.2rem', fontFamily: 'var(--font-mono)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span>⚙️</span> EasyLM Configuration
           </h2>
           <button
             onClick={onClose}
-            style={{ background: 'transparent', border: 'none', color: '#71717a', fontSize: '1.2rem', cursor: 'pointer' }}
+            style={{ background: 'transparent', border: 'none', color: '#71717a', fontSize: '1.4rem', cursor: 'pointer' }}
             title="Close settings"
           >
             ×
@@ -106,10 +110,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 key={m.id}
                 onClick={() => onSelectModel(m.id)}
                 style={{
-                  padding: '0.6rem 0.85rem',
+                  padding: '0.65rem 0.85rem',
                   borderRadius: '12px',
                   cursor: 'pointer',
-                  backgroundColor: selectedModel === m.id ? 'rgba(139, 92, 246, 0.2)' : '#111118',
+                  backgroundColor: selectedModel === m.id ? 'rgba(139, 92, 246, 0.18)' : '#111118',
                   border: selectedModel === m.id ? '1px solid #8b5cf6' : '1px solid rgba(139, 92, 246, 0.2)',
                   display: 'flex',
                   alignItems: 'center',
@@ -173,9 +177,35 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           )}
         </div>
 
+        {/* SearXNG Endpoint Configuration */}
+        <div style={{ marginBottom: '1.25rem' }}>
+          <label style={{ display: 'block', fontSize: '0.8rem', fontFamily: 'var(--font-mono)', color: '#a78bfa', marginBottom: '0.4rem' }}>
+            SearXNG Web Search Endpoint:
+          </label>
+          <input
+            type="text"
+            value={searxngUrl}
+            onChange={(e) => onChangeSearxngUrl(e.target.value)}
+            placeholder="Default: /api/search (or http://localhost:8080)"
+            style={{
+              width: '100%',
+              background: '#07070a',
+              border: '1px solid rgba(139, 92, 246, 0.3)',
+              borderRadius: '12px',
+              color: '#ffffff',
+              padding: '0.6rem 0.75rem',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.82rem'
+            }}
+          />
+          <div style={{ fontSize: '0.7rem', color: '#71717a', marginTop: '0.25rem', fontFamily: 'var(--font-mono)' }}>
+            Leave empty to use built-in search gateway (/api/search + Wikipedia fallback).
+          </div>
+        </div>
+
         {/* Feature Toggles */}
         <div style={{ marginBottom: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', padding: '0.5rem', background: '#111118', borderRadius: '12px' }}>
+          <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', padding: '0.6rem', background: '#111118', borderRadius: '12px' }}>
             <span style={{ fontSize: '0.85rem' }}>⚡ In-App Hands (Math, Units, Web Search, Warehouse)</span>
             <input
               type="checkbox"
@@ -185,8 +215,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             />
           </label>
 
-          <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', padding: '0.5rem', background: '#111118', borderRadius: '12px' }}>
-            <span style={{ fontSize: '0.85rem' }}>🧠 Extended Thinking / Scratchpad Mode</span>
+          <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', padding: '0.6rem', background: '#111118', borderRadius: '12px' }}>
+            <span style={{ fontSize: '0.85rem' }}>🧠 Extended Thinking Mode (&lt;think&gt; trace)</span>
             <input
               type="checkbox"
               checked={extendedThinking}

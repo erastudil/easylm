@@ -32,6 +32,7 @@ export const App: React.FC = () => {
   const [toolsEnabled, setToolsEnabled] = useState<boolean>(true);
   const [extendedThinking, setExtendedThinking] = useState<boolean>(false);
   const [temperature, setTemperature] = useState<number>(0.3);
+  const [searxngUrl, setSearxngUrl] = useState<string>(() => localStorage.getItem('easylm_searxng_url') || '');
 
   // Runtime State
   const [inputPrompt, setInputPrompt] = useState('');
@@ -42,6 +43,12 @@ export const App: React.FC = () => {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Save SearXNG URL to localStorage
+  const handleUpdateSearxng = (url: string) => {
+    setSearxngUrl(url);
+    localStorage.setItem('easylm_searxng_url', url);
+  };
 
   // 1. Initial boot: load sessions or create first
   useEffect(() => {
@@ -122,6 +129,11 @@ export const App: React.FC = () => {
     }
   };
 
+  // Helper to extract clean display text from streamed tokens (hiding raw tool_call tags)
+  const cleanDisplayContent = (text: string): string => {
+    return text.replace(/<tool_call>[\s\S]*?(?:<\/tool_call>|$)/gi, '').trim();
+  };
+
   // Send Prompt & Run Inference Loop
   const handleSendMessage = async () => {
     const trimmed = inputPrompt.trim();
@@ -173,15 +185,19 @@ export const App: React.FC = () => {
 
     const executedTools: ToolExecution[] = [];
 
-    // Pre-flight heuristic: Detect direct math or unit questions for instant deterministic execution
+    // Pre-flight heuristic: Detect direct math, unit, or search requests for instant deterministic execution
     const mathMatch = trimmed.match(/^(?:what is|calculate|compute|eval)\s+([0-9+\-*/().\s^sqrtpowpi]+)$/i);
     const unitMatch = trimmed.match(/^(?:convert\s+)?([\d.]+\s*[a-zA-Z]+\s*(?:to|in)\s*[a-zA-Z]+)$/i);
+    const directSearchMatch = trimmed.match(/^(?:search|search for|google|web search)\s*:\s*(.+)$/i);
 
     if (toolsEnabled && mathMatch) {
       const toolRes = await dispatchTool('calc', mathMatch[1]);
       executedTools.push(toolRes);
     } else if (toolsEnabled && unitMatch) {
       const toolRes = await dispatchTool('units', unitMatch[1]);
+      executedTools.push(toolRes);
+    } else if (toolsEnabled && directSearchMatch) {
+      const toolRes = await dispatchTool('web_search', directSearchMatch[1], searxngUrl);
       executedTools.push(toolRes);
     }
 
@@ -195,8 +211,8 @@ export const App: React.FC = () => {
       timestamp: Date.now()
     };
 
-    // If deterministic tool directly solved it, finish immediately without spinning up full LLM
-    if (executedTools.length > 0 && !extendedThinking) {
+    // If deterministic math/unit tool directly solved it, finish immediately without spinning up full LLM
+    if (executedTools.length > 0 && !directSearchMatch && !extendedThinking) {
       const finalSess = {
         ...updatedSession,
         messages: [...updatedMessages, assistantPlaceholder]
@@ -226,7 +242,7 @@ export const App: React.FC = () => {
       let currentStreamed = '';
       const startTime = Date.now();
 
-      // Start stream
+      // Start initial stream
       const result = await streamChatCompletion(
         convoMessages,
         selectedModel,
@@ -234,13 +250,13 @@ export const App: React.FC = () => {
         2048,
         (delta) => {
           currentStreamed += delta;
-          // In-flight token update
+          // In-flight token update - strip raw tool call tags from visible text!
           setSessions(prev => prev.map(s => {
             if (s.id !== activeSession.id) return s;
             const msgs = [...updatedMessages];
             msgs.push({
               ...assistantPlaceholder,
-              content: currentStreamed
+              content: cleanDisplayContent(currentStreamed)
             });
             return { ...s, messages: msgs };
           }));
@@ -248,11 +264,99 @@ export const App: React.FC = () => {
         (prog) => setSpindleProgress(prog)
       );
 
-      // Final message update with extracted thought trace
+      // Check if model emitted a tool call!
+      const rawOutput = result.fullText;
+      const toolMatch = rawOutput.match(/<tool_call>([\s\S]*?)(?:<\/tool_call>|$)/i);
+
+      if (toolMatch && toolsEnabled) {
+        let callName = '';
+        let callQuery = '';
+        try {
+          const parsed = JSON.parse(toolMatch[1].trim());
+          callName = parsed.name || '';
+          callQuery = parsed.query || parsed.expression || parsed.input || '';
+        } catch {
+          const nMatch = toolMatch[1].match(/"name"\s*:\s*"([^"]+)"/);
+          const qMatch = toolMatch[1].match(/"query"\s*:\s*"([^"]+)"/);
+          if (nMatch) callName = nMatch[1];
+          if (qMatch) callQuery = qMatch[1];
+        }
+
+        if (callName) {
+          // Execute the intercepted tool!
+          const toolExecution = await dispatchTool(callName, callQuery || trimmed, searxngUrl);
+          executedTools.push(toolExecution);
+
+          // Update UI with the tool badge immediately
+          setSessions(prev => prev.map(s => {
+            if (s.id !== activeSession.id) return s;
+            const msgs = [...updatedMessages];
+            msgs.push({
+              ...assistantPlaceholder,
+              content: 'Synthesizing verified results...',
+              toolsUsed: executedTools
+            });
+            return { ...s, messages: msgs };
+          }));
+
+          // Construct follow-up turn to let the model synthesize the answer
+          const toolFollowUpMessages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
+            ...convoMessages,
+            { role: 'assistant', content: rawOutput },
+            {
+              role: 'user',
+              content: `[TOOL EXECUTION RESULT FOR ${toolExecution.tool}]:\n${toolExecution.result}\n\nPlease synthesize this verified data into a direct, friendly, and complete answer for the user.`
+            }
+          ];
+
+          let followUpStreamed = '';
+          const finalResult = await streamChatCompletion(
+            toolFollowUpMessages,
+            selectedModel,
+            temperature,
+            2048,
+            (delta) => {
+              followUpStreamed += delta;
+              setSessions(prev => prev.map(s => {
+                if (s.id !== activeSession.id) return s;
+                const msgs = [...updatedMessages];
+                msgs.push({
+                  ...assistantPlaceholder,
+                  content: cleanDisplayContent(followUpStreamed),
+                  toolsUsed: executedTools
+                });
+                return { ...s, messages: msgs };
+              }));
+            },
+            (prog) => setSpindleProgress(prog)
+          );
+
+          const finalAssistantMsg: Message = {
+            id: assistantMsgId,
+            role: 'assistant',
+            content: finalResult.fullText || 'Results retrieved successfully.',
+            thinking: finalResult.thinking || result.thinking,
+            thoughtDurationMs: Date.now() - startTime,
+            toolsUsed: executedTools,
+            timestamp: Date.now()
+          };
+
+          const finalSessionObj = {
+            ...updatedSession,
+            messages: [...updatedMessages, finalAssistantMsg]
+          };
+
+          setSessions(prev => prev.map(s => s.id === activeSession.id ? finalSessionObj : s));
+          saveAllSessions(sessions.map(s => s.id === activeSession.id ? finalSessionObj : s));
+          return;
+        }
+      }
+
+      // If no tool call was emitted, commit the clean message
       const finalAssistantMsg: Message = {
         id: assistantMsgId,
         role: 'assistant',
-        content: result.fullText,
+        content: cleanDisplayContent(result.fullText) || result.fullText,
         thinking: result.thinking,
         thoughtDurationMs: Date.now() - startTime,
         toolsUsed: executedTools,
@@ -271,7 +375,7 @@ export const App: React.FC = () => {
       const errMsg: Message = {
         id: assistantMsgId,
         role: 'assistant',
-        content: `**Inference Notice:** ${err?.message || String(err)}\n\n*Note: Make sure your browser supports WebGPU (Chrome, Edge 113+) and hardware acceleration is enabled.*`,
+        content: `**Notice:** ${err?.message || String(err)}\n\n*Ensure your browser supports WebGPU (Chrome/Edge 113+) and hardware acceleration is turned on.*`,
         timestamp: Date.now()
       };
       setSessions(prev => prev.map(s => s.id === activeSession.id ? { ...s, messages: [...updatedMessages, errMsg] } : s));
@@ -410,7 +514,7 @@ export const App: React.FC = () => {
               onClick={() => setSettingsOpen(true)}
               className="btn-pill"
               style={{ padding: '0.3rem 0.75rem' }}
-              title="Configure model, presets, and tools"
+              title="Configure model, presets, SearXNG, and tools"
             >
               ⚙
             </button>
@@ -539,6 +643,8 @@ export const App: React.FC = () => {
         onToggleExtendedThinking={() => setExtendedThinking(!extendedThinking)}
         temperature={temperature}
         onChangeTemperature={setTemperature}
+        searxngUrl={searxngUrl}
+        onChangeSearxngUrl={handleUpdateSearxng}
       />
     </div>
   );

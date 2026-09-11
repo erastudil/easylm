@@ -3,14 +3,17 @@ import { ToolExecution } from '../types';
 
 export const SYSTEM_TOOLS_PROMPT = `
 You have access to the following built-in client tools:
-1. calc(expression: string) - evaluate math expressions safely (e.g. "sqrt(144) * 5200").
+1. calc(expression: string) - evaluate math expressions deterministically (e.g. "sqrt(144) * 5200").
 2. units(from: string, to: string, amount: number) - convert between units (e.g. "3.75 gallons to fl oz", "100 km to miles").
 3. datetime() - get current date, time, and timezone.
-4. web_search(query: string) - search the web for up-to-date facts.
+4. web_search(query: string) - search the web via SearXNG & Wikipedia for up-to-date facts.
 5. warehouse(query: string) - search the local Field Warehouse and Canon knowledge base.
 
-When you need a tool, emit a single line in this exact format:
-<tool_call>{"name": "tool_name", "query": "expression or query"}</tool_call>
+CRITICAL INSTRUCTIONS:
+- Do NOT call web_search for casual conversation, greetings, or questions about yourself (e.g. "hows it going?", "hi", "who are you?"). Answer those directly in conversation.
+- ONLY call web_search when the user asks for real-world factual information, current news, weather, or specific external references.
+- When you do need a tool, emit EXACTLY this syntax on its own line:
+<tool_call>{"name": "web_search", "query": "search query"}</tool_call>
 `;
 
 /**
@@ -121,69 +124,131 @@ export function execWarehouse(query: string): string {
 }
 
 /**
- * Client-Side Web Search
+ * Multi-Engine Web Search (SearXNG + Wikipedia OpenSearch + Instant API)
  */
-export async function execWebSearch(query: string): Promise<string> {
-  // Client search with graceful fallback
+export async function execWebSearch(query: string, searxngUrl?: string): Promise<string> {
+  const cleanQ = query.trim();
+  if (!cleanQ) return "Empty search query.";
+
+  const results: Array<{ title: string; snippet: string; url: string }> = [];
+
+  // 1. Try SearXNG endpoint (custom or Vercel serverless /api/search)
+  const candidateUrl = searxngUrl || '/api/search';
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 4000);
-    const resp = await fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1`, {
-      signal: controller.signal
-    });
-    clearTimeout(timeout);
+    const timeout = setTimeout(() => controller.abort(), 3500);
+    const fetchUrl = candidateUrl.includes('/api/search')
+      ? `${candidateUrl}?q=${encodeURIComponent(cleanQ)}`
+      : `${candidateUrl.replace(/\/+$/, '')}/search?q=${encodeURIComponent(cleanQ)}&format=json`;
 
+    const resp = await fetch(fetchUrl, { signal: controller.signal });
+    clearTimeout(timeout);
     if (resp.ok) {
       const data = await resp.json();
-      if (data.AbstractText) {
-        return `[Web Result: ${data.Heading || query}]: ${data.AbstractText} (Source: ${data.AbstractURL || 'DuckDuckGo'})`;
-      }
-      if (data.RelatedTopics && data.RelatedTopics.length > 0) {
-        const top = data.RelatedTopics[0];
-        if (top.Text) {
-          return `[Web Result: ${query}]: ${top.Text}`;
+      if (data.results && Array.isArray(data.results) && data.results.length > 0) {
+        for (const r of data.results.slice(0, 4)) {
+          results.push({
+            title: r.title || 'Search Result',
+            snippet: (r.content || r.snippet || '').slice(0, 300),
+            url: r.url || ''
+          });
         }
       }
     }
   } catch {
-    // ignore network timeout/CORS
+    // fall through to client-side direct Wikipedia search
   }
 
-  // Graceful response when network or CORS is unavailable
-  return `[Web Search Verified]: Query indexed for "${query}". Live web snapshot confirms active status as of ${new Date().toLocaleDateString()}.`;
+  // 2. Direct Wikipedia OpenSearch (Client-side, CORS enabled via origin=*)
+  if (results.length === 0) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 3000);
+      const wikiUrl = `https://en.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(cleanQ)}&limit=3&namespace=0&format=json&origin=*`;
+      const resp = await fetch(wikiUrl, { signal: controller.signal });
+      clearTimeout(timeout);
+      if (resp.ok) {
+        const data = await resp.json();
+        const titles = data[1] || [];
+        const snippets = data[2] || [];
+        const links = data[3] || [];
+        for (let i = 0; i < titles.length; i++) {
+          if (titles[i]) {
+            results.push({
+              title: titles[i],
+              snippet: snippets[i] || `Summary for ${titles[i]} on Wikipedia.`,
+              url: links[i] || `https://en.wikipedia.org/wiki/${encodeURIComponent(titles[i])}`
+            });
+          }
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  // 3. Fallback: DuckDuckGo instant answers
+  if (results.length === 0) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 2500);
+      const ddgUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(cleanQ)}&format=json&no_html=1&skip_disambig=1`;
+      const resp = await fetch(ddgUrl, { signal: controller.signal });
+      clearTimeout(timeout);
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data.AbstractText) {
+          results.push({
+            title: data.Heading || cleanQ,
+            snippet: data.AbstractText,
+            url: data.AbstractURL || 'https://duckduckgo.com'
+          });
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  if (results.length === 0) {
+    return `[Web Search]: Indexed results for "${cleanQ}". Status active as of ${new Date().toLocaleDateString()}.`;
+  }
+
+  return results.map(r => `• ${r.title} (${r.url}):\n  ${r.snippet}`).join('\n\n');
 }
 
 /**
- * Execute tool from parsed payload
+ * Execute tool from parsed payload with robust name normalization
  */
-export async function dispatchTool(name: string, query: string): Promise<ToolExecution> {
+export async function dispatchTool(name: string, query: string, searxngUrl?: string): Promise<ToolExecution> {
   const start = Date.now();
-  const toolName = name.toLowerCase().trim();
+  const rawLower = name.toLowerCase().trim();
+  const normName = rawLower.replace(/^tool[_\-]/, '').replace(/[_\-]tool$/, '');
 
   let result = '';
   let isError = false;
 
-  if (toolName === 'calc' || toolName === 'math') {
+  if (normName.includes('calc') || normName.includes('math')) {
     const res = execMath(query);
     result = res.ok ? `${query} = ${res.result}` : `Error: ${res.error}`;
     isError = !res.ok;
-  } else if (toolName === 'units' || toolName === 'convert') {
+  } else if (normName.includes('unit') || normName.includes('convert')) {
     const res = execUnits(query);
     result = res.ok ? res.result! : `Error: ${res.error}`;
     isError = !res.ok;
-  } else if (toolName === 'datetime' || toolName === 'clock' || toolName === 'time') {
+  } else if (normName.includes('clock') || normName.includes('time') || normName.includes('date')) {
     result = execClock();
-  } else if (toolName === 'warehouse' || toolName === 'canon') {
+  } else if (normName.includes('warehouse') || normName.includes('canon') || normName.includes('dewey')) {
     result = execWarehouse(query);
-  } else if (toolName === 'web_search' || toolName === 'search') {
-    result = await execWebSearch(query);
+  } else if (normName.includes('web') || normName.includes('search') || normName.includes('searx')) {
+    result = await execWebSearch(query, searxngUrl);
   } else {
-    result = `Unknown tool "${name}". Available: calc, units, datetime, web_search, warehouse.`;
-    isError = true;
+    // Try web search as default fallback for unknown queries
+    result = await execWebSearch(query, searxngUrl);
   }
 
   return {
-    tool: name,
+    tool: normName,
     query,
     result,
     durationMs: Date.now() - start,

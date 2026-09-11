@@ -25,6 +25,17 @@ import { EASYLM_GUIDE_PROMPT_CONTEXT } from './data/help_guide';
 import { detectDevice, DeviceInfo } from './engine/device';
 import { createWelcomeMessage } from './data/welcome';
 import { CORE_INTERACTION_PROTOCOLS } from './data/protocols';
+import {
+  UserProfile,
+  AttachedDoc,
+  getActiveProfile,
+  getProfileMemories,
+  detectPII,
+  hasParentalPin
+} from './engine/family';
+import { ParentalModal } from './components/ParentalModal';
+import { ProfileModal } from './components/ProfileModal';
+import { AttachmentBar } from './components/AttachmentBar';
 
 export const App: React.FC = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -35,9 +46,21 @@ export const App: React.FC = () => {
   const [supportOpen, setSupportOpen] = useState(false);
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
 
+  // Family Mode, Profiles, Parental Controls, and Sovereign Memory
+  const [currentProfile, setCurrentProfile] = useState<UserProfile>(() => getActiveProfile());
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [parentalModalOpen, setParentalModalOpen] = useState(false);
+  const [parentalModalMode, setParentalModalMode] = useState<'verify' | 'setup'>('verify');
+  const [pendingPinAction, setPendingPinAction] = useState<(() => void) | null>(null);
+  const [piiAlert, setPiiAlert] = useState<string | null>(null);
+  const [attachedDoc, setAttachedDoc] = useState<AttachedDoc | null>(null);
+
   // Model & Personality Configuration
   const [selectedModel, setSelectedModel] = useState<string>(DEFAULT_MODEL_ID);
-  const [selectedPersonality, setSelectedPersonality] = useState<string>('friendly');
+  const [selectedPersonality, setSelectedPersonality] = useState<string>(() => {
+    const prof = getActiveProfile();
+    return prof.personalityId || 'friendly';
+  });
   const [personalityDropdownOpen, setPersonalityDropdownOpen] = useState(false);
   const [customPrompt, setCustomPrompt] = useState<string>('');
   const [toolsEnabled, setToolsEnabled] = useState<boolean>(true);
@@ -53,6 +76,32 @@ export const App: React.FC = () => {
     const next = !showWelcomeMessage;
     setShowWelcomeMessage(next);
     localStorage.setItem('easylm_show_welcome', String(next));
+  };
+
+  const handleRequestPinVerify = (onSuccess: () => void) => {
+    setPendingPinAction(() => onSuccess);
+    setParentalModalMode('verify');
+    setParentalModalOpen(true);
+  };
+
+  const handleOpenPinSetup = () => {
+    setParentalModalMode('setup');
+    setParentalModalOpen(true);
+  };
+
+  const handlePinSuccess = () => {
+    setParentalModalOpen(false);
+    if (pendingPinAction) {
+      pendingPinAction();
+      setPendingPinAction(null);
+    }
+  };
+
+  const handleProfileChanged = (newProfile: UserProfile) => {
+    setCurrentProfile(newProfile);
+    if (newProfile.personalityId) {
+      setSelectedPersonality(newProfile.personalityId);
+    }
   };
 
   // Runtime State
@@ -229,16 +278,32 @@ export const App: React.FC = () => {
   };
 
   // Send Prompt & Run Inference Loop
-  const handleSendMessage = async () => {
-    const trimmed = inputPrompt.trim();
+  const handleSendMessage = async (overridePrompt?: string | React.MouseEvent) => {
+    const rawInput = typeof overridePrompt === 'string' ? overridePrompt : inputPrompt;
+    const trimmed = rawInput.trim();
     if (!trimmed || isGenerating || !activeSession) return;
+
+    // Internet Safety Sentinel: check for personal identifiable info (PII)
+    const piiCheck = detectPII(trimmed);
+    if (piiCheck.hasPII) {
+      setPiiAlert(`🛡️ Internet Safety Sentinel: Notice: You included a ${piiCheck.detectedTypes.join(', ')}. EasyLM runs 100% locally on your computer, but remember to never share private details on public websites!`);
+      setTimeout(() => setPiiAlert(null), 8000);
+    }
 
     setInputPrompt('');
     const userMsgId = 'msg-' + Date.now();
+
+    let userDisplayContent = trimmed;
+    let docContext = '';
+    if (attachedDoc) {
+      docContext = `[ATTACHED DOCUMENT: ${attachedDoc.name} (${Math.round(attachedDoc.size / 1024)} KB)]:\n${attachedDoc.content.slice(0, 14000)}\n\n`;
+      userDisplayContent = `📄 [Attached: ${attachedDoc.name}]\n\n${trimmed}`;
+    }
+
     const newUserMsg: Message = {
       id: userMsgId,
       role: 'user',
-      content: trimmed,
+      content: userDisplayContent,
       timestamp: Date.now()
     };
 
@@ -268,8 +333,19 @@ export const App: React.FC = () => {
       systemInstruction = customPrompt;
     }
 
-    // Always inject core interaction protocols (Professional referral triage, Depression/Kaizen, Acute Crisis)
+    // Always inject core interaction protocols (Professional triage, Depression/Kaizen, Acute Crisis, Kids & Family)
     systemInstruction += '\n\n' + CORE_INTERACTION_PROTOCOLS;
+
+    // Sovereign Memory Vault injection
+    const profileMemories = getProfileMemories(currentProfile.id);
+    if (profileMemories.length > 0) {
+      systemInstruction += '\n\n[USER SOVEREIGN MEMORY & NOTEBOOK]:\n' + profileMemories.map(m => '- ' + m.text).join('\n');
+    }
+
+    // Kid Safe / Socratic tutor mandate
+    if (currentProfile.role === 'kid' || currentProfile.socraticTutorEnabled) {
+      systemInstruction += '\n\n[KID SAFE & SOCRATIC TUTOR MANDATE]:\nGuide the student step-by-step with inquiry, hints, and questions. Never hand over direct solutions to homework or tests. Keep tone warm, patient, and encouraging.';
+    }
 
     // In-chat help detection: if prompt asks about help, features, or how EasyLM works
     const isHelpAsk = /^(?:help|\?|guide|what can you do|how do you work|who are you|explain yourself|about you)/i.test(trimmed) || trimmed.toLowerCase().includes('how do you work');
@@ -383,6 +459,14 @@ export const App: React.FC = () => {
           role: m.role as any,
           content: m.content
         });
+      }
+
+      // If attached document exists, inject its content into the active turn
+      if (docContext) {
+        const lastMsg = convoMessages[convoMessages.length - 1];
+        if (lastMsg && lastMsg.role === 'user') {
+          lastMsg.content = `${docContext}User prompt: ${trimmed}`;
+        }
       }
 
       // If pre-flight tools (e.g. web_fetch or direct search) ran, inject context into the active turn
@@ -596,7 +680,12 @@ export const App: React.FC = () => {
     reader.onload = (e) => {
       const text = e.target?.result as string;
       if (text) {
-        setInputPrompt(prev => (prev ? prev + '\n\n' : '') + `[ATTACHED DOCUMENT: ${file.name}]\n${text.slice(0, 8000)}`);
+        setAttachedDoc({
+          name: file.name,
+          size: file.size,
+          content: text,
+          type: file.type || 'text/plain'
+        });
       }
     };
     reader.readAsText(file);
@@ -711,6 +800,25 @@ export const App: React.FC = () => {
                 <span className="hide-on-mobile"> Hands</span>
               </span>
             )}
+
+            {/* Family Profile Button */}
+            <button
+              onClick={() => setProfileModalOpen(true)}
+              className="btn-pill"
+              style={{
+                fontSize: '0.75rem',
+                padding: '0.25rem 0.65rem',
+                gap: '0.35rem',
+                backgroundColor: currentProfile.role === 'kid' ? 'rgba(52, 211, 153, 0.15)' : '#111118',
+                borderColor: currentProfile.role === 'kid' ? 'rgba(52, 211, 153, 0.4)' : 'rgba(139, 92, 246, 0.25)',
+                color: currentProfile.role === 'kid' ? '#34d399' : '#ffffff'
+              }}
+              title="Family Profiles, Kid Safe & Sovereign Memory"
+            >
+              <span>{currentProfile.avatar}</span>
+              <span className="hide-on-mobile">{currentProfile.name.split('/')[0].trim()}</span>
+              {currentProfile.parentalLockEnabled && hasParentalPin() && <span style={{ fontSize: '0.65rem' }}>🔒</span>}
+            </button>
 
             {/* Personality Dropdown Menu */}
             <div ref={personalityDropdownRef} style={{ position: 'relative' }}>
@@ -923,6 +1031,42 @@ export const App: React.FC = () => {
             </div>
           )}
 
+          {/* PII Safety Alert Banner */}
+          {piiAlert && (
+            <div style={{
+              maxWidth: '820px',
+              width: '100%',
+              margin: '0 auto 0.45rem auto',
+              padding: '0.5rem 0.85rem',
+              backgroundColor: 'rgba(234, 179, 8, 0.12)',
+              border: '1px solid rgba(234, 179, 8, 0.4)',
+              borderRadius: '10px',
+              color: '#fde047',
+              fontSize: '0.78rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.4)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <span>{piiAlert}</span>
+              </div>
+              <button
+                onClick={() => setPiiAlert(null)}
+                style={{ background: 'transparent', border: 'none', color: '#fde047', cursor: 'pointer', fontSize: '1rem', padding: '0 0.3rem' }}
+              >
+                ×
+              </button>
+            </div>
+          )}
+
+          {/* Attached Document Bar with Quick Study Actions */}
+          <AttachmentBar
+            doc={attachedDoc}
+            onRemove={() => setAttachedDoc(null)}
+            onQuickAction={(actionPrompt) => handleSendMessage(actionPrompt)}
+          />
+
           <div className="floating-prompt" style={{ maxWidth: '820px', width: '100%', padding: '0.5rem 0.85rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
               {/* Attachment Button */}
@@ -931,19 +1075,19 @@ export const App: React.FC = () => {
                 style={{
                   background: 'transparent',
                   border: 'none',
-                  color: '#71717a',
+                  color: attachedDoc ? '#8b5cf6' : '#71717a',
                   fontSize: '1.25rem',
                   cursor: 'pointer',
                   padding: '0.3rem'
                 }}
-                title="Attach text, code, or markdown document"
+                title="Attach text, code, notes, or homework document"
               >
                 📎
               </button>
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".txt,.md,.json,.csv,.py,.ts,.js,.rs"
+                accept=".txt,.md,.json,.csv,.py,.ts,.js,.rs,.html,.xml,.css"
                 style={{ display: 'none' }}
                 onChange={(e) => {
                   if (e.target.files && e.target.files[0]) {
@@ -1054,6 +1198,24 @@ export const App: React.FC = () => {
         onChangeSearxngUrl={handleUpdateSearxng}
         showWelcomeMessage={showWelcomeMessage}
         onToggleWelcomeMessage={handleToggleWelcomeMessage}
+        onOpenProfiles={() => setProfileModalOpen(true)}
+      />
+
+      {/* Profile & Sovereign Memory Modal */}
+      <ProfileModal
+        isOpen={profileModalOpen}
+        onClose={() => setProfileModalOpen(false)}
+        onRequestPinVerify={handleRequestPinVerify}
+        onOpenPinSetup={handleOpenPinSetup}
+        onProfileChanged={handleProfileChanged}
+      />
+
+      {/* Parental PIN Lock Modal */}
+      <ParentalModal
+        isOpen={parentalModalOpen}
+        mode={parentalModalMode}
+        onClose={() => setParentalModalOpen(false)}
+        onSuccess={handlePinSuccess}
       />
     </div>
   );

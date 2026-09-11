@@ -20,6 +20,30 @@ HONEST DEFLECTION & INTEGRITY:
 - Offer what is known, or suggest how the user might verify it.`
   },
   {
+    id: 'socratic_kid',
+    name: 'Kids & Homework Coach',
+    badge: 'Kid Safe',
+    description: 'Patient Socratic coach & safety guide. Encourages inquiry, gives step-by-step hints, never just gives away homework answers.',
+    systemPrompt: `You are EasyLM in Kids & Homework Coach mode—a patient, encouraging, and warm learning companion running 100% locally in the user's browser via WebGPU.
+
+CORE GUIDING PRINCIPLES:
+1. SOCRATIC HOMEWORK COACHING:
+- When a student asks for homework help (math, science, reading, writing, history), NEVER simply hand over the final answer!
+- Guide them step-by-step using questions: "What do you think the first step should be?" or "What clues does the problem give us?"
+- Celebrate small breakthroughs with positive, warm reinforcement.
+
+2. ACCESSIBLE & FUN EXPLANATIONS:
+- Use vivid, relatable real-world analogies (space, animals, cooking, games, building blocks) to make tough concepts click.
+- Keep tone encouraging, patient, and age-appropriate.
+
+3. INTERNET SAFETY & DIGITAL LITERACY:
+- Teach healthy digital habits: remind students to never share real names, home addresses, school names, or passwords online.
+- Emphasize that AI is a computer program predicting words, not a replacement for teachers, parents, or verified books.
+
+4. HONEST DEFLECTION:
+- If evidence is absent or a fact is unknown, warmly state: "I couldn't find a reliable answer for that, and I don't want to guess. Let's look it up together in a book or ask a teacher!"`
+  },
+  {
     id: 'critical',
     name: 'Critical Thinker',
     badge: 'Analyst',
@@ -92,6 +116,7 @@ interface SettingsModalProps {
   onChangeSearxngUrl: (url: string) => void;
   showWelcomeMessage: boolean;
   onToggleWelcomeMessage: () => void;
+  onOpenProfiles?: () => void;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -112,7 +137,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   searxngUrl,
   onChangeSearxngUrl,
   showWelcomeMessage,
-  onToggleWelcomeMessage
+  onToggleWelcomeMessage,
+  onOpenProfiles
 }) => {
   if (!isOpen) return null;
 
@@ -141,6 +167,33 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             ×
           </button>
         </div>
+
+        {/* Family Profiles & Sovereign Memory Access */}
+        {onOpenProfiles && (
+          <div style={{ marginBottom: '1.25rem' }}>
+            <button
+              onClick={() => {
+                onClose();
+                onOpenProfiles();
+              }}
+              className="btn-pill"
+              style={{
+                width: '100%',
+                justifyContent: 'space-between',
+                padding: '0.65rem 0.85rem',
+                backgroundColor: 'rgba(139, 92, 246, 0.12)',
+                borderColor: 'rgba(139, 92, 246, 0.35)',
+                color: '#ffffff'
+              }}
+            >
+              <span style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                <span>👨‍👩‍👧</span>
+                <span style={{ fontWeight: 500 }}>Family Profiles, Kid Safe & Sovereign Memory</span>
+              </span>
+              <span style={{ fontSize: '0.75rem', color: '#a78bfa' }}>Manage →</span>
+            </button>
+          </div>
+        )}
 
         {/* Model Selector */}
         <div style={{ marginBottom: '1.25rem' }}>

@@ -10,8 +10,8 @@ You have access to the following built-in tools:
 5. datetime(timezone?: string) - current local or global time & date (e.g. "" for local time, or "Tokyo", "London", "New York").
 6. fact(topic: string) - verified encyclopedic summary for notable people, concepts, history, or science (e.g. "Alan Turing", "photosynthesis", "James Webb Space Telescope").
 7. dictionary(word: string) - exact definition, pronunciation, part of speech, and origin for English words (e.g. "obfuscate", "serendipity").
-8. web_search(query: string) - search the web for recent events, specific websites, or general questions.
-9. web_fetch(url: string) - read and extract clean text from a specific webpage URL.
+8. web_search(query: string) - search the web for recent events, specific websites, literary quotations, or classic book chapters (via Wikiquote, Wikisource, Wikipedia).
+9. web_fetch(url: string) - read and extract clean text from any webpage URL, including Wikipedia, Wikiquote, and Wikisource chapters.
 10. warehouse(query: string) - search the local reference knowledge base.
 
 CRITICAL INSTRUCTIONS:
@@ -19,7 +19,8 @@ CRITICAL INSTRUCTIONS:
 - For weather inquiries, call "weather".
 - For currency conversion, call "exchange".
 - For word definitions, pronunciations, and etymology, call "dictionary".
-- For encyclopedic overviews of people, concepts, science, or history, call "fact".
+- For encyclopedic overviews of people, concepts, science, history, or literary quotes/works, call "fact" or "web_search".
+- For specific book chapters (e.g. "Count of Monte Cristo Chapter 5" or "Moby Dick Chapter 1") or literary quotations, call "web_search".
 - When you do need a tool, emit EXACTLY this syntax on its own line:
 <tool_call>{"name": "weather", "query": "Dallas, TX"}</tool_call>
 or
@@ -384,7 +385,58 @@ export async function execWebSearch(query: string, searxngUrl?: string): Promise
     }
   }
 
-  // 3. Fallback: DuckDuckGo instant answers
+  // 3. Literary Quotations & Classic Literature: Wikiquote & Wikisource OpenSearch
+  if (results.length === 0) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 3000);
+      const wqUrl = `https://en.wikiquote.org/w/api.php?action=opensearch&search=${encodeURIComponent(cleanQ)}&limit=3&format=json&origin=*`;
+      const resp = await fetch(wqUrl, { signal: controller.signal });
+      clearTimeout(timeout);
+      if (resp.ok) {
+        const data = await resp.json();
+        const titles = data[1] || [];
+        const snippets = data[2] || [];
+        const links = data[3] || [];
+        for (let i = 0; i < titles.length; i++) {
+          if (titles[i]) {
+            results.push({
+              title: `Wikiquote: ${titles[i]}`,
+              snippet: snippets[i] || `Literary quotes and citations for ${titles[i]}.`,
+              url: links[i] || `https://en.wikiquote.org/wiki/${encodeURIComponent(titles[i])}`
+            });
+          }
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  if (results.length === 0) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 3000);
+      const wsUrl = `https://en.wikisource.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(cleanQ)}&format=json&origin=*`;
+      const resp = await fetch(wsUrl, { signal: controller.signal });
+      clearTimeout(timeout);
+      if (resp.ok) {
+        const data = await resp.json();
+        const hits = data?.query?.search || [];
+        for (const hit of hits.slice(0, 3)) {
+          results.push({
+            title: `Wikisource: ${hit.title}`,
+            snippet: (hit.snippet || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim(),
+            url: `https://en.wikisource.org/wiki/${encodeURIComponent(hit.title.replace(/\s+/g, '_'))}`
+          });
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  // 4. Fallback: DuckDuckGo instant answers
   if (results.length === 0) {
     try {
       const controller = new AbortController();

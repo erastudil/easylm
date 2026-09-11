@@ -23,6 +23,7 @@ import { SupportModal } from './components/SupportModal';
 import { EASYLM_GUIDE_PROMPT_CONTEXT } from './data/help_guide';
 import { detectDevice, DeviceInfo } from './engine/device';
 import { createWelcomeMessage } from './data/welcome';
+import { CORE_INTERACTION_PROTOCOLS } from './data/protocols';
 
 export const App: React.FC = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -227,6 +228,9 @@ export const App: React.FC = () => {
       systemInstruction = customPrompt;
     }
 
+    // Always inject core interaction protocols (Professional referral triage, Depression/Kaizen, Acute Crisis)
+    systemInstruction += '\n\n' + CORE_INTERACTION_PROTOCOLS;
+
     // In-chat help detection: if prompt asks about help, features, or how EasyLM works
     const isHelpAsk = /^(?:help|\?|guide|what can you do|how do you work|who are you|explain yourself|about you)/i.test(trimmed) || trimmed.toLowerCase().includes('how do you work');
     if (isHelpAsk) {
@@ -244,12 +248,15 @@ export const App: React.FC = () => {
 
     const executedTools: ToolExecution[] = [];
 
-    // Pre-flight heuristic: Detect direct math, unit, URL fetch, or search requests for instant execution
+    // Pre-flight heuristic: Detect direct math, unit, URL fetch, literary chapters, quotes, or search requests
     const mathMatch = trimmed.match(/^(?:what is|calculate|compute|eval)\s+([0-9+\-*/().\s^sqrtpowpi]+)$/i);
     const unitMatch = trimmed.match(/^(?:convert\s+)?([\d.]+\s*[a-zA-Z]+\s*(?:to|in)\s*[a-zA-Z]+)$/i);
     const directSearchMatch = trimmed.match(/^(?:search|search for|google|web search)\s*:\s*(.+)$/i);
     const urlMatch = trimmed.match(/(https?:\/\/[^\s]+)/i);
     const directFetchMatch = trimmed.match(/^(?:fetch|read|browse|summarize|inspect)\s+(https?:\/\/[^\s]+)$/i);
+    const chapterMatch = trimmed.match(/(?:summarize|read|tell me about|what happens in|overview of)?\s*(?:the\s+)?(?:chapter|act|canto)\s*(\d+|[ivxlcdm]+)\s+(?:of|in)\s+(.+)/i)
+      || trimmed.match(/(?:summarize|read|tell me about|what happens in|overview of)?\s*(.+?)\s+chapter\s*(\d+|[ivxlcdm]+)/i);
+    const quoteMatch = trimmed.match(/(?:famous\s+)?(?:quotes?|quotations?|sayings?)\s+(?:from|by|in)\s+(.+)/i);
 
     if (toolsEnabled && mathMatch) {
       const toolRes = await dispatchTool('calc', mathMatch[1]);
@@ -266,6 +273,15 @@ export const App: React.FC = () => {
     } else if (toolsEnabled && urlMatch && (trimmed.toLowerCase().includes('read') || trimmed.toLowerCase().includes('summarize') || trimmed === urlMatch[1])) {
       const toolRes = await dispatchTool('web_fetch', urlMatch[1]);
       executedTools.push(toolRes);
+    } else if (toolsEnabled && chapterMatch) {
+      const chNum = chapterMatch[1] && /^\d+|[ivxlcdm]+$/i.test(chapterMatch[1]) ? chapterMatch[1] : chapterMatch[2];
+      const rawBook = (chapterMatch[1] === chNum ? chapterMatch[2] : chapterMatch[1]).trim();
+      const cleanBook = rawBook.replace(/^(?:the\s+)?book\s+/i, '');
+      const toolRes = await dispatchTool('web_search', `${cleanBook} Chapter ${chNum}`, searxngUrl);
+      executedTools.push(toolRes);
+    } else if (toolsEnabled && quoteMatch) {
+      const toolRes = await dispatchTool('web_search', `quotes from ${quoteMatch[1].trim()}`, searxngUrl);
+      executedTools.push(toolRes);
     }
 
     // Prepare assistant response message placeholder
@@ -279,7 +295,7 @@ export const App: React.FC = () => {
     };
 
     // If deterministic math/unit tool directly solved it, finish immediately without spinning up full LLM
-    if (executedTools.length > 0 && !directSearchMatch && !urlMatch && !directFetchMatch && !extendedThinking) {
+    if (executedTools.length > 0 && !directSearchMatch && !urlMatch && !directFetchMatch && !chapterMatch && !quoteMatch && !extendedThinking) {
       const finalSess = {
         ...updatedSession,
         messages: [...updatedMessages, assistantPlaceholder]

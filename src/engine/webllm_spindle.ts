@@ -8,7 +8,7 @@ import { ModelOption } from '../types';
 export const AVAILABLE_MODELS: ModelOption[] = [
   {
     id: 'Qwen2.5-3B-Instruct-q4f16_1-MLC',
-    label: 'Qwen 2.5 3B Instruct (Default Spindle)',
+    label: 'Qwen 2.5 3B Instruct (Default Local Model)',
     sizeMB: 1950,
     vramEst: '~2.2 GB'
   },
@@ -95,7 +95,7 @@ export async function getOrInitEngine(
     } catch (err: any) {
       isInitializing = false;
       initPromise = null;
-      throw new Error(`WebLLM Spindle Init Error: ${err?.message || String(err)}`);
+      throw new Error(`WebLLM Model Init Error: ${err?.message || String(err)}`);
     }
   })();
 

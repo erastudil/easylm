@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { Session } from '../types';
 import { exportBackupToDisk, restoreBackupFromDisk, wipeAllStoredSessions } from '../engine/storage';
+import { HnaiLogo } from './HnaiLogo';
 
 interface SidebarProps {
   sessions: Session[];
@@ -62,7 +63,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <>
+      {/* Mobile Drawer Backdrop */}
+      {isOpen && (
+        <div
+          className="mobile-backdrop"
+          onClick={onToggleOpen}
+        />
+      )}
+
       <aside 
+        className="sidebar-drawer"
         style={{
           width: isOpen ? '280px' : '0px',
           minWidth: isOpen ? '280px' : '0px',
@@ -73,18 +83,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
           flexDirection: 'column',
           height: '100vh',
           overflow: 'hidden',
-          zIndex: 40
+          zIndex: 50
         }}
       >
-        {/* Top Header */}
+        {/* Top Header - Deduplicated Title, showing HNAI Logo + Conversations */}
         <div style={{ padding: '1.2rem 1rem 0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <span style={{ fontSize: '1.25rem' }}>⚡</span>
-            <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, letterSpacing: '0.05em' }}>
-              EasyLM
-            </span>
-            <span style={{ fontSize: '0.65rem', padding: '0.15rem 0.45rem', borderRadius: '9999px', background: 'rgba(139,92,246,0.15)', color: '#a78bfa', border: '1px solid rgba(139,92,246,0.3)' }}>
-              WebGPU
+            <HnaiLogo size="sm" />
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: '#c4b5fd', fontWeight: 600 }}>
+              Chats
             </span>
           </div>
           <button 
@@ -96,10 +103,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </button>
         </div>
 
-        {/* New Chat Button */}
+        {/* New Session Button */}
         <div style={{ padding: '0.5rem 1rem' }}>
           <button 
-            onClick={onNewSession}
+            onClick={() => {
+              onNewSession();
+              if (window.innerWidth < 768) onToggleOpen();
+            }}
             className="btn-pill btn-pill-primary"
             style={{ width: '100%', justifyContent: 'center', gap: '0.5rem' }}
             title="Start fresh conversation"
@@ -111,7 +121,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Session List */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '0.5rem 0.75rem' }}>
           <div style={{ fontSize: '0.7rem', color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.08em', padding: '0.5rem 0.5rem 0.3rem', fontFamily: 'var(--font-mono)' }}>
-            Recent Chats ({sessions.length})
+            Recent History ({sessions.length})
           </div>
           
           {sessions.length === 0 ? (
@@ -124,7 +134,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
               return (
                 <div
                   key={s.id}
-                  onClick={() => onSelectSession(s.id)}
+                  onClick={() => {
+                    onSelectSession(s.id);
+                    if (window.innerWidth < 768) onToggleOpen();
+                  }}
                   style={{
                     padding: '0.6rem 0.75rem',
                     borderRadius: '12px',
@@ -221,9 +234,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
           onClick={onToggleOpen}
           style={{
             position: 'absolute',
-            top: '1rem',
-            left: '1rem',
-            zIndex: 50,
+            top: '0.85rem',
+            left: '0.85rem',
+            zIndex: 40,
             background: '#111118',
             border: '1px solid rgba(139, 92, 246, 0.3)',
             borderRadius: '9999px',
@@ -235,7 +248,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           }}
           title="Open chat sidebar"
         >
-          ☰ Chats
+          ☰
         </button>
       )}
     </>

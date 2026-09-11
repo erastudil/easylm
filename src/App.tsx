@@ -17,17 +17,21 @@ import {
 import { dispatchTool, SYSTEM_TOOLS_PROMPT } from './engine/tools';
 import { Sidebar } from './components/Sidebar';
 import { MessageItem } from './components/MessageItem';
-import { SettingsModal, SYSTEM_PRESETS } from './components/SettingsModal';
+import { SettingsModal, PERSONALITIES } from './components/SettingsModal';
+import { HelpModal } from './components/HelpModal';
+import { HnaiLogo } from './components/HnaiLogo';
+import { EASYLM_GUIDE_PROMPT_CONTEXT } from './data/help_guide';
 
 export const App: React.FC = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [activeSessionId, setActiveSessionIdState] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
 
-  // Model & Inference Configuration
+  // Model & Personality Configuration
   const [selectedModel, setSelectedModel] = useState<string>(DEFAULT_MODEL_ID);
-  const [selectedPreset, setSelectedPreset] = useState<string>('general');
+  const [selectedPersonality, setSelectedPersonality] = useState<string>('friendly');
   const [customPrompt, setCustomPrompt] = useState<string>('');
   const [toolsEnabled, setToolsEnabled] = useState<boolean>(true);
   const [extendedThinking, setExtendedThinking] = useState<boolean>(false);
@@ -37,7 +41,7 @@ export const App: React.FC = () => {
   // Runtime State
   const [inputPrompt, setInputPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
-  const [spindleProgress, setSpindleProgress] = useState<ProgressStatus | null>(null);
+  const [modelProgress, setModelProgress] = useState<ProgressStatus | null>(null);
   const [webGpuAvailable, setWebGpuAvailable] = useState<boolean>(true);
   const [isDraggingFile, setIsDraggingFile] = useState(false);
 
@@ -67,7 +71,14 @@ export const App: React.FC = () => {
       initial.messages.push({
         id: 'msg-welcome',
         role: 'assistant',
-        content: 'Welcome to **EasyLM** — 100% private, free local AI running entirely in your browser via WebGPU.\n\n- **Zero Account / Zero Setup:** No API keys, no subscriptions, zero data sent to external servers.\n- **In-App Hands:** Deterministic calculator, unit converter, live system clock, web search, and Field Warehouse canon search.\n- **Local Backup:** Your conversations stay in this browser by default; use the "Backup to Disk" button anytime to save your chats.\n\nType your message below or drop a document to start!',
+        content: `Welcome to **EasyLM** by **humans&ai** — 100% private, free AI that runs entirely on your device via WebGPU.
+
+• **Private & Free:** No accounts, no subscriptions, zero data sent to external servers. Everything runs on your machine.
+• **In-App Hands:** Built-in calculator, unit converter, live system clock, web search, and webpage reader.
+• **Local Backup:** Your conversations stay in this browser; click **"Backup to Disk"** anytime to download your chats.
+• **Help & Guidance:** Click the **"? Help"** button above or type **"help"** anytime to learn about prompting, hallucination, and how EasyLM works.
+
+How can I help you today?`,
         timestamp: Date.now()
       });
       setSessions([initial]);
@@ -179,16 +190,22 @@ export const App: React.FC = () => {
 
     setIsGenerating(true);
 
-    // Build system mandate
-    const preset = SYSTEM_PRESETS.find(p => p.id === selectedPreset);
-    let systemInstruction = preset ? preset.systemPrompt : SYSTEM_PRESETS[0].systemPrompt;
-    if (selectedPreset === 'custom' && customPrompt) {
+    // Build system mandate based on Personality
+    const personality = PERSONALITIES.find(p => p.id === selectedPersonality) || PERSONALITIES[0];
+    let systemInstruction = personality.systemPrompt;
+    if (selectedPersonality === 'custom' && customPrompt) {
       systemInstruction = customPrompt;
+    }
+
+    // In-chat help detection: if prompt asks about help, features, or how EasyLM works
+    const isHelpAsk = /^(?:help|\?|guide|what can you do|how do you work|who are you|explain yourself|about you)/i.test(trimmed) || trimmed.toLowerCase().includes('how do you work');
+    if (isHelpAsk) {
+      systemInstruction += '\n\n' + EASYLM_GUIDE_PROMPT_CONTEXT + '\n\nINSTRUCTION: The user is asking about how EasyLM works or asking for help. Explain who you are, how you run locally, your in-app tools, privacy, and prompting advice in a warm, friendly, and accessible manner.';
     }
 
     // Extended thinking instruction injection if enabled
     if (extendedThinking) {
-      systemInstruction += '\n\n[EXTENDED THINKING PROTOCOL]\nInspect assumptions, formulate hypotheses, and verify edge cases step-by-step inside <think>...</think> tags before delivering your final workpiece.';
+      systemInstruction += '\n\n[EXTENDED THINKING PROTOCOL]\nInspect assumptions, evaluate evidence, and explore edge cases step-by-step inside <think>...</think> tags before delivering your final workpiece.';
     }
 
     if (toolsEnabled) {
@@ -290,7 +307,7 @@ export const App: React.FC = () => {
             return { ...s, messages: msgs };
           }));
         },
-        (prog) => setSpindleProgress(prog)
+        (prog) => setModelProgress(prog)
       );
 
       // Check if model emitted a tool call!
@@ -357,7 +374,7 @@ export const App: React.FC = () => {
                 return { ...s, messages: msgs };
               }));
             },
-            (prog) => setSpindleProgress(prog)
+            (prog) => setModelProgress(prog)
           );
 
           const finalAssistantMsg: Message = {
@@ -410,7 +427,7 @@ export const App: React.FC = () => {
       setSessions(prev => prev.map(s => s.id === activeSession.id ? { ...s, messages: [...updatedMessages, errMsg] } : s));
     } finally {
       setIsGenerating(false);
-      setSpindleProgress(null);
+      setModelProgress(null);
     }
   };
 
@@ -436,7 +453,7 @@ export const App: React.FC = () => {
   };
 
   const currentModelLabel = AVAILABLE_MODELS.find(m => m.id === selectedModel)?.label || 'Qwen 2.5 3B';
-  const currentPresetName = SYSTEM_PRESETS.find(p => p.id === selectedPreset)?.name || 'General';
+  const currentPersonality = PERSONALITIES.find(p => p.id === selectedPersonality) || PERSONALITIES[0];
 
   return (
     <div 
@@ -481,7 +498,7 @@ export const App: React.FC = () => {
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', position: 'relative' }}>
         {/* Header HUD */}
         <header style={{
-          padding: '0.75rem 1.5rem',
+          padding: '0.75rem 1.25rem',
           borderBottom: '1px solid rgba(139, 92, 246, 0.2)',
           display: 'flex',
           alignItems: 'center',
@@ -489,15 +506,16 @@ export const App: React.FC = () => {
           backgroundColor: '#07070b',
           zIndex: 30
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginLeft: sidebarOpen ? '0' : '4.5rem' }}>
-            <span style={{ fontSize: '1.2rem' }}>⚡</span>
-            <span style={{ fontWeight: 700, fontFamily: 'var(--font-mono)', fontSize: '1rem', letterSpacing: '0.04em' }}>
+          {/* Left: Brand & Model */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginLeft: sidebarOpen ? '0' : '3.5rem' }}>
+            <HnaiLogo size="sm" />
+            <span className="header-title-text" style={{ fontWeight: 700, fontFamily: 'var(--font-mono)', fontSize: '0.95rem', letterSpacing: '0.04em', color: '#ffffff' }}>
               EasyLM
             </span>
             <span style={{
-              fontSize: '0.75rem',
+              fontSize: '0.72rem',
               fontFamily: 'var(--font-mono)',
-              padding: '0.2rem 0.6rem',
+              padding: '0.15rem 0.5rem',
               borderRadius: '9999px',
               backgroundColor: 'rgba(139, 92, 246, 0.15)',
               border: '1px solid rgba(139, 92, 246, 0.4)',
@@ -510,50 +528,63 @@ export const App: React.FC = () => {
             <button
               onClick={handleNewSession}
               className="btn-pill btn-pill-primary"
-              style={{ fontSize: '0.75rem', padding: '0.25rem 0.75rem', gap: '0.35rem' }}
+              style={{ fontSize: '0.75rem', padding: '0.2rem 0.65rem', gap: '0.35rem' }}
               title="Start a fresh chat session (Ctrl+N)"
             >
               <span>+</span> New Session
             </button>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          {/* Right: Controls & Badges */}
+          <div className="header-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             {/* Extended Thinking Indicator */}
             {extendedThinking && (
               <span 
-                style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: '#a78bfa', padding: '0.2rem 0.5rem', background: '#13131c', borderRadius: '9999px', border: '1px solid rgba(139,92,246,0.3)' }}
+                style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: '#a78bfa', padding: '0.2rem 0.45rem', background: '#13131c', borderRadius: '9999px', border: '1px solid rgba(139,92,246,0.3)' }}
                 title="Extended reasoning scratchpad active"
               >
-                🧠 Think Mode
+                🧠 Think
               </span>
             )}
 
             {/* Tools Indicator */}
             {toolsEnabled && (
               <span 
-                style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: '#10b981', padding: '0.2rem 0.5rem', background: 'rgba(16,185,129,0.1)', borderRadius: '9999px', border: '1px solid rgba(16,185,129,0.3)' }}
-                title="In-app tools (Math, Units, Search, Warehouse) active"
+                style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: '#10b981', padding: '0.2rem 0.45rem', background: 'rgba(16,185,129,0.1)', borderRadius: '9999px', border: '1px solid rgba(16,185,129,0.3)' }}
+                title="In-app tools (Math, Units, Search, Web Reader) active"
               >
-                ⚡ Hands ON
+                ⚡ Hands
               </span>
             )}
 
-            {/* Preset Pill */}
+            {/* Personality Pill */}
             <button
               onClick={() => setSettingsOpen(true)}
               className="btn-pill"
-              style={{ fontSize: '0.75rem', padding: '0.3rem 0.75rem' }}
-              title="Click to switch preset or customize prompt"
+              style={{ fontSize: '0.75rem', padding: '0.25rem 0.65rem', gap: '0.3rem' }}
+              title="Click to switch AI Personality or customize"
             >
-              Preset: {currentPresetName}
+              <span>{currentPersonality.badge.split(' ')[0]}</span>
+              <span>{currentPersonality.name}</span>
+            </button>
+
+            {/* Help Guide Button */}
+            <button
+              onClick={() => setHelpOpen(true)}
+              className="btn-pill"
+              style={{ fontSize: '0.75rem', padding: '0.25rem 0.6rem', gap: '0.3rem', borderColor: 'rgba(139, 92, 246, 0.4)', color: '#c4b5fd' }}
+              title="Open EasyLM Guide & AI Primer"
+            >
+              <span>?</span>
+              <span>Help</span>
             </button>
 
             {/* Settings Button */}
             <button
               onClick={() => setSettingsOpen(true)}
               className="btn-pill"
-              style={{ padding: '0.3rem 0.75rem' }}
-              title="Configure model, presets, SearXNG, and tools"
+              style={{ padding: '0.25rem 0.6rem' }}
+              title="Configure model, personalities, SearXNG, and tools"
             >
               ⚙
             </button>
@@ -561,7 +592,7 @@ export const App: React.FC = () => {
         </header>
 
         {/* Progress HUD bar during model download / warmup */}
-        {spindleProgress && (
+        {modelProgress && (
           <div style={{
             backgroundColor: '#12121c',
             borderBottom: '1px solid #8b5cf6',
@@ -573,9 +604,9 @@ export const App: React.FC = () => {
             fontSize: '0.8rem',
             color: '#c4b5fd'
           }}>
-            <span>{spindleProgress.text}</span>
+            <span>{modelProgress.text}</span>
             <div style={{ width: '120px', height: '6px', background: '#272733', borderRadius: '3px', overflow: 'hidden' }}>
-              <div style={{ width: `${Math.round((spindleProgress.progress || 0) * 100)}%`, height: '100%', background: '#8b5cf6', transition: 'width 0.2s' }} />
+              <div style={{ width: `${Math.round((modelProgress.progress || 0) * 100)}%`, height: '100%', background: '#8b5cf6', transition: 'width 0.2s' }} />
             </div>
           </div>
         )}
@@ -631,7 +662,7 @@ export const App: React.FC = () => {
                     handleSendMessage();
                   }
                 }}
-                placeholder="Ask anything, do math, search web, or drop a document..."
+                placeholder="Ask anything, do math, paste a link, or drop a document..."
                 rows={1}
                 style={{
                   flex: 1,
@@ -666,14 +697,20 @@ export const App: React.FC = () => {
         </div>
       </main>
 
+      {/* Help Modal */}
+      <HelpModal
+        isOpen={helpOpen}
+        onClose={() => setHelpOpen(false)}
+      />
+
       {/* Settings Modal */}
       <SettingsModal
         isOpen={settingsOpen}
         onClose={() => setSettingsOpen(false)}
         selectedModel={selectedModel}
         onSelectModel={setSelectedModel}
-        selectedPreset={selectedPreset}
-        onSelectPreset={setSelectedPreset}
+        selectedPreset={selectedPersonality}
+        onSelectPreset={setSelectedPersonality}
         customPrompt={customPrompt}
         onChangeCustomPrompt={setCustomPrompt}
         toolsEnabled={toolsEnabled}

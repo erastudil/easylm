@@ -379,3 +379,47 @@ body {
 .animate-glow {
   animation: pulseGlow 2.5s infinite ease-in-out;
 }
+
+/* Mobile Drawer & Responsive Layout */
+@media (max-width: 768px) {
+  .sidebar-drawer {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    box-shadow: 8px 0 32px rgba(0, 0, 0, 0.9);
+  }
+  .mobile-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    z-index: 45;
+  }
+  .help-modal-body {
+    flex-direction: column !important;
+  }
+  .help-modal-body > div:first-child {
+    width: 100% !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+    max-height: 140px;
+  }
+  .header-actions {
+    gap: 0.35rem !important;
+  }
+  .header-title-text {
+    display: none;
+  }
+  .bubble-user,
+  .bubble-assistant {
+    max-width: 95% !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-backdrop {
+    display: none;
+  }
+}
+

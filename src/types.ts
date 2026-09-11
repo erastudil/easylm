@@ -34,9 +34,13 @@ export interface ModelOption {
   isReasoning?: boolean;
 }
 
-export interface Preset {
+export interface Personality {
   id: string;
   name: string;
+  badge: string;
   description: string;
   systemPrompt: string;
 }
+
+export type Preset = Personality;
+

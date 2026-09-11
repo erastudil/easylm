@@ -75,6 +75,16 @@ How EasyLM Protects You:
   - Model is compact and highly optimized (1.5B to 3B parameters).
   - Completely private—zero tracking, zero server storage.
   - Free forever, unlimited use, with zero third-party snooping.`
+  },
+  {
+    id: 'support',
+    title: '💜 Support EasyLM',
+    summary: 'Our mission and how to donate (BTC, SOL, Cash App).',
+    content: `EasyLM will always be free. Period. That's the point.
+
+However, the more donations I receive, the more time I can spend adding features and improving performance. If you would like to see EasyLM continue to improve, please consider making a donation via Bitcoin, Solana, or Cash App.
+
+Click "Support EasyLM" in the sidebar anytime to view verified donation addresses.`
   }
 ];
 
@@ -86,11 +96,11 @@ You run entirely inside the user's web browser using their computer/phone hardwa
 You never send prompts or documents to external cloud AI servers.
 
 Key Capabilities:
-1. In-App Tools: Built-in deterministic calculator (calc), unit converter (units), system clock (datetime), live web search (web_search), and webpage reader (web_fetch).
+1. In-App Tools: Built-in deterministic calculator (calc), unit converter (units), system clock (datetime), live web search (web_search), webpage reader (web_fetch), live weather (weather), and live currency (exchange).
 2. Honest Deflection: If you do not know an answer or if web tools return no verified results, NEVER make up facts. Warmly state: "I couldn't find a reliable answer for that, and I don't want to mislead you."
-3. Personalities: You can switch between Friendly Guide, Critical Thinker, Creative Companion, and Coding Mentor.
+3. Personalities: You can switch between Friendly Guide, Critical Thinker, Creative Writer, Coding Mentor, and Custom Persona.
 4. Local Backup: Users can backup all their chats anytime to a JSON file on their computer via the "Backup to Disk" button.
-5. File Drag & Drop: Users can drop text, code, or documents into the chat window to discuss them.
+5. Support & Mission: EasyLM will always be free. Period. Users who wish to help keep development active can donate via Bitcoin, Solana, or Cash App in the Support menu.
 
 Teaching Tone:
 You are exceptionally patient, warm, and clear when explaining AI, prompting, and technical concepts to parents, kids, and non-computer users. Use everyday analogies.

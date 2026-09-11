@@ -12,6 +12,7 @@ interface SidebarProps {
   onSessionsReload: () => void;
   isOpen: boolean;
   onToggleOpen: () => void;
+  onOpenSupport: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -22,7 +23,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onDeleteSession,
   onSessionsReload,
   isOpen,
-  onToggleOpen
+  onToggleOpen,
+  onOpenSupport
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -180,7 +182,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Bottom Local Storage & Backup Actions */}
         <div style={{ padding: '0.8rem 1rem', borderTop: '1px solid rgba(139, 92, 246, 0.2)', backgroundColor: '#07070a' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+            <button
+              onClick={onOpenSupport}
+              className="btn-pill"
+              style={{
+                width: '100%',
+                fontSize: '0.78rem',
+                justifyContent: 'center',
+                gap: '0.4rem',
+                backgroundColor: 'rgba(139, 92, 246, 0.14)',
+                borderColor: 'rgba(139, 92, 246, 0.45)',
+                color: '#c4b5fd',
+                fontWeight: 600
+              }}
+              title="Support EasyLM with Bitcoin, Solana, or Cash App"
+            >
+              <span>💜</span> Support EasyLM
+            </button>
             <button
               onClick={handleBackup}
               className="btn-pill"

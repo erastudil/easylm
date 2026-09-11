@@ -19,6 +19,7 @@ import { Sidebar } from './components/Sidebar';
 import { MessageItem } from './components/MessageItem';
 import { SettingsModal, PERSONALITIES } from './components/SettingsModal';
 import { HelpModal } from './components/HelpModal';
+import { SupportModal } from './components/SupportModal';
 import { EASYLM_GUIDE_PROMPT_CONTEXT } from './data/help_guide';
 import { detectDevice, DeviceInfo } from './engine/device';
 
@@ -28,6 +29,7 @@ export const App: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(() => typeof window !== 'undefined' ? window.innerWidth > 768 : false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [supportOpen, setSupportOpen] = useState(false);
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
 
   // Model & Personality Configuration
@@ -527,6 +529,7 @@ How can I help you today?`,
         onSessionsReload={handleSessionsReload}
         isOpen={sidebarOpen}
         onToggleOpen={() => setSidebarOpen(!sidebarOpen)}
+        onOpenSupport={() => setSupportOpen(true)}
       />
 
       {/* Main Chat Area */}
@@ -842,6 +845,12 @@ How can I help you today?`,
       <HelpModal
         isOpen={helpOpen}
         onClose={() => setHelpOpen(false)}
+      />
+
+      {/* Support Modal */}
+      <SupportModal
+        isOpen={supportOpen}
+        onClose={() => setSupportOpen(false)}
       />
 
       {/* Settings Modal */}

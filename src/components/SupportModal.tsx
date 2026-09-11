@@ -103,6 +103,92 @@ export const SupportModal: React.FC<SupportModalProps> = ({ isOpen, onClose }) =
             </p>
           </div>
 
+          {/* Open Source, Forks & Contributors (MIT License) */}
+          <div style={{
+            backgroundColor: '#11111a',
+            border: '1px solid rgba(139, 92, 246, 0.35)',
+            borderRadius: '14px',
+            padding: '1rem 1.25rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.65rem'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '1.1rem' }}>🐙</span>
+                <span style={{ fontWeight: 600, color: '#ffffff', fontSize: '0.92rem' }}>
+                  Forks &amp; Contributors
+                </span>
+              </div>
+              <span style={{
+                fontSize: '0.68rem',
+                fontFamily: 'var(--font-mono)',
+                padding: '0.12rem 0.5rem',
+                borderRadius: '6px',
+                backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                border: '1px solid rgba(16, 185, 129, 0.35)',
+                color: '#34d399',
+                fontWeight: 600
+              }}>
+                MIT License
+              </span>
+            </div>
+
+            <p style={{ margin: 0, fontSize: '0.82rem', color: '#a1a1aa', lineHeight: 1.55 }}>
+              EasyLM is 100% open source under the permissive <strong style={{ color: '#ffffff' }}>MIT License</strong>. You have complete freedom to inspect the code, fork the project, contribute pull requests, or adapt it for personal, academic, or commercial use.
+            </p>
+
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem', marginTop: '0.2rem' }}>
+              <a
+                href="https://github.com/erastudil/easylm"
+                target="_blank"
+                rel="noreferrer"
+                className="btn-pill"
+                style={{
+                  fontSize: '0.74rem',
+                  padding: '0.25rem 0.75rem',
+                  backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                  borderColor: '#8b5cf6',
+                  color: '#ffffff',
+                  fontWeight: 600,
+                  textDecoration: 'none'
+                }}
+              >
+                ⭐ View Repository ↗
+              </a>
+              <a
+                href="https://github.com/erastudil/easylm/fork"
+                target="_blank"
+                rel="noreferrer"
+                className="btn-pill"
+                style={{
+                  fontSize: '0.74rem',
+                  padding: '0.25rem 0.75rem',
+                  borderColor: 'rgba(139, 92, 246, 0.4)',
+                  color: '#c4b5fd',
+                  textDecoration: 'none'
+                }}
+              >
+                🍴 Fork on GitHub ↗
+              </a>
+              <a
+                href="https://github.com/erastudil/easylm/issues"
+                target="_blank"
+                rel="noreferrer"
+                className="btn-pill"
+                style={{
+                  fontSize: '0.74rem',
+                  padding: '0.25rem 0.75rem',
+                  borderColor: 'rgba(255, 255, 255, 0.15)',
+                  color: '#a1a1aa',
+                  textDecoration: 'none'
+                }}
+              >
+                🐞 Issues &amp; PRs ↗
+              </a>
+            </div>
+          </div>
+
           {/* Donation Methods */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
             <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: '#a78bfa', textTransform: 'uppercase', letterSpacing: '0.06em' }}>

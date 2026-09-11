@@ -23,6 +23,7 @@ import { PersonalityModal } from './components/PersonalityModal';
 import { PERSONALITIES } from './data/personalities';
 import { HelpModal } from './components/HelpModal';
 import { SupportModal } from './components/SupportModal';
+import { FeedbackModal } from './components/FeedbackModal';
 import { EASYLM_GUIDE_PROMPT_CONTEXT } from './data/help_guide';
 import { detectDevice, DeviceInfo } from './engine/device';
 import { createWelcomeMessage, WELCOME_TOOLBOX_CONTENT } from './data/welcome';
@@ -46,6 +47,7 @@ export const App: React.FC = () => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
+  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
 
   // Family Mode, Profiles, Parental Controls, and Sovereign Memory
@@ -732,6 +734,7 @@ export const App: React.FC = () => {
         onToggleOpen={() => setSidebarOpen(!sidebarOpen)}
         onOpenSupport={() => setSupportOpen(true)}
         onOpenPersonalityModal={() => setPersonalityModalOpen(true)}
+        onOpenFeedback={() => setFeedbackModalOpen(true)}
       />
 
       {/* Main Chat Area */}
@@ -756,6 +759,20 @@ export const App: React.FC = () => {
           <div className="header-brand-wrap" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '0.65rem', flexShrink: 0, marginLeft: sidebarOpen ? '0' : '3.5rem' }}>
             <span className="header-title-text" style={{ fontWeight: 700, fontFamily: 'var(--font-mono)', fontSize: '0.95rem', letterSpacing: '0.04em', color: '#ffffff' }}>
               EasyLM
+            </span>
+            <span style={{
+              fontSize: '0.62rem',
+              fontWeight: 700,
+              fontFamily: 'var(--font-mono)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+              padding: '0.12rem 0.45rem',
+              borderRadius: '9999px',
+              backgroundColor: 'rgba(234, 179, 8, 0.15)',
+              border: '1px solid rgba(234, 179, 8, 0.45)',
+              color: '#fde047'
+            }}>
+              Public Beta
             </span>
             <span className="model-pill-badge" style={{
               fontSize: '0.72rem',
@@ -848,6 +865,24 @@ export const App: React.FC = () => {
             >
               <span>?</span>
               <span className="hide-on-mobile"> Help</span>
+            </button>
+
+            {/* Public Beta Feedback Button */}
+            <button
+              onClick={() => setFeedbackModalOpen(true)}
+              className="btn-pill"
+              style={{
+                fontSize: '0.75rem',
+                padding: '0.25rem 0.6rem',
+                gap: '0.3rem',
+                borderColor: 'rgba(234, 179, 8, 0.4)',
+                backgroundColor: feedbackModalOpen ? 'rgba(234, 179, 8, 0.2)' : '#111118',
+                color: '#fef08a'
+              }}
+              title="Send beta feedback, bug reports, and writeups to humansandai@atomicmail.io"
+            >
+              <span>💬</span>
+              <span className="hide-on-mobile"> Feedback</span>
             </button>
 
             {/* Settings Button */}
@@ -1090,6 +1125,13 @@ export const App: React.FC = () => {
       <SupportModal
         isOpen={supportOpen}
         onClose={() => setSupportOpen(false)}
+      />
+
+      {/* Public Beta Feedback Modal */}
+      <FeedbackModal
+        isOpen={feedbackModalOpen}
+        onClose={() => setFeedbackModalOpen(false)}
+        activeModel={currentModelLabel}
       />
 
       {/* Settings Modal */}

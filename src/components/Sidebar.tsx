@@ -14,6 +14,7 @@ interface SidebarProps {
   onToggleOpen: () => void;
   onOpenSupport: () => void;
   onOpenPersonalityModal?: () => void;
+  onOpenFeedback?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -26,7 +27,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isOpen,
   onToggleOpen,
   onOpenSupport,
-  onOpenPersonalityModal
+  onOpenPersonalityModal,
+  onOpenFeedback
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -221,6 +223,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
             >
               <span>💜</span> Support EasyLM
             </button>
+            {onOpenFeedback && (
+              <button
+                onClick={onOpenFeedback}
+                className="btn-pill"
+                style={{
+                  width: '100%',
+                  fontSize: '0.78rem',
+                  justifyContent: 'center',
+                  gap: '0.4rem',
+                  backgroundColor: 'rgba(234, 179, 8, 0.1)',
+                  borderColor: 'rgba(234, 179, 8, 0.35)',
+                  color: '#fef08a',
+                  fontWeight: 500
+                }}
+                title="Send beta feedback, bugs, or writeups to humansandai@atomicmail.io"
+              >
+                <span>💬</span> Send Beta Feedback
+              </button>
+            )}
             <button
               onClick={handleBackup}
               className="btn-pill"

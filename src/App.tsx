@@ -63,7 +63,6 @@ export const App: React.FC = () => {
     const prof = getActiveProfile();
     return prof.personalityId || 'friendly';
   });
-  const [personalityDropdownOpen, setPersonalityDropdownOpen] = useState(false);
   const [personalityModalOpen, setPersonalityModalOpen] = useState(false);
   const [customPrompt, setCustomPrompt] = useState<string>('');
   const [toolsEnabled, setToolsEnabled] = useState<boolean>(true);
@@ -116,20 +115,6 @@ export const App: React.FC = () => {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const personalityDropdownRef = useRef<HTMLDivElement>(null);
-
-  // Close personality dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (personalityDropdownRef.current && !personalityDropdownRef.current.contains(e.target as Node)) {
-        setPersonalityDropdownOpen(false);
-      }
-    };
-    if (personalityDropdownOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [personalityDropdownOpen]);
 
   // Save SearXNG URL to localStorage
   const handleUpdateSearxng = (url: string) => {
@@ -735,6 +720,7 @@ export const App: React.FC = () => {
         isOpen={sidebarOpen}
         onToggleOpen={() => setSidebarOpen(!sidebarOpen)}
         onOpenSupport={() => setSupportOpen(true)}
+        onOpenPersonalityModal={() => setPersonalityModalOpen(true)}
       />
 
       {/* Main Chat Area */}
@@ -823,145 +809,24 @@ export const App: React.FC = () => {
               {currentProfile.parentalLockEnabled && hasParentalPin() && <span style={{ fontSize: '0.65rem' }}>🔒</span>}
             </button>
 
-            {/* Personality Dropdown Menu */}
-            <div ref={personalityDropdownRef} style={{ position: 'relative' }}>
-              <button
-                onClick={() => setPersonalityDropdownOpen(!personalityDropdownOpen)}
-                className="btn-pill"
-                style={{
-                  fontSize: '0.75rem',
-                  padding: '0.25rem 0.65rem',
-                  gap: '0.35rem',
-                  backgroundColor: personalityDropdownOpen ? 'rgba(139, 92, 246, 0.2)' : '#111118',
-                  borderColor: personalityDropdownOpen ? '#8b5cf6' : 'rgba(139, 92, 246, 0.3)',
-                  color: '#ffffff'
-                }}
-                title="Select AI Personality or Perspective"
-              >
-                {currentPersonality.avatar && <span>{currentPersonality.avatar}</span>}
-                <span>{currentPersonality.name}</span>
-                <span style={{
-                  fontSize: '0.6rem',
-                  color: '#a78bfa',
-                  transition: 'transform 0.15s ease',
-                  transform: personalityDropdownOpen ? 'rotate(180deg)' : 'none'
-                }}>
-                  ▼
-                </span>
-              </button>
-
-              {personalityDropdownOpen && (
-                <div style={{
-                  position: 'absolute',
-                  top: 'calc(100% + 8px)',
-                  right: 0,
-                  width: '300px',
-                  maxHeight: '420px',
-                  overflowY: 'auto',
-                  backgroundColor: '#0c0c12',
-                  border: '1px solid rgba(139, 92, 246, 0.35)',
-                  borderRadius: '12px',
-                  padding: '0.4rem',
-                  boxShadow: '0 10px 30px rgba(0, 0, 0, 0.8)',
-                  zIndex: 100,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.25rem'
-                }}>
-                  {/* Gallery Button to open full modal */}
-                  <button
-                    onClick={() => {
-                      setPersonalityDropdownOpen(false);
-                      setPersonalityModalOpen(true);
-                    }}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '0.5rem 0.65rem',
-                      borderRadius: '8px',
-                      backgroundColor: 'rgba(139, 92, 246, 0.22)',
-                      border: '1px solid #8b5cf6',
-                      color: '#ffffff',
-                      cursor: 'pointer',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      fontFamily: 'var(--font-mono)',
-                      marginBottom: '0.25rem'
-                    }}
-                  >
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <span>🎭</span>
-                      <span>Browse Gallery ({PERSONALITIES.length})...</span>
-                    </span>
-                    <span style={{ color: '#c4b5fd' }}>→</span>
-                  </button>
-
-                  <div style={{
-                    fontSize: '0.68rem',
-                    fontFamily: 'var(--font-mono)',
-                    color: '#71717a',
-                    padding: '0.2rem 0.5rem 0.1rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em'
-                  }}>
-                    Quick Select
-                  </div>
-                  {PERSONALITIES.map(p => {
-                    const isSelected = selectedPersonality === p.id;
-                    return (
-                      <button
-                        key={p.id}
-                        onClick={() => {
-                          setSelectedPersonality(p.id);
-                          setPersonalityDropdownOpen(false);
-                          if (p.id === 'custom' && !customPrompt) {
-                            setSettingsOpen(true);
-                          }
-                        }}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          padding: '0.45rem 0.65rem',
-                          borderRadius: '8px',
-                          border: isSelected ? '1px solid rgba(139, 92, 246, 0.4)' : '1px solid transparent',
-                          backgroundColor: isSelected ? 'rgba(139, 92, 246, 0.18)' : 'transparent',
-                          color: isSelected ? '#ffffff' : '#d4d4d8',
-                          cursor: 'pointer',
-                          textAlign: 'left',
-                          fontFamily: 'var(--font-mono)',
-                          transition: 'background-color 0.15s'
-                        }}
-                        onMouseEnter={(e) => {
-                          if (!isSelected) e.currentTarget.style.backgroundColor = 'rgba(139, 92, 246, 0.08)';
-                        }}
-                        onMouseLeave={(e) => {
-                          if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent';
-                        }}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.45rem', overflow: 'hidden' }}>
-                          {p.avatar && <span style={{ fontSize: '1rem', lineHeight: 1.2 }}>{p.avatar}</span>}
-                          <div style={{ overflow: 'hidden' }}>
-                            <div style={{ fontSize: '0.8rem', fontWeight: isSelected ? 700 : 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                              {p.name}
-                            </div>
-                            <div style={{ fontSize: '0.68rem', color: '#71717a', marginTop: '0.1rem', maxWidth: '190px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                              {p.description}
-                            </div>
-                          </div>
-                        </div>
-                        {isSelected && (
-                          <span style={{ color: '#8b5cf6', fontSize: '0.9rem', fontWeight: 700, marginLeft: '0.5rem' }}>
-                            ✓
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+            {/* Personality Gallery Pill Button */}
+            <button
+              onClick={() => setPersonalityModalOpen(true)}
+              className="btn-pill"
+              style={{
+                fontSize: '0.75rem',
+                padding: '0.25rem 0.65rem',
+                gap: '0.35rem',
+                backgroundColor: personalityModalOpen ? 'rgba(139, 92, 246, 0.25)' : '#111118',
+                borderColor: personalityModalOpen ? '#8b5cf6' : 'rgba(139, 92, 246, 0.3)',
+                color: '#ffffff'
+              }}
+              title="Browse 22 Thinkers, Authors & Coaches (Personality Gallery)"
+            >
+              {currentPersonality.avatar && <span>{currentPersonality.avatar}</span>}
+              <span>{currentPersonality.name}</span>
+              <span style={{ fontSize: '0.7rem', color: '#c4b5fd' }}>🎭</span>
+            </button>
 
             {/* Help Guide Button */}
             <button

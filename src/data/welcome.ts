@@ -14,7 +14,7 @@ EasyLM comes equipped with deterministic client & background tools that execute 
 
 ### 💡 Quick Tips
 • **Extended Thinking:** Toggle **"🧠 Think"** on the top bar for deep step-by-step reasoning.
-• **AI Personalities:** Switch between Friendly Guide, Critical Thinker, Creative Writer, and Coding Mentor in the top dropdown.
+• **AI Personalities & Voices:** Click the personality pill on the top bar or sidebar to explore the **🎭 22 Voices Gallery** (Socrates, Feynman, Letterman’s Razor, Stoics, Kant, Wu Wei, Twain, Austen, Poe, and more).
 • **Local Backup:** All chats stay in this browser. Click **"💾 Backup to Disk"** anytime to download your conversations.
 
 How can I help you today?`;

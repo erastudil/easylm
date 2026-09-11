@@ -13,6 +13,7 @@ interface SidebarProps {
   isOpen: boolean;
   onToggleOpen: () => void;
   onOpenSupport: () => void;
+  onOpenPersonalityModal?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -24,7 +25,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onSessionsReload,
   isOpen,
   onToggleOpen,
-  onOpenSupport
+  onOpenSupport,
+  onOpenPersonalityModal
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -183,6 +185,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Bottom Local Storage & Backup Actions */}
         <div style={{ padding: '0.8rem 1rem', borderTop: '1px solid rgba(139, 92, 246, 0.2)', backgroundColor: '#07070a' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+            {onOpenPersonalityModal && (
+              <button
+                onClick={onOpenPersonalityModal}
+                className="btn-pill"
+                style={{
+                  width: '100%',
+                  fontSize: '0.78rem',
+                  justifyContent: 'center',
+                  gap: '0.4rem',
+                  backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                  borderColor: 'rgba(139, 92, 246, 0.35)',
+                  color: '#e4e4e7',
+                  fontWeight: 500
+                }}
+                title="Browse 22 Thinkers, Authors & Coaches (Gallery)"
+              >
+                <span>🎭</span> Voices Gallery (22)
+              </button>
+            )}
             <button
               onClick={onOpenSupport}
               className="btn-pill"

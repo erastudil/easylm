@@ -13,9 +13,9 @@ export const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
   const isUser = message.role === 'user';
 
   return (
-    <div className={`flex flex-col w-full ${isUser ? 'items-end' : 'items-start'} my-2.5`}>
+    <div className={`flex flex-col w-full ${isUser ? 'items-end' : 'items-start'} my-3.5`}>
       {/* Role / Timestamp / Header row */}
-      <div className="flex items-center justify-between gap-2 mb-1 px-2 text-xs font-mono text-zinc-500" style={{ maxWidth: isUser ? '85%' : '90%', width: '100%' }}>
+      <div className="flex items-center justify-between gap-2 mb-1.5 px-2 text-xs font-mono text-zinc-500" style={{ maxWidth: isUser ? '88%' : '98%', width: '100%' }}>
         <div className="flex items-center gap-1.5">
           <span style={{ color: isUser ? '#c4b5fd' : '#a78bfa', fontWeight: 600 }}>
             {isUser ? 'You' : 'EasyLM'}

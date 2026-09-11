@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { EASYLM_HELP_SECTIONS } from '../data/help_guide';
 import { HnaiLogo } from './HnaiLogo';
+import { MarkdownRenderer } from './MarkdownRenderer';
 
 interface HelpModalProps {
   isOpen: boolean;
@@ -32,9 +33,11 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
       <div
         className="card-panel"
         style={{
-          width: '100%',
-          maxWidth: '720px',
-          maxHeight: '88vh',
+          width: '94vw',
+          maxWidth: '1020px',
+          height: '84vh',
+          minHeight: '580px',
+          maxHeight: '90vh',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
@@ -50,12 +53,13 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          backgroundColor: '#08080d'
+          backgroundColor: '#08080d',
+          flexShrink: 0
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <HnaiLogo size="sm" />
             <h2 style={{ margin: 0, fontSize: '1.15rem', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
-              EasyLM Guide &amp; AI Primer
+              EasyLM Guide &amp; Knowledge Base
             </h2>
           </div>
           <button
@@ -76,15 +80,16 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Content Layout (Sidebar tabs + Main pane) */}
-        <div style={{ display: 'flex', flex: 1, overflow: 'hidden', flexDirection: 'row' }} className="help-modal-body">
+        <div style={{ display: 'flex', flex: 1, minHeight: 0, overflow: 'hidden', flexDirection: 'row' }} className="help-modal-body">
           {/* Navigation Sidebar */}
           <div style={{
-            width: '230px',
-            minWidth: '200px',
+            width: '260px',
+            minWidth: '240px',
             backgroundColor: '#07070b',
             borderRight: '1px solid rgba(139, 92, 246, 0.15)',
             padding: '0.75rem',
-            overflowY: 'auto'
+            overflowY: 'auto',
+            flexShrink: 0
           }}>
             {EASYLM_HELP_SECTIONS.map((sec) => {
               const isActive = sec.id === activeTab;
@@ -116,20 +121,8 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
           </div>
 
           {/* Section Body */}
-          <div style={{ flex: 1, padding: '1.5rem', overflowY: 'auto', backgroundColor: '#0a0a10' }}>
-            <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.25rem', color: '#ffffff', fontFamily: 'var(--font-mono)' }}>
-              {currentSection.title}
-            </h3>
-            <div
-              style={{
-                fontSize: '0.92rem',
-                lineHeight: 1.7,
-                color: '#d4d4d8',
-                whiteSpace: 'pre-line'
-              }}
-            >
-              {currentSection.content}
-            </div>
+          <div style={{ flex: 1, minHeight: 0, padding: '1.75rem 2rem', overflowY: 'auto', backgroundColor: '#0a0a10' }}>
+            <MarkdownRenderer content={currentSection.content} />
           </div>
         </div>
 

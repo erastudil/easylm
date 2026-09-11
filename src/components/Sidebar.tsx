@@ -1,0 +1,243 @@
+import React, { useRef } from 'react';
+import { Session } from '../types';
+import { exportBackupToDisk, restoreBackupFromDisk, wipeAllStoredSessions } from '../engine/storage';
+
+interface SidebarProps {
+  sessions: Session[];
+  activeSessionId: string | null;
+  onSelectSession: (id: string) => void;
+  onNewSession: () => void;
+  onDeleteSession: (id: string) => void;
+  onSessionsReload: () => void;
+  isOpen: boolean;
+  onToggleOpen: () => void;
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({
+  sessions,
+  activeSessionId,
+  onSelectSession,
+  onNewSession,
+  onDeleteSession,
+  onSessionsReload,
+  isOpen,
+  onToggleOpen
+}) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleBackup = () => {
+    exportBackupToDisk(sessions);
+  };
+
+  const handleRestoreClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      if (content) {
+        const res = restoreBackupFromDisk(content);
+        if (res.ok) {
+          alert(`Restored ${res.count || 0} sessions successfully.`);
+          onSessionsReload();
+        } else {
+          alert(`Restore failed: ${res.error}`);
+        }
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const handleWipe = () => {
+    if (confirm('Are you sure you want to delete all local sessions from this browser? This cannot be undone unless you backed up to disk.')) {
+      wipeAllStoredSessions();
+      onSessionsReload();
+    }
+  };
+
+  return (
+    <>
+      <aside 
+        style={{
+          width: isOpen ? '280px' : '0px',
+          minWidth: isOpen ? '280px' : '0px',
+          transition: 'all 0.25s ease-in-out',
+          backgroundColor: '#09090e',
+          borderRight: isOpen ? '1px solid rgba(139, 92, 246, 0.2)' : 'none',
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100vh',
+          overflow: 'hidden',
+          zIndex: 40
+        }}
+      >
+        {/* Top Header */}
+        <div style={{ padding: '1.2rem 1rem 0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <span style={{ fontSize: '1.25rem' }}>⚡</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, letterSpacing: '0.05em' }}>
+              EasyLM
+            </span>
+            <span style={{ fontSize: '0.65rem', padding: '0.15rem 0.45rem', borderRadius: '9999px', background: 'rgba(139,92,246,0.15)', color: '#a78bfa', border: '1px solid rgba(139,92,246,0.3)' }}>
+              WebGPU
+            </span>
+          </div>
+          <button 
+            onClick={onToggleOpen}
+            style={{ background: 'transparent', border: 'none', color: '#71717a', cursor: 'pointer', fontSize: '1.1rem' }}
+            title="Collapse sidebar"
+          >
+            ◀
+          </button>
+        </div>
+
+        {/* New Chat Button */}
+        <div style={{ padding: '0.5rem 1rem' }}>
+          <button 
+            onClick={onNewSession}
+            className="btn-pill btn-pill-primary"
+            style={{ width: '100%', justifyContent: 'center', gap: '0.5rem' }}
+            title="Start fresh conversation"
+          >
+            <span>+</span> New Chat
+          </button>
+        </div>
+
+        {/* Session List */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '0.5rem 0.75rem' }}>
+          <div style={{ fontSize: '0.7rem', color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.08em', padding: '0.5rem 0.5rem 0.3rem', fontFamily: 'var(--font-mono)' }}>
+            Recent Chats ({sessions.length})
+          </div>
+          
+          {sessions.length === 0 ? (
+            <div style={{ padding: '1.5rem 0.5rem', textAlign: 'center', color: '#52525b', fontSize: '0.85rem' }}>
+              No chats yet. Start typing to begin.
+            </div>
+          ) : (
+            sessions.map((s) => {
+              const isActive = s.id === activeSessionId;
+              return (
+                <div
+                  key={s.id}
+                  onClick={() => onSelectSession(s.id)}
+                  style={{
+                    padding: '0.6rem 0.75rem',
+                    borderRadius: '12px',
+                    marginBottom: '0.3rem',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    backgroundColor: isActive ? 'rgba(139, 92, 246, 0.15)' : 'transparent',
+                    border: isActive ? '1px solid rgba(139, 92, 246, 0.4)' : '1px solid transparent',
+                    color: isActive ? '#ffffff' : '#a1a1aa',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '0.85rem', flex: 1 }}>
+                    {s.title}
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteSession(s.id);
+                    }}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#52525b',
+                      cursor: 'pointer',
+                      fontSize: '0.9rem',
+                      padding: '0.2rem'
+                    }}
+                    title="Delete chat"
+                  >
+                    ×
+                  </button>
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        {/* Bottom Local Storage & Backup Actions */}
+        <div style={{ padding: '0.8rem 1rem', borderTop: '1px solid rgba(139, 92, 246, 0.2)', backgroundColor: '#07070a' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+            <button
+              onClick={handleBackup}
+              className="btn-pill"
+              style={{ width: '100%', fontSize: '0.78rem', justifyContent: 'center', gap: '0.4rem' }}
+              title="Download all chats as a local JSON file"
+            >
+              <span>💾</span> Backup to Disk
+            </button>
+            <button
+              onClick={handleRestoreClick}
+              className="btn-pill"
+              style={{ width: '100%', fontSize: '0.78rem', justifyContent: 'center', gap: '0.4rem' }}
+              title="Restore chats from local JSON file"
+            >
+              <span>📥</span> Restore Backup
+            </button>
+            <input 
+              ref={fileInputRef} 
+              type="file" 
+              accept=".json" 
+              style={{ display: 'none' }} 
+              onChange={handleFileChange} 
+            />
+            <button
+              onClick={handleWipe}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: '#ef4444',
+                fontSize: '0.75rem',
+                fontFamily: 'var(--font-mono)',
+                cursor: 'pointer',
+                marginTop: '0.3rem',
+                textAlign: 'center'
+              }}
+              title="Wipe all local storage"
+            >
+              Clear Stored Data
+            </button>
+          </div>
+          
+          <div style={{ marginTop: '0.8rem', textAlign: 'center', fontSize: '0.7rem', color: '#52525b', fontFamily: 'var(--font-mono)' }}>
+            100% Private · WebGPU In-Browser
+          </div>
+        </div>
+      </aside>
+
+      {/* Toggle button when closed */}
+      {!isOpen && (
+        <button
+          onClick={onToggleOpen}
+          style={{
+            position: 'absolute',
+            top: '1rem',
+            left: '1rem',
+            zIndex: 50,
+            background: '#111118',
+            border: '1px solid rgba(139, 92, 246, 0.3)',
+            borderRadius: '9999px',
+            color: '#a78bfa',
+            padding: '0.4rem 0.75rem',
+            cursor: 'pointer',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.85rem'
+          }}
+          title="Open chat sidebar"
+        >
+          ☰ Chats
+        </button>
+      )}
+    </>
+  );
+};

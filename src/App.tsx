@@ -832,7 +832,7 @@ export const App: React.FC = () => {
                 borderColor: personalityModalOpen ? '#8b5cf6' : 'rgba(139, 92, 246, 0.3)',
                 color: '#ffffff'
               }}
-              title="Browse 22 Thinkers, Authors & Coaches (Personality Gallery)"
+              title="Browse Perspectives & Voices Gallery"
             >
               {currentPersonality.avatar && <span>{currentPersonality.avatar}</span>}
               <span>{currentPersonality.name}</span>

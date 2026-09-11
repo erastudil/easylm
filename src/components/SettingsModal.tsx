@@ -159,10 +159,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   color: '#c4b5fd',
                   gap: '0.3rem'
                 }}
-                title="Open 22-Perspective Categorized Gallery"
+                title="Open Categorized Voices Gallery"
               >
                 <span>🎭</span>
-                <span>Browse Gallery ({PERSONALITIES.length}) →</span>
+                <span>Browse Gallery →</span>
               </button>
             )}
           </div>

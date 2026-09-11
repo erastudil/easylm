@@ -199,9 +199,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   color: '#e4e4e7',
                   fontWeight: 500
                 }}
-                title="Browse 22 Thinkers, Authors & Coaches (Gallery)"
+                title="Browse Thinkers, Authors & Characters (Gallery)"
               >
-                <span>🎭</span> Voices Gallery (22)
+                <span>🎭</span> Voices Gallery
               </button>
             )}
             <button

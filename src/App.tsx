@@ -31,6 +31,7 @@ export const App: React.FC = () => {
   // Model & Personality Configuration
   const [selectedModel, setSelectedModel] = useState<string>(DEFAULT_MODEL_ID);
   const [selectedPersonality, setSelectedPersonality] = useState<string>('friendly');
+  const [personalityDropdownOpen, setPersonalityDropdownOpen] = useState(false);
   const [customPrompt, setCustomPrompt] = useState<string>('');
   const [toolsEnabled, setToolsEnabled] = useState<boolean>(true);
   const [extendedThinking, setExtendedThinking] = useState<boolean>(false);
@@ -46,6 +47,20 @@ export const App: React.FC = () => {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const personalityDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close personality dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (personalityDropdownRef.current && !personalityDropdownRef.current.contains(e.target as Node)) {
+        setPersonalityDropdownOpen(false);
+      }
+    };
+    if (personalityDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [personalityDropdownOpen]);
 
   // Save SearXNG URL to localStorage
   const handleUpdateSearxng = (url: string) => {
@@ -565,15 +580,110 @@ How can I help you today?`,
               </span>
             )}
 
-            {/* Personality Pill */}
-            <button
-              onClick={() => setSettingsOpen(true)}
-              className="btn-pill"
-              style={{ fontSize: '0.75rem', padding: '0.25rem 0.65rem' }}
-              title="Click to switch AI Personality or customize"
-            >
-              <span>{currentPersonality.name}</span>
-            </button>
+            {/* Personality Dropdown Menu */}
+            <div ref={personalityDropdownRef} style={{ position: 'relative' }}>
+              <button
+                onClick={() => setPersonalityDropdownOpen(!personalityDropdownOpen)}
+                className="btn-pill"
+                style={{
+                  fontSize: '0.75rem',
+                  padding: '0.25rem 0.65rem',
+                  gap: '0.35rem',
+                  backgroundColor: personalityDropdownOpen ? 'rgba(139, 92, 246, 0.2)' : '#111118',
+                  borderColor: personalityDropdownOpen ? '#8b5cf6' : 'rgba(139, 92, 246, 0.3)',
+                  color: '#ffffff'
+                }}
+                title="Select AI Personality"
+              >
+                <span>{currentPersonality.name}</span>
+                <span style={{
+                  fontSize: '0.6rem',
+                  color: '#a78bfa',
+                  transition: 'transform 0.15s ease',
+                  transform: personalityDropdownOpen ? 'rotate(180deg)' : 'none'
+                }}>
+                  ▼
+                </span>
+              </button>
+
+              {personalityDropdownOpen && (
+                <div style={{
+                  position: 'absolute',
+                  top: 'calc(100% + 8px)',
+                  right: 0,
+                  width: '240px',
+                  backgroundColor: '#0c0c12',
+                  border: '1px solid rgba(139, 92, 246, 0.35)',
+                  borderRadius: '12px',
+                  padding: '0.4rem',
+                  boxShadow: '0 10px 30px rgba(0, 0, 0, 0.8)',
+                  zIndex: 100,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.25rem'
+                }}>
+                  <div style={{
+                    fontSize: '0.68rem',
+                    fontFamily: 'var(--font-mono)',
+                    color: '#71717a',
+                    padding: '0.25rem 0.5rem 0.15rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em'
+                  }}>
+                    Select Personality
+                  </div>
+                  {PERSONALITIES.map(p => {
+                    const isSelected = selectedPersonality === p.id;
+                    return (
+                      <button
+                        key={p.id}
+                        onClick={() => {
+                          setSelectedPersonality(p.id);
+                          setPersonalityDropdownOpen(false);
+                          if (p.id === 'custom' && !customPrompt) {
+                            setSettingsOpen(true);
+                          }
+                        }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '0.5rem 0.65rem',
+                          borderRadius: '8px',
+                          border: isSelected ? '1px solid rgba(139, 92, 246, 0.4)' : '1px solid transparent',
+                          backgroundColor: isSelected ? 'rgba(139, 92, 246, 0.18)' : 'transparent',
+                          color: isSelected ? '#ffffff' : '#d4d4d8',
+                          cursor: 'pointer',
+                          textAlign: 'left',
+                          fontFamily: 'var(--font-mono)',
+                          transition: 'background-color 0.15s'
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isSelected) e.currentTarget.style.backgroundColor = 'rgba(139, 92, 246, 0.08)';
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent';
+                        }}
+                      >
+                        <div>
+                          <div style={{ fontSize: '0.8rem', fontWeight: isSelected ? 700 : 500 }}>
+                            {p.name}
+                          </div>
+                          <div style={{ fontSize: '0.68rem', color: '#71717a', marginTop: '0.1rem', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {p.description}
+                          </div>
+                        </div>
+                        {isSelected && (
+                          <span style={{ color: '#8b5cf6', fontSize: '0.9rem', fontWeight: 700, marginLeft: '0.5rem' }}>
+                            ✓
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
 
             {/* Help Guide Button */}
             <button

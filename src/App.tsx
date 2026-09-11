@@ -18,7 +18,9 @@ import {
 import { dispatchTool, SYSTEM_TOOLS_PROMPT } from './engine/tools';
 import { Sidebar } from './components/Sidebar';
 import { MessageItem } from './components/MessageItem';
-import { SettingsModal, PERSONALITIES } from './components/SettingsModal';
+import { SettingsModal } from './components/SettingsModal';
+import { PersonalityModal } from './components/PersonalityModal';
+import { PERSONALITIES } from './data/personalities';
 import { HelpModal } from './components/HelpModal';
 import { SupportModal } from './components/SupportModal';
 import { EASYLM_GUIDE_PROMPT_CONTEXT } from './data/help_guide';
@@ -62,6 +64,7 @@ export const App: React.FC = () => {
     return prof.personalityId || 'friendly';
   });
   const [personalityDropdownOpen, setPersonalityDropdownOpen] = useState(false);
+  const [personalityModalOpen, setPersonalityModalOpen] = useState(false);
   const [customPrompt, setCustomPrompt] = useState<string>('');
   const [toolsEnabled, setToolsEnabled] = useState<boolean>(true);
   const [extendedThinking, setExtendedThinking] = useState<boolean>(false);
@@ -833,8 +836,9 @@ export const App: React.FC = () => {
                   borderColor: personalityDropdownOpen ? '#8b5cf6' : 'rgba(139, 92, 246, 0.3)',
                   color: '#ffffff'
                 }}
-                title="Select AI Personality"
+                title="Select AI Personality or Perspective"
               >
+                {currentPersonality.avatar && <span>{currentPersonality.avatar}</span>}
                 <span>{currentPersonality.name}</span>
                 <span style={{
                   fontSize: '0.6rem',
@@ -851,8 +855,8 @@ export const App: React.FC = () => {
                   position: 'absolute',
                   top: 'calc(100% + 8px)',
                   right: 0,
-                  width: '280px',
-                  maxHeight: '400px',
+                  width: '300px',
+                  maxHeight: '420px',
                   overflowY: 'auto',
                   backgroundColor: '#0c0c12',
                   border: '1px solid rgba(139, 92, 246, 0.35)',
@@ -864,15 +868,44 @@ export const App: React.FC = () => {
                   flexDirection: 'column',
                   gap: '0.25rem'
                 }}>
+                  {/* Gallery Button to open full modal */}
+                  <button
+                    onClick={() => {
+                      setPersonalityDropdownOpen(false);
+                      setPersonalityModalOpen(true);
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '0.5rem 0.65rem',
+                      borderRadius: '8px',
+                      backgroundColor: 'rgba(139, 92, 246, 0.22)',
+                      border: '1px solid #8b5cf6',
+                      color: '#ffffff',
+                      cursor: 'pointer',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      fontFamily: 'var(--font-mono)',
+                      marginBottom: '0.25rem'
+                    }}
+                  >
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <span>🎭</span>
+                      <span>Browse Gallery ({PERSONALITIES.length})...</span>
+                    </span>
+                    <span style={{ color: '#c4b5fd' }}>→</span>
+                  </button>
+
                   <div style={{
                     fontSize: '0.68rem',
                     fontFamily: 'var(--font-mono)',
                     color: '#71717a',
-                    padding: '0.25rem 0.5rem 0.15rem',
+                    padding: '0.2rem 0.5rem 0.1rem',
                     textTransform: 'uppercase',
                     letterSpacing: '0.05em'
                   }}>
-                    Select Personality
+                    Quick Select
                   </div>
                   {PERSONALITIES.map(p => {
                     const isSelected = selectedPersonality === p.id;
@@ -890,7 +923,7 @@ export const App: React.FC = () => {
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
-                          padding: '0.5rem 0.65rem',
+                          padding: '0.45rem 0.65rem',
                           borderRadius: '8px',
                           border: isSelected ? '1px solid rgba(139, 92, 246, 0.4)' : '1px solid transparent',
                           backgroundColor: isSelected ? 'rgba(139, 92, 246, 0.18)' : 'transparent',
@@ -907,12 +940,15 @@ export const App: React.FC = () => {
                           if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent';
                         }}
                       >
-                        <div>
-                          <div style={{ fontSize: '0.8rem', fontWeight: isSelected ? 700 : 500 }}>
-                            {p.name}
-                          </div>
-                          <div style={{ fontSize: '0.68rem', color: '#71717a', marginTop: '0.1rem', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {p.description}
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.45rem', overflow: 'hidden' }}>
+                          {p.avatar && <span style={{ fontSize: '1rem', lineHeight: 1.2 }}>{p.avatar}</span>}
+                          <div style={{ overflow: 'hidden' }}>
+                            <div style={{ fontSize: '0.8rem', fontWeight: isSelected ? 700 : 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {p.name}
+                            </div>
+                            <div style={{ fontSize: '0.68rem', color: '#71717a', marginTop: '0.1rem', maxWidth: '190px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {p.description}
+                            </div>
                           </div>
                         </div>
                         {isSelected && (
@@ -1201,6 +1237,18 @@ export const App: React.FC = () => {
         showWelcomeMessage={showWelcomeMessage}
         onToggleWelcomeMessage={handleToggleWelcomeMessage}
         onOpenProfiles={() => setProfileModalOpen(true)}
+        onOpenPersonalityModal={() => setPersonalityModalOpen(true)}
+      />
+
+      {/* 22-Perspective & Author Voices Gallery Modal */}
+      <PersonalityModal
+        isOpen={personalityModalOpen}
+        onClose={() => setPersonalityModalOpen(false)}
+        selectedPersonality={selectedPersonality}
+        onSelectPersonality={(id) => {
+          setSelectedPersonality(id);
+        }}
+        onOpenCustomSettings={() => setSettingsOpen(true)}
       />
 
       {/* Profile & Sovereign Memory Modal */}

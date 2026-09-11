@@ -41,6 +41,10 @@ export interface Personality {
   badge: string;
   description: string;
   systemPrompt: string;
+  avatar?: string;
+  era?: string;
+  writingStyle?: string;
+  category?: 'practical' | 'philosophy' | 'science' | 'literature';
 }
 
 export type Preset = Personality;

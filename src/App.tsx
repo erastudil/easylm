@@ -535,9 +535,23 @@ How can I help you today?`,
       {/* Main Chat Area */}
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', position: 'relative' }}>
         {/* Header HUD */}
-        <header className="header-hud">
+        <header
+          className="header-hud"
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'nowrap',
+            width: '100%',
+            padding: '0.75rem 1.25rem',
+            backgroundColor: '#07070b',
+            borderBottom: '1px solid rgba(139, 92, 246, 0.2)',
+            zIndex: 30
+          }}
+        >
           {/* Left: Brand & Model */}
-          <div className="header-brand-wrap" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginLeft: sidebarOpen ? '0' : '3.5rem' }}>
+          <div className="header-brand-wrap" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '0.65rem', flexShrink: 0, marginLeft: sidebarOpen ? '0' : '3.5rem' }}>
             <span className="header-title-text" style={{ fontWeight: 700, fontFamily: 'var(--font-mono)', fontSize: '0.95rem', letterSpacing: '0.04em', color: '#ffffff' }}>
               EasyLM
             </span>
@@ -555,7 +569,7 @@ How can I help you today?`,
           </div>
 
           {/* Right: Controls & Badges */}
-          <div className="header-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div className="header-actions" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '0.5rem', flexShrink: 0, marginLeft: 'auto' }}>
             {/* Extended Thinking Toggle Button */}
             <button
               onClick={() => setExtendedThinking(!extendedThinking)}

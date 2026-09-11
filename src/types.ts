@@ -6,6 +6,7 @@ export interface Message {
   thoughtDurationMs?: number;
   toolsUsed?: ToolExecution[];
   timestamp: number;
+  loopProtected?: boolean;
 }
 
 export interface ToolExecution {

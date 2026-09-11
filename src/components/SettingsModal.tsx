@@ -286,6 +286,16 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               style={{ accentColor: '#8b5cf6', width: '1.1rem', height: '1.1rem' }}
             />
           </label>
+
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.6rem 0.75rem', background: '#111118', borderRadius: '12px' }}>
+            <div>
+              <div style={{ fontSize: '0.85rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <span>🛡️ Anti-Loop Sentinel</span>
+                <span style={{ fontSize: '0.65rem', background: 'rgba(52, 211, 153, 0.15)', color: '#34d399', padding: '0.1rem 0.4rem', borderRadius: '6px', border: '1px solid rgba(52, 211, 153, 0.3)' }}>Active</span>
+              </div>
+              <div style={{ fontSize: '0.7rem', color: '#71717a' }}>Real-time cycle detection & runaway reasoning pruning for DeepSeek and local models</div>
+            </div>
+          </div>
         </div>
 
         {/* Temperature slider */}

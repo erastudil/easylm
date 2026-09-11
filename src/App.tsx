@@ -203,6 +203,31 @@ export const App: React.FC = () => {
       .trim();
   };
 
+  // Helper to cleanly separate in-flight thinking traces from display response during live generation
+  const parseStreamedTokens = (raw: string): { displayContent: string; inFlightThinking?: string } => {
+    let inFlightThinking: string | undefined = undefined;
+    let text = raw;
+
+    if (raw.includes('<think>')) {
+      const closedMatch = raw.match(/<think>([\s\S]*?)<\/think>/i);
+      if (closedMatch) {
+        inFlightThinking = closedMatch[1].trim();
+        text = raw.replace(/<think>[\s\S]*?<\/think>/i, '');
+      } else {
+        const openMatch = raw.match(/<think>([\s\S]*)$/i);
+        if (openMatch) {
+          inFlightThinking = openMatch[1].trim();
+          text = ''; // Actively reasoning; suppress raw think tags from main bubble
+        }
+      }
+    }
+
+    return {
+      displayContent: cleanDisplayContent(text),
+      inFlightThinking
+    };
+  };
+
   // Send Prompt & Run Inference Loop
   const handleSendMessage = async () => {
     const trimmed = inputPrompt.trim();
@@ -380,13 +405,15 @@ export const App: React.FC = () => {
         2048,
         (delta) => {
           currentStreamed += delta;
-          // In-flight token update - strip raw tool call tags from visible text!
+          const { displayContent, inFlightThinking } = parseStreamedTokens(currentStreamed);
+          // In-flight token update - clean display text and live thinking trace
           setSessions(prev => prev.map(s => {
             if (s.id !== activeSession.id) return s;
             const msgs = [...updatedMessages];
             msgs.push({
               ...assistantPlaceholder,
-              content: cleanDisplayContent(currentStreamed)
+              content: displayContent,
+              thinking: inFlightThinking
             });
             return { ...s, messages: msgs };
           }));
@@ -482,12 +509,14 @@ export const App: React.FC = () => {
             2048,
             (delta) => {
               followUpStreamed += delta;
+              const { displayContent, inFlightThinking } = parseStreamedTokens(followUpStreamed);
               setSessions(prev => prev.map(s => {
                 if (s.id !== activeSession.id) return s;
                 const msgs = [...updatedMessages];
                 msgs.push({
                   ...assistantPlaceholder,
-                  content: cleanDisplayContent(followUpStreamed),
+                  content: displayContent,
+                  thinking: inFlightThinking || result.thinking,
                   toolsUsed: executedTools
                 });
                 return { ...s, messages: msgs };
@@ -503,6 +532,7 @@ export const App: React.FC = () => {
             thinking: finalResult.thinking || result.thinking,
             thoughtDurationMs: Date.now() - startTime,
             toolsUsed: executedTools,
+            loopProtected: finalResult.loopDetected || result.loopDetected,
             timestamp: Date.now()
           };
 
@@ -525,6 +555,7 @@ export const App: React.FC = () => {
         thinking: result.thinking,
         thoughtDurationMs: Date.now() - startTime,
         toolsUsed: executedTools,
+        loopProtected: result.loopDetected,
         timestamp: Date.now()
       };
 

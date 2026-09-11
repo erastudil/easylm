@@ -43,7 +43,11 @@ export const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
 
         {/* Thought trace accordion if assistant reasoning exists */}
         {!isUser && message.thinking && (
-          <ThoughtDrawer thinking={message.thinking} durationMs={message.thoughtDurationMs} />
+          <ThoughtDrawer 
+            thinking={message.thinking} 
+            durationMs={message.thoughtDurationMs} 
+            loopProtected={message.loopProtected}
+          />
         )}
 
         {/* Markdown Content rendering */}

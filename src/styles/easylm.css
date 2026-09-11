@@ -380,6 +380,25 @@ body {
   animation: pulseGlow 2.5s infinite ease-in-out;
 }
 
+/* Content Wrapping & Overflow Guards */
+.prose-content {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.prose-content pre {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.prose-content table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 /* Mobile Drawer & Responsive Layout */
 @media (max-width: 768px) {
   .sidebar-drawer {
@@ -405,15 +424,54 @@ body {
     border-bottom: 1px solid rgba(139, 92, 246, 0.2);
     max-height: 140px;
   }
-  .header-actions {
+  .header-hud {
+    padding: 0.55rem 0.75rem !important;
+    gap: 0.35rem;
+  }
+  .header-brand-wrap {
+    margin-left: 2.6rem !important;
     gap: 0.35rem !important;
   }
-  .header-title-text {
-    display: none;
+  .header-actions {
+    gap: 0.25rem !important;
   }
-  .bubble-user,
+  .header-title-text {
+    display: none !important;
+  }
+  .model-pill-badge {
+    max-width: 75px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.65rem !important;
+    padding: 0.15rem 0.4rem !important;
+  }
+  .hide-on-mobile {
+    display: none !important;
+  }
+  .messages-scroll-area {
+    padding: 0.75rem 0.65rem !important;
+  }
+  .prompt-wrapper {
+    padding: 0.4rem 0.65rem 0.85rem !important;
+  }
+  .floating-prompt {
+    padding: 0.4rem 0.65rem !important;
+    border-radius: 20px !important;
+  }
+  .btn-pill {
+    padding: 0.25rem 0.45rem !important;
+    font-size: 0.72rem !important;
+  }
+  .bubble-user {
+    padding: 0.75rem 0.9rem !important;
+    border-radius: 16px 16px 4px 16px !important;
+    max-width: 96% !important;
+  }
   .bubble-assistant {
-    max-width: 95% !important;
+    padding: 0.85rem 1rem !important;
+    border-radius: 16px 16px 16px 4px !important;
+    max-width: 98% !important;
   }
 }
 

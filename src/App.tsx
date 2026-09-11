@@ -20,13 +20,15 @@ import { MessageItem } from './components/MessageItem';
 import { SettingsModal, PERSONALITIES } from './components/SettingsModal';
 import { HelpModal } from './components/HelpModal';
 import { EASYLM_GUIDE_PROMPT_CONTEXT } from './data/help_guide';
+import { detectDevice, DeviceInfo } from './engine/device';
 
 export const App: React.FC = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [activeSessionId, setActiveSessionIdState] = useState<string | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(() => typeof window !== 'undefined' ? window.innerWidth > 768 : false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
 
   // Model & Personality Configuration
   const [selectedModel, setSelectedModel] = useState<string>(DEFAULT_MODEL_ID);
@@ -68,9 +70,16 @@ export const App: React.FC = () => {
     localStorage.setItem('easylm_searxng_url', url);
   };
 
-  // 1. Initial boot: load sessions or create first
+  // 1. Initial boot: detect device hardware & load sessions
   useEffect(() => {
-    setWebGpuAvailable(isWebGPUSupported());
+    detectDevice().then(dev => {
+      setDeviceInfo(dev);
+      setWebGpuAvailable(dev.hasWebGPU);
+      if (dev.isMobile && dev.recommendedModel) {
+        setSelectedModel(dev.recommendedModel);
+      }
+    });
+
     const loaded = loadAllSessions();
     if (loaded.length > 0) {
       setSessions(loaded);
@@ -523,21 +532,13 @@ How can I help you today?`,
       {/* Main Chat Area */}
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', position: 'relative' }}>
         {/* Header HUD */}
-        <header style={{
-          padding: '0.75rem 1.25rem',
-          borderBottom: '1px solid rgba(139, 92, 246, 0.2)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          backgroundColor: '#07070b',
-          zIndex: 30
-        }}>
+        <header className="header-hud">
           {/* Left: Brand & Model */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginLeft: sidebarOpen ? '0' : '3.5rem' }}>
+          <div className="header-brand-wrap" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginLeft: sidebarOpen ? '0' : '3.5rem' }}>
             <span className="header-title-text" style={{ fontWeight: 700, fontFamily: 'var(--font-mono)', fontSize: '0.95rem', letterSpacing: '0.04em', color: '#ffffff' }}>
               EasyLM
             </span>
-            <span style={{
+            <span className="model-pill-badge" style={{
               fontSize: '0.72rem',
               fontFamily: 'var(--font-mono)',
               padding: '0.15rem 0.5rem',
@@ -567,16 +568,17 @@ How can I help you today?`,
               title={extendedThinking ? 'Extended thinking active (click to turn OFF)' : 'Extended thinking disabled (click to turn ON)'}
             >
               <span>🧠</span>
-              <span>Think {extendedThinking ? 'ON' : 'OFF'}</span>
+              <span><span className="hide-on-mobile">Think </span>{extendedThinking ? 'ON' : 'OFF'}</span>
             </button>
 
             {/* Tools Indicator */}
             {toolsEnabled && (
               <span 
                 style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: '#10b981', padding: '0.2rem 0.45rem', background: 'rgba(16,185,129,0.1)', borderRadius: '9999px', border: '1px solid rgba(16,185,129,0.3)' }}
-                title="In-app tools (Math, Units, Search, Web Reader) active"
+                title="In-app tools (Math, Units, Search, Web Reader, Weather, FX) active"
               >
-                ⚡ Hands
+                <span>⚡</span>
+                <span className="hide-on-mobile"> Hands</span>
               </span>
             )}
 
@@ -693,7 +695,7 @@ How can I help you today?`,
               title="Open EasyLM Guide & AI Primer"
             >
               <span>?</span>
-              <span>Help</span>
+              <span className="hide-on-mobile"> Help</span>
             </button>
 
             {/* Settings Button */}
@@ -707,6 +709,28 @@ How can I help you today?`,
             </button>
           </div>
         </header>
+
+        {/* WebGPU Device Status Notification Banner if unsupported */}
+        {!webGpuAvailable && (
+          <div style={{
+            backgroundColor: '#1c1307',
+            borderBottom: '1px solid #d97706',
+            color: '#fbbf24',
+            padding: '0.65rem 1.25rem',
+            fontSize: '0.78rem',
+            fontFamily: 'var(--font-mono)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '0.5rem'
+          }}>
+            <span>
+              {deviceInfo?.isIOS 
+                ? '⚠️ iOS WebGPU: Turn on in Settings → Safari → Advanced → Feature Flags → WebGPU, then refresh.'
+                : '⚠️ WebGPU not detected: Use Chrome, Edge (113+), or Android Chrome with hardware acceleration for local AI.'}
+            </span>
+          </div>
+        )}
 
         {/* Progress HUD bar during model download / warmup */}
         {modelProgress && (
@@ -729,7 +753,7 @@ How can I help you today?`,
         )}
 
         {/* Messages Stream */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem 2rem', display: 'flex', flexDirection: 'column' }}>
+        <div className="messages-scroll-area" style={{ flex: 1, overflowY: 'auto', padding: '1.5rem 2rem', display: 'flex', flexDirection: 'column' }}>
           <div style={{ maxWidth: '820px', width: '100%', margin: '0 auto' }}>
             {activeSession && activeSession.messages.map((m) => (
               <MessageItem key={m.id} message={m} />
@@ -739,7 +763,7 @@ How can I help you today?`,
         </div>
 
         {/* Floating Rounded Prompt Bar */}
-        <div style={{ padding: '0.75rem 2rem 1.5rem', display: 'flex', justifyContent: 'center', zIndex: 20 }}>
+        <div className="prompt-wrapper" style={{ padding: '0.75rem 2rem 1.5rem', display: 'flex', justifyContent: 'center', zIndex: 20 }}>
           <div className="floating-prompt" style={{ maxWidth: '820px', width: '100%', padding: '0.5rem 0.85rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
               {/* Attachment Button */}

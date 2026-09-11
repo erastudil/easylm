@@ -15,8 +15,8 @@ export const DONATION_METHODS: DonationMethod[] = [
     id: 'btc',
     name: 'Bitcoin',
     symbol: 'BTC',
-    network: 'Bitcoin Native',
-    address: 'bc1qeasylm9v7x2k4p8w3z5n6m1t0y8h2u4g7j9s0',
+    network: 'Bitcoin Native (SegWit)',
+    address: 'bc1q89c5mgtv9avlaadsh0504mvxl6znm2fl2yn99a',
     note: 'Send any amount of BTC'
   },
   {
@@ -24,7 +24,7 @@ export const DONATION_METHODS: DonationMethod[] = [
     name: 'Solana',
     symbol: 'SOL',
     network: 'Solana Mainnet',
-    address: 'EasyLM7xGqL8rP3vK6mZ9wF1tN4bV2yH5uE8sA3jD1',
+    address: '8cpaA3wz7q4iesZfioCieCKXE1fsnBKLh9R9CoH4tEKN',
     note: 'Send SOL or USDC (SPL)'
   },
   {
@@ -32,8 +32,8 @@ export const DONATION_METHODS: DonationMethod[] = [
     name: 'Cash App',
     symbol: 'Cash App',
     network: '$cashtag',
-    address: '$easylm',
-    link: 'https://cash.app/$easylm',
+    address: '$bluebarrels',
+    link: 'https://cash.app/$bluebarrels',
     note: 'Send via Cash App'
   }
 ];

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Message } from '../types';
 import { ThoughtDrawer } from './ThoughtDrawer';
+import { ToolDrawer } from './ToolDrawer';
 import { CopyButton } from './CopyButton';
 import { MarkdownRenderer } from './MarkdownRenderer';
 
@@ -31,14 +32,11 @@ export const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
 
       {/* Main bubble */}
       <div className={isUser ? 'bubble-user' : 'bubble-assistant'}>
-        {/* Render tool executions if any */}
+        {/* Render tool executions in deterministic rectangular boxes */}
         {message.toolsUsed && message.toolsUsed.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-3">
+          <div className="w-full mb-3">
             {message.toolsUsed.map((t, idx) => (
-              <div key={idx} className="tool-badge" title={`Execution completed in ${t.durationMs}ms`}>
-                <span>⚡ {t.tool}:</span>
-                <span className="text-zinc-300 truncate max-w-sm">{t.result}</span>
-              </div>
+              <ToolDrawer key={idx} tool={t} />
             ))}
           </div>
         )}

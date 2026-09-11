@@ -90,6 +90,8 @@ interface SettingsModalProps {
   onChangeTemperature: (t: number) => void;
   searxngUrl: string;
   onChangeSearxngUrl: (url: string) => void;
+  showWelcomeMessage: boolean;
+  onToggleWelcomeMessage: () => void;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -108,7 +110,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   temperature,
   onChangeTemperature,
   searxngUrl,
-  onChangeSearxngUrl
+  onChangeSearxngUrl,
+  showWelcomeMessage,
+  onToggleWelcomeMessage
 }) => {
   if (!isOpen) return null;
 
@@ -250,8 +254,21 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
         {/* Feature Toggles */}
         <div style={{ marginBottom: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', padding: '0.6rem', background: '#111118', borderRadius: '12px' }}>
-            <span style={{ fontSize: '0.85rem' }}>⚡ In-App Hands (Math, Units, Web Search, Web Reader)</span>
+          <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', padding: '0.6rem 0.75rem', background: '#111118', borderRadius: '12px' }}>
+            <div>
+              <div style={{ fontSize: '0.85rem', fontWeight: 500 }}>👋 Show Toolbox Guide on fresh chats</div>
+              <div style={{ fontSize: '0.7rem', color: '#71717a' }}>Explains in-app tools (weather, currency, math, dictionary) on load</div>
+            </div>
+            <input
+              type="checkbox"
+              checked={showWelcomeMessage}
+              onChange={onToggleWelcomeMessage}
+              style={{ accentColor: '#8b5cf6', width: '1.1rem', height: '1.1rem' }}
+            />
+          </label>
+
+          <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', padding: '0.6rem 0.75rem', background: '#111118', borderRadius: '12px' }}>
+            <span style={{ fontSize: '0.85rem' }}>⚡ In-App Hands (Weather, FX, Facts, Dictionary, Math, Web)</span>
             <input
               type="checkbox"
               checked={toolsEnabled}
@@ -260,7 +277,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             />
           </label>
 
-          <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', padding: '0.6rem', background: '#111118', borderRadius: '12px' }}>
+          <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', padding: '0.6rem 0.75rem', background: '#111118', borderRadius: '12px' }}>
             <span style={{ fontSize: '0.85rem' }}>🧠 Extended Thinking Mode (&lt;think&gt; trace)</span>
             <input
               type="checkbox"

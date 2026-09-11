@@ -22,6 +22,7 @@ import { HelpModal } from './components/HelpModal';
 import { SupportModal } from './components/SupportModal';
 import { EASYLM_GUIDE_PROMPT_CONTEXT } from './data/help_guide';
 import { detectDevice, DeviceInfo } from './engine/device';
+import { createWelcomeMessage } from './data/welcome';
 
 export const App: React.FC = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -41,6 +42,16 @@ export const App: React.FC = () => {
   const [extendedThinking, setExtendedThinking] = useState<boolean>(false);
   const [temperature, setTemperature] = useState<number>(0.3);
   const [searxngUrl, setSearxngUrl] = useState<string>(() => localStorage.getItem('easylm_searxng_url') || '');
+  const [showWelcomeMessage, setShowWelcomeMessage] = useState<boolean>(() => {
+    const saved = localStorage.getItem('easylm_show_welcome');
+    return saved === null ? true : saved === 'true';
+  });
+
+  const handleToggleWelcomeMessage = () => {
+    const next = !showWelcomeMessage;
+    setShowWelcomeMessage(next);
+    localStorage.setItem('easylm_show_welcome', String(next));
+  };
 
   // Runtime State
   const [inputPrompt, setInputPrompt] = useState('');
@@ -93,19 +104,10 @@ export const App: React.FC = () => {
       }
     } else {
       const initial = createNewSession('Welcome to EasyLM');
-      initial.messages.push({
-        id: 'msg-welcome',
-        role: 'assistant',
-        content: `Welcome to **EasyLM** by **humans&ai** — 100% private, free AI that runs entirely on your device via WebGPU.
-
-• **Private & Free:** No accounts, no subscriptions, zero data sent to external servers. Everything runs on your machine.
-• **In-App Hands:** Built-in calculator, unit converter, live system clock, web search, and webpage reader.
-• **Local Backup:** Your conversations stay in this browser; click **"Backup to Disk"** anytime to download your chats.
-• **Help & Guidance:** Click the **"? Help"** button above or type **"help"** anytime to learn about prompting, hallucination, and how EasyLM works.
-
-How can I help you today?`,
-        timestamp: Date.now()
-      });
+      const shouldWelcome = localStorage.getItem('easylm_show_welcome');
+      if (shouldWelcome === null || shouldWelcome === 'true') {
+        initial.messages.push(createWelcomeMessage());
+      }
       setSessions([initial]);
       setActiveSessionIdState(initial.id);
       saveAllSessions([initial]);
@@ -127,6 +129,9 @@ How can I help you today?`,
   // Create New Session
   const handleNewSession = () => {
     const newSess = createNewSession('New Conversation');
+    if (showWelcomeMessage) {
+      newSess.messages.push(createWelcomeMessage());
+    }
     const updated = [newSess, ...sessions];
     setSessions(updated);
     setActiveSessionIdState(newSess.id);
@@ -885,6 +890,8 @@ How can I help you today?`,
         onChangeTemperature={setTemperature}
         searxngUrl={searxngUrl}
         onChangeSearxngUrl={handleUpdateSearxng}
+        showWelcomeMessage={showWelcomeMessage}
+        onToggleWelcomeMessage={handleToggleWelcomeMessage}
       />
     </div>
   );

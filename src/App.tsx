@@ -11,6 +11,7 @@ import {
   isWebGPUSupported,
   DEFAULT_MODEL_ID,
   streamChatCompletion,
+  stopGeneration,
   ProgressStatus,
   AVAILABLE_MODELS
 } from './engine/webllm_spindle';
@@ -139,17 +140,27 @@ export const App: React.FC = () => {
     saveAllSessions(updated);
   };
 
-  // Global Keyboard shortcuts (Ctrl+K or Ctrl+N for new session)
+  // Stop active inference
+  const handleStopGeneration = async () => {
+    await stopGeneration();
+    setIsGenerating(false);
+    setModelProgress(null);
+  };
+
+  // Global Keyboard shortcuts (Ctrl+K or Ctrl+N for new session, Esc to stop generation)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'n')) {
         e.preventDefault();
         handleNewSession();
+      } else if (e.key === 'Escape' && isGenerating) {
+        e.preventDefault();
+        handleStopGeneration();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [sessions]);
+  }, [sessions, isGenerating]);
 
   useEffect(() => {
     scrollToBottom();
@@ -851,7 +862,36 @@ export const App: React.FC = () => {
         </div>
 
         {/* Floating Rounded Prompt Bar */}
-        <div className="prompt-wrapper" style={{ padding: '0.75rem 2rem 1.5rem', display: 'flex', justifyContent: 'center', zIndex: 20 }}>
+        <div className="prompt-wrapper" style={{ padding: '0.75rem 2rem 1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 20 }}>
+          {/* Floating Stop Indicator when generating */}
+          {isGenerating && (
+            <div style={{ marginBottom: '0.5rem', zIndex: 25 }}>
+              <button
+                onClick={handleStopGeneration}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
+                  padding: '0.35rem 0.95rem',
+                  backgroundColor: '#18181b',
+                  border: '1px solid rgba(239, 68, 68, 0.6)',
+                  borderRadius: '9999px',
+                  color: '#f87171',
+                  fontSize: '0.78rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 14px rgba(0, 0, 0, 0.6)',
+                  transition: 'all 0.15s ease'
+                }}
+                title="Stop generating response (Esc)"
+              >
+                <span style={{ fontSize: '0.7rem' }}>⏹</span>
+                <span>Stop Generating</span>
+                <span style={{ color: '#71717a', fontSize: '0.7rem', fontWeight: 400 }}>(Esc)</span>
+              </button>
+            </div>
+          )}
+
           <div className="floating-prompt" style={{ maxWidth: '820px', width: '100%', padding: '0.5rem 0.85rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
               {/* Attachment Button */}
@@ -907,20 +947,45 @@ export const App: React.FC = () => {
                 }}
               />
 
-              {/* Send Button */}
-              <button
-                onClick={handleSendMessage}
-                disabled={isGenerating || !inputPrompt.trim()}
-                className="btn-pill btn-pill-primary"
-                style={{
-                  padding: '0.5rem 1rem',
-                  opacity: (isGenerating || !inputPrompt.trim()) ? 0.4 : 1,
-                  cursor: (isGenerating || !inputPrompt.trim()) ? 'not-allowed' : 'pointer'
-                }}
-                title="Send message (Enter)"
-              >
-                {isGenerating ? '✦' : '➤'}
-              </button>
+              {/* Send or Stop Button */}
+              {isGenerating ? (
+                <button
+                  onClick={handleStopGeneration}
+                  className="btn-pill"
+                  style={{
+                    padding: '0.5rem 0.95rem',
+                    backgroundColor: '#dc2626',
+                    border: '1px solid #ef4444',
+                    color: '#ffffff',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    fontSize: '0.8rem',
+                    fontWeight: 600,
+                    borderRadius: '9999px',
+                    transition: 'all 0.15s ease'
+                  }}
+                  title="Stop generating response (Esc)"
+                >
+                  <span style={{ fontSize: '0.75rem' }}>⏹</span>
+                  <span>Stop</span>
+                </button>
+              ) : (
+                <button
+                  onClick={handleSendMessage}
+                  disabled={!inputPrompt.trim()}
+                  className="btn-pill btn-pill-primary"
+                  style={{
+                    padding: '0.5rem 1rem',
+                    opacity: !inputPrompt.trim() ? 0.4 : 1,
+                    cursor: !inputPrompt.trim() ? 'not-allowed' : 'pointer'
+                  }}
+                  title="Send message (Enter)"
+                >
+                  ➤
+                </button>
+              )}
             </div>
           </div>
         </div>

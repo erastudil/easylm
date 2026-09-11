@@ -134,8 +134,24 @@ export async function getOrInitEngine(
   return initPromise;
 }
 
+let abortCurrentGeneration = false;
+
 /**
- * Stream inference with token chunk callbacks
+ * Abort active inference immediately via WebLLM interruptGenerate
+ */
+export async function stopGeneration(): Promise<void> {
+  abortCurrentGeneration = true;
+  if (activeEngine) {
+    try {
+      await activeEngine.interruptGenerate();
+    } catch (e) {
+      console.warn('Error interrupting generation:', e);
+    }
+  }
+}
+
+/**
+ * Stream inference with token chunk callbacks and abort support
  */
 export async function streamChatCompletion(
   messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>,
@@ -146,24 +162,38 @@ export async function streamChatCompletion(
   onProgress?: (p: ProgressStatus) => void
 ): Promise<{ fullText: string; thinking?: string }> {
   const engine = await getOrInitEngine(modelId, onProgress);
+  abortCurrentGeneration = false;
+
+  const isReasoning = modelId.includes('DeepSeek-R1') || modelId.includes('Reasoning');
 
   const completion = await engine.chat.completions.create({
     messages,
     temperature,
     max_tokens: maxTokens,
-    stream: true
+    stream: true,
+    frequency_penalty: isReasoning ? 0.25 : 0.0,
+    presence_penalty: isReasoning ? 0.2 : 0.0
   });
 
   let fullRaw = '';
-  for await (const chunk of completion) {
-    const delta = chunk.choices[0]?.delta?.content || '';
-    if (delta) {
-      fullRaw += delta;
-      onChunk(delta);
+  try {
+    for await (const chunk of completion) {
+      if (abortCurrentGeneration) {
+        break;
+      }
+      const delta = chunk.choices[0]?.delta?.content || '';
+      if (delta) {
+        fullRaw += delta;
+        onChunk(delta);
+      }
+    }
+  } catch (err: any) {
+    if (!abortCurrentGeneration) {
+      throw err;
     }
   }
 
-  // Parse <think>...</think> tags if present
+  // Parse <think>...</think> tags if present, including unclosed tags when interrupted mid-thought
   let thinking: string | undefined = undefined;
   let finalContent = fullRaw;
 
@@ -172,6 +202,12 @@ export async function streamChatCompletion(
     if (match) {
       thinking = match[1].trim();
       finalContent = fullRaw.replace(/<think>[\s\S]*?<\/think>/i, '').trim();
+    } else {
+      const openMatch = fullRaw.match(/<think>([\s\S]*)$/i);
+      if (openMatch) {
+        thinking = openMatch[1].trim();
+        finalContent = fullRaw.replace(/<think>[\s\S]*$/i, '').trim();
+      }
     }
   }
 

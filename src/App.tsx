@@ -185,7 +185,11 @@ export const App: React.FC = () => {
 
   // Helper to extract clean display text from streamed tokens (hiding raw tool_call tags)
   const cleanDisplayContent = (text: string): string => {
-    return text.replace(/<tool_call>[\s\S]*?(?:<\/tool_call>|$)/gi, '').trim();
+    return text
+      .replace(/<tool_call>[\s\S]*?(?:<\/tool_call>|$)/gi, '')
+      .replace(/```(?:tool_call|json)\s*\{[\s\S]*?"(?:name|function|tool)"[\s\S]*?\}\s*```/gi, '')
+      .replace(/<function=[a-zA-Z0-9_]+>[\s\S]*?(?:<\/function>|$)/gi, '')
+      .trim();
   };
 
   // Send Prompt & Run Inference Loop
@@ -248,15 +252,24 @@ export const App: React.FC = () => {
 
     const executedTools: ToolExecution[] = [];
 
-    // Pre-flight heuristic: Detect direct math, unit, URL fetch, literary chapters, quotes, or search requests
+    // Pre-flight heuristic: Detect direct math, unit, URL fetch, search, repository queries, quotes, or chapters
     const mathMatch = trimmed.match(/^(?:what is|calculate|compute|eval)\s+([0-9+\-*/().\s^sqrtpowpi]+)$/i);
     const unitMatch = trimmed.match(/^(?:convert\s+)?([\d.]+\s*[a-zA-Z]+\s*(?:to|in)\s*[a-zA-Z]+)$/i);
     const directSearchMatch = trimmed.match(/^(?:search|search for|google|web search)\s*:\s*(.+)$/i);
     const urlMatch = trimmed.match(/(https?:\/\/[^\s]+)/i);
     const directFetchMatch = trimmed.match(/^(?:fetch|read|browse|summarize|inspect)\s+(https?:\/\/[^\s]+)$/i);
-    const chapterMatch = trimmed.match(/(?:summarize|read|tell me about|what happens in|overview of)?\s*(?:the\s+)?(?:chapter|act|canto)\s*(\d+|[ivxlcdm]+)\s+(?:of|in)\s+(.+)/i)
-      || trimmed.match(/(?:summarize|read|tell me about|what happens in|overview of)?\s*(.+?)\s+chapter\s*(\d+|[ivxlcdm]+)/i);
-    const quoteMatch = trimmed.match(/(?:famous\s+)?(?:quotes?|quotations?|sayings?)\s+(?:from|by|in)\s+(.+)/i);
+
+    // Direct repository trigger: wikiquote, wikisource, gutenberg
+    const repoMatch = trimmed.match(/\b(?:check|search|look up|find on|on|from)?\s*(wikiquote|wikisource|gutenberg)\b(?:\s+(?:for|about|on|in))?\s*(.+)?/i);
+
+    // Universal literary quotes query (e.g. "What are some quotes from...", "quotes in Hamlet", "lines by Dumas")
+    const quoteMatch = !repoMatch && trimmed.match(/\b(?:quotes?|quotations?|sayings?|lines?)\b\s+(?:from|by|in|of|about)\s+(.+)/i);
+
+    // Universal chapter query (e.g. "Summarize chapter 5 of...", "The Count of Monte Cristo chapter 1", "What happens in act 1 scene 1")
+    const chapterMatch = !repoMatch && (
+      trimmed.match(/\b(?:chapter|act|canto|volume)\s*(\d+|[ivxlcdm]+)\b\s+(?:of|in|from)\s+(.+)/i)
+      || trimmed.match(/(.+?)\s+\b(?:chapter|act|canto|volume)\s*(\d+|[ivxlcdm]+)\b/i)
+    );
 
     if (toolsEnabled && mathMatch) {
       const toolRes = await dispatchTool('calc', mathMatch[1]);
@@ -273,14 +286,28 @@ export const App: React.FC = () => {
     } else if (toolsEnabled && urlMatch && (trimmed.toLowerCase().includes('read') || trimmed.toLowerCase().includes('summarize') || trimmed === urlMatch[1])) {
       const toolRes = await dispatchTool('web_fetch', urlMatch[1]);
       executedTools.push(toolRes);
-    } else if (toolsEnabled && chapterMatch) {
-      const chNum = chapterMatch[1] && /^\d+|[ivxlcdm]+$/i.test(chapterMatch[1]) ? chapterMatch[1] : chapterMatch[2];
-      const rawBook = (chapterMatch[1] === chNum ? chapterMatch[2] : chapterMatch[1]).trim();
-      const cleanBook = rawBook.replace(/^(?:the\s+)?book\s+/i, '');
-      const toolRes = await dispatchTool('web_search', `${cleanBook} Chapter ${chNum}`, searxngUrl);
+    } else if (toolsEnabled && repoMatch) {
+      const target = (repoMatch[2] || trimmed)
+        .replace(/^(?:for|about|on|in)\s+/i, '')
+        .replace(/[?.!]+$/, '')
+        .trim();
+      const toolRes = await dispatchTool('web_search', target, searxngUrl);
       executedTools.push(toolRes);
     } else if (toolsEnabled && quoteMatch) {
-      const toolRes = await dispatchTool('web_search', `quotes from ${quoteMatch[1].trim()}`, searxngUrl);
+      const cleanTarget = quoteMatch[1]
+        .replace(/^(?:the\s+)?(?:book|novel|play)\s+/i, '')
+        .replace(/[?.!]+$/, '')
+        .trim();
+      const toolRes = await dispatchTool('web_search', `quotes from ${cleanTarget}`, searxngUrl);
+      executedTools.push(toolRes);
+    } else if (toolsEnabled && chapterMatch) {
+      const chNum = /^\d+|[ivxlcdm]+$/i.test(chapterMatch[1]) ? chapterMatch[1] : chapterMatch[2];
+      const rawBook = (chapterMatch[1] === chNum ? chapterMatch[2] : chapterMatch[1])
+        .replace(/^(?:summarize|read|tell me about|what happens in|overview of)\s+/i, '')
+        .replace(/\s+(?:summary|overview)$/i, '')
+        .replace(/[?.!]+$/, '')
+        .trim();
+      const toolRes = await dispatchTool('web_search', `${rawBook} Chapter ${chNum}`, searxngUrl);
       executedTools.push(toolRes);
     }
 
@@ -295,7 +322,7 @@ export const App: React.FC = () => {
     };
 
     // If deterministic math/unit tool directly solved it, finish immediately without spinning up full LLM
-    if (executedTools.length > 0 && !directSearchMatch && !urlMatch && !directFetchMatch && !chapterMatch && !quoteMatch && !extendedThinking) {
+    if (executedTools.length > 0 && !directSearchMatch && !urlMatch && !directFetchMatch && !repoMatch && !chapterMatch && !quoteMatch && !extendedThinking) {
       const finalSess = {
         ...updatedSession,
         messages: [...updatedMessages, assistantPlaceholder]
@@ -356,34 +383,57 @@ export const App: React.FC = () => {
         (prog) => setModelProgress(prog)
       );
 
-      // Check if model emitted a tool call!
+      // Check if model emitted a tool call in any supported format
       const rawOutput = result.fullText;
-      const toolMatch = rawOutput.match(/<tool_call>([\s\S]*?)(?:<\/tool_call>|$)/i);
+      let toolJsonStr = '';
 
-      if (toolMatch && toolsEnabled) {
+      const xmlMatch = rawOutput.match(/<tool_call>([\s\S]*?)(?:<\/tool_call>|$)/i);
+      const mdMatch = rawOutput.match(/```(?:tool_call|json)?\s*(\{[\s\S]*?"(?:name|function|tool)"[\s\S]*?\})\s*```/i);
+      const fnMatch = rawOutput.match(/<function=([a-zA-Z0-9_]+)>([\s\S]*?)(?:<\/function>|$)/i);
+
+      if (xmlMatch) {
+        toolJsonStr = xmlMatch[1].trim();
+      } else if (mdMatch) {
+        toolJsonStr = mdMatch[1].trim();
+      }
+
+      if ((toolJsonStr || fnMatch) && toolsEnabled) {
         let callName = '';
         let callQuery = '';
-        try {
-          const parsed = JSON.parse(toolMatch[1].trim());
-          callName = parsed.name || '';
-          if (parsed.query) {
-            callQuery = String(parsed.query);
-          } else if (parsed.location) {
-            callQuery = String(parsed.location);
-          } else if (parsed.word) {
-            callQuery = String(parsed.word);
-          } else if (parsed.topic) {
-            callQuery = String(parsed.topic);
-          } else if (parsed.expression || parsed.input) {
-            callQuery = String(parsed.expression || parsed.input);
-          } else if (parsed.amount || parsed.from || parsed.to) {
-            callQuery = `${parsed.amount || ''} ${parsed.from || ''} to ${parsed.to || ''}`.trim();
+
+        if (fnMatch) {
+          callName = fnMatch[1];
+          callQuery = fnMatch[2].trim();
+        } else if (toolJsonStr) {
+          try {
+            const parsed = JSON.parse(toolJsonStr);
+            callName = parsed.name || parsed.function?.name || parsed.tool || '';
+
+            // Handle Qwen-native arguments (object or string) or standard top-level fields
+            const args = parsed.arguments || parsed.parameters || parsed;
+            if (typeof args === 'string') {
+              try {
+                const inner = JSON.parse(args);
+                callQuery = inner.query || inner.location || inner.word || inner.topic || inner.expression || inner.input || inner.q || String(args);
+              } catch {
+                callQuery = args;
+              }
+            } else if (typeof args === 'object' && args !== null) {
+              if (args.query) callQuery = String(args.query);
+              else if (args.location) callQuery = String(args.location);
+              else if (args.word) callQuery = String(args.word);
+              else if (args.topic) callQuery = String(args.topic);
+              else if (args.expression || args.input) callQuery = String(args.expression || args.input);
+              else if (args.amount || args.from || args.to) callQuery = `${args.amount || ''} ${args.from || ''} to ${args.to || ''}`.trim();
+              else if (args.q) callQuery = String(args.q);
+            }
+          } catch {
+            const nMatch = toolJsonStr.match(/"(?:name|function|tool)"\s*:\s*"([^"]+)"/);
+            const qMatch = toolJsonStr.match(/"(?:query|expression|input|location|word|topic|q)"\s*:\s*"([^"]+)"/)
+              || toolJsonStr.match(/"arguments"\s*:\s*\{[^}]*"(?:query|expression|input|location|word|topic|q)"\s*:\s*"([^"]+)"/);
+            if (nMatch) callName = nMatch[1];
+            if (qMatch) callQuery = qMatch[1];
           }
-        } catch {
-          const nMatch = toolMatch[1].match(/"name"\s*:\s*"([^"]+)"/);
-          const qMatch = toolMatch[1].match(/"(?:query|expression|input|location|word|topic)"\s*:\s*"([^"]+)"/);
-          if (nMatch) callName = nMatch[1];
-          if (qMatch) callQuery = qMatch[1];
         }
 
         if (callName) {

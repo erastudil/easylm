@@ -1,9 +1,33 @@
 import {
   CreateMLCEngine,
   MLCEngine,
-  InitProgressReport
+  InitProgressReport,
+  prebuiltAppConfig,
+  AppConfig,
+  ModelRecord
 } from '@mlc-ai/web-llm';
 import { ModelOption } from '../types';
+
+export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
+  {
+    model: 'https://huggingface.co/mlc-ai/DeepSeek-R1-Distill-Qwen-1.5B-q4f16_1-MLC',
+    model_id: 'DeepSeek-R1-Distill-Qwen-1.5B-q4f16_1-MLC',
+    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen2-1.5B-Instruct-q4f16_1_cs1k-webgpu.wasm',
+    low_resource_required: true,
+    vram_required_MB: 1629.75,
+    overrides: {
+      context_window_size: 4096
+    }
+  }
+];
+
+export const EASYLM_APP_CONFIG: AppConfig = {
+  ...prebuiltAppConfig,
+  model_list: [
+    ...prebuiltAppConfig.model_list,
+    ...CUSTOM_MODEL_RECORDS
+  ]
+};
 
 export const AVAILABLE_MODELS: ModelOption[] = [
   {
@@ -14,9 +38,16 @@ export const AVAILABLE_MODELS: ModelOption[] = [
   },
   {
     id: 'DeepSeek-R1-Distill-Qwen-1.5B-q4f16_1-MLC',
-    label: 'DeepSeek-R1 1.5B (Extended Thinking)',
+    label: 'DeepSeek-R1 1.5B (Extended Thinking / Reasoning)',
     sizeMB: 1020,
-    vramEst: '~1.3 GB',
+    vramEst: '~1.6 GB',
+    isReasoning: true
+  },
+  {
+    id: 'DeepSeek-R1-Distill-Qwen-7B-q4f16_1-MLC',
+    label: 'DeepSeek-R1 7B (Extended Thinking - Flagship)',
+    sizeMB: 4500,
+    vramEst: '~5.1 GB',
     isReasoning: true
   },
   {
@@ -78,6 +109,7 @@ export async function getOrInitEngine(
       }
 
       const engine = await CreateMLCEngine(modelId, {
+        appConfig: EASYLM_APP_CONFIG,
         initProgressCallback: (report: InitProgressReport) => {
           if (onProgress) {
             onProgress({

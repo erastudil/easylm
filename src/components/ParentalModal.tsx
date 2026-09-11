@@ -20,8 +20,9 @@ export const ParentalModal: React.FC<ParentalModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleVerify = () => {
-    if (verifyParentalPin(pin)) {
+  const handleVerify = async () => {
+    const ok = await verifyParentalPin(pin);
+    if (ok) {
       setError('');
       setPin('');
       onSuccess();
@@ -30,12 +31,12 @@ export const ParentalModal: React.FC<ParentalModalProps> = ({
     }
   };
 
-  const handleSavePin = () => {
+  const handleSavePin = async () => {
     if (pin.trim().length < 4) {
       setError('PIN must be at least 4 digits.');
       return;
     }
-    setParentalPin(pin.trim());
+    await setParentalPin(pin.trim());
     setError('');
     setPin('');
     onSuccess();
@@ -75,8 +76,8 @@ export const ParentalModal: React.FC<ParentalModalProps> = ({
 
         <p style={{ fontSize: '0.85rem', color: '#a1a1aa', margin: '0 0 1.25rem 0', lineHeight: 1.5 }}>
           {mode === 'verify'
-            ? 'Enter your 4-digit Parent PIN to unlock settings or switch to an unrestricted profile.'
-            : 'Set a 4-digit PIN to prevent children or students from exiting Kid Safe mode or changing guardrails.'}
+            ? 'Enter the parent PIN to leave Kid Safe or change lock settings. This is a household speed-bump, not a school content filter.'
+            : 'Set a 4–8 digit PIN. It is stored as a salted hash in this browser. It is not COPPA, not a school filter, and not encryption. A determined person with this device can still bypass it.'}
         </p>
 
         <div style={{ marginBottom: '1.25rem' }}>

@@ -258,7 +258,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   color: '#93c5fd',
                   fontWeight: 500
                 }}
-                title="Backup or restore sessions directly to your Google Drive AppData folder (Zero servers)"
+                title="Optional Drive AppData backup. This copy leaves the machine."
               >
                 <span>📁</span> Google Drive Sync
               </button>

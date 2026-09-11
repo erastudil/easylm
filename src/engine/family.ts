@@ -3,7 +3,7 @@
  *
  * 1. User Profiles (Parent, Student/Kid, custom child profiles)
  * 2. Local Parental Controls (4-digit PIN lock to prevent switching out of Kid Safe mode)
- * 3. Sovereign Memory Vault (IndexedDB/localStorage explicit key-value notebook per profile)
+ * 3. Sovereign Memory Vault (localStorage explicit key-value notebook per profile)
  * 4. Internet Safety Sentinel (detects personal identifiable information: phone, address, school)
  */
 
@@ -54,7 +54,7 @@ const DEFAULT_PROFILES: UserProfile[] = [
     avatar: '🎒',
     role: 'kid',
     personalityId: 'socratic_kid',
-    parentalLockEnabled: false,
+    parentalLockEnabled: true,
     socraticTutorEnabled: true,
     readingLevel: 'middle'
   }
@@ -77,7 +77,10 @@ export function loadProfiles(): UserProfile[] {
       return DEFAULT_PROFILES;
     }
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : DEFAULT_PROFILES;
+    if (!Array.isArray(parsed) || parsed.length === 0) return DEFAULT_PROFILES;
+    return parsed.map((p: UserProfile) =>
+      p.role === 'kid' ? { ...p, parentalLockEnabled: true } : p
+    );
   } catch {
     return DEFAULT_PROFILES;
   }
@@ -120,37 +123,115 @@ export function getActiveProfile(): UserProfile {
   return profiles.find(p => p.id === activeId) || profiles[0];
 }
 
+const PIN_ITERATIONS = 100000;
+
+type PinRecord = {
+  v: 1;
+  alg: 'PBKDF2-SHA-256';
+  iter: number;
+  salt: string;
+  hash: string;
+};
+
+function bytesToB64(bytes: Uint8Array): string {
+  let s = '';
+  for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+  return btoa(s);
+}
+
+function b64ToBytes(s: string): Uint8Array {
+  const bin = atob(s);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let x = 0;
+  for (let i = 0; i < a.length; i++) x |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return x === 0;
+}
+
+export async function hashParentalPin(pin: string, salt?: Uint8Array, iterations = PIN_ITERATIONS): Promise<PinRecord> {
+  const enc = new TextEncoder();
+  const saltBytes = salt
+    ? new Uint8Array(salt)
+    : crypto.getRandomValues(new Uint8Array(16));
+  const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(pin.trim()), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits(
+    { name: 'PBKDF2', salt: saltBytes as BufferSource, iterations, hash: 'SHA-256' },
+    keyMaterial,
+    256
+  );
+  return {
+    v: 1,
+    alg: 'PBKDF2-SHA-256',
+    iter: iterations,
+    salt: bytesToB64(saltBytes),
+    hash: bytesToB64(new Uint8Array(bits))
+  };
+}
+
+function parsePinRecord(stored: string): PinRecord | null {
+  try {
+    const parsed = JSON.parse(stored);
+    if (parsed && parsed.v === 1 && parsed.salt && parsed.hash && parsed.iter) {
+      return parsed as PinRecord;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Check if parental PIN is set
  */
 export function hasParentalPin(): boolean {
-  if (typeof window === 'undefined') return false;
+  if (typeof localStorage === 'undefined') return false;
   return !!localStorage.getItem(PARENTAL_PIN_KEY);
 }
 
 /**
- * Verify parental PIN
+ * Verify parental PIN. Migrates legacy plaintext PINs to PBKDF2 on success.
  */
-export function verifyParentalPin(pin: string): boolean {
-  if (typeof window === 'undefined') return true;
+export async function verifyParentalPin(pin: string): Promise<boolean> {
+  if (typeof localStorage === 'undefined') return true;
   const stored = localStorage.getItem(PARENTAL_PIN_KEY);
-  if (!stored) return true; // No PIN configured
-  return stored === pin.trim();
+  if (!stored) return true;
+  const trimmed = pin.trim();
+  const record = parsePinRecord(stored);
+  if (record) {
+    const next = await hashParentalPin(trimmed, b64ToBytes(record.salt), record.iter);
+    return timingSafeEqual(next.hash, record.hash);
+  }
+  // Legacy plaintext 4–8 digit PIN
+  if (/^\d{4,8}$/.test(stored) && stored === trimmed) {
+    await setParentalPin(trimmed);
+    return true;
+  }
+  return false;
 }
 
 /**
- * Set or update parental PIN
+ * Set or update parental PIN as a salted hash. Enables lock on kid profiles.
  */
-export function setParentalPin(pin: string): void {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem(PARENTAL_PIN_KEY, pin.trim());
+export async function setParentalPin(pin: string): Promise<void> {
+  if (typeof localStorage === 'undefined') return;
+  const record = await hashParentalPin(pin.trim());
+  localStorage.setItem(PARENTAL_PIN_KEY, JSON.stringify(record));
+  const profiles = loadProfiles().map(p =>
+    p.role === 'kid' ? { ...p, parentalLockEnabled: true } : p
+  );
+  saveProfiles(profiles);
 }
 
 /**
  * Remove parental PIN
  */
 export function clearParentalPin(): void {
-  if (typeof window === 'undefined') return;
+  if (typeof localStorage === 'undefined') return;
   localStorage.removeItem(PARENTAL_PIN_KEY);
 }
 

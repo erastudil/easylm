@@ -1,7 +1,7 @@
 {
   "name": "EasyLM — Zero-Install Local AI",
   "short_name": "EasyLM",
-  "description": "Free, private, zero-install WebGPU local AI chat running 100% in your browser.",
+  "description": "Free, zero-install WebGPU local AI. Chat runs on your GPU. Optional tools send lookups you ask for.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",

@@ -131,7 +131,7 @@ export const WAREHOUSE_DOCS: WarehouseDoc[] = [
     title: "Neural Networks, Transformers & WebGPU Inference",
     category: "Computing",
     tier: "intermediate",
-    snippet: "Architecture of modern large language models: Scaled Dot-Product Attention, Multi-Head Attention, Rotary Position Embeddings (RoPE), KV-cache memory dynamics, and low-bit weight quantization (Q4_F16). Real-time execution in client-side browser VRAM via WebGPU compute shaders without server telemetry."
+    snippet: "Architecture of modern large language models: Scaled Dot-Product Attention, Multi-Head Attention, Rotary Position Embeddings (RoPE), KV-cache memory dynamics, and low-bit weight quantization (Q4_F16). Real-time execution in client-side browser VRAM via WebGPU compute shaders. Chat tokens stay on device; optional tools send lookups."
   },
   {
     dewey: "600",

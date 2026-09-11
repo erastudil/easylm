@@ -205,7 +205,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
                           )}
                         </div>
                         <div style={{ fontSize: '0.72rem', color: '#71717a', marginTop: '0.15rem' }}>
-                          {p.role === 'kid' ? 'Socratic homework tutor & internet safety shield' : 'Unrestricted personal assistant'}
+                          {p.role === 'kid' ? 'Homework coach. Network tools off. Household PIN if set.' : 'Unrestricted personal assistant'}
                         </div>
                       </div>
                     </div>
@@ -287,7 +287,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
         {activeTab === 'memory' && (
           <div>
             <div style={{ fontSize: '0.8rem', color: '#a1a1aa', marginBottom: '0.85rem', lineHeight: 1.5 }}>
-              Standing facts, learning preferences, and goals saved for <strong style={{ color: '#ffffff' }}>{activeProfile.name}</strong>. Stored 100% locally in your browser. Zero cloud telemetry.
+              Standing facts, learning preferences, and goals saved for <strong style={{ color: '#ffffff' }}>{activeProfile.name}</strong>. Stored in this browser. Optional Drive backup, if enabled, leaves the machine.
             </div>
 
             {/* Add Memory Input */}
@@ -378,7 +378,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
                 </button>
               </div>
               <p style={{ fontSize: '0.78rem', color: '#a1a1aa', margin: 0, lineHeight: 1.5 }}>
-                When configured, students cannot exit Kid Safe mode or adjust content boundaries without entering your 4-digit PIN.
+                When a PIN is set, this profile cannot switch to an unrestricted profile from the UI without it. The PIN is hashed in this browser. It is a household speed-bump, not a content filter and not COPPA. The local model can still speak if asked.
               </p>
             </div>
 
@@ -387,10 +387,10 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
                 🛡️ Internet Safety Sentinel
               </div>
               <p style={{ fontSize: '0.78rem', color: '#a1a1aa', margin: '0 0 0.6rem 0', lineHeight: 1.5 }}>
-                Active by default on all student profiles. Automatically inspects outgoing queries for private personal data (phone numbers, physical addresses, school names, passwords) and displays an immediate educational privacy reminder.
+                On student profiles, phone numbers, home addresses, school names, emails, and passwords block the send. The text stays in the box so they can edit. Adult profiles get a warning and still send.
               </p>
               <div style={{ fontSize: '0.72rem', color: '#34d399', fontFamily: 'var(--font-mono)' }}>
-                ✓ Client-side PII Pre-flight Interceptor Active
+                Kid send is blocked on a PII hit. Network tools are off.
               </div>
             </div>
           </div>

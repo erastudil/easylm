@@ -103,7 +103,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({ isOpen, onClose }) =
             </p>
           </div>
 
-          {/* Open Source, Forks & Contributors (MIT License) */}
+          {/* Open Source, Forks & Contributors · GPLv3 */}
           <div style={{
             backgroundColor: '#11111a',
             border: '1px solid rgba(139, 92, 246, 0.35)',
@@ -135,7 +135,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({ isOpen, onClose }) =
             </div>
 
             <p style={{ margin: 0, fontSize: '0.82rem', color: '#a1a1aa', lineHeight: 1.55 }}>
-              EasyLM is 100% free software under the copyleft <strong style={{ color: '#ffffff' }}>GNU General Public License v3.0 (GPLv3)</strong>. You have complete freedom to inspect the code, fork the project, and contribute pull requests. All distributed derivative works and forks must remain free and open source forever.
+              Copyright (C) 2026 Humans and AI. EasyLM is free software under the copyleft <strong style={{ color: '#ffffff' }}>GNU General Public License v3.0 (GPLv3)</strong>. You can inspect, fork, and share it. Distributed forks must stay free. This program comes with ABSOLUTELY NO WARRANTY. The official app stays free forever. That is the point.
             </p>
 
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem', marginTop: '0.2rem' }}>

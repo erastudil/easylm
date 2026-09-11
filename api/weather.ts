@@ -1,9 +1,7 @@
+import { applyCors } from '../src/engine/origin';
+
 export default async function handler(req: any, res: any) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  if (applyCors(req, res)) return;
 
   const queryLoc = req.query?.q || req.query?.location || (req.url ? new URL(req.url, 'http://localhost').searchParams.get('q') : '');
   const location = (queryLoc || '').trim();

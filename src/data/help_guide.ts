@@ -77,6 +77,28 @@ How EasyLM Protects You:
   - Free forever, unlimited use, with zero third-party snooping.`
   },
   {
+    id: 'install',
+    title: '📱 Add to Home Screen (Apple & Android)',
+    summary: 'Run EasyLM full-screen like a native app without App Store tolls.',
+    content: `You can install EasyLM directly to your phone, tablet, or desktop home screen as a standalone zero-install app:
+
+• On Apple iOS / iPadOS (Safari):
+  1. Open https://easylm.vercel.app in Safari.
+  2. Tap the Share button (the square with an arrow pointing up ⎋) at the bottom.
+  3. Scroll down and tap "Add to Home Screen" ➕.
+  4. Tap "Add" in the top right corner.
+  EasyLM will now launch in full-screen standalone mode without browser bars!
+
+• On Android & Chromebooks (Chrome / Brave / Edge):
+  1. Open https://easylm.vercel.app.
+  2. Tap the three dots menu (⋮) in the top right.
+  3. Tap "Install App" or "Add to Home screen".
+
+• On Mac & Windows (Chrome / Edge):
+  1. Look for the install icon (a small computer screen with a down arrow) on the right side of the address bar.
+  2. Click "Install" to run EasyLM in its own dedicated window.`
+  },
+  {
     id: 'support',
     title: '💜 Support EasyLM',
     summary: 'Our mission and how to donate (BTC, SOL, Cash App).',

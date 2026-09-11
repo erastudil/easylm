@@ -24,6 +24,7 @@ import { PERSONALITIES } from './data/personalities';
 import { HelpModal } from './components/HelpModal';
 import { SupportModal } from './components/SupportModal';
 import { FeedbackModal } from './components/FeedbackModal';
+import { GoogleDriveModal } from './components/GoogleDriveModal';
 import { EASYLM_GUIDE_PROMPT_CONTEXT } from './data/help_guide';
 import { detectDevice, DeviceInfo } from './engine/device';
 import { createWelcomeMessage, WELCOME_TOOLBOX_CONTENT } from './data/welcome';
@@ -48,6 +49,7 @@ export const App: React.FC = () => {
   const [helpOpen, setHelpOpen] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
+  const [googleDriveModalOpen, setGoogleDriveModalOpen] = useState(false);
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
 
   // Family Mode, Profiles, Parental Controls, and Sovereign Memory
@@ -735,6 +737,7 @@ export const App: React.FC = () => {
         onOpenSupport={() => setSupportOpen(true)}
         onOpenPersonalityModal={() => setPersonalityModalOpen(true)}
         onOpenFeedback={() => setFeedbackModalOpen(true)}
+        onOpenGoogleDrive={() => setGoogleDriveModalOpen(true)}
       />
 
       {/* Main Chat Area */}
@@ -1132,6 +1135,14 @@ export const App: React.FC = () => {
         isOpen={feedbackModalOpen}
         onClose={() => setFeedbackModalOpen(false)}
         activeModel={currentModelLabel}
+      />
+
+      {/* Google Drive AppData Sync Modal */}
+      <GoogleDriveModal
+        isOpen={googleDriveModalOpen}
+        onClose={() => setGoogleDriveModalOpen(false)}
+        sessions={sessions}
+        onSessionsReload={handleSessionsReload}
       />
 
       {/* Settings Modal */}

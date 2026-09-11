@@ -44,7 +44,8 @@ export interface Personality {
   avatar?: string;
   era?: string;
   writingStyle?: string;
-  category?: 'practical' | 'philosophy' | 'science' | 'literature';
+  category?: 'practical' | 'philosophy' | 'science' | 'literature' | 'characters';
+  book?: string;
 }
 
 export type Preset = Personality;

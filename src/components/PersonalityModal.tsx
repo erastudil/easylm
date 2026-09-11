@@ -39,8 +39,9 @@ export const PersonalityModal: React.FC<PersonalityModalProps> = ({
     const eraMatch = p.era ? p.era.toLowerCase().includes(q) : false;
     const styleMatch = p.writingStyle ? p.writingStyle.toLowerCase().includes(q) : false;
     const badgeMatch = p.badge.toLowerCase().includes(q);
+    const bookMatch = p.book ? p.book.toLowerCase().includes(q) : false;
 
-    return nameMatch || descMatch || eraMatch || styleMatch || badgeMatch;
+    return nameMatch || descMatch || eraMatch || styleMatch || badgeMatch || bookMatch;
   });
 
   const handleSelect = (p: ExtendedPersonality) => {
@@ -191,6 +192,12 @@ export const PersonalityModal: React.FC<PersonalityModalProps> = ({
                       </span>
                     )}
                   </div>
+
+                  {p.book && (
+                    <div style={{ fontSize: '0.68rem', color: '#c4b5fd', fontFamily: 'var(--font-mono)', marginBottom: '0.15rem' }}>
+                      📖 {p.book}
+                    </div>
+                  )}
 
                   {p.era && (
                     <div style={{ fontSize: '0.68rem', color: '#8b5cf6', fontFamily: 'var(--font-mono)', marginBottom: '0.35rem' }}>

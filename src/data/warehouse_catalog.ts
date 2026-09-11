@@ -24,10 +24,10 @@ export const WAREHOUSE_DOCS: WarehouseDoc[] = [
   },
   {
     dewey: "162",
-    title: "Letterman's Razor (Anti-Information Overload & BS Sifter)",
+    title: "The Pragmatist's Razor (Anti-Information Overload & Plain-English Sifter)",
     category: "Critical Thinking",
     tier: "novice",
-    snippet: "A pragmatic razor for the age of hype and cognitive overload: 'If you strip away the million-dollar jargon, the slick marketing pitch, and the earnest hand gestures, what is this widget actually doing, who is profiting, and why should an ordinary person with a mortgage and a lawnmower give a damn?' If an explanation cannot withstand a blunt, plain-English common-sense question from an Indiana guy in a cardigan, it is hot air."
+    snippet: "A pragmatic razor for the age of tech hype and cognitive overload: 'If you strip away the million-dollar jargon, the slick marketing pitch, and the earnest hand gestures, what is this widget actually doing, who is profiting, and why should an ordinary person with a mortgage and a lawnmower give a damn?' If an explanation cannot withstand a blunt, plain-English common-sense question, it is hot air."
   },
   {
     dewey: "189",

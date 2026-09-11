@@ -14,7 +14,7 @@ EasyLM comes equipped with local tools that execute automatically in the backgro
 
 ### 💡 Quick Controls
 - **🧠 Extended Thinking:** Toggle **"Think"** on the top bar for deep step-by-step reasoning.
-- **🎭 22 Voices & Perspectives:** Click the personality pill (**Friendly Guide 🎭**) or sidebar to open the **Gallery** (Socrates, Feynman, Letterman’s Razor, Stoics, Kant, Wu Wei, Twain, Austen, Poe, and more).
+- **🎭 Perspectives & Literary Characters:** Click the personality pill (**Friendly Guide 🎭**) or sidebar to explore 37 curated voices — chat with classic literary characters (Sherlock Holmes, Gatsby, Elizabeth Bennet, Frankenstein's creature), great thinkers (Socrates, Sun Tzu, Feynman, Stoics), classic authors, or the Pragmatic Skeptic.
 - **💾 Local Backup:** All chats stay in this browser. Click **"Backup to Disk"** anytime in the sidebar.
 
 How can I help you today?`;

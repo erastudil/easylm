@@ -19,7 +19,6 @@ import { Sidebar } from './components/Sidebar';
 import { MessageItem } from './components/MessageItem';
 import { SettingsModal, PERSONALITIES } from './components/SettingsModal';
 import { HelpModal } from './components/HelpModal';
-import { HnaiLogo } from './components/HnaiLogo';
 import { EASYLM_GUIDE_PROMPT_CONTEXT } from './data/help_guide';
 
 export const App: React.FC = () => {
@@ -508,7 +507,6 @@ How can I help you today?`,
         }}>
           {/* Left: Brand & Model */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginLeft: sidebarOpen ? '0' : '3.5rem' }}>
-            <HnaiLogo size="sm" />
             <span className="header-title-text" style={{ fontWeight: 700, fontFamily: 'var(--font-mono)', fontSize: '0.95rem', letterSpacing: '0.04em', color: '#ffffff' }}>
               EasyLM
             </span>

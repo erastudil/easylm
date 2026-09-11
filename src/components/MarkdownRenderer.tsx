@@ -18,10 +18,12 @@ function normalizeMarkdown(raw: string): string {
   if (!raw) return '';
 
   return raw
-    // Ensure headings preceded by text get clean double newlines
-    .replace(/([^\n])\s*(#{1,6}\s+)/g, '$1\n\n$2')
-    // Ensure bullet items (- , * , • ) preceded by text get clean newlines
-    .replace(/([^\n])\s+([•\-*]\s+)/g, '$1\n$2')
+    // Convert unicode bullets (• , ● , ◦ ) at line starts to standard markdown list dashes (- )
+    .replace(/^[ \t]*[•●◦][ \t]*/gm, '- ')
+    // Ensure headings preceded by non-newline text get clean double newlines
+    .replace(/([^\n])\s*(#{1,6}\s+[^\n]+)/g, '$1\n\n$2\n\n')
+    // Ensure bullet items (- , * ) preceded by text get clean newlines
+    .replace(/([^\n])\s+([\-*]\s+)/g, '$1\n$2')
     // Ensure numbered lists (1. , 2. ) preceded by text get clean newlines
     .replace(/([^\n])\s+(\d+\.\s+)/g, '$1\n$2')
     // Clean up triple+ newlines

@@ -25,7 +25,7 @@ import { HelpModal } from './components/HelpModal';
 import { SupportModal } from './components/SupportModal';
 import { EASYLM_GUIDE_PROMPT_CONTEXT } from './data/help_guide';
 import { detectDevice, DeviceInfo } from './engine/device';
-import { createWelcomeMessage } from './data/welcome';
+import { createWelcomeMessage, WELCOME_TOOLBOX_CONTENT } from './data/welcome';
 import { CORE_INTERACTION_PROTOCOLS } from './data/protocols';
 import {
   UserProfile,
@@ -134,12 +134,23 @@ export const App: React.FC = () => {
 
     const loaded = loadAllSessions();
     if (loaded.length > 0) {
-      setSessions(loaded);
+      // Refresh welcome messages with latest formatted copy
+      const refreshed = loaded.map(sess => ({
+        ...sess,
+        messages: sess.messages.map(m => {
+          if (m.id.startsWith('msg-welcome-') || (m.role === 'assistant' && m.content.startsWith('Welcome to **EasyLM**'))) {
+            return { ...m, content: WELCOME_TOOLBOX_CONTENT };
+          }
+          return m;
+        })
+      }));
+      setSessions(refreshed);
+      saveAllSessions(refreshed);
       const savedActive = getActiveSessionId();
-      if (savedActive && loaded.some(s => s.id === savedActive)) {
+      if (savedActive && refreshed.some(s => s.id === savedActive)) {
         setActiveSessionIdState(savedActive);
       } else {
-        setActiveSessionIdState(loaded[0].id);
+        setActiveSessionIdState(refreshed[0].id);
       }
     } else {
       const initial = createNewSession('Welcome to EasyLM');

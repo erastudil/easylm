@@ -6,7 +6,7 @@ export const PERSONALITIES: Personality[] = [
   {
     id: 'friendly',
     name: 'Friendly Guide',
-    badge: '🌟 Teacher',
+    badge: 'Guide',
     description: 'Patient, warm, and clear. Explains complex topics and AI simply for parents, kids, and beginners.',
     systemPrompt: `You are EasyLM in Friendly Guide mode—a warm, patient, and exceptionally clear AI guide running 100% locally in the user's browser via WebGPU.
 
@@ -22,7 +22,7 @@ HONEST DEFLECTION & INTEGRITY:
   {
     id: 'critical',
     name: 'Critical Thinker',
-    badge: '🧐 Analyst',
+    badge: 'Analyst',
     description: 'Methodical, truth-checking, and rigorous. Evaluates assumptions and flags uncertainties.',
     systemPrompt: `You are EasyLM in Critical Thinker mode—a rigorous, thoughtful truth-checker running 100% locally via WebGPU.
 
@@ -36,10 +36,10 @@ HONEST DEFLECTION & INTEGRITY:
   },
   {
     id: 'creative',
-    name: 'Creative Companion',
-    badge: '✍️ Writer',
+    name: 'Creative Writer',
+    badge: 'Writer',
     description: 'Imaginative storytelling, engaging prose, and vivid writing.',
-    systemPrompt: `You are EasyLM in Creative Companion mode—an imaginative writing partner running locally via WebGPU.
+    systemPrompt: `You are EasyLM in Creative Writer mode—an imaginative writing partner running locally via WebGPU.
 
 CORE PERSONALITY:
 - You craft engaging stories, poetry, essays, dialogue, and creative metaphors with rich cadence and warmth.
@@ -51,7 +51,7 @@ HONEST DEFLECTION:
   {
     id: 'coding',
     name: 'Coding Mentor',
-    badge: '💻 Mentor',
+    badge: 'Mentor',
     description: 'Patient, step-by-step programming instructor with beginner-friendly explanations.',
     systemPrompt: `You are EasyLM in Coding Mentor mode—an encouraging, patient programming tutor running locally via WebGPU.
 
@@ -64,8 +64,8 @@ HONEST DEFLECTION:
   },
   {
     id: 'custom',
-    name: 'Custom Personality',
-    badge: '🛠️ Custom',
+    name: 'Custom Persona',
+    badge: 'Custom',
     description: 'User-specified prompt instructions.',
     systemPrompt: ''
   }
@@ -175,24 +175,25 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           <label style={{ display: 'block', fontSize: '0.8rem', fontFamily: 'var(--font-mono)', color: '#a78bfa', marginBottom: '0.4rem' }}>
             AI Personality:
           </label>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginBottom: '0.6rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.45rem', marginBottom: '0.6rem' }}>
             {PERSONALITIES.map(p => (
               <button
                 key={p.id}
                 onClick={() => onSelectPreset(p.id)}
                 className="btn-pill"
                 style={{
-                  fontSize: '0.75rem',
-                  padding: '0.5rem 0.6rem',
+                  fontSize: '0.78rem',
+                  fontFamily: 'var(--font-mono)',
+                  letterSpacing: '0.02em',
+                  padding: '0.55rem 0.6rem',
                   justifyContent: 'center',
-                  gap: '0.35rem',
                   backgroundColor: selectedPreset === p.id ? '#8b5cf6' : '#111118',
                   color: selectedPreset === p.id ? '#000000' : '#ffffff',
-                  fontWeight: selectedPreset === p.id ? 600 : 400
+                  border: selectedPreset === p.id ? '1px solid #8b5cf6' : '1px solid rgba(139, 92, 246, 0.25)',
+                  fontWeight: selectedPreset === p.id ? 700 : 500
                 }}
               >
-                <span>{p.badge}</span>
-                <span>{p.name}</span>
+                {p.name}
               </button>
             ))}
           </div>

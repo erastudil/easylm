@@ -2,19 +2,35 @@ import { WAREHOUSE_DOCS } from '../data/warehouse_catalog';
 import { ToolExecution } from '../types';
 
 export const SYSTEM_TOOLS_PROMPT = `
-You have access to the following built-in client tools:
+You have access to the following built-in tools:
 1. calc(expression: string) - evaluate math expressions deterministically (e.g. "sqrt(144) * 5200").
-2. units(from: string, to: string, amount: number) - convert between units (e.g. "3.75 gallons to fl oz", "100 km to miles").
-3. datetime() - get current date, time, and timezone.
-4. web_search(query: string) - search the web via SearXNG & Wikipedia for up-to-date facts.
-5. web_fetch(url: string) - read and extract clean readable text from a specific webpage URL.
-6. warehouse(query: string) - search the local Field Warehouse and Canon knowledge base.
+2. units(from: string, to: string, amount: number) - convert physical units (e.g. "100 km to miles", "3.75 gallons to fl oz", "85 F to C").
+3. exchange(query: string) - live currency exchange rates & conversion (e.g. "100 USD to EUR", "50000 JPY to USD").
+4. weather(location: string) - live temperature, conditions, and 3-day forecast for any city or region (e.g. "Dallas, TX", "London", "Tokyo").
+5. datetime(timezone?: string) - current local or global time & date (e.g. "" for local time, or "Tokyo", "London", "New York").
+6. fact(topic: string) - verified encyclopedic summary for notable people, concepts, history, or science (e.g. "Alan Turing", "photosynthesis", "James Webb Space Telescope").
+7. dictionary(word: string) - exact definition, pronunciation, part of speech, and origin for English words (e.g. "obfuscate", "serendipity").
+8. web_search(query: string) - search the web for recent events, specific websites, or general questions.
+9. web_fetch(url: string) - read and extract clean text from a specific webpage URL.
+10. warehouse(query: string) - search the local reference knowledge base.
 
 CRITICAL INSTRUCTIONS:
-- Do NOT call web_search for casual conversation, greetings, or questions about yourself (e.g. "hows it going?", "hi", "who are you?"). Answer those directly in conversation.
-- ONLY call web_search when the user asks for real-world factual information, current news, weather, or specific external references.
-- ONLY call web_fetch when given a URL to read, inspect, or summarize.
+- For casual conversation, greetings, or questions about yourself (e.g. "hi", "how are you?", "who are you?"), DO NOT call any tools. Answer naturally.
+- For weather inquiries, call "weather".
+- For currency conversion, call "exchange".
+- For word definitions, pronunciations, and etymology, call "dictionary".
+- For encyclopedic overviews of people, concepts, science, or history, call "fact".
 - When you do need a tool, emit EXACTLY this syntax on its own line:
+<tool_call>{"name": "weather", "query": "Dallas, TX"}</tool_call>
+or
+<tool_call>{"name": "exchange", "query": "100 USD to EUR"}</tool_call>
+or
+<tool_call>{"name": "dictionary", "query": "serendipity"}</tool_call>
+or
+<tool_call>{"name": "fact", "query": "Alan Turing"}</tool_call>
+or
+<tool_call>{"name": "calc", "query": "sqrt(144) * 5200"}</tool_call>
+or
 <tool_call>{"name": "web_search", "query": "search query"}</tool_call>
 or
 <tool_call>{"name": "web_fetch", "query": "https://example.com"}</tool_call>
@@ -103,11 +119,188 @@ export function execUnits(input: string): { ok: boolean; result?: string; error?
 }
 
 /**
- * System Clock
+ * System Clock & World Time (Client-side Intl)
  */
-export function execClock(): string {
+export function execClock(tzQuery?: string): string {
   const now = new Date();
-  return `Current Local Time: ${now.toLocaleString()} (${Intl.DateTimeFormat().resolvedOptions().timeZone}) · ISO: ${now.toISOString()}`;
+  const cleanTz = (tzQuery || '').trim();
+  if (!cleanTz) {
+    return `Current Local Time: ${now.toLocaleString()} (${Intl.DateTimeFormat().resolvedOptions().timeZone}) · ISO: ${now.toISOString()}`;
+  }
+
+  const tzMap: Record<string, string> = {
+    'tokyo': 'Asia/Tokyo',
+    'japan': 'Asia/Tokyo',
+    'london': 'Europe/London',
+    'uk': 'Europe/London',
+    'paris': 'Europe/Paris',
+    'berlin': 'Europe/Berlin',
+    'rome': 'Europe/Rome',
+    'new york': 'America/New_York',
+    'nyc': 'America/New_York',
+    'est': 'America/New_York',
+    'chicago': 'America/Chicago',
+    'cst': 'America/Chicago',
+    'denver': 'America/Denver',
+    'mst': 'America/Denver',
+    'los angeles': 'America/Los_Angeles',
+    'la': 'America/Los_Angeles',
+    'seattle': 'America/Los_Angeles',
+    'pst': 'America/Los_Angeles',
+    'sydney': 'Australia/Sydney',
+    'auckland': 'Pacific/Auckland',
+    'beijing': 'Asia/Shanghai',
+    'shanghai': 'Asia/Shanghai',
+    'hong kong': 'Asia/Hong_Kong',
+    'singapore': 'Asia/Singapore',
+    'seoul': 'Asia/Seoul',
+    'dubai': 'Asia/Dubai',
+    'mumbai': 'Asia/Kolkata',
+    'delhi': 'Asia/Kolkata',
+    'utc': 'UTC',
+    'gmt': 'UTC'
+  };
+
+  const norm = cleanTz.toLowerCase();
+  const timeZone = tzMap[norm] || cleanTz;
+
+  try {
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      second: '2-digit',
+      timeZoneName: 'short'
+    });
+    return `Current Time in ${cleanTz} (${timeZone}): ${formatter.format(now)}`;
+  } catch {
+    return `Current Local Time: ${now.toLocaleString()} (${Intl.DateTimeFormat().resolvedOptions().timeZone}) · (Unrecognized timezone "${cleanTz}")`;
+  }
+}
+
+/**
+ * Serverless Weather & Forecast via Open-Meteo (/api/weather)
+ */
+export async function execWeather(location: string): Promise<string> {
+  const cleanLoc = location.trim().replace(/^["']|["']$/g, '');
+  if (!cleanLoc) return 'Error: Please specify a city or region for weather lookup.';
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 6500);
+    const resp = await fetch(`/api/weather?q=${encodeURIComponent(cleanLoc)}`, {
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data.ok && data.summary) {
+        return data.summary;
+      }
+      if (data.error) {
+        return `Weather lookup: ${data.error}`;
+      }
+    }
+    return `Unable to fetch weather for "${cleanLoc}" (HTTP ${resp.status}).`;
+  } catch (err: any) {
+    return `Weather service unavailable: ${err?.message || 'timeout'}`;
+  }
+}
+
+/**
+ * Serverless Live Currency Exchange via Frankfurter ECB API (/api/exchange)
+ */
+export async function execExchange(query: string): Promise<string> {
+  const cleanQ = query.trim().replace(/^["']|["']$/g, '');
+  if (!cleanQ) return 'Error: Please specify currency conversion (e.g. "100 USD to EUR").';
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5500);
+    const resp = await fetch(`/api/exchange?q=${encodeURIComponent(cleanQ)}`, {
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data.ok && data.summary) {
+        return data.summary;
+      }
+      if (data.error) {
+        return `Currency exchange: ${data.error}`;
+      }
+    }
+    return `Unable to convert currency for "${cleanQ}".`;
+  } catch (err: any) {
+    return `Currency exchange unavailable: ${err?.message || 'timeout'}`;
+  }
+}
+
+/**
+ * Serverless Encyclopedic Fact Summary via Wikipedia REST API (/api/fact)
+ */
+export async function execFact(topic: string): Promise<string> {
+  const cleanTopic = topic.trim().replace(/^["']|["']$/g, '');
+  if (!cleanTopic) return 'Error: Please specify a topic.';
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5500);
+    const resp = await fetch(`/api/fact?q=${encodeURIComponent(cleanTopic)}`, {
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data.ok && data.summary) {
+        return data.summary;
+      }
+      if (data.error) {
+        return `Encyclopedic lookup: ${data.error}`;
+      }
+    }
+    // Fall back to multi-engine search if fact endpoint missed
+    return await execWebSearch(cleanTopic);
+  } catch (err: any) {
+    return `Encyclopedic lookup error: ${err?.message || 'timeout'}`;
+  }
+}
+
+/**
+ * Serverless Dictionary & Etymology via Free Dictionary API (/api/dictionary)
+ */
+export async function execDictionary(word: string): Promise<string> {
+  const cleanWord = word.trim().replace(/^["']|["']$/g, '');
+  if (!cleanWord) return 'Error: Please specify a word to define.';
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5500);
+    const resp = await fetch(`/api/dictionary?q=${encodeURIComponent(cleanWord)}`, {
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data.ok && data.summary) {
+        return data.summary;
+      }
+      if (data.error) {
+        return `Dictionary: ${data.error}`;
+      }
+    }
+    return `Unable to define "${cleanWord}".`;
+  } catch (err: any) {
+    return `Dictionary lookup error: ${err?.message || 'timeout'}`;
+  }
 }
 
 /**
@@ -273,8 +466,16 @@ export async function dispatchTool(name: string, query: string, searxngUrl?: str
     const res = execUnits(query);
     result = res.ok ? res.result! : `Error: ${res.error}`;
     isError = !res.ok;
-  } else if (normName.includes('clock') || normName.includes('time') || normName.includes('date')) {
-    result = execClock();
+  } else if (normName.includes('weather') || normName.includes('forecast') || normName.includes('temp') || normName.includes('climate')) {
+    result = await execWeather(query);
+  } else if (normName.includes('exchange') || normName.includes('currency') || normName.includes('forex') || normName.includes('fx')) {
+    result = await execExchange(query);
+  } else if (normName.includes('fact') || normName.includes('wiki') || normName.includes('encyclopedia') || normName.includes('whois')) {
+    result = await execFact(query);
+  } else if (normName.includes('dictionary') || normName.includes('define') || normName.includes('vocab') || normName.includes('definition') || normName.includes('etymology')) {
+    result = await execDictionary(query);
+  } else if (normName.includes('clock') || normName.includes('time') || normName.includes('date') || normName.includes('zone')) {
+    result = execClock(query);
   } else if (normName.includes('warehouse') || normName.includes('canon') || normName.includes('dewey')) {
     result = execWarehouse(query);
   } else if (normName.includes('fetch') || normName.includes('read_url') || normName.includes('scrape') || normName.includes('browse')) {
@@ -288,7 +489,7 @@ export async function dispatchTool(name: string, query: string, searxngUrl?: str
       result = await execWebSearch(query, searxngUrl);
     }
   } else {
-    // Default fallback
+    // Default fallback: detect if query looks like URL, math, weather, or search
     const trimmedQ = query.trim();
     if (trimmedQ.startsWith('http://') || trimmedQ.startsWith('https://')) {
       result = await execWebFetch(trimmedQ);

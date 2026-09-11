@@ -46,14 +46,17 @@ How EasyLM Protects You:
   {
     id: 'tools',
     title: '⚡ Built-In Hands (Tools)',
-    summary: 'Calculator, unit converter, web search, and webpage reader.',
-    content: `EasyLM comes equipped with built-in tools that execute right inside your browser:
+    summary: 'Weather, currency, dictionary, facts, calculator, and web reader.',
+    content: `EasyLM comes equipped with built-in tools that execute silently in the background:
 
-1. Math Calculator: Evaluates complex expressions with 100% mathematical accuracy (e.g. "sqrt(144) * 5200").
-2. Unit Converter: Converts between metric, imperial, and common units (e.g. "how many fluid ounces are in 3.75 gallons?").
-3. System Clock: Always knows the exact date, time, and your local timezone.
-4. Web Search: Searches public search indexes and encyclopedias for real-world current events.
-5. Webpage Reader: Paste any website link (e.g. "summarize https://example.com"), and EasyLM will read the page and answer your questions.`
+1. Live Weather & Forecast: Real-time temperature, conditions, and 3-day forecast for any city or town worldwide.
+2. Live Currency Exchange: Real-time foreign exchange conversion powered by European Central Bank rates.
+3. Quick Encyclopedic Facts: Verified summaries for historical figures, science, and notable topics.
+4. Dictionary & Etymology: Exact definitions, pronunciations, parts of speech, and word origins.
+5. Math Calculator: Evaluates arithmetic and formulas with 100% mathematical precision.
+6. Unit Converter: Converts between imperial, metric, temperature, and volume units.
+7. World Clock: Exact local and world timezones across any global city.
+8. Web Search & Reader: Searches live indexes and reads any website link you paste.`
   },
   {
     id: 'local-vs-cloud',

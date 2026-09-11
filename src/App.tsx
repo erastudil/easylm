@@ -319,10 +319,22 @@ How can I help you today?`,
         try {
           const parsed = JSON.parse(toolMatch[1].trim());
           callName = parsed.name || '';
-          callQuery = parsed.query || parsed.expression || parsed.input || '';
+          if (parsed.query) {
+            callQuery = String(parsed.query);
+          } else if (parsed.location) {
+            callQuery = String(parsed.location);
+          } else if (parsed.word) {
+            callQuery = String(parsed.word);
+          } else if (parsed.topic) {
+            callQuery = String(parsed.topic);
+          } else if (parsed.expression || parsed.input) {
+            callQuery = String(parsed.expression || parsed.input);
+          } else if (parsed.amount || parsed.from || parsed.to) {
+            callQuery = `${parsed.amount || ''} ${parsed.from || ''} to ${parsed.to || ''}`.trim();
+          }
         } catch {
           const nMatch = toolMatch[1].match(/"name"\s*:\s*"([^"]+)"/);
-          const qMatch = toolMatch[1].match(/"query"\s*:\s*"([^"]+)"/);
+          const qMatch = toolMatch[1].match(/"(?:query|expression|input|location|word|topic)"\s*:\s*"([^"]+)"/);
           if (nMatch) callName = nMatch[1];
           if (qMatch) callQuery = qMatch[1];
         }
@@ -559,10 +571,9 @@ How can I help you today?`,
             <button
               onClick={() => setSettingsOpen(true)}
               className="btn-pill"
-              style={{ fontSize: '0.75rem', padding: '0.25rem 0.65rem', gap: '0.3rem' }}
+              style={{ fontSize: '0.75rem', padding: '0.25rem 0.65rem' }}
               title="Click to switch AI Personality or customize"
             >
-              <span>{currentPersonality.badge.split(' ')[0]}</span>
               <span>{currentPersonality.name}</span>
             </button>
 

@@ -533,29 +533,27 @@ How can I help you today?`,
             }}>
               {currentModelLabel.split('(')[0].trim()}
             </span>
-
-            {/* Prominent New Session Button */}
-            <button
-              onClick={handleNewSession}
-              className="btn-pill btn-pill-primary"
-              style={{ fontSize: '0.75rem', padding: '0.2rem 0.65rem', gap: '0.35rem' }}
-              title="Start a fresh chat session (Ctrl+N)"
-            >
-              <span>+</span> New Session
-            </button>
           </div>
 
           {/* Right: Controls & Badges */}
           <div className="header-actions" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            {/* Extended Thinking Indicator */}
-            {extendedThinking && (
-              <span 
-                style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: '#a78bfa', padding: '0.2rem 0.45rem', background: '#13131c', borderRadius: '9999px', border: '1px solid rgba(139,92,246,0.3)' }}
-                title="Extended reasoning scratchpad active"
-              >
-                🧠 Think
-              </span>
-            )}
+            {/* Extended Thinking Toggle Button */}
+            <button
+              onClick={() => setExtendedThinking(!extendedThinking)}
+              className="btn-pill"
+              style={{
+                fontSize: '0.75rem',
+                padding: '0.25rem 0.65rem',
+                gap: '0.35rem',
+                backgroundColor: extendedThinking ? 'rgba(139, 92, 246, 0.25)' : '#111118',
+                borderColor: extendedThinking ? '#8b5cf6' : 'rgba(139, 92, 246, 0.25)',
+                color: extendedThinking ? '#ffffff' : '#71717a'
+              }}
+              title={extendedThinking ? 'Extended thinking active (click to turn OFF)' : 'Extended thinking disabled (click to turn ON)'}
+            >
+              <span>🧠</span>
+              <span>Think {extendedThinking ? 'ON' : 'OFF'}</span>
+            </button>
 
             {/* Tools Indicator */}
             {toolsEnabled && (

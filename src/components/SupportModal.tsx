@@ -130,12 +130,12 @@ export const SupportModal: React.FC<SupportModalProps> = ({ isOpen, onClose }) =
                 color: '#34d399',
                 fontWeight: 600
               }}>
-                MIT License
+                GPL-3.0 License
               </span>
             </div>
 
             <p style={{ margin: 0, fontSize: '0.82rem', color: '#a1a1aa', lineHeight: 1.55 }}>
-              EasyLM is 100% open source under the permissive <strong style={{ color: '#ffffff' }}>MIT License</strong>. You have complete freedom to inspect the code, fork the project, contribute pull requests, or adapt it for personal, academic, or commercial use.
+              EasyLM is 100% free software under the copyleft <strong style={{ color: '#ffffff' }}>GNU General Public License v3.0 (GPLv3)</strong>. You have complete freedom to inspect the code, fork the project, and contribute pull requests. All distributed derivative works and forks must remain free and open source forever.
             </p>
 
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem', marginTop: '0.2rem' }}>

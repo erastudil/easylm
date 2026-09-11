@@ -72,4 +72,6 @@ npm run build
 
 ## License
 
-MIT License. Free for everyone.
+GNU General Public License v3.0 (GPLv3).
+
+EasyLM is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. All derivative works and forks must also remain free and open source under GPLv3.

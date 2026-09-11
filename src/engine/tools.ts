@@ -7,13 +7,17 @@ You have access to the following built-in client tools:
 2. units(from: string, to: string, amount: number) - convert between units (e.g. "3.75 gallons to fl oz", "100 km to miles").
 3. datetime() - get current date, time, and timezone.
 4. web_search(query: string) - search the web via SearXNG & Wikipedia for up-to-date facts.
-5. warehouse(query: string) - search the local Field Warehouse and Canon knowledge base.
+5. web_fetch(url: string) - read and extract clean readable text from a specific webpage URL.
+6. warehouse(query: string) - search the local Field Warehouse and Canon knowledge base.
 
 CRITICAL INSTRUCTIONS:
 - Do NOT call web_search for casual conversation, greetings, or questions about yourself (e.g. "hows it going?", "hi", "who are you?"). Answer those directly in conversation.
 - ONLY call web_search when the user asks for real-world factual information, current news, weather, or specific external references.
+- ONLY call web_fetch when given a URL to read, inspect, or summarize.
 - When you do need a tool, emit EXACTLY this syntax on its own line:
 <tool_call>{"name": "web_search", "query": "search query"}</tool_call>
+or
+<tool_call>{"name": "web_fetch", "query": "https://example.com"}</tool_call>
 `;
 
 /**
@@ -218,6 +222,39 @@ export async function execWebSearch(query: string, searxngUrl?: string): Promise
 }
 
 /**
+ * Webpage Content Fetcher via serverless /api/fetch
+ */
+export async function execWebFetch(targetUrl: string): Promise<string> {
+  let cleanUrl = targetUrl.trim();
+  cleanUrl = cleanUrl.replace(/^[<"']|[>"']$/g, '');
+  if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
+    cleanUrl = 'https://' + cleanUrl;
+  }
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 9000);
+    const resp = await fetch(`/api/fetch?url=${encodeURIComponent(cleanUrl)}`, {
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data.ok && data.text) {
+        return `[Fetched: ${data.title || cleanUrl}] (${data.url}):\n\n${data.text}${data.truncated ? '\n\n[Content truncated at 12,000 chars]' : ''}`;
+      }
+      if (data.error) {
+        return `Failed to fetch URL: ${data.error}`;
+      }
+    }
+    return `HTTP error ${resp.status} fetching ${cleanUrl}`;
+  } catch (err: any) {
+    return `Error fetching webpage: ${err?.message || 'Network timeout'}`;
+  }
+}
+
+/**
  * Execute tool from parsed payload with robust name normalization
  */
 export async function dispatchTool(name: string, query: string, searxngUrl?: string): Promise<ToolExecution> {
@@ -240,11 +277,24 @@ export async function dispatchTool(name: string, query: string, searxngUrl?: str
     result = execClock();
   } else if (normName.includes('warehouse') || normName.includes('canon') || normName.includes('dewey')) {
     result = execWarehouse(query);
+  } else if (normName.includes('fetch') || normName.includes('read_url') || normName.includes('scrape') || normName.includes('browse')) {
+    result = await execWebFetch(query);
   } else if (normName.includes('web') || normName.includes('search') || normName.includes('searx')) {
-    result = await execWebSearch(query, searxngUrl);
+    // If the query is an actual URL, route to execWebFetch instead!
+    const trimmedQ = query.trim();
+    if (trimmedQ.startsWith('http://') || trimmedQ.startsWith('https://') || /^www\./i.test(trimmedQ)) {
+      result = await execWebFetch(trimmedQ);
+    } else {
+      result = await execWebSearch(query, searxngUrl);
+    }
   } else {
-    // Try web search as default fallback for unknown queries
-    result = await execWebSearch(query, searxngUrl);
+    // Default fallback
+    const trimmedQ = query.trim();
+    if (trimmedQ.startsWith('http://') || trimmedQ.startsWith('https://')) {
+      result = await execWebFetch(trimmedQ);
+    } else {
+      result = await execWebSearch(query, searxngUrl);
+    }
   }
 
   return {
@@ -255,3 +305,4 @@ export async function dispatchTool(name: string, query: string, searxngUrl?: str
     isError
   };
 }
+

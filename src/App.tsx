@@ -197,10 +197,12 @@ export const App: React.FC = () => {
 
     const executedTools: ToolExecution[] = [];
 
-    // Pre-flight heuristic: Detect direct math, unit, or search requests for instant deterministic execution
+    // Pre-flight heuristic: Detect direct math, unit, URL fetch, or search requests for instant execution
     const mathMatch = trimmed.match(/^(?:what is|calculate|compute|eval)\s+([0-9+\-*/().\s^sqrtpowpi]+)$/i);
     const unitMatch = trimmed.match(/^(?:convert\s+)?([\d.]+\s*[a-zA-Z]+\s*(?:to|in)\s*[a-zA-Z]+)$/i);
     const directSearchMatch = trimmed.match(/^(?:search|search for|google|web search)\s*:\s*(.+)$/i);
+    const urlMatch = trimmed.match(/(https?:\/\/[^\s]+)/i);
+    const directFetchMatch = trimmed.match(/^(?:fetch|read|browse|summarize|inspect)\s+(https?:\/\/[^\s]+)$/i);
 
     if (toolsEnabled && mathMatch) {
       const toolRes = await dispatchTool('calc', mathMatch[1]);
@@ -208,8 +210,14 @@ export const App: React.FC = () => {
     } else if (toolsEnabled && unitMatch) {
       const toolRes = await dispatchTool('units', unitMatch[1]);
       executedTools.push(toolRes);
+    } else if (toolsEnabled && directFetchMatch) {
+      const toolRes = await dispatchTool('web_fetch', directFetchMatch[1]);
+      executedTools.push(toolRes);
     } else if (toolsEnabled && directSearchMatch) {
       const toolRes = await dispatchTool('web_search', directSearchMatch[1], searxngUrl);
+      executedTools.push(toolRes);
+    } else if (toolsEnabled && urlMatch && (trimmed.toLowerCase().includes('read') || trimmed.toLowerCase().includes('summarize') || trimmed === urlMatch[1])) {
+      const toolRes = await dispatchTool('web_fetch', urlMatch[1]);
       executedTools.push(toolRes);
     }
 
@@ -224,7 +232,7 @@ export const App: React.FC = () => {
     };
 
     // If deterministic math/unit tool directly solved it, finish immediately without spinning up full LLM
-    if (executedTools.length > 0 && !directSearchMatch && !extendedThinking) {
+    if (executedTools.length > 0 && !directSearchMatch && !urlMatch && !directFetchMatch && !extendedThinking) {
       const finalSess = {
         ...updatedSession,
         messages: [...updatedMessages, assistantPlaceholder]
@@ -249,6 +257,15 @@ export const App: React.FC = () => {
           role: m.role as any,
           content: m.content
         });
+      }
+
+      // If pre-flight tools (e.g. web_fetch or direct search) ran, inject context into the active turn
+      if (executedTools.length > 0) {
+        const lastMsg = convoMessages[convoMessages.length - 1];
+        if (lastMsg && lastMsg.role === 'user') {
+          const toolData = executedTools.map(t => `[${t.tool.toUpperCase()} RESULT for "${t.query}"]:\n${t.result}`).join('\n\n');
+          lastMsg.content = `${toolData}\n\nUser prompt: ${lastMsg.content}`;
+        }
       }
 
       let currentStreamed = '';

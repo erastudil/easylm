@@ -72,14 +72,15 @@ body {
   align-items: center;
   justify-content: center;
   font-family: var(--font-mono);
-  font-size: 0.85rem;
-  padding: 0.5rem 1.1rem;
+  font-size: 0.82rem;
+  padding: 0.45rem 1rem;
   border: 1px solid var(--border-subtle);
   background: var(--bg-surface-elevated);
   color: var(--text-primary);
   cursor: pointer;
   transition: all 0.15s ease-in-out;
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .btn-pill:hover {
@@ -98,6 +99,7 @@ body {
 .btn-pill-primary:hover {
   background: var(--accent-violet-light);
   box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+  color: #000000;
 }
 
 /* Message Bubbles */
@@ -110,6 +112,7 @@ body {
   max-width: 85%;
   align-self: flex-end;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  word-break: break-word;
 }
 
 .bubble-assistant {
@@ -122,6 +125,7 @@ body {
   align-self: flex-start;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   line-height: 1.65;
+  word-break: break-word;
 }
 
 /* Tool execution badge */
@@ -177,38 +181,179 @@ body {
   overflow-y: auto;
 }
 
-/* Markdown prose rendering */
-.prose-content p {
-  margin: 0.6rem 0;
+/* ==========================================================================
+   Comprehensive Markdown Prose Rendering
+   ========================================================================== */
+.prose-content {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: #f4f4f5;
 }
+
+.prose-content h1,
+.prose-content h2,
+.prose-content h3,
+.prose-content h4,
+.prose-content h5,
+.prose-content h6 {
+  font-family: var(--font-mono);
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.prose-content h1 {
+  font-size: 1.35rem;
+  color: #ffffff;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+  padding-bottom: 0.35rem;
+}
+
+.prose-content h2 {
+  font-size: 1.2rem;
+  color: #ffffff;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+  padding-bottom: 0.25rem;
+}
+
+.prose-content h3 {
+  font-size: 1.05rem;
+  color: var(--accent-violet-light);
+}
+
+.prose-content h4 {
+  font-size: 0.95rem;
+  color: #c4b5fd;
+}
+
+.prose-content p {
+  margin: 0.65rem 0;
+}
+
 .prose-content p:first-child {
   margin-top: 0;
 }
+
 .prose-content p:last-child {
   margin-bottom: 0;
 }
+
+.prose-content strong,
+.prose-content b {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.prose-content em,
+.prose-content i {
+  color: #e4e4e7;
+}
+
+.prose-content ul,
+.prose-content ol {
+  margin: 0.5rem 0 0.85rem 1.25rem;
+  padding-left: 0.5rem;
+}
+
+.prose-content ul {
+  list-style-type: disc;
+}
+
+.prose-content ol {
+  list-style-type: decimal;
+}
+
+.prose-content li {
+  margin-bottom: 0.45rem;
+  line-height: 1.6;
+}
+
+.prose-content ul li::marker {
+  color: var(--accent-violet);
+}
+
+.prose-content ol li::marker {
+  color: var(--accent-violet-light);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.prose-content code {
+  font-family: var(--font-mono);
+  background: #181824;
+  color: var(--accent-violet-light);
+  padding: 0.15rem 0.4rem;
+  border-radius: 6px;
+  font-size: 0.88em;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
 .prose-content pre {
   background: #050508;
   border: 1px solid #272733;
   border-radius: 12px;
-  padding: 0.85rem 1rem;
+  padding: 0.85rem 1.1rem;
   overflow-x: auto;
   font-family: var(--font-mono);
   font-size: 0.85rem;
-  margin: 0.8rem 0;
+  margin: 0.85rem 0;
+  line-height: 1.5;
 }
-.prose-content code {
-  font-family: var(--font-mono);
-  background: #181822;
-  color: var(--accent-violet-light);
-  padding: 0.15rem 0.35rem;
-  border-radius: 6px;
-  font-size: 0.88em;
-}
+
 .prose-content pre code {
   background: transparent;
+  border: none;
   padding: 0;
   color: #e4e4e7;
+}
+
+.prose-content blockquote {
+  border-left: 3px solid var(--accent-violet);
+  background: rgba(139, 92, 246, 0.05);
+  padding: 0.5rem 1rem;
+  margin: 0.85rem 0;
+  color: #a1a1aa;
+  font-style: italic;
+  border-radius: 0 8px 8px 0;
+}
+
+.prose-content hr {
+  border: none;
+  border-top: 1px solid rgba(139, 92, 246, 0.25);
+  margin: 1.25rem 0;
+}
+
+.prose-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.85rem 0;
+  font-size: 0.88rem;
+}
+
+.prose-content th {
+  background: #13131c;
+  color: var(--accent-violet-light);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #272733;
+}
+
+.prose-content td {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #1e1e28;
+}
+
+.prose-content a {
+  color: var(--accent-violet-light);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.prose-content a:hover {
+  color: #ffffff;
 }
 
 /* Floating prompt box */

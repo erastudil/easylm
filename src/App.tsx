@@ -88,13 +88,6 @@ export const App: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [sessions, activeSessionId, isGenerating]);
-
-  // Active Session Lookup
-  const activeSession = sessions.find(s => s.id === activeSessionId) || sessions[0];
-
   // Create New Session
   const handleNewSession = () => {
     const newSess = createNewSession('New Conversation');
@@ -103,6 +96,25 @@ export const App: React.FC = () => {
     setActiveSessionIdState(newSess.id);
     saveAllSessions(updated);
   };
+
+  // Global Keyboard shortcuts (Ctrl+K or Ctrl+N for new session)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'n')) {
+        e.preventDefault();
+        handleNewSession();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [sessions]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [sessions, activeSessionId, isGenerating]);
+
+  // Active Session Lookup
+  const activeSession = sessions.find(s => s.id === activeSessionId) || sessions[0];
 
   // Delete Session
   const handleDeleteSession = (id: string) => {
@@ -476,6 +488,16 @@ export const App: React.FC = () => {
             }}>
               {currentModelLabel.split('(')[0].trim()}
             </span>
+
+            {/* Prominent New Session Button */}
+            <button
+              onClick={handleNewSession}
+              className="btn-pill btn-pill-primary"
+              style={{ fontSize: '0.75rem', padding: '0.25rem 0.75rem', gap: '0.35rem' }}
+              title="Start a fresh chat session (Ctrl+N)"
+            >
+              <span>+</span> New Session
+            </button>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>

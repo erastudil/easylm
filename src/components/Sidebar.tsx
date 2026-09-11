@@ -104,7 +104,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             style={{ width: '100%', justifyContent: 'center', gap: '0.5rem' }}
             title="Start fresh conversation"
           >
-            <span>+</span> New Chat
+            <span>+</span> New Session
           </button>
         </div>
 

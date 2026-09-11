@@ -2,6 +2,7 @@ import React from 'react';
 import { Message } from '../types';
 import { ThoughtDrawer } from './ThoughtDrawer';
 import { CopyButton } from './CopyButton';
+import { MarkdownRenderer } from './MarkdownRenderer';
 
 interface MessageItemProps {
   message: Message;
@@ -22,7 +23,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
           <span>{new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
         </div>
         
-        {/* Sleek copy button in the header for user prompts */}
+        {/* Sleek copy button in header for user prompts */}
         {isUser && (
           <CopyButton text={message.content} label="Copy" />
         )}
@@ -47,12 +48,16 @@ export const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
           <ThoughtDrawer thinking={message.thinking} durationMs={message.thoughtDurationMs} />
         )}
 
-        {/* Content */}
-        <div className="prose-content whitespace-pre-wrap">
-          {message.content}
-        </div>
+        {/* Markdown Content rendering */}
+        {isUser ? (
+          <div className="whitespace-pre-wrap leading-relaxed">
+            {message.content}
+          </div>
+        ) : (
+          <MarkdownRenderer content={message.content} />
+        )}
 
-        {/* Sleek Action bar for assistant message - NO VRAM MESSAGE! */}
+        {/* Sleek Action bar for assistant message */}
         {!isUser && (
           <div className="mt-3 pt-2.5 border-t border-zinc-800/40 flex items-center justify-end">
             <CopyButton text={message.content} label="Copy Response" />

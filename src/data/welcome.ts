@@ -19,7 +19,7 @@ All tokens and model generations run directly on **your GPU** via WebGPU. No acc
 ### Privacy & Data Boundaries
 - **What stays strictly on your device**: All prompts, uploaded documents, chat history, and memories stay in this browser's local sandbox.
 - **What is streamed**: Model weights stream once from Hugging Face into browser cache on first run.
-- **Kid Safe Mode**: Restricts all tool executions to purely local hands (math, units, clock, dictionary, warehouse). Network lookups stay completely off.
+- **Kid Safe Mode**: Restricts tool executions to purely local hands (math, units, clock, warehouse). Network lookups — including dictionary (external API) — stay completely off.
 
 ### Quick Controls
 - 🧠 **Think (Top Bar)**: Enable step-by-step chain-of-thought reasoning before answers.

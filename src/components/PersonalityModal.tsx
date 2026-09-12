@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import {
   PERSONALITIES,
   PERSONALITY_CATEGORIES,
-  ExtendedPersonality
+  ExtendedPersonality,
+  getPersonalitiesForRole
 } from '../data/personalities';
 
 interface PersonalityModalProps {
@@ -11,6 +12,8 @@ interface PersonalityModalProps {
   selectedPersonality: string;
   onSelectPersonality: (id: string) => void;
   onOpenCustomSettings?: () => void;
+  /** When true (kid profile), only socratic_kid / kid-safe subset is shown. */
+  kidSafe?: boolean;
 }
 
 export const PersonalityModal: React.FC<PersonalityModalProps> = ({
@@ -18,14 +21,17 @@ export const PersonalityModal: React.FC<PersonalityModalProps> = ({
   onClose,
   selectedPersonality,
   onSelectPersonality,
-  onOpenCustomSettings
+  onOpenCustomSettings,
+  kidSafe = false
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   if (!isOpen) return null;
 
-  const filteredPersonalities = PERSONALITIES.filter(p => {
+  const gallery = getPersonalitiesForRole(kidSafe ? 'kid' : 'parent');
+
+  const filteredPersonalities = gallery.filter(p => {
     // Category match
     const categoryMatch = selectedCategory === 'all' || p.category === selectedCategory;
 
@@ -83,7 +89,9 @@ export const PersonalityModal: React.FC<PersonalityModalProps> = ({
               <span>🎭</span> Perspectives & Author Voices
             </h2>
             <div style={{ fontSize: '0.78rem', color: '#a1a1aa', marginTop: '0.2rem' }}>
-              Choose a philosopher, scientist, classic author, or coach to shape thinking and writing style.
+              {kidSafe
+                ? 'Kid Safe: only the Homework Coach voice is available. Adult author voices stay locked.'
+                : 'Choose a philosopher, scientist, classic author, or coach to shape thinking and writing style.'}
             </div>
           </div>
           <button
@@ -132,8 +140,8 @@ export const PersonalityModal: React.FC<PersonalityModalProps> = ({
             {PERSONALITY_CATEGORIES.map(cat => {
               const isActive = selectedCategory === cat.id;
               const count = cat.id === 'all'
-                ? PERSONALITIES.length
-                : PERSONALITIES.filter(p => p.category === cat.id).length;
+                ? gallery.length
+                : gallery.filter(p => p.category === cat.id).length;
               return (
                 <button
                   key={cat.id}
@@ -225,7 +233,9 @@ export const PersonalityModal: React.FC<PersonalityModalProps> = ({
         {/* Footer */}
         <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(139, 92, 246, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
           <div style={{ fontSize: '0.72rem', color: '#71717a' }}>
-            Historical figures & public domain literature. Zero brand infringement.
+            {kidSafe
+              ? 'Kid Safe gallery lock — adult voices do not load on this profile.'
+              : 'Historical figures & public domain literature. Zero brand infringement.'}
           </div>
           <button
             onClick={onClose}

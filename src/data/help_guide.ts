@@ -36,7 +36,7 @@ The top bar provides quick access to runtime states, reasoning modes, and active
    - When **OFF**: The model produces direct, concise answers without intermediate reasoning traces.
 4. **⚡ Hands (Tools Status Indicator)**:
    - Green indicator confirming that built-in tools are active.
-   - In **Kid Safe** mode, Hands are restricted strictly to deterministic local tools (calculator, unit converter, clock, dictionary, knowledge warehouse).
+   - In **Kid Safe** mode, Hands are restricted strictly to deterministic local tools (calculator, unit converter, clock, knowledge warehouse). Dictionary is network-backed and stays off.
    - In standard mode, Hands can also access live web search, webpage reading, weather forecasts, and currency exchange when requested.
 5. **👤 Profile & Family Mode**:
    - Displays the current active profile avatar and name (e.g., *Student*, *Parent*, *Curious Learner*).
@@ -99,8 +99,8 @@ The Settings dialog allows you to calibrate inference parameters, tool availabil
    - **ON**: Enables EasyLM to execute deterministic tools (calculator, unit converter, clock, dictionary, weather, currency, search) whenever relevant.
    - **OFF**: Completely disables all tool calls. The model answers using only its internal knowledge weights with zero external lookups.
 4. **Kid Safe Mode**:
-   - When active, restricts all tool calling strictly to local hands: math calculator, unit converter, world clock, dictionary, and offline warehouse facts.
-   - All network lookups (web search, webpage reader, live weather, currency) are permanently disabled.
+   - When active, restricts all tool calling strictly to local hands: math calculator, unit converter, world clock, and offline warehouse facts.
+   - All network lookups (web search, webpage reader, live weather, currency, dictionary) are permanently disabled.
 5. **Custom System Instructions**:
    - Enter standing instructions or personal guidelines that prepend to every conversation (e.g., *"Always format mathematical proofs step-by-step"* or *"Cite relevant historical primary sources"*).
 6. **SearXNG Search Engine URL**:
@@ -232,7 +232,7 @@ Architecture & Capabilities:
 2. In-App Hands (Tools):
    - Deterministic Local Tools: calc (arithmetic/formulas), units (physical unit conversion), datetime (system clock and global timezones), knowledge warehouse.
    - Transparent Network Tools: dictionary, fact summaries, live weather, currency exchange, web_search, and web_fetch.
-   - Kid Safe Mode: Permanently enforces 100% local tools only. All network access is disabled.
+   - Kid Safe Mode: Permanently enforces local-only tools (calc, units, clock, warehouse). Network tools including dictionary stay disabled.
 3. Top Bar (Header HUD) Controls:
    - EasyLM Title & Public Beta Badge: Current release status.
    - Model Pill Badge: Shows active model (Qwen 2.5 3B / 1.5B / 0.5B).

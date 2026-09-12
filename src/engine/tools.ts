@@ -45,10 +45,9 @@ You have access to these local tools only:
 1. calc(expression: string) - evaluate math expressions.
 2. units(from: string, to: string, amount: number) - convert physical units.
 3. datetime(timezone?: string) - current local or world time.
-4. dictionary(word: string) - English definition and origin.
-5. warehouse(query: string) - local reference notes.
+4. warehouse(query: string) - local reference notes.
 
-Do not call web_search, web_fetch, weather, exchange, or fact. Those leave the machine.
+Do not call dictionary, web_search, web_fetch, weather, exchange, or fact. Those leave the machine (dictionary uses an external API).
 When you need a tool, emit EXACTLY:
 <tool_call>{"name": "calc", "query": "sqrt(144) * 5200"}</tool_call>
 `;

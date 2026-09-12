@@ -8,6 +8,12 @@ describe('dispatchTool kidSafe', () => {
     expect(res.result).toMatch(/network tools are off/i);
   });
 
+  it('refuses dictionary (external dictionaryapi.dev)', async () => {
+    const res = await dispatchTool('dictionary', 'serendipity', undefined, { kidSafe: true });
+    expect(res.isError).toBe(true);
+    expect(res.result).toMatch(/network tools are off/i);
+  });
+
   it('still runs units', async () => {
     const res = await dispatchTool('units', '10 kg to lbs', undefined, { kidSafe: true });
     expect(res.isError).toBe(false);

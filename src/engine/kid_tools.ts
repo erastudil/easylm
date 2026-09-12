@@ -1,6 +1,7 @@
 /**
  * Kid Safe tool allowlist.
  * Network tools leave the machine. Kid profiles do not get them.
+ * Dictionary calls /api/dictionary → dictionaryapi.dev and is NOT local — excluded here.
  */
 
 const ALLOWED_SUBSTRINGS = [
@@ -12,11 +13,6 @@ const ALLOWED_SUBSTRINGS = [
   'time',
   'date',
   'zone',
-  'dictionary',
-  'define',
-  'vocab',
-  'definition',
-  'etymology',
   'warehouse',
   'canon',
   'dewey'
@@ -37,7 +33,12 @@ const BLOCKED_SUBSTRINGS = [
   'whois',
   'scrape',
   'browse',
-  'read_url'
+  'read_url',
+  'dictionary',
+  'define',
+  'vocab',
+  'definition',
+  'etymology'
 ];
 
 export function normalizeToolName(name: string): string {
@@ -56,4 +57,4 @@ export function isKidAllowedTool(name: string): boolean {
 }
 
 export const KID_TOOL_REFUSAL =
-  'Kid Safe mode: network tools are off. Local calculator, units, clock, dictionary, and warehouse only.';
+  'Kid Safe mode: network tools are off. Local calculator, units, clock, and warehouse only.';

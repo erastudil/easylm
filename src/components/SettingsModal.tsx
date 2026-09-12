@@ -1,6 +1,6 @@
 import React from 'react';
 import { AVAILABLE_MODELS } from '../engine/webllm_spindle';
-import { PERSONALITIES } from '../data/personalities';
+import { PERSONALITIES, getPersonalitiesForRole } from '../data/personalities';
 import { DeviceInfo } from '../engine/device';
 
 export { PERSONALITIES };
@@ -29,6 +29,8 @@ interface SettingsModalProps {
   onOpenPersonalityModal?: () => void;
   onOpenWelcomeGuide?: () => void;
   deviceInfo?: DeviceInfo | null;
+  /** When true (kid profile), only kid-safe personalities are listed. */
+  kidSafe?: boolean;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -53,9 +55,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onOpenProfiles,
   onOpenPersonalityModal,
   onOpenWelcomeGuide,
-  deviceInfo
+  deviceInfo,
+  kidSafe = false
 }) => {
   if (!isOpen) return null;
+
+  const gallery = getPersonalitiesForRole(kidSafe ? 'kid' : 'parent');
 
   return (
     <div style={{
@@ -190,7 +195,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         <div style={{ marginBottom: '1.25rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.45rem' }}>
             <label style={{ fontSize: '0.8rem', fontFamily: 'var(--font-mono)', color: '#a78bfa', margin: 0 }}>
-              AI Personality & Voice:
+              AI Personality & Voice:{kidSafe ? ' (Kid Safe locked)' : ''}
             </label>
             {onOpenPersonalityModal && (
               <button
@@ -224,7 +229,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             overflowY: 'auto',
             paddingRight: '0.2rem'
           }}>
-            {PERSONALITIES.map(p => (
+            {gallery.map(p => (
               <button
                 key={p.id}
                 onClick={() => onSelectPreset(p.id)}

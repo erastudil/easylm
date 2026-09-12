@@ -62,7 +62,14 @@ export const App: React.FC = () => {
   const [attachedDoc, setAttachedDoc] = useState<AttachedDoc | null>(null);
 
   // Model & Personality Configuration
-  const [selectedModel, setSelectedModel] = useState<string>(DEFAULT_MODEL_ID);
+  const [selectedModel, setSelectedModel] = useState<string>(() => {
+    return localStorage.getItem('easylm_selected_model') || DEFAULT_MODEL_ID;
+  });
+
+  const handleSelectModel = (id: string) => {
+    setSelectedModel(id);
+    localStorage.setItem('easylm_selected_model', id);
+  };
   const [selectedPersonality, setSelectedPersonality] = useState<string>(() => {
     const prof = getActiveProfile();
     return prof.personalityId || 'friendly';
@@ -143,7 +150,8 @@ export const App: React.FC = () => {
     detectDevice().then(dev => {
       setDeviceInfo(dev);
       setWebGpuAvailable(dev.hasWebGPU);
-      if (dev.isMobile && dev.recommendedModel) {
+      const savedModel = localStorage.getItem('easylm_selected_model');
+      if (!savedModel && dev.recommendedModel) {
         setSelectedModel(dev.recommendedModel);
       }
     });
@@ -669,10 +677,16 @@ export const App: React.FC = () => {
       saveAllSessions(sessions.map(s => s.id === activeSession.id ? finalSessionObj : s));
     } catch (err: any) {
       console.error('Inference error:', err);
+      const errStr = String(err?.message || err).toLowerCase();
+      const isOOM = errStr.includes('out of memory') || errStr.includes('buffer') || errStr.includes('device lost') || errStr.includes('allocation');
+      const oomHint = isOOM
+        ? `\n\n💡 **Tip:** Your GPU ran out of memory for this model. Switch to the ultralight **Qwen 2.5 1.5B** in Settings (⚙) for instant, low-memory inference.`
+        : `\n\n*Ensure your browser supports WebGPU (Chrome/Edge 113+) and hardware acceleration is turned on.*`;
+
       const errMsg: Message = {
         id: assistantMsgId,
         role: 'assistant',
-        content: `**Notice:** ${err?.message || String(err)}\n\n*Ensure your browser supports WebGPU (Chrome/Edge 113+) and hardware acceleration is turned on.*`,
+        content: `**Notice:** ${err?.message || String(err)}${oomHint}`,
         timestamp: Date.now()
       };
       setSessions(prev => prev.map(s => s.id === activeSession.id ? { ...s, messages: [...updatedMessages, errMsg] } : s));
@@ -1266,7 +1280,7 @@ export const App: React.FC = () => {
         isOpen={settingsOpen}
         onClose={() => setSettingsOpen(false)}
         selectedModel={selectedModel}
-        onSelectModel={setSelectedModel}
+        onSelectModel={handleSelectModel}
         selectedPreset={selectedPersonality}
         onSelectPreset={setSelectedPersonality}
         customPrompt={customPrompt}
@@ -1284,6 +1298,7 @@ export const App: React.FC = () => {
         onOpenProfiles={() => setProfileModalOpen(true)}
         onOpenPersonalityModal={() => setPersonalityModalOpen(true)}
         onOpenWelcomeGuide={() => setWelcomeModalOpen(true)}
+        deviceInfo={deviceInfo}
       />
 
       {/* Welcome & Toolbox Guide Popup Modal */}

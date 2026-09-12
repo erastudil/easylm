@@ -1,6 +1,7 @@
 import React from 'react';
 import { AVAILABLE_MODELS } from '../engine/webllm_spindle';
 import { PERSONALITIES } from '../data/personalities';
+import { DeviceInfo } from '../engine/device';
 
 export { PERSONALITIES };
 export const SYSTEM_PRESETS = PERSONALITIES;
@@ -27,6 +28,7 @@ interface SettingsModalProps {
   onOpenProfiles?: () => void;
   onOpenPersonalityModal?: () => void;
   onOpenWelcomeGuide?: () => void;
+  deviceInfo?: DeviceInfo | null;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -50,7 +52,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onToggleWelcomeMessage,
   onOpenProfiles,
   onOpenPersonalityModal,
-  onOpenWelcomeGuide
+  onOpenWelcomeGuide,
+  deviceInfo
 }) => {
   if (!isOpen) return null;
 
@@ -109,33 +112,77 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
         {/* Model Selector */}
         <div style={{ marginBottom: '1.25rem' }}>
-          <label style={{ display: 'block', fontSize: '0.8rem', fontFamily: 'var(--font-mono)', color: '#a78bfa', marginBottom: '0.4rem' }}>
-            Select Local AI Model:
-          </label>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem', flexWrap: 'wrap', gap: '0.3rem' }}>
+            <label style={{ fontSize: '0.8rem', fontFamily: 'var(--font-mono)', color: '#a78bfa', margin: 0 }}>
+              Select Local AI Model:
+            </label>
+            {deviceInfo && (
+              <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: '#a1a1aa' }}>
+                Hardware: {deviceInfo.osName} · {deviceInfo.hardwareTier.toUpperCase()}
+              </span>
+            )}
+          </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            {AVAILABLE_MODELS.map(m => (
-              <div
-                key={m.id}
-                onClick={() => onSelectModel(m.id)}
-                style={{
-                  padding: '0.65rem 0.85rem',
-                  borderRadius: '12px',
-                  cursor: 'pointer',
-                  backgroundColor: selectedModel === m.id ? 'rgba(139, 92, 246, 0.18)' : '#111118',
-                  border: selectedModel === m.id ? '1px solid #8b5cf6' : '1px solid rgba(139, 92, 246, 0.2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  fontSize: '0.85rem'
-                }}
-              >
-                <div>
-                  <div style={{ fontWeight: 600, color: '#ffffff' }}>{m.label}</div>
-                  <div style={{ fontSize: '0.75rem', color: '#71717a' }}>{m.vramEst} VRAM required · Runs 100% on your device</div>
+            {AVAILABLE_MODELS.map(m => {
+              const isRecommended = deviceInfo?.recommendedModel === m.id;
+              const isSelected = selectedModel === m.id;
+              const isHeavyForDevice = deviceInfo?.hardwareTier === 'ultralight' && (m.id.includes('7B') || m.id.includes('3B'));
+
+              return (
+                <div
+                  key={m.id}
+                  onClick={() => onSelectModel(m.id)}
+                  style={{
+                    padding: '0.65rem 0.85rem',
+                    borderRadius: '12px',
+                    cursor: 'pointer',
+                    backgroundColor: isSelected ? 'rgba(139, 92, 246, 0.18)' : '#111118',
+                    border: isSelected ? '1px solid #8b5cf6' : '1px solid rgba(139, 92, 246, 0.2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    fontSize: '0.85rem'
+                  }}
+                >
+                  <div style={{ flex: 1, minWidth: 0, paddingRight: '0.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
+                      <span style={{ fontWeight: 600, color: '#ffffff' }}>{m.label}</span>
+                      {isRecommended && (
+                        <span style={{
+                          fontSize: '0.62rem',
+                          fontWeight: 700,
+                          fontFamily: 'var(--font-mono)',
+                          padding: '0.1rem 0.4rem',
+                          borderRadius: '6px',
+                          backgroundColor: 'rgba(52, 211, 153, 0.18)',
+                          border: '1px solid #10b981',
+                          color: '#34d399'
+                        }}>
+                          ✨ Recommended
+                        </span>
+                      )}
+                      {isHeavyForDevice && (
+                        <span style={{
+                          fontSize: '0.62rem',
+                          fontFamily: 'var(--font-mono)',
+                          padding: '0.1rem 0.4rem',
+                          borderRadius: '6px',
+                          backgroundColor: 'rgba(234, 179, 8, 0.12)',
+                          color: '#fbbf24',
+                          border: '1px solid rgba(234, 179, 8, 0.3)'
+                        }}>
+                          High VRAM
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: '#71717a', marginTop: '0.15rem' }}>
+                      {m.vramEst} VRAM required · Runs 100% on your device
+                    </div>
+                  </div>
+                  {isSelected && <span style={{ color: '#8b5cf6', fontSize: '1.1rem', flexShrink: 0 }}>✓</span>}
                 </div>
-                {selectedModel === m.id && <span style={{ color: '#8b5cf6', fontSize: '1.1rem' }}>✓</span>}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 

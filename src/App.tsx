@@ -745,7 +745,6 @@ export const App: React.FC = () => {
         onOpenSupport={() => setSupportOpen(true)}
         onOpenPersonalityModal={() => setPersonalityModalOpen(true)}
         onOpenFeedback={() => setFeedbackModalOpen(true)}
-        onOpenGoogleDrive={isGoogleDriveConfigured() ? () => setGoogleDriveModalOpen(true) : undefined}
       />
 
       {/* Main Chat Area */}

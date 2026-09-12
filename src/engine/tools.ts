@@ -329,17 +329,34 @@ export async function execDictionary(word: string): Promise<string> {
  * Local Warehouse / Canon Dewey search
  */
 export function execWarehouse(query: string): string {
-  const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
-  const matches = WAREHOUSE_DOCS.filter(doc => {
-    const text = (doc.title + ' ' + doc.category + ' ' + doc.snippet).toLowerCase();
-    return terms.some(t => text.includes(t));
-  });
-
-  if (matches.length === 0) {
-    return `No exact warehouse hits for "${query}". Check Deweys 000-800.`;
+  const terms = query.toLowerCase().split(/\s+/).filter(t => t.length > 1);
+  if (terms.length === 0) {
+    return `No search terms provided for Warehouse lookup.`;
   }
 
-  return matches.slice(0, 3).map(m => `[Dewey ${m.dewey} · ${m.title}]: ${m.snippet}`).join('\n\n');
+  const scored = WAREHOUSE_DOCS.map(doc => {
+    const titleLower = doc.title.toLowerCase();
+    const catLower = doc.category.toLowerCase();
+    const snipLower = doc.snippet.toLowerCase();
+    const deweyLower = doc.dewey.toLowerCase();
+    let score = 0;
+
+    for (const t of terms) {
+      if (deweyLower === t) score += 10;
+      if (titleLower.includes(t)) score += 5;
+      if (catLower.includes(t)) score += 3;
+      if (snipLower.includes(t)) score += 1;
+    }
+    return { doc, score };
+  }).filter(item => item.score > 0);
+
+  scored.sort((a, b) => b.score - a.score);
+
+  if (scored.length === 0) {
+    return `No exact warehouse hits for "${query}". Stacks span Deweys 000-900.`;
+  }
+
+  return scored.slice(0, 3).map(m => `[Dewey ${m.doc.dewey} · ${m.doc.title} (${m.doc.category})]:\n${m.doc.snippet}`).join('\n\n');
 }
 
 /**

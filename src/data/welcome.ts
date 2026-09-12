@@ -24,7 +24,7 @@ All tokens and model generations run directly on **your GPU** via WebGPU. No acc
 ### Quick Controls
 - 🧠 **Think (Top Bar)**: Enable step-by-step chain-of-thought reasoning before answers.
 - 🎭 **Voices Gallery (Top Bar)**: Converse with 35+ historical philosophers, authors, scientists, and characters.
-- 📁 **Google Drive & Disk**: Backup chats to a local JSON file or client-encrypted private Google Drive AppData.
+- 💾 **Local Disk Backup**: Download all conversations as a local JSON file or restore previous archives in the sidebar.
 - 💬 **Beta Feedback**: Send notes, bug reports, and diagnostic logs to **humansandai@atomicmail.io**.
 
 How can I assist your research or learning today?`;

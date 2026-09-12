@@ -65,20 +65,16 @@ The sidebar allows you to organize your studies, manage conversation threads, an
    - Click any session to switch to it instantly.
    - **Rename**: Click the pencil icon to assign a descriptive title to any chat.
    - **Delete**: Click the trash icon to permanently remove a session.
-3. **📁 Google Drive Sync (Zero-Server)**:
-   - Direct client-to-cloud synchronization with your personal Google Drive account.
-   - Uses Google's hidden **AppData sandbox** (\`drive.appdata\`) so EasyLM files are isolated from your main drive documents.
-   - **Zero Servers**: EasyLM operates no intermediate servers or databases. The browser talks directly to Google APIs using a temporary OAuth token stored only in memory.
-   - **Client-Side WebCrypto Encryption**: Optional AES-GCM-256 encryption using a personal passphrase. All sessions and memories are encrypted before leaving your browser.
-4. **💾 Backup to Disk**:
-   - Exports all conversations, system prompts, and settings into a single JSON file directly to your computer's downloads folder.
-5. **📥 Restore from Disk**:
-   - Imports a previously saved EasyLM JSON backup, merging or restoring your conversation archive.
-6. **🎭 Voices Gallery**:
+3. **💾 Backup to Disk**:
+   - Exports all conversations, system prompts, and settings into a clean JSON file directly to your local downloads folder.
+   - Completely offline and private; no intermediate servers or cloud accounts required.
+4. **📥 Restore from Disk**:
+   - Imports a previously saved EasyLM JSON backup file, restoring your conversation archive and sovereign memories into this browser.
+5. **🎭 Voices Gallery**:
    - Direct shortcut to open the Perspectives Gallery modal.
-7. **🔒 Parental Controls**:
+6. **🔒 Parental Controls**:
    - Quick access to setup or verify the parental PIN and enforce safe study settings.
-8. **💜 Support & Free Software**:
+7. **💜 Support & Free Software**:
    - Opens the Support dialog with official **GNU GPL-3.0** licensing information, GitHub repository fork links, and verified donation addresses (Bitcoin, Solana, Cash App) to support independent development.`
   },
   {

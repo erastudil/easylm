@@ -23,6 +23,13 @@ export function setStoredGoogleClientId(id: string): void {
   }
 }
 
+/** Real OAuth client only. Placeholder is not a product. */
+export function isGoogleDriveConfigured(): boolean {
+  const id = getStoredGoogleClientId();
+  if (!id || id.includes('placeholder')) return false;
+  return /^[0-9]+-[a-z0-9]+\.apps\.googleusercontent\.com$/i.test(id);
+}
+
 /**
  * Dynamically injects Google Identity Services script ONLY when requested.
  * Preserves zero-tracking privacy for offline or local-only users.

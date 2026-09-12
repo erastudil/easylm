@@ -281,7 +281,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             }}
           />
           <div style={{ fontSize: '0.7rem', color: '#71717a', marginTop: '0.25rem', fontFamily: 'var(--font-mono)' }}>
-            Leave empty to use built-in search gateway (/api/search + Wikipedia fallback).
+            Empty uses /api/search. Search queries leave this machine. Kid Safe ignores this.
           </div>
         </div>
 
@@ -301,7 +301,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           </label>
 
           <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', padding: '0.6rem 0.75rem', background: '#111118', borderRadius: '12px' }}>
-            <span style={{ fontSize: '0.85rem' }}>⚡ In-App Hands (Weather, FX, Facts, Dictionary, Math, Web)</span>
+            <span style={{ fontSize: '0.85rem' }}>⚡ Hands (local math/units/clock; optional network lookups)</span>
             <input
               type="checkbox"
               checked={toolsEnabled}

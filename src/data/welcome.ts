@@ -1,24 +1,33 @@
 import { Message } from '../types';
 
-export const WELCOME_TOOLBOX_CONTENT = `Welcome to **EasyLM (Public Beta)** by **humans&ai** — 100% private, free AI running entirely inside your browser via WebGPU.
+export const WELCOME_TOOLBOX_CONTENT = `Welcome to **EasyLM (Public Beta)** by **humans&ai**.
 
-### ⚡ Built-In Deterministic Toolbox
-EasyLM comes equipped with local tools that execute automatically in the background:
+All tokens and model generations run directly on **your GPU** via WebGPU. No accounts, no subscriptions, and zero server logging. The official app is free forever under the GNU GPL-3.0.
 
-- **🌤️ Live Weather:** Real-time conditions & 3-day forecast (*"weather Dallas"*, *"is it raining in Tokyo?"*).
-- **💱 Currency FX:** Live European Central Bank exchange rates (*"100 USD to EUR"*, *"50,000 yen in USD"*).
-- **📖 Dictionary & Etymology:** Exact definitions & word origins (*"define serendipity"*).
-- **🏛️ Encyclopedic Facts:** Verified summaries for history, science & notable figures (*"who was Alan Turing?"*).
-- **🧮 Math & Unit Conversion:** Deterministic calculations (*"sqrt(144) * 5200"*, *"3.75 gal to fl oz"*).
-- **🌐 Web Search & Reader:** Live search & page content reader (*"summarize https://example.com"*).
+### Built-In Tools & Mathematical Capabilities
 
-### 💡 Public Beta Controls
-- **🧠 Extended Thinking:** Toggle **"Think"** on the top bar for deep step-by-step reasoning.
-- **🎭 Perspectives & Literary Characters:** Click the personality pill (**Friendly Guide 🎭**) or sidebar to explore 37 curated voices — chat with classic literary characters (Sherlock Holmes, Gatsby, Elizabeth Bennet, Frankenstein's creature), great thinkers (Socrates, Sun Tzu, Feynman, Stoics), classic authors, or the Pragmatic Skeptic.
-- **💬 Beta Feedback:** Click **"Feedback"** (or in the sidebar) to submit bug reports, writeups, and screenshots directly to **humansandai@atomicmail.io**.
-- **💾 Local Backup:** All chats stay in this browser. Click **"Backup to Disk"** anytime in the sidebar.
+| Tool / Capability | Execution Scope | Example Queries & Deterministic Behavior |
+| :--- | :--- | :--- |
+| 🧮 **Math Calculator** | **100% Local & Offline** | Evaluates formulas directly: \`calc("sqrt(144) * (50 + 2)")\` → \`624\` |
+| 📏 **Unit Converter** | **100% Local & Offline** | Exact physics conversions: \`units("100 km/h to mph")\` or \`units("72 deg F to deg C")\` |
+| 🕒 **World Clock** | **100% Local & Offline** | Instant system time & global timezones: \`datetime("Tokyo")\` |
+| 📚 **Knowledge Warehouse** | **100% Local & Offline** | Universal constants, discrete logic, scientific formulas, and history |
+| 🌐 **Web Hands** | **Network Lookups** | Live web search, page reader, weather, and FX (*disabled in Kid Safe mode*) |
 
-How can I help you today?`;
+---
+
+### Privacy & Data Boundaries
+- **What stays strictly on your device**: All prompts, uploaded documents, chat history, and memories stay in this browser's local sandbox.
+- **What is streamed**: Model weights stream once from Hugging Face into browser cache on first run.
+- **Kid Safe Mode**: Restricts all tool executions to purely local hands (math, units, clock, dictionary, warehouse). Network lookups stay completely off.
+
+### Quick Controls
+- 🧠 **Think (Top Bar)**: Enable step-by-step chain-of-thought reasoning before answers.
+- 🎭 **Voices Gallery (Top Bar)**: Converse with 35+ historical philosophers, authors, scientists, and characters.
+- 💾 **Local Disk Backup**: Download all conversations as a local JSON file or restore previous archives in the sidebar.
+- 💬 **Beta Feedback**: Send notes, bug reports, and diagnostic logs to **humansandai@atomicmail.io**.
+
+How can I assist your research or learning today?`;
 
 export function createWelcomeMessage(): Message {
   return {

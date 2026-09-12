@@ -1,5 +1,7 @@
 import { WAREHOUSE_DOCS } from '../data/warehouse_catalog';
 import { ToolExecution } from '../types';
+import { isKidAllowedTool, KID_TOOL_REFUSAL, normalizeToolName } from './kid_tools';
+import { parsePublicHttpsUrl } from './ssrf';
 
 export const SYSTEM_TOOLS_PROMPT = `
 You have access to the following built-in tools:
@@ -36,6 +38,19 @@ or
 <tool_call>{"name": "web_search", "query": "search query"}</tool_call>
 or
 <tool_call>{"name": "web_fetch", "query": "https://example.com"}</tool_call>
+`;
+
+export const SYSTEM_TOOLS_PROMPT_KID = `
+You have access to these local tools only:
+1. calc(expression: string) - evaluate math expressions.
+2. units(from: string, to: string, amount: number) - convert physical units.
+3. datetime(timezone?: string) - current local or world time.
+4. dictionary(word: string) - English definition and origin.
+5. warehouse(query: string) - local reference notes.
+
+Do not call web_search, web_fetch, weather, exchange, or fact. Those leave the machine.
+When you need a tool, emit EXACTLY:
+<tool_call>{"name": "calc", "query": "sqrt(144) * 5200"}</tool_call>
 `;
 
 /**
@@ -116,8 +131,13 @@ export function execUnits(input: string): { ok: boolean; result?: string; error?
     const res = amount * 0.453592;
     return { ok: true, result: `${amount} lbs = ${res.toFixed(2)} kg` };
   }
+  // Kilograms to Pounds
+  if ((from === 'kg' || from === 'kilogram' || from === 'kilograms') && (to === 'lb' || to === 'lbs' || to === 'pound' || to === 'pounds')) {
+    const res = amount / 0.453592;
+    return { ok: true, result: `${amount} kg = ${res.toFixed(2)} lbs` };
+  }
 
-  return { ok: true, result: `${amount} ${from} converted to standard ratio: ~${(amount * 1.0).toFixed(2)} ${to}` };
+  return { ok: false, error: `No conversion table for ${from} to ${to}. Supported: gal↔fl oz, mi↔km, C↔F, lb↔kg.` };
 }
 
 /**
@@ -309,17 +329,34 @@ export async function execDictionary(word: string): Promise<string> {
  * Local Warehouse / Canon Dewey search
  */
 export function execWarehouse(query: string): string {
-  const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
-  const matches = WAREHOUSE_DOCS.filter(doc => {
-    const text = (doc.title + ' ' + doc.category + ' ' + doc.snippet).toLowerCase();
-    return terms.some(t => text.includes(t));
-  });
-
-  if (matches.length === 0) {
-    return `No exact warehouse hits for "${query}". Check Deweys 000-800.`;
+  const terms = query.toLowerCase().split(/\s+/).filter(t => t.length > 1);
+  if (terms.length === 0) {
+    return `No search terms provided for Warehouse lookup.`;
   }
 
-  return matches.slice(0, 3).map(m => `[Dewey ${m.dewey} · ${m.title}]: ${m.snippet}`).join('\n\n');
+  const scored = WAREHOUSE_DOCS.map(doc => {
+    const titleLower = doc.title.toLowerCase();
+    const catLower = doc.category.toLowerCase();
+    const snipLower = doc.snippet.toLowerCase();
+    const deweyLower = doc.dewey.toLowerCase();
+    let score = 0;
+
+    for (const t of terms) {
+      if (deweyLower === t) score += 10;
+      if (titleLower.includes(t)) score += 5;
+      if (catLower.includes(t)) score += 3;
+      if (snipLower.includes(t)) score += 1;
+    }
+    return { doc, score };
+  }).filter(item => item.score > 0);
+
+  scored.sort((a, b) => b.score - a.score);
+
+  if (scored.length === 0) {
+    return `No exact warehouse hits for "${query}". Stacks span Deweys 000-900.`;
+  }
+
+  return scored.slice(0, 3).map(m => `[Dewey ${m.doc.dewey} · ${m.doc.title} (${m.doc.category})]:\n${m.doc.snippet}`).join('\n\n');
 }
 
 /**
@@ -473,9 +510,11 @@ export async function execWebSearch(query: string, searxngUrl?: string): Promise
 export async function execWebFetch(targetUrl: string): Promise<string> {
   let cleanUrl = targetUrl.trim();
   cleanUrl = cleanUrl.replace(/^[<"']|[>"']$/g, '');
-  if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
-    cleanUrl = 'https://' + cleanUrl;
+  const parsed = parsePublicHttpsUrl(cleanUrl);
+  if (parsed.ok === false) {
+    return `Blocked URL: ${parsed.error}`;
   }
+  cleanUrl = parsed.url.toString();
 
   try {
     const controller = new AbortController();
@@ -503,13 +542,27 @@ export async function execWebFetch(targetUrl: string): Promise<string> {
 /**
  * Execute tool from parsed payload with robust name normalization
  */
-export async function dispatchTool(name: string, query: string, searxngUrl?: string): Promise<ToolExecution> {
+export async function dispatchTool(
+  name: string,
+  query: string,
+  searxngUrl?: string,
+  opts?: { kidSafe?: boolean }
+): Promise<ToolExecution> {
   const start = Date.now();
-  const rawLower = name.toLowerCase().trim();
-  const normName = rawLower.replace(/^tool[_\-]/, '').replace(/[_\-]tool$/, '');
+  const normName = normalizeToolName(name);
 
   let result = '';
   let isError = false;
+
+  if (opts?.kidSafe && !isKidAllowedTool(normName)) {
+    return {
+      tool: normName || name,
+      query,
+      result: KID_TOOL_REFUSAL,
+      durationMs: Date.now() - start,
+      isError: true
+    };
+  }
 
   if (normName.includes('calc') || normName.includes('math')) {
     const res = execMath(query);

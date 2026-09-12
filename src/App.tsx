@@ -15,7 +15,8 @@ import {
   ProgressStatus,
   AVAILABLE_MODELS
 } from './engine/webllm_spindle';
-import { dispatchTool, SYSTEM_TOOLS_PROMPT } from './engine/tools';
+import { dispatchTool, SYSTEM_TOOLS_PROMPT, SYSTEM_TOOLS_PROMPT_KID } from './engine/tools';
+import { isGoogleDriveConfigured } from './engine/google_drive';
 import { Sidebar } from './components/Sidebar';
 import { MessageItem } from './components/MessageItem';
 import { SettingsModal } from './components/SettingsModal';
@@ -288,8 +289,14 @@ export const App: React.FC = () => {
 
     // Internet Safety Sentinel: check for personal identifiable info (PII)
     const piiCheck = detectPII(trimmed);
+    const kidSafe = currentProfile.role === 'kid';
+    if (piiCheck.hasPII && kidSafe) {
+      setPiiAlert(`Kid Safe blocked this send. It looks like a ${piiCheck.detectedTypes.join(', ')}. Edit the message. The local model never saw it.`);
+      setTimeout(() => setPiiAlert(null), 10000);
+      return;
+    }
     if (piiCheck.hasPII) {
-      setPiiAlert(`🛡️ Internet Safety Sentinel: Notice: You included a ${piiCheck.detectedTypes.join(', ')}. EasyLM runs 100% locally on your computer, but remember to never share private details on public websites!`);
+      setPiiAlert(`This message looks like it contains a ${piiCheck.detectedTypes.join(', ')}. Inference stays in this browser. Optional tools can still send a lookup if they run.`);
       setTimeout(() => setPiiAlert(null), 8000);
     }
 
@@ -362,7 +369,7 @@ export const App: React.FC = () => {
     }
 
     if (toolsEnabled) {
-      systemInstruction += '\n' + SYSTEM_TOOLS_PROMPT;
+      systemInstruction += '\n' + (kidSafe ? SYSTEM_TOOLS_PROMPT_KID : SYSTEM_TOOLS_PROMPT);
     }
 
     const executedTools: ToolExecution[] = [];
@@ -386,43 +393,44 @@ export const App: React.FC = () => {
       || trimmed.match(/(.+?)\s+\b(?:chapter|act|canto|volume)\s*(\d+|[ivxlcdm]+)\b/i)
     );
 
+    const toolOpts = { kidSafe };
     if (toolsEnabled && mathMatch) {
-      const toolRes = await dispatchTool('calc', mathMatch[1]);
+      const toolRes = await dispatchTool('calc', mathMatch[1], searxngUrl, toolOpts);
       executedTools.push(toolRes);
     } else if (toolsEnabled && unitMatch) {
-      const toolRes = await dispatchTool('units', unitMatch[1]);
+      const toolRes = await dispatchTool('units', unitMatch[1], searxngUrl, toolOpts);
       executedTools.push(toolRes);
-    } else if (toolsEnabled && directFetchMatch) {
-      const toolRes = await dispatchTool('web_fetch', directFetchMatch[1]);
+    } else if (toolsEnabled && !kidSafe && directFetchMatch) {
+      const toolRes = await dispatchTool('web_fetch', directFetchMatch[1], searxngUrl, toolOpts);
       executedTools.push(toolRes);
-    } else if (toolsEnabled && directSearchMatch) {
-      const toolRes = await dispatchTool('web_search', directSearchMatch[1], searxngUrl);
+    } else if (toolsEnabled && !kidSafe && directSearchMatch) {
+      const toolRes = await dispatchTool('web_search', directSearchMatch[1], searxngUrl, toolOpts);
       executedTools.push(toolRes);
-    } else if (toolsEnabled && urlMatch && (trimmed.toLowerCase().includes('read') || trimmed.toLowerCase().includes('summarize') || trimmed === urlMatch[1])) {
-      const toolRes = await dispatchTool('web_fetch', urlMatch[1]);
+    } else if (toolsEnabled && !kidSafe && urlMatch && (trimmed.toLowerCase().includes('read') || trimmed.toLowerCase().includes('summarize') || trimmed === urlMatch[1])) {
+      const toolRes = await dispatchTool('web_fetch', urlMatch[1], searxngUrl, toolOpts);
       executedTools.push(toolRes);
-    } else if (toolsEnabled && repoMatch) {
+    } else if (toolsEnabled && !kidSafe && repoMatch) {
       const target = (repoMatch[2] || trimmed)
         .replace(/^(?:for|about|on|in)\s+/i, '')
         .replace(/[?.!]+$/, '')
         .trim();
-      const toolRes = await dispatchTool('web_search', target, searxngUrl);
+      const toolRes = await dispatchTool('web_search', target, searxngUrl, toolOpts);
       executedTools.push(toolRes);
-    } else if (toolsEnabled && quoteMatch) {
+    } else if (toolsEnabled && !kidSafe && quoteMatch) {
       const cleanTarget = quoteMatch[1]
         .replace(/^(?:the\s+)?(?:book|novel|play)\s+/i, '')
         .replace(/[?.!]+$/, '')
         .trim();
-      const toolRes = await dispatchTool('web_search', `quotes from ${cleanTarget}`, searxngUrl);
+      const toolRes = await dispatchTool('web_search', `quotes from ${cleanTarget}`, searxngUrl, toolOpts);
       executedTools.push(toolRes);
-    } else if (toolsEnabled && chapterMatch) {
+    } else if (toolsEnabled && !kidSafe && chapterMatch) {
       const chNum = /^\d+|[ivxlcdm]+$/i.test(chapterMatch[1]) ? chapterMatch[1] : chapterMatch[2];
       const rawBook = (chapterMatch[1] === chNum ? chapterMatch[2] : chapterMatch[1])
         .replace(/^(?:summarize|read|tell me about|what happens in|overview of)\s+/i, '')
         .replace(/\s+(?:summary|overview)$/i, '')
         .replace(/[?.!]+$/, '')
         .trim();
-      const toolRes = await dispatchTool('web_search', `${rawBook} Chapter ${chNum}`, searxngUrl);
+      const toolRes = await dispatchTool('web_search', `${rawBook} Chapter ${chNum}`, searxngUrl, toolOpts);
       executedTools.push(toolRes);
     }
 
@@ -563,7 +571,7 @@ export const App: React.FC = () => {
 
         if (callName) {
           // Execute the intercepted tool!
-          const toolExecution = await dispatchTool(callName, callQuery || trimmed, searxngUrl);
+          const toolExecution = await dispatchTool(callName, callQuery || trimmed, searxngUrl, { kidSafe });
           executedTools.push(toolExecution);
 
           // Update UI with the tool badge immediately
@@ -699,7 +707,7 @@ export const App: React.FC = () => {
 
   return (
     <div 
-      style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden', backgroundColor: '#000000' }}
+      style={{ display: 'flex', height: '100dvh', maxHeight: '100dvh', width: '100vw', maxWidth: '100vw', overflow: 'hidden', backgroundColor: '#000000' }}
       onDragOver={(e) => { e.preventDefault(); setIsDraggingFile(true); }}
       onDragLeave={() => setIsDraggingFile(false)}
       onDrop={handleDrop}
@@ -737,11 +745,10 @@ export const App: React.FC = () => {
         onOpenSupport={() => setSupportOpen(true)}
         onOpenPersonalityModal={() => setPersonalityModalOpen(true)}
         onOpenFeedback={() => setFeedbackModalOpen(true)}
-        onOpenGoogleDrive={() => setGoogleDriveModalOpen(true)}
       />
 
       {/* Main Chat Area */}
-      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', position: 'relative' }}>
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100dvh', maxHeight: '100dvh', minWidth: 0, position: 'relative', overflow: 'hidden' }}>
         {/* Header HUD */}
         <header
           className="header-hud"
@@ -814,7 +821,9 @@ export const App: React.FC = () => {
             {toolsEnabled && (
               <span 
                 style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: '#10b981', padding: '0.2rem 0.45rem', background: 'rgba(16,185,129,0.1)', borderRadius: '9999px', border: '1px solid rgba(16,185,129,0.3)' }}
-                title="In-app tools (Math, Units, Search, Web Reader, Weather, FX) active"
+                title={currentProfile.role === 'kid'
+                  ? 'Kid Safe hands: local calc, units, clock, dictionary, warehouse. No network tools.'
+                  : 'Hands on. Optional lookups (search, fetch, weather, FX) leave this machine.'}
               >
                 <span>⚡</span>
                 <span className="hide-on-mobile"> Hands</span>
@@ -943,17 +952,17 @@ export const App: React.FC = () => {
         )}
 
         {/* Messages Stream */}
-        <div className="messages-scroll-area" style={{ flex: 1, overflowY: 'auto', padding: '1.5rem 2rem', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ maxWidth: '820px', width: '100%', margin: '0 auto' }}>
+        <div className="messages-scroll-area" style={{ flex: '1 1 auto', minHeight: 0, overflowY: 'auto', overflowX: 'hidden', padding: '1.5rem 2rem', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ maxWidth: '1080px', width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
             {activeSession && activeSession.messages.map((m) => (
               <MessageItem key={m.id} message={m} />
             ))}
-            <div ref={messagesEndRef} />
+            <div ref={messagesEndRef} style={{ height: '1.5rem', flexShrink: 0 }} />
           </div>
         </div>
 
         {/* Floating Rounded Prompt Bar */}
-        <div className="prompt-wrapper" style={{ padding: '0.75rem 2rem 1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 20 }}>
+        <div className="prompt-wrapper" style={{ flexShrink: 0, width: '100%', padding: '0.75rem 2rem 1.25rem', display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 20 }}>
           {/* Floating Stop Indicator when generating */}
           {isGenerating && (
             <div style={{ marginBottom: '0.5rem', zIndex: 25 }}>
@@ -986,7 +995,7 @@ export const App: React.FC = () => {
           {/* PII Safety Alert Banner */}
           {piiAlert && (
             <div style={{
-              maxWidth: '820px',
+              maxWidth: '1080px',
               width: '100%',
               margin: '0 auto 0.45rem auto',
               padding: '0.5rem 0.85rem',
@@ -1019,7 +1028,7 @@ export const App: React.FC = () => {
             onQuickAction={(actionPrompt) => handleSendMessage(actionPrompt)}
           />
 
-          <div className="floating-prompt" style={{ maxWidth: '820px', width: '100%', padding: '0.5rem 0.85rem' }}>
+          <div className="floating-prompt" style={{ maxWidth: '1080px', width: '100%', padding: '0.55rem 0.95rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
               {/* Attachment Button */}
               <button

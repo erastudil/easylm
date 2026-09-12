@@ -26,6 +26,7 @@ interface SettingsModalProps {
   onToggleWelcomeMessage: () => void;
   onOpenProfiles?: () => void;
   onOpenPersonalityModal?: () => void;
+  onOpenWelcomeGuide?: () => void;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -48,7 +49,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   showWelcomeMessage,
   onToggleWelcomeMessage,
   onOpenProfiles,
-  onOpenPersonalityModal
+  onOpenPersonalityModal,
+  onOpenWelcomeGuide
 }) => {
   if (!isOpen) return null;
 
@@ -287,18 +289,40 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
         {/* Feature Toggles */}
         <div style={{ marginBottom: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', padding: '0.6rem 0.75rem', background: '#111118', borderRadius: '12px' }}>
-            <div>
-              <div style={{ fontSize: '0.85rem', fontWeight: 500 }}>👋 Show Toolbox Guide on fresh chats</div>
-              <div style={{ fontSize: '0.7rem', color: '#71717a' }}>Explains in-app tools (weather, currency, math, dictionary) on load</div>
-            </div>
-            <input
-              type="checkbox"
-              checked={showWelcomeMessage}
-              onChange={onToggleWelcomeMessage}
-              style={{ accentColor: '#8b5cf6', width: '1.1rem', height: '1.1rem' }}
-            />
-          </label>
+          <div style={{ padding: '0.65rem 0.75rem', background: '#111118', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
+              <div>
+                <div style={{ fontSize: '0.85rem', fontWeight: 500 }}>👋 Show Welcome Guide popup on startup</div>
+                <div style={{ fontSize: '0.7rem', color: '#71717a' }}>Opens the interactive card grid when you launch EasyLM</div>
+              </div>
+              <input
+                type="checkbox"
+                checked={showWelcomeMessage}
+                onChange={onToggleWelcomeMessage}
+                style={{ accentColor: '#8b5cf6', width: '1.1rem', height: '1.1rem' }}
+              />
+            </label>
+            {onOpenWelcomeGuide && (
+              <div style={{ display: 'flex', justifyContent: 'flex-start', paddingTop: '0.15rem' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onOpenWelcomeGuide();
+                  }}
+                  className="btn-pill"
+                  style={{
+                    fontSize: '0.74rem',
+                    padding: '0.25rem 0.65rem',
+                    borderColor: 'rgba(139, 92, 246, 0.3)',
+                    color: '#c4b5fd'
+                  }}
+                >
+                  <span>👁️</span> Open Welcome Guide Popup
+                </button>
+              </div>
+            )}
+          </div>
 
           <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', padding: '0.6rem 0.75rem', background: '#111118', borderRadius: '12px' }}>
             <span style={{ fontSize: '0.85rem' }}>⚡ Hands (local math/units/clock; optional network lookups)</span>

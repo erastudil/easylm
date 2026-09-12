@@ -6,9 +6,10 @@ import { MarkdownRenderer } from './MarkdownRenderer';
 interface HelpModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onOpenWelcomeGuide?: () => void;
 }
 
-export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
+export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose, onOpenWelcomeGuide }) => {
   const [activeTab, setActiveTab] = useState<string>(EASYLM_HELP_SECTIONS[0].id);
 
   if (!isOpen) return null;
@@ -133,11 +134,33 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          backgroundColor: '#07070b'
+          backgroundColor: '#07070b',
+          flexWrap: 'wrap',
+          gap: '0.5rem'
         }}>
-          <span style={{ fontSize: '0.75rem', color: '#71717a', fontFamily: 'var(--font-mono)' }}>
-            Tip: You can also type "help" directly in chat anytime!
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '0.75rem', color: '#71717a', fontFamily: 'var(--font-mono)' }}>
+              Tip: You can also type "help" directly in chat anytime!
+            </span>
+            {onOpenWelcomeGuide && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onOpenWelcomeGuide();
+                }}
+                className="btn-pill"
+                style={{
+                  fontSize: '0.72rem',
+                  padding: '0.2rem 0.65rem',
+                  borderColor: 'rgba(139, 92, 246, 0.3)',
+                  color: '#c4b5fd'
+                }}
+              >
+                👋 View Welcome Guide
+              </button>
+            )}
+          </div>
           <button
             onClick={onClose}
             className="btn-pill btn-pill-primary"

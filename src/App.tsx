@@ -39,6 +39,8 @@ import {
 import { ParentalModal } from './components/ParentalModal';
 import { ProfileModal } from './components/ProfileModal';
 import { AttachmentBar } from './components/AttachmentBar';
+import { WelcomeModal } from './components/WelcomeModal';
+import { HnaiLogo } from './components/HnaiLogo';
 
 export const App: React.FC = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -71,6 +73,7 @@ export const App: React.FC = () => {
   const [extendedThinking, setExtendedThinking] = useState<boolean>(false);
   const [temperature, setTemperature] = useState<number>(0.3);
   const [searxngUrl, setSearxngUrl] = useState<string>(() => localStorage.getItem('easylm_searxng_url') || '');
+  const [welcomeModalOpen, setWelcomeModalOpen] = useState(false);
   const [showWelcomeMessage, setShowWelcomeMessage] = useState<boolean>(() => {
     const saved = localStorage.getItem('easylm_show_welcome');
     return saved === null ? true : saved === 'true';
@@ -80,6 +83,17 @@ export const App: React.FC = () => {
     const next = !showWelcomeMessage;
     setShowWelcomeMessage(next);
     localStorage.setItem('easylm_show_welcome', String(next));
+    if (next) {
+      setWelcomeModalOpen(true);
+    }
+  };
+
+  const handleCloseWelcomeModal = (dontShowAgain: boolean) => {
+    setWelcomeModalOpen(false);
+    if (dontShowAgain) {
+      setShowWelcomeMessage(false);
+      localStorage.setItem('easylm_show_welcome', 'false');
+    }
   };
 
   const handleRequestPinVerify = (onSuccess: () => void) => {
@@ -134,32 +148,28 @@ export const App: React.FC = () => {
       }
     });
 
+    const shouldWelcome = localStorage.getItem('easylm_show_welcome');
+    if (shouldWelcome === null || shouldWelcome === 'true') {
+      setWelcomeModalOpen(true);
+    }
+
     const loaded = loadAllSessions();
     if (loaded.length > 0) {
-      // Refresh welcome messages with latest formatted copy
-      const refreshed = loaded.map(sess => ({
+      // Clean up legacy welcome message blobs to keep chat clean and prevent viewport shift
+      const cleaned = loaded.map(sess => ({
         ...sess,
-        messages: sess.messages.map(m => {
-          if (m.id.startsWith('msg-welcome-') || (m.role === 'assistant' && m.content.startsWith('Welcome to **EasyLM**'))) {
-            return { ...m, content: WELCOME_TOOLBOX_CONTENT };
-          }
-          return m;
-        })
+        messages: sess.messages.filter(m => !m.id.startsWith('msg-welcome-') && !(m.role === 'assistant' && m.content.startsWith('Welcome to **EasyLM**')))
       }));
-      setSessions(refreshed);
-      saveAllSessions(refreshed);
+      setSessions(cleaned);
+      saveAllSessions(cleaned);
       const savedActive = getActiveSessionId();
-      if (savedActive && refreshed.some(s => s.id === savedActive)) {
+      if (savedActive && cleaned.some(s => s.id === savedActive)) {
         setActiveSessionIdState(savedActive);
       } else {
-        setActiveSessionIdState(refreshed[0].id);
+        setActiveSessionIdState(cleaned[0].id);
       }
     } else {
-      const initial = createNewSession('Welcome to EasyLM');
-      const shouldWelcome = localStorage.getItem('easylm_show_welcome');
-      if (shouldWelcome === null || shouldWelcome === 'true') {
-        initial.messages.push(createWelcomeMessage());
-      }
+      const initial = createNewSession('New Conversation');
       setSessions([initial]);
       setActiveSessionIdState(initial.id);
       saveAllSessions([initial]);
@@ -181,9 +191,6 @@ export const App: React.FC = () => {
   // Create New Session
   const handleNewSession = () => {
     const newSess = createNewSession('New Conversation');
-    if (showWelcomeMessage) {
-      newSess.messages.push(createWelcomeMessage());
-    }
     const updated = [newSess, ...sessions];
     setSessions(updated);
     setActiveSessionIdState(newSess.id);
@@ -212,12 +219,14 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [sessions, isGenerating]);
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [sessions, activeSessionId, isGenerating]);
-
   // Active Session Lookup
   const activeSession = sessions.find(s => s.id === activeSessionId) || sessions[0];
+
+  useEffect(() => {
+    if (activeSession && (activeSession.messages.length > 0 || isGenerating)) {
+      scrollToBottom();
+    }
+  }, [sessions, activeSessionId, isGenerating]);
 
   // Delete Session
   const handleDeleteSession = (id: string) => {
@@ -951,10 +960,118 @@ export const App: React.FC = () => {
         {/* Messages Stream */}
         <div className="messages-scroll-area" style={{ flex: '1 1 auto', minHeight: 0, overflowY: 'auto', overflowX: 'hidden', padding: '1.5rem 2rem', display: 'flex', flexDirection: 'column' }}>
           <div style={{ maxWidth: '1080px', width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-            {activeSession && activeSession.messages.map((m) => (
-              <MessageItem key={m.id} message={m} />
-            ))}
-            <div ref={messagesEndRef} style={{ height: '1.5rem', flexShrink: 0 }} />
+            {activeSession && activeSession.messages.length === 0 ? (
+              <div style={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'center',
+                padding: '2rem 1rem',
+                minHeight: '100%'
+              }}>
+                <div style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <HnaiLogo size="md" />
+                  <span style={{ fontSize: '1.4rem', fontWeight: 700, fontFamily: 'var(--font-mono)', color: '#ffffff' }}>
+                    EasyLM
+                  </span>
+                  <span style={{
+                    fontSize: '0.65rem',
+                    fontWeight: 700,
+                    fontFamily: 'var(--font-mono)',
+                    padding: '0.12rem 0.45rem',
+                    borderRadius: '6px',
+                    backgroundColor: 'rgba(139, 92, 246, 0.25)',
+                    border: '1px solid #8b5cf6',
+                    color: '#c4b5fd'
+                  }}>
+                    PUBLIC BETA
+                  </span>
+                </div>
+                <p style={{ margin: '0 0 1.75rem 0', fontSize: '0.88rem', color: '#a1a1aa', maxWidth: '540px', lineHeight: 1.55 }}>
+                  Zero-Install Local WebGPU Intelligence · In-Browser Privacy · Deterministic Tools &amp; University Stacks
+                </p>
+
+                {/* Prompt Starter Chips */}
+                <div style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: '0.65rem',
+                  justifyContent: 'center',
+                  maxWidth: '740px',
+                  marginBottom: '1.75rem'
+                }}>
+                  {[
+                    { label: '🧮 Math Evaluator', prompt: 'sqrt(144) * (50 + 2)' },
+                    { label: '📏 Unit Converter', prompt: '100 km/h to mph' },
+                    { label: '📚 Dewey Stacks 510', prompt: 'What does Dewey 510 cover in mathematics?' },
+                    { label: '🕒 World Clock', prompt: 'What time is it in Tokyo right now?' },
+                    { label: '💡 Occam\'s Razor', prompt: 'Explain Occam\'s razor with an intuitive example.' },
+                    { label: '🎭 Perspectives', prompt: 'Summarize the core principles of Computational Taoism.' }
+                  ].map((chip) => (
+                    <button
+                      key={chip.prompt}
+                      onClick={() => handleSendMessage(chip.prompt)}
+                      className="btn-pill"
+                      style={{
+                        fontSize: '0.78rem',
+                        padding: '0.45rem 0.85rem',
+                        backgroundColor: '#111118',
+                        borderColor: 'rgba(139, 92, 246, 0.25)',
+                        color: '#d4d4d8',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease',
+                        gap: '0.35rem'
+                      }}
+                      title={`Send: "${chip.prompt}"`}
+                    >
+                      <span style={{ fontWeight: 600, color: '#c4b5fd' }}>{chip.label}:</span>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.74rem' }}>{chip.prompt}</span>
+                    </button>
+                  ))}
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.78rem', color: '#71717a' }}>
+                  <button
+                    onClick={() => setWelcomeModalOpen(true)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#a78bfa',
+                      cursor: 'pointer',
+                      fontSize: '0.78rem',
+                      textDecoration: 'underline',
+                      fontFamily: 'var(--font-mono)'
+                    }}
+                  >
+                    👋 Open Welcome &amp; Tool Guide
+                  </button>
+                  <span>·</span>
+                  <button
+                    onClick={() => setPersonalityModalOpen(true)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#a78bfa',
+                      cursor: 'pointer',
+                      fontSize: '0.78rem',
+                      textDecoration: 'underline',
+                      fontFamily: 'var(--font-mono)'
+                    }}
+                  >
+                    🎭 Switch Voice ({currentPersonality.name})
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                {activeSession && activeSession.messages.map((m) => (
+                  <MessageItem key={m.id} message={m} />
+                ))}
+                <div ref={messagesEndRef} style={{ height: '1.5rem', flexShrink: 0 }} />
+              </>
+            )}
           </div>
         </div>
 
@@ -1128,6 +1245,7 @@ export const App: React.FC = () => {
       <HelpModal
         isOpen={helpOpen}
         onClose={() => setHelpOpen(false)}
+        onOpenWelcomeGuide={() => setWelcomeModalOpen(true)}
       />
 
       {/* Support Modal */}
@@ -1165,6 +1283,15 @@ export const App: React.FC = () => {
         onToggleWelcomeMessage={handleToggleWelcomeMessage}
         onOpenProfiles={() => setProfileModalOpen(true)}
         onOpenPersonalityModal={() => setPersonalityModalOpen(true)}
+        onOpenWelcomeGuide={() => setWelcomeModalOpen(true)}
+      />
+
+      {/* Welcome & Toolbox Guide Popup Modal */}
+      <WelcomeModal
+        isOpen={welcomeModalOpen}
+        onClose={handleCloseWelcomeModal}
+        onOpenHelp={() => setHelpOpen(true)}
+        onOpenVoices={() => setPersonalityModalOpen(true)}
       />
 
       {/* 22-Perspective & Author Voices Gallery Modal */}

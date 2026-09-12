@@ -23,4 +23,20 @@ describe('renderMarkdownSafe', () => {
     expect(html).toContain('10 - 2 = 8');
     expect(html).toContain('5 * 4 = 20');
   });
+
+  it('renders display math expressions in rectangular objective math boxes', () => {
+    const raw = 'Here is the formula:\n\n$$E = mc^2$$\n\nEnd of calculation.';
+    const html = renderMarkdownSafe(raw);
+    expect(html).toContain('class="math-box"');
+    expect(html).toContain('DETERMINISTIC MATH');
+    expect(html).toContain('E = mc^2');
+  });
+
+  it('renders fenced math code blocks in rectangular objective math boxes', () => {
+    const raw = 'Calculation:\n\n```calc\nsqrt(144) * 5200 = 62400\n```';
+    const html = renderMarkdownSafe(raw);
+    expect(html).toContain('class="math-box"');
+    expect(html).toContain('DETERMINISTIC MATH');
+    expect(html).toContain('sqrt(144) * 5200 = 62400');
+  });
 });

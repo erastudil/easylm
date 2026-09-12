@@ -99,7 +99,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({ isOpen, onClose }) =
               EasyLM will always be free. Period. That's the point.
             </p>
             <p style={{ margin: 0, color: '#d4d4d8', fontSize: '0.85rem' }}>
-              However, the more donations I receive, the more time I can spend adding features and improving performance. If you would like to see EasyLM continue to improve, please consider making a donation.
+              {SUPPORT_STATEMENT.replace("EasyLM will always be free. Period. That's the point. ", "")}
             </p>
           </div>
 

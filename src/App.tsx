@@ -849,7 +849,7 @@ export const App: React.FC = () => {
               <span 
                 style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: '#10b981', padding: '0.2rem 0.45rem', background: 'rgba(16,185,129,0.1)', borderRadius: '9999px', border: '1px solid rgba(16,185,129,0.3)' }}
                 title={currentProfile.role === 'kid'
-                  ? 'Kid Safe hands: local calc, units, clock, dictionary, warehouse. No network tools.'
+                  ? 'Kid Safe hands: local calc, units, clock, warehouse. No network tools (dictionary blocked).'
                   : 'Hands on. Optional lookups (search, fetch, weather, FX) leave this machine.'}
               >
                 <span>⚡</span>

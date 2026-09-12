@@ -53,7 +53,7 @@ The top bar provides quick access to runtime states, reasoning modes, and active
   {
     id: 'sidebar',
     title: '📂 Sidebar & Session Management',
-    summary: 'Organize chats, backup to local disk or Google Drive, and access resources.',
+    summary: 'Organize chats, backup to local disk, and manage sovereign memories.',
     content: `### Sidebar Navigation & Data Management
 
 The sidebar allows you to organize your studies, manage conversation threads, and backup your work:
@@ -246,7 +246,6 @@ Architecture & Capabilities:
 4. Sidebar Features:
    - ➕ New Chat: Starts a fresh session.
    - Session List: Search, rename, and delete local chats.
-   - 📁 Google Drive Sync: Zero-server backup to Google Drive AppData sandbox with optional AES-GCM-256 WebCrypto passphrase encryption.
    - 💾 Backup to Disk: Exports all sessions to a local JSON file.
    - 📥 Restore from Disk: Imports chats from an EasyLM JSON backup.
    - 🔒 Parental Controls: Configure PIN lock for kid safety.

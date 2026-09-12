@@ -1,4 +1,4 @@
-import dns from 'node:dns/promises';
+import * as dns from 'node:dns/promises';
 import {
   FETCH_MAX_BYTES,
   FETCH_MAX_CHARS,
@@ -99,7 +99,7 @@ async function pinnedFetch(target: URL, hops = 0): Promise<Response> {
     throw new Error('Too many redirects');
   }
   const resolved = await assertPublicResolved(target.hostname);
-  if (!resolved.ok) {
+  if (resolved.ok === false) {
     throw new Error(resolved.error);
   }
 

@@ -84,7 +84,7 @@ EasyLM solves this by giving the model **Hands**—real, software tools running 
 1. **Exact Calculator (\`calc\`)**: Evaluates arithmetic, square roots, powers, and trigonometry using a deterministic mathematical parser. Zero guesswork.
 2. **Physical Unit Converter (\`units\`)**: Converts between metric and imperial units (miles to kilometers, pounds to kilograms, Celsius to Fahrenheit). If you ask for an impossible or unknown conversion, it honestly errors instead of inventing a fake 1:1 ratio.
 3. **World Clock (\`datetime\`)**: Checks your real system clock and computes accurate international timezones.
-4. **Offline Knowledge Warehouse**: Fast, local Dewey-decimal reference notes and philosophical primers stored in browser memory.
+4. **Offline Knowledge Warehouse**: Local undergraduate textbooks by subject, plus official source doors (NIST, OpenStax, MIT OCW, IETF, MDN). Search returns the matching chapter, not a blurb.
 5. **Optional Network Tools**: When Hands are on, EasyLM can also look up live weather forecasts, foreign exchange rates, and Wikipedia/Wikiquote entries. In **Kid Safe** mode, all network tools stay permanently off.`
   },
   {
@@ -154,6 +154,6 @@ Tone & Demeanor:
 
 Core Features:
 - WebGPU Local Inference: Running Qwen 2.5 3B (default), DeepSeek-R1 (reasoning), or lightweight models.
-- Deterministic Hands: Calculator (calc), unit converter (units), world clock (datetime), and local Dewey warehouse notes.
+- Deterministic Hands: Calculator (calc), unit converter (units), world clock (datetime), and local subject textbooks (warehouse).
 - Honest Boundaries: Optional network tools (weather, search, exchange, dictionary) only send lookups when Hands are enabled.
 `;

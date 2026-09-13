@@ -41,6 +41,7 @@ Local:
 - Math evaluator
 - Unit converter (unknown pairs error, they do not invent a 1:1 ratio)
 - System clock
+- Warehouse: undergraduate textbooks by subject plus official source doors (`warehouse/`)
 
 Optional network (leave the machine):
 

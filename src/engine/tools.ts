@@ -1,10 +1,11 @@
-import { WAREHOUSE_DOCS } from '../data/warehouse_catalog';
 import { ToolExecution } from '../types';
 import { isKidAllowedTool, KID_TOOL_REFUSAL, normalizeToolName } from './kid_tools';
 import { execMath } from './math';
 import { isWikiHost, parsePublicHttpsUrl } from './ssrf';
+import { execWarehouse } from './warehouse';
 
 export { execMath } from './math';
+export { execWarehouse } from './warehouse';
 
 export const SYSTEM_TOOLS_PROMPT = `
 You have access to the following built-in tools:
@@ -17,7 +18,7 @@ You have access to the following built-in tools:
 7. dictionary(word: string) - exact definition, pronunciation, part of speech, and origin for English words (e.g. "obfuscate", "serendipity").
 8. web_search(query: string) - search the web for recent events, specific websites, literary quotations, or classic book chapters (via Wikiquote, Wikisource, Wikipedia).
 9. web_fetch(url: string) - read Wikipedia, Wikiquote, and Wikisource pages. Other URLs only if the site allows browser CORS. EasyLM does not proxy arbitrary websites.
-10. warehouse(query: string) - search the local reference knowledge base.
+10. warehouse(query: string) - search local subject textbooks and official source doors (math, physics, civics, etc.). Not a wiki dump. Fetch the named door for a load-bearing number.
 
 CRITICAL INSTRUCTIONS:
 - For casual conversation, greetings, or questions about yourself (e.g. "hi", "how are you?", "who are you?"), DO NOT call any tools. Answer naturally.
@@ -41,6 +42,8 @@ or
 <tool_call>{"name": "web_search", "query": "search query"}</tool_call>
 or
 <tool_call>{"name": "web_fetch", "query": "https://example.com"}</tool_call>
+or
+<tool_call>{"name": "warehouse", "query": "Bayes theorem"}</tool_call>
 `;
 
 export const SYSTEM_TOOLS_PROMPT_KID = `
@@ -48,7 +51,7 @@ You have access to these local tools only:
 1. calc(expression: string) - evaluate math expressions.
 2. units(from: string, to: string, amount: number) - convert physical units.
 3. datetime(timezone?: string) - current local or world time.
-4. warehouse(query: string) - local reference notes.
+4. warehouse(query: string) - local subject textbooks and official source doors.
 
 Do not call dictionary, web_search, web_fetch, weather, exchange, or fact. Those leave the machine (dictionary uses an external API).
 When you need a tool, emit EXACTLY:
@@ -337,39 +340,7 @@ export async function execDictionary(word: string): Promise<string> {
   }
 }
 
-/**
- * Local Warehouse / Canon Dewey search
- */
-export function execWarehouse(query: string): string {
-  const terms = query.toLowerCase().split(/\s+/).filter(t => t.length > 1);
-  if (terms.length === 0) {
-    return `No search terms provided for Warehouse lookup.`;
-  }
 
-  const scored = WAREHOUSE_DOCS.map(doc => {
-    const titleLower = doc.title.toLowerCase();
-    const catLower = doc.category.toLowerCase();
-    const snipLower = doc.snippet.toLowerCase();
-    const deweyLower = doc.dewey.toLowerCase();
-    let score = 0;
-
-    for (const t of terms) {
-      if (deweyLower === t) score += 10;
-      if (titleLower.includes(t)) score += 5;
-      if (catLower.includes(t)) score += 3;
-      if (snipLower.includes(t)) score += 1;
-    }
-    return { doc, score };
-  }).filter(item => item.score > 0);
-
-  scored.sort((a, b) => b.score - a.score);
-
-  if (scored.length === 0) {
-    return `No exact warehouse hits for "${query}". Stacks span Deweys 000-900.`;
-  }
-
-  return scored.slice(0, 3).map(m => `[Dewey ${m.doc.dewey} · ${m.doc.title} (${m.doc.category})]:\n${m.doc.snippet}`).join('\n\n');
-}
 
 /**
  * Multi-Engine Web Search (SearXNG + Wikipedia OpenSearch + Instant API)

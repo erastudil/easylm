@@ -5,7 +5,10 @@
   "license": "GPL-3.0-or-later",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "node scripts/compile_warehouse.mjs && vite",
+    "compile-warehouse": "node scripts/compile_warehouse.mjs",
+    "prebuild": "node scripts/compile_warehouse.mjs",
+    "pretest": "node scripts/compile_warehouse.mjs",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest run"

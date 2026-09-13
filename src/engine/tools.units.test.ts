@@ -21,21 +21,22 @@ describe('execUnits', () => {
 });
 
 describe('execWarehouse', () => {
-  it('finds Dewey reference documents by keyword', () => {
-    const popper = execWarehouse('falsificationism');
-    expect(popper).toContain('Dewey 001');
-    expect(popper).toContain('Karl Popper');
+  it('finds textbook chapters by keyword', () => {
+    const popper = execWarehouse('falsificationism Popper');
+    expect(popper).toMatch(/Dewey 001|Dewey 100/);
+    expect(popper.toLowerCase()).toMatch(/popper|falsif/);
+    expect(popper.length).toBeGreaterThan(400);
 
-    const shannon = execWarehouse('information entropy');
-    expect(shannon).toContain('Dewey 003');
-    expect(shannon).toContain('Claude Shannon');
+    const shannon = execWarehouse('information entropy Shannon');
+    expect(shannon).toContain('Dewey 004');
+    expect(shannon).toContain('Shannon');
 
     const physics = execWarehouse('thermodynamics entropy');
-    expect(physics).toContain('Dewey 532');
+    expect(physics).toContain('Dewey 530');
   });
 
   it('handles misses with clean fallback notice', () => {
     const res = execWarehouse('xyznonexistentterm123');
-    expect(res).toContain('No exact warehouse hits');
+    expect(res).toContain('No warehouse hits');
   });
 });

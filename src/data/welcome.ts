@@ -11,7 +11,7 @@ All tokens and model generations run directly on **your GPU** via WebGPU. No acc
 | 🧮 **Math Calculator** | **100% Local & Offline** | Evaluates formulas directly: \`calc("sqrt(144) * (50 + 2)")\` → \`624\` |
 | 📏 **Unit Converter** | **100% Local & Offline** | Exact physics conversions: \`units("100 km/h to mph")\` or \`units("72 deg F to deg C")\` |
 | 🕒 **World Clock** | **100% Local & Offline** | Instant system time & global timezones: \`datetime("Tokyo")\` |
-| 📚 **Knowledge Warehouse** | **100% Local & Offline** | Universal constants, discrete logic, scientific formulas, and history |
+| 📚 **Knowledge Warehouse** | **100% Local & Offline** | Subject textbooks + official doors (NIST, OpenStax, MIT OCW). Ask a topic or Dewey class. |
 | 🌐 **Web Hands** | **Network Lookups** | Live web search, page reader, weather, and FX (*disabled in Kid Safe mode*) |
 
 ---

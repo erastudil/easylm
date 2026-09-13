@@ -44,11 +44,11 @@ if a dose, schedule, CPR count, ORT recipe, cutoff, or outbreak number is load-b
 4. fetch the page if you will cite a dose, a schedule, a count, a recipe, or an outbreak number.
 5. if two official pages disagree, say so. do not average them. a clinician beats this table on a person. a current AHA card beats a remembered ratio.
 
-## not doors (refuse as SoT)
+## Unverified or Derivative Sources (Do Not Cite as Primary Authority)
 
 remembered CPR ratios, homemade ORT grams, “typical” BMI as a verdict, social-media outbreak charts, wiki as a vaccine schedule, a dose from weights. wiki is **seed** (`ARTICLES.md` / `WIKI_INDEX.md`).
 
-## house paths (local, first)
+## Sovereign Offline Cross-References
 
 | topic | path |
 |---|---|

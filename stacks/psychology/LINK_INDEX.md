@@ -29,3 +29,14 @@
 
 10. **The Association for Psychological Science (APS)** — Open-access methodology benchmarks and replication standards in psychological science.
     https://www.psychologicalscience.org/
+
+---
+
+## Canonical Psychologists & Thinkers
+
+| Thinker | Era | Focus / School | Wikipedia Reference |
+|---|---|---|---|
+| **Wilhelm Wundt** | 1832–1920 | Experimental Psychology, Structuralism | https://en.wikipedia.org/wiki/Wilhelm_Wundt |
+| **Sigmund Freud** | 1856–1939 | Psychoanalysis, Unconscious Dynamics | https://en.wikipedia.org/wiki/Sigmund_Freud |
+| **Jean Piaget** | 1896–1980 | Developmental Psychology, Genetic Epistemology | https://en.wikipedia.org/wiki/Jean_Piaget |
+

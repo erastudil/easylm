@@ -10,7 +10,7 @@ related:
   - "../methods/"
 ---
 
-# Psychology & Cognitive Science — Neural Architecture, Perception, Memory & Behavior
+# Psychology & Cognitive Science — Neural Architecture, Perception, Memory, Decision Theory & Clinical Science
 
 A comprehensive undergraduate textbook investigating the empirical science of mind, brain, and behavior: neurobiological substrates, sensory transduction and perception, learning theory, memory architecture, cognitive heuristics and decision science, developmental trajectories, personality psychometrics, and evidence-based clinical paradigms.
 
@@ -18,25 +18,27 @@ A comprehensive undergraduate textbook investigating the empirical science of mi
 
 ## 0. Syllabus & Structural Map
 
-Psychology is the empirical and experimental study of mental processes and behavioral manifestations. It bridges physiological neuroscience with higher-order cognition, social dynamics, and developmental maturation.
+The human brain is the most complex physical object known in the universe: roughly 86 billion neurons, each connected to thousands of synaptic partners, orchestrating trillions of electrical and chemical impulses every second. Yet psychology is not merely the study of wet biology; it is the science of how that biological organ generates subjective consciousness, perceives the physical world, stores memories, makes choices under uncertainty, and experiences emotional life.
+
+Richard Feynman loved to point out how easily our intuitive minds deceive us. We look at an optical illusion and see motion where there is none; we remember a childhood event and feel absolute certainty, unaware that every time we recall a memory, our brain subtly rewrites and resaves the script. Psychology replaces armchair speculation about human nature with rigorous experimental psychophysics, cognitive modeling, and empirical neuroscience.
 
 ```
 +---------------------------------------------------------------------------------------------------+
 |                                     THE COGNITIVE SPECTRUM                                        |
 +---------------------------------------------------------------------------------------------------+
-|  NEURAL SUBSTRATES (Hardware) | Action Potentials · Synaptic Transmitters · Cortical Localization |
+|  NEURAL HARDWARE (Substrates) | Action Potentials · Neurotransmitters · Cortical Localization     |
 +-------------------------------+-------------------------------------------------------------------+
-|  SENSATION & PERCEPTION (Input)| Transduction · Psychophysics · Retinotopic & Tonotopic Mapping    |
+|  SENSATION & PERCEPTION (Input)| Transduction · Psychophysics · Retinal Mapping · Gestalt Grouping|
 +-------------------------------+-------------------------------------------------------------------+
-|  LEARNING & BEHAVIOR (Updates)| Classical Conditioning · Operant Schedules · Reinforcement Theory |
+|  LEARNING & BEHAVIOR (Updates)| Classical Conditioning · Operant Schedules · Social Modeling      |
 +-------------------------------+-------------------------------------------------------------------+
-|  MEMORY & COGNITION (Storage) | Working Memory (Baddeley) · Long-Term Consolidation · Spreading   |
+|  MEMORY & COGNITION (Storage) | Working Memory (Baddeley) · Hippocampal Consolidation · Retrieval |
 +-------------------------------+-------------------------------------------------------------------+
-|  DECISION SCIENCE (Judgments) | System 1 / System 2 · Heuristics & Biases · Prospect Theory       |
+|  DECISION SCIENCE (Judgments) | System 1 / System 2 · Heuristics · Prospect Theory · Loss Aversion|
 +-------------------------------+-------------------------------------------------------------------+
-|  DEVELOPMENT (Lifespan)       | Piagetian Stages · Vygotsky ZPD · Attachment Theory (Ainsworth)   |
+|  DEVELOPMENT (Lifespan)       | Piagetian Schema · Vygotsky ZPD · Attachment Trajectories (Bowlby)|
 +-------------------------------+-------------------------------------------------------------------+
-|  CLINICAL & HEALTH (Remedies) | DSM Diagnostic Criteria · CBT Paradigms · Empirical Interventions |
+|  CLINICAL PARADIGMS (Remedies)| Biopsychosocial Model · CBT Cognitive Restructuring · Efficacy    |
 +---------------------------------------------------------------------------------------------------+
 ```
 
@@ -52,194 +54,203 @@ Psychology is the empirical and experimental study of mental processes and behav
 8. [Chapter 8: Developmental Psychology Across the Lifespan](#8-developmental-psychology-across-the-lifespan)
 9. [Chapter 9: Personality Theory & Psychometric Measurement](#9-personality-theory--psychometric-measurement)
 10. [Chapter 10: Psychopathology & Evidence-Based Interventions](#10-psychopathology--evidence-based-interventions)
+11. [Chapter 11: Cognitive Debugging & Common Psychological Fallacies](#11-cognitive-debugging--common-psychological-fallacies)
 
 ---
 
 ## 1. Epistemological Foundations & Psychological Research Methods
 
-### 1.1 The Scientific Paradigm in Psychology
+### 1.1 Beyond Introspection: The Scientific Turn
 
-Psychological inquiry demands operationalization: translating unobservable theoretical constructs (e.g. "anxiety", "working memory capacity", "intelligence") into measurable, falsifiable, and repeatable empirical variables.
-- **Independent Variable ($X$):** The factor experimentally manipulated by the investigator.
-- **Dependent Variable ($Y$):** The behavioral or physiological outcome measured.
-- **Extraneous & Confounding Variables ($Z$):** Uncontrolled variables that covary systematically with $X$, threatening internal validity.
+Early psychology (Wilhelm Wundt, William James) attempted to study the mind through disciplined introspection—having observers describe their internal feelings. But introspection proved fatally unscientific: two observers reported conflicting internal experiences with no objective ruler to adjudicate between them.
 
-### 1.2 Methodological Designs
-
-1. **Experimental Design (The Gold Standard for Causality):** Employs random assignment of participants to experimental and control conditions, isolating the causal effect $\Delta Y = f(\Delta X)$. Double-blind designs prevent experimenter expectancy effects and participant demand characteristics.
-2. **Quasi-Experimental & Natural Experiments:** Manipulations occurring via nature or policy where random assignment is unethical or impossible (e.g. assessing outcomes following traumatic brain injury).
-3. **Correlational & Longitudinal Studies:** Measuring co-variance without active manipulation. Quantified via Pearson's product-moment correlation coefficient $r \in [-1, 1]$. Crucial axiom: correlation does not establish direction of causality, susceptible to third-variable confounds.
+Modern psychology is anchored in **empirical operationalism**:
+- **Behavioral Metrics:** Reaction times (milliseconds), eye-tracking fixations, error rates, and task performance.
+- **Physiological Metrics:** Electroencephalography (EEG event-related potentials), functional Magnetic Resonance Imaging (fMRI BOLD signal), galvanic skin response, and hormone assays (cortisol, oxytocin).
 
 ---
 
 ## 2. Biological Bases of Behavior & Neuroanatomy
 
-### 2.1 The Neuron & Action Potential Dynamics
+### 2.1 The Neuron as an Electrochemical Battery
 
-The fundamental unit of neural processing is the neuron, maintaining a resting membrane potential of approximately $-70\text{ mV}$ via sodium-potassium adenosine triphosphatase ($\text{Na}^+/\text{K}^+$ ATPase pumps, expelling $3\text{ Na}^+$ for every $2\text{ K}^+$ imported).
+A neuron is an excitable cell that communicates via electrical pulses and chemical synapses:
+- **Resting Membrane Potential ($-70\text{ mV}$):** Maintained by the metabolic sodium-potassium ATPase pump, which continuously pumps three sodium ions ($\text{Na}^+$) out for every two potassium ions ($\text{K}^+$) pumped in, leaving the interior negatively charged relative to the extracellular fluid.
+- **The Action Potential (The All-or-None Fire):**
+  1. Excitatory postsynaptic potentials depolarize the cell membrane toward the threshold of **$-55\text{ mV}$**.
+  2. At threshold, voltage-gated $\text{Na}^+$ channels snap open. Sodium floods down its electrical and chemical gradient into the cell, driving membrane potential up to $+30\text{ mV}$ in less than a millisecond.
+  3. Sodium channels inactivate; voltage-gated $\text{K}^+$ channels open, allowing potassium to rush out and repolarize the cell.
+  4. The electrical pulse races down the axon, insulated by fatty **myelin sheaths** that allow the impulse to jump between the Nodes of Ranvier (**saltatory conduction**) at speeds up to $120\text{ m/s}$.
 
-1. **Depolarization:** Excitatory postsynaptic potentials (EPSPs) summate at the axon hillock. When the threshold potential ($\approx -55\text{ mV}$) is reached, voltage-gated $\text{Na}^+$ channels open explosively.
-2. **Repolarization:** Inactivation of $\text{Na}^+$ channels and opening of voltage-gated $\text{K}^+$ channels restores negative internal charge.
-3. **Refractory Period:** Absolute refractory period ensures unidirectional action potential propagation along myelinated axons via saltatory conduction across nodes of Ranvier.
+### 2.2 Chemical Synapses and Neurotransmission
 
-### 2.2 Neurochemical Signaling Systems
-
-- **Glutamate:** Primary excitatory neurotransmitter in the central nervous system; critical for long-term potentiation (LTP) via NMDA and AMPA receptors.
-- **GABA ($\gamma$-aminobutyric acid):** Primary inhibitory neurotransmitter; dampens neural excitability via chloride channel influx ($\text{GABA}_A$).
-- **Dopamine:** Catecholamine modulating reward prediction errors, motivational salience, and motor coordination (mesolimbic and nigrostriatal pathways).
-- **Serotonin (5-HT):** Modulates mood, emotional regulation, appetite, and circadian cycles; targeted by selective serotonin reuptake inhibitors (SSRIs).
-- **Acetylcholine (ACh):** Mediates neuromuscular junctions and central cholinergic projections critical for attention and episodic memory encoding.
-
-### 2.3 Macroscopic Brain Systems
-
-- **Frontal Lobe:** Prefrontal cortex mediates executive control, impulse regulation, prospective planning, and abstract reasoning. Broca's area coordinates expressive language.
-- **Temporal Lobe:** Auditory processing (primary auditory cortex), semantic memory, and receptive language comprehension (Wernicke's area).
-- **Parietal Lobe:** Primary somatosensory cortex and spatial representation (integrating visual dorsal stream coordinates).
-- **Occipital Lobe:** Primary visual cortex (V1/striate cortex) organized into retinotopic feature-detection columns (Hubel & Wiesel).
-- **Limbic Complex:** Hippocampus mediates consolidation of declarative memories; amygdala coordinates emotional arousal and conditioned threat responses.
+At the axon terminal, the electrical wave triggers voltage-gated calcium channels, prompting synaptic vesicles to fuse with the membrane and release chemical **neurotransmitters** into the synaptic cleft:
+- **Glutamate:** The primary excitatory neurotransmitter of the central nervous system.
+- **GABA ($\gamma$-aminobutyric acid):** The primary inhibitory neurotransmitter, preventing neural runaway excitation.
+- **Dopamine:** Mediates reward prediction error, motor control, and motivation.
+- **Serotonin:** Regulates mood, satiety, sleep cycles, and social hierarchy.
 
 ---
 
 ## 3. Psychophysics, Sensation & Sensory Perception
 
-### 3.1 Mathematical Laws of Psychophysics
+### 3.1 Transduction: Physical Energy into Neural Code
 
-Psychophysics quantifies the functional mapping between physical stimulus intensity ($I$) and subjective sensory experience ($S$).
+Sensation is the biological process of converting physical stimuli into electrochemical signals (**transduction**):
+- Photoreceptors (rods and cones in the retina) convert photons into graded hyperpolarizations.
+- Mechanoreceptors (hair cells in the cochlea) convert acoustic air vibrations into fluid shear.
 
-1. **Weber's Law:** The just noticeable difference ($\Delta I$, difference threshold) is a constant fraction of the initial stimulus intensity:
-   $$\frac{\Delta I}{I} = k \quad (\text{Weber fraction})$$
-2. **Fechner's Law:** Sensation magnitude scales logarithmically with physical stimulus intensity:
-   $$S = k \ln\left( \frac{I}{I_0} \right)$$
-3. **Stevens' Power Law:** Generalizes sensory scaling across diverse sensory modalities:
-   $$S = k I^\beta$$
-   where $\beta < 1$ for compressive senses (brightness, loudness) and $\beta > 1$ for expansive senses (electric shock).
+### 3.2 Psychophysics: Weber-Fechner Law
 
-### 3.2 Signal Detection Theory (SDT)
-
-SDT separates an observer's sensory sensitivity ($d'$, d-prime) from their decision criterion ($c$ or $\beta$):
-- **Sensitivity ($d'$):** Distance between noise and signal-plus-noise distributions in standard deviation units:
-  $$d' = Z(\text{Hit Rate}) - Z(\text{False Alarm Rate})$$
-- Independent of an observer's conservative or liberal reporting bias.
+How strong must a stimulus change be for a human to notice it?
+- **Weber's Law:** The **Just Noticeable Difference (JND)** is a constant fraction of the original stimulus intensity:
+  $$\frac{\Delta I}{I} = k$$
+  If you are holding a 1-kilogram bag, you notice a 50-gram addition. If you are holding a 20-kilogram dumbbell, you will not notice 50 grams; you need an additional 1 kilogram to perceive the change!
+- **The Brain as a Predictive Inference Machine:** Perception is not a passive video camera recording photons. Perception is an active, top-down generative model: the brain constructs a best-guess hypothesis of the outside world, testing its predictions against incoming sensory error signals. Optical illusions occur when environmental cues trigger strong, normally adaptive evolutionary priors.
 
 ---
 
 ## 4. Conditioning & Behavior Modification Principles
 
-### 4.1 Classical (Pavlovian) Conditioning
+### 4.1 Classical Conditioning (Ivan Pavlov)
 
-Associative learning pairing a neutral stimulus with an unconditioned stimulus:
-- **Acquisition:** Contiguous and contingent temporal pairing of Conditioned Stimulus (CS, e.g. metronome) with Unconditioned Stimulus (US, e.g. meat powder).
-- **Extinction:** Repeated presentation of CS in the absence of US leads to progressive attenuation of the Conditioned Response (CR).
-- **Spontaneous Recovery:** Re-emergence of an extinguished CR following a temporal delay, proving extinction represents new inhibitory learning rather than memory erasure.
+Associative learning between two environmental stimuli:
+- **Unconditioned Stimulus (US):** Meat powder naturally triggers salivation (**Unconditioned Response, UR**).
+- **Conditioned Stimulus (CS):** A neutral bell repeatedly paired with meat powder eventually triggers salivation alone (**Conditioned Response, CR**).
+- **Extinction:** Presenting the CS repeatedly without the US causes the conditioned response to weaken and extinguish over time.
 
-### 4.2 Operant (Skinnerian) Conditioning
+### 4.2 Operant Conditioning (B.F. Skinner)
 
-Learning governed by behavioral consequences:
-- **Reinforcement:** Increases response probability (Positive: presenting an appetitive stimulus; Negative: removing an aversive stimulus).
-- **Punishment:** Decreases response probability (Positive: presenting an aversive stimulus; Negative: removing an appetitive stimulus).
+Learning where voluntary behavior is modified by its consequences:
+- **Reinforcement (Increases Behavior):**
+  - *Positive:* Presenting an appetitive stimulus (praise, food).
+  - *Negative:* Removing an aversive stimulus (turning off an annoying alarm).
+- **Punishment (Decreases Behavior):**
+  - *Positive:* Applying an aversive stimulus.
+  - *Negative:* Removing an appetitive stimulus (loss of privileges).
 - **Reinforcement Schedules:**
-  - *Fixed Ratio (FR):* High response rates with post-reinforcement pauses.
-  - *Variable Ratio (VR):* Highest, most persistent response rates, highly resistant to extinction (the gambling/slot machine mechanic).
-  - *Fixed Interval (FI):* Scalloped response pattern preceding scheduled delivery.
-  - *Variable Interval (VI):* Steady, moderate response rates.
+  - *Fixed Ratio (FR):* Reward delivered after fixed number of responses (piece-rate labor).
+  - *Variable Ratio (VR):* Reward delivered after an unpredictable, varying number of responses. Produces the highest, most relentless rates of behavior and is extraordinarily resistant to extinction—the psychological engine powering casino slot machines and social media notification feeds!
 
 ---
 
 ## 5. Memory Architecture, Consolidation & Retrieval
 
-### 5.1 The Multistore Model (Atkinson & Shiffrin)
+### 5.1 The Multi-Store Memory Model (Atkinson-Shiffrin & Baddeley)
 
-1. **Sensory Register:** High capacity, ultra-short decay ($\sim 250\text{ ms}$ for iconic visual store; $\sim 3 - 4\text{ s}$ for echoic auditory store).
-2. **Short-Term Store:** Limited capacity classically formulated as $7 \pm 2$ chunks (Miller) or $\sim 4$ items under attentional focus (Cowan), persisting $\sim 15 - 30\text{ s}$ without rehearsal.
-3. **Long-Term Store:** Unlimited capacity and long-term durability.
+```
+[Sensory Memory] -> Attention -> [Working Memory] <===> [Long-Term Memory]
+  (Milliseconds)                    (Capacity ~4 items)     (Declarative / Non-Declarative)
+```
 
-### 5.2 Working Memory Model (Baddeley & Hitch)
+1. **Sensory Buffer:** High-capacity, fleeting retention of raw sensory inputs (iconic visual, echoic auditory).
+2. **Working Memory (Alan Baddeley):** The active cognitive workspace:
+   - *Phonological Loop:* Auditory rehearsal ("the inner voice").
+   - *Visuospatial Sketchpad:* Visual manipulation of shapes and spatial paths.
+   - *Central Executive:* Attentional control and coordination.
+3. **Long-Term Memory:**
+   - *Explicit / Declarative (Conscious):*
+     - **Episodic:** Personally experienced life events situated in time and space.
+     - **Semantic:** General world facts, vocabulary, and mathematical concepts.
+   - *Implicit / Non-Declarative (Unconscious):*
+     - **Procedural:** Motor skills (riding a bicycle, typing without looking).
+     - **Priming:** Unconscious sensitization to subsequent stimuli.
 
-Reconceptualized short-term storage as an active computational workspace:
-- **Central Executive:** Modulates attentional allocation, task switching, and inhibitory control.
-- **Phonological Loop:** Subvocal articulatory rehearsal component preserving acoustic and verbal information.
-- **Visuospatial Sketchpad:** Manipulates visual imagery, spatial orientation, and mental rotation.
-- **Episodic Buffer:** Multimodal integration interface binding perceptual inputs with long-term semantic structures into coherent temporal episodes.
+### 5.2 The Fragility of Memory: Reconsolidation and Loftus's Discoveries
 
-### 5.3 Long-Term Memory Taxonomy
-
-- **Declarative (Explicit) Memory:** Consciously accessible knowledge.
-  - *Episodic:* Autobiographical events situated in specific spatial-temporal contexts.
-  - *Semantic:* Decontextualized conceptual facts, linguistic vocabulary, and worldly rules.
-- **Nondeclarative (Implicit) Memory:** Expressed through performance without conscious awareness.
-  - *Procedural:* Motor and cognitive skills (e.g. bicycle riding, typing).
-  - *Priming & Perceptual Learning:* Enhanced processing speed following prior exposure.
-  - *Conditioned Reflexes:* Classical Pavlovian associations.
+In computer memory, reading a hard drive sector leaves the data unchanged. In human biology, **recalling a memory renders it malleable and biochemically vulnerable to alteration**.
+- Elizabeth Loftus proved that eyewitness testimony is easily contaminated. Asking "How fast were the cars going when they *smashed* into each other?" versus "when they *hit* each other?" caused participants to recall seeing shattered glass that was never present in the video!
 
 ---
 
 ## 6. Cognition, Attention & Executive Function
 
-### 6.1 Selective & Divided Attention
+### 6.1 Attentional Bottlenecks: Selective and Divided Attention
 
-- **Broadbent Filter Model:** Early selection model positing an all-or-none bottleneck prior to semantic analysis.
-- **Treisman Attenuation Model:** Intermediate model where unattended sensory channels are attenuated rather than completely blocked, explaining the "cocktail party phenomenon" (hearing one's own name in a crowded room).
-- **Kahneman's Attentional Capacity Theory:** Attention as a finite, allocatable computational resource modulated by arousal and task complexity.
+The human sensory nervous system absorbs gigabits of raw environmental data per second, but conscious executive attention can process only tens of bits per second.
+- **Broadbent's Filter Model:** The brain acts as an early sensory filter, discarding unattended audio channels.
+- **The Cocktail Party Effect:** You can focus on a single conversation in a crowded, roaring room, yet your auditory cortex monitors background noise unconsciously—snapping your attention immediately if someone mentions your name.
 
 ---
 
 ## 7. Judgment, Decision-Making & Behavioral Economics
 
-### 7.1 Dual-Process Theory (Kahneman & Tversky)
+### 7.1 Dual-Process Theory: System 1 and System 2 (Daniel Kahneman & Amos Tversky)
 
-- **System 1 (Fast & Intuitive):** Automatic, involuntary, fast, emotionally charged, high capacity, rule-heuristic-driven, unconscious of its own operation.
-- **System 2 (Slow & Deliberative):** Effortful, voluntary, slow, logically constrained, low capacity, serial, requiring working memory allocation.
+- **System 1 (Fast & Intuitive):** Automatic, fast, effortless, emotional, and operating beneath conscious awareness. Excels at survival reactions, facial recognition, and reading simple words on billboards. Relies heavily on cognitive heuristics (mental shortcuts).
+- **System 2 (Slow & Deliberative):** Conscious, effortful, slow, logical, and metabolically demanding. Required for complex math ($17 \times 24$), verifying logic, and self-control. System 2 is lazy and routinely accepts erroneous answers proposed by System 1.
 
-### 7.2 Core Heuristics and Cognitive Biases
+### 7.2 Cognitive Heuristics & Biases
 
-1. **Availability Heuristic:** Estimating frequency or probability based on the cognitive ease with which instances come to mind (distorted by media vividness).
-2. **Representativeness Heuristic:** Categorizing probability by the degree of similarity to a prototype, often neglecting base-rate probabilities (the base-rate fallacy).
-3. **Anchoring & Adjustment:** Relying disproportionately on an initial reference number, adjusting insufficiently from that anchor.
-4. **Framing Effects:** Decision shifts driven by presenting identical objective outcomes as potential gains versus potential losses.
-5. **Prospect Theory:** Asymmetric value function: the subjective disutility of a loss is psychologically more painful than the utility of an equivalent gain (**loss aversion**, $V(-\$100) \approx 2 \times |V(+\$100)|$).
+1. **Availability Heuristic:** Estimating the likelihood of an event based on how easily examples spring to mind (e.g. fearing plane crashes or shark attacks after viewing dramatic television news, while ignoring far more lethal automobile accidents).
+2. **Representativeness Heuristic:** Judging probability by similarity to a stereotype while ignoring underlying statistical base rates (**The Base Rate Fallacy**).
+3. **Anchoring and Adjustment:** Getting irrationally pulled toward an initial arbitrary number when making quantitative estimates.
+4. **Prospect Theory & Loss Aversion:** Human psychology does not evaluate wealth in absolute values, but as gains and losses relative to a subjective reference point:
+   $$\text{Psychological Pain of Losing \$100} \approx 2 \times \text{Psychological Joy of Gaining \$100}$$
 
 ---
 
 ## 8. Developmental Psychology Across the Lifespan
 
-### 8.1 Piagetian Cognitive Stage Theory
+### 8.1 Jean Piaget: Cognitive Constructivism
 
-Children construct cognitive schemas through **assimilation** (fitting new information into existing mental frameworks) and **accommodation** (revising frameworks in response to novel disconfirming feedback):
-1. **Sensorimotor ($0 - 2\text{ yrs}$):** Coordination of sensory motor actions; mastery of **object permanence** ($\sim 8\text{ months}$).
-2. **Preoperational ($2 - 7\text{ yrs}$):** Symbolic representation, emergence of language; constrained by egocentrism and lack of **conservation**.
-3. **Concrete Operational ($7 - 11\text{ yrs}$):** Logical operations applied to concrete physical objects; mastery of reversibility, transitivity, and conservation of mass and volume.
-4. **Formal Operational ($12+\text{ yrs}$):** Abstract propositional logic, systematic deductive hypothesis testing, and counterfactual reasoning.
+Children do not think like miniature adults; they pass through distinct qualitative stages:
+1. **Sensorimotor (0–2 years):** Learning through motor interaction; acquisition of **Object Permanence** (realizing objects exist even when out of sight).
+2. **Preoperational (2–7 years):** Symbolic language, pretend play, but dominated by egocentrism and failure to comprehend **Conservation** (believing a tall narrow glass contains more liquid than a short wide glass with identical volume).
+3. **Concrete Operational (7–11 years):** Logical reasoning applied to physical objects; reversibility.
+4. **Formal Operational (12+ years):** Abstract hypothetical-deductive reasoning, scientific modeling, and moral philosophy.
 
-### 8.2 Attachment Theory (Bowlby & Ainsworth)
+### 8.2 Attachment Theory (John Bowlby & Mary Ainsworth)
 
-Assessed via the Strange Situation paradigm:
-- **Secure Attachment:** Demonstrates distress upon caregiver separation, actively seeks comfort upon reunion, returns readily to exploratory play.
-- **Insecure-Avoidant:** Suppresses overt distress upon separation, actively avoids proximity upon reunion.
-- **Insecure-Resistant/Ambivalent:** Heightened distress upon separation, ambivalence and anger upon reunion, inability to soothe.
-- **Disorganized/Disoriented:** Contradictory behaviors signaling fear of the attachment figure.
+In the **Strange Situation Protocol**, infants display distinct attachment classifications with their primary caregiver:
+- **Secure Attachment:** Distressed by separation, easily soothed upon reunion; predicts healthy adult emotional regulation.
+- **Insecure-Avoidant:** Suppresses overt distress, avoids caregiver upon return; internalizes emotional suppression.
+- **Insecure-Anxious/Ambivalent:** Extremely distressed, displays clinging combined with anger upon reunion.
 
 ---
 
 ## 9. Personality Theory & Psychometric Measurement
 
-### 9.1 The Five-Factor Model (The Big Five / OCEAN)
+### 9.1 The Five-Factor Model ("OCEAN")
 
-Derived via lexical analysis and factor analysis of trait descriptors across human languages:
-1. **Openness to Experience:** Intellectual curiosity, artistic appreciation, unconventionality.
-2. **Conscientiousness:** Dutifulness, self-regulation, goal-directed planning, organization.
-3. **Extraversion:** Sociability, positive affectivity, assertiveness, reward sensitivity.
-4. **Agreeableness:** Altruism, empathy, trust, pro-social cooperativeness.
-5. **Neuroticism:** Emotional volatility, vulnerability to stress, chronic threat sensitivity.
+Modern personality psychometrics rejects unscientific typologies (like the Myers-Briggs Type Indicator, which suffers from dismal test-retest reliability) in favor of the empirically validated **Big Five Trait Spectrum**:
+1. **Openness to Experience:** Intellectual curiosity, aesthetic sensitivity, imagination.
+2. **Conscientiousness:** Self-discipline, orderliness, goal-directed planning, impulse control.
+3. **Extraversion:** Sociability, assertiveness, reward sensitivity, positive affect.
+4. **Agreeableness:** Compassion, trust, cooperation, empathy versus antagonism.
+5. **Neuroticism (Emotional Instability):** Tendency to experience negative affect (anxiety, depression, vulnerability to stress).
 
 ---
 
 ## 10. Psychopathology & Evidence-Based Interventions
 
-### 10.1 Diagnostic Paradigms
+### 10.1 The Biopsychosocial Paradigm
 
-Classification via the Diagnostic and Statistical Manual of Mental Disorders (DSM-5-TR) and International Classification of Diseases (ICD-11). Diagnostic criteria mandate clinical distress or impairment across social, occupational, or personal domains.
+Mental illness does not arise from a single isolated defect. It reflects an intricate interaction:
+- **Biological:** Genetic vulnerability, neurochemical receptor densities, endocrine dysregulation.
+- **Psychological:** Maladaptive cognitive schemas, learned helplessness, trauma processing.
+- **Social:** Socioeconomic deprivation, institutional discrimination, isolation, chronic environmental stress.
 
-### 10.2 Evidence-Based Psychotherapy
+### 10.2 Cognitive Behavioral Therapy (CBT)
 
-- **Cognitive Behavioral Therapy (CBT - Beck):** Identifies and restructures dysfunctional cognitive schemas and automatic negative thoughts, paired with behavioral activation and systematic desensitization.
-- **Exposure Therapies:** Extinguishes conditioned fear responses via controlled, gradual, and repeated exposure to feared stimuli without avoidance or safety behaviors.
+Developed by Aaron Beck, CBT is the most empirically supported psychotherapeutic intervention. It posits that psychological suffering is mediated not by events themselves, but by our cognitive interpretations of those events:
+$$\text{Triggering Event} \to \text{Automatic Thought} \to \text{Emotional & Behavioral Reaction}$$
+
+- **Cognitive Restructuring:** Identifying and systematically testing cognitive distortions:
+  - *Catastrophizing:* Assuming the worst conceivable disaster will inevitably occur.
+  - *All-or-Nothing Thinking:* Viewing outcomes in rigid black-and-white absolutes.
+  - *Mind Reading:* Assuming others harbor negative thoughts about you without evidence.
+- Patients are taught to treat automatic negative thoughts as testable hypotheses rather than objective facts, using behavioral experiments to verify reality.
+
+---
+
+## 11. Cognitive Debugging & Common Psychological Fallacies
+
+### 11.1 Fundamental Attribution Error & Self-Serving Bias
+
+- **The Fundamental Attribution Error:** When observing someone else cut us off in traffic, we attribute their behavior to an intrinsic character flaw ("they are a reckless, selfish jerk"). When we cut someone off, we attribute our behavior to external situational pressures ("I was late to a medical appointment").
+- **Confirmation Bias:** The instinctive tendency to notice, search for, and remember evidence that confirms our pre-existing beliefs, while ignoring or rationalizing away disconfirming facts.
+
+### 11.2 The Feynman Rule for the Human Mind
+
+Richard Feynman observed that the ultimate hallmark of a mature scientific intellect is the capacity to say: **"I do not know, and my current intuition may be completely wrong."** The human mind evolved on the African savannah to survive, reproduce, and navigate tribal politics—not to naturally compute probabilities or perceive quantum mechanics. To understand yourself and the world, you must cultivate the habit of questioning your own first impressions.

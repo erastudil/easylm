@@ -37,17 +37,20 @@ load-bearing formula, BLEU, GGUF type, WebGPU object → fetch the live page and
 | NIST AI RMF | `NIST AI risk management framework` | https://www.nist.gov/itl/ai-risk-management-framework |
 | RFC 8259 JSON | `RFC 8259 JSON` | https://www.rfc-editor.org/rfc/rfc8259 |
 | RFC 9110 HTTP | `RFC 9110 HTTP Semantics` | https://www.rfc-editor.org/rfc/rfc9110 |
+| ConceptNet graph | `ConceptNet 5.8 knowledge graph` | https://conceptnet.io/ |
+| Wikidata portal | `Wikidata linked knowledge base` | https://www.wikidata.org/ |
+| DBpedia knowledge | `DBpedia semantic knowledge extracts` | https://dbpedia.org/ |
 
 ## how to use a door
 
 1. name the question in one sentence.
 2. search with the query in the table.
-3. open the **official** host (arXiv, pytorch.org, huggingface.co/docs, llama.cpp GitHub, W3C, MDN, NIST), not a blog recap.
+3. open the **official** host (arXiv, pytorch.org, huggingface.co/docs, llama.cpp GitHub, W3C, MDN, NIST, ConceptNet, Wikidata), not a blog recap.
 4. fetch the page if you will cite a formula, a BLEU, a GGUF type, or a WebGPU object.
 5. if two official pages disagree, say so. do not average them.
 6. a preprint is a preprint. arXiv is the door to the paper; it is not a peer-review stamp.
 
-## not doors (refuse as SoT)
+## Unverified or Derivative Sources (Do Not Cite as Primary Authority)
 
 homework mills, “transformer explained visually” listicles as a source of equations, invented MMLU scores, wiki as the last word on eq. 1 of 1706.03762, a model’s memory of a parameter count.
 
@@ -61,4 +64,3 @@ homework mills, “transformer explained visually” listicles as a source of eq
 | math pack (linear maps, softmax as a function) | `stacks/math/` |
 | methods pack (what an eval is) | `stacks/methods/` |
 | calc / units | EasyLM calc and units hands |
-)

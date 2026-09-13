@@ -19,6 +19,19 @@ describe('dispatchTool kidSafe', () => {
     expect(res.isError).toBe(false);
     expect(res.result).toMatch(/lbs/);
   });
+
+  it('runs local studio status', async () => {
+    const res = await dispatchTool('studio', 'list', undefined, { kidSafe: true });
+    expect(res.isError).toBe(false);
+    expect(res.result).toMatch(/Studio catalog/i);
+    expect(res.result.toLowerCase()).not.toMatch(/"answer"/);
+  });
+
+  it('runs local zcabs canary tool', async () => {
+    const res = await dispatchTool('zcabs', 'check', undefined, { kidSafe: true });
+    expect(res.isError).toBe(false);
+    expect(res.result).toMatch(/CANARY_OBSERVED/);
+  });
 });
 
 describe('dispatchTool unknown name', () => {

@@ -84,8 +84,27 @@ EasyLM solves this by giving the model **Hands**—real, software tools running 
 1. **Exact Calculator (\`calc\`)**: Evaluates arithmetic, square roots, powers, and trigonometry using a deterministic mathematical parser. Zero guesswork.
 2. **Physical Unit Converter (\`units\`)**: Converts between metric and imperial units (miles to kilometers, pounds to kilograms, Celsius to Fahrenheit). If you ask for an impossible or unknown conversion, it honestly errors instead of inventing a fake 1:1 ratio.
 3. **World Clock (\`datetime\`)**: Checks your real system clock and computes accurate international timezones.
-4. **Offline Knowledge Warehouse**: Local undergraduate textbooks by subject, plus official source doors (NIST, OpenStax, MIT OCW, IETF, MDN). Search returns the matching chapter, not a blurb.
+4. **The Stacks (Offline Sovereign Library)**: Local undergraduate textbooks by subject, plus official source doors (NIST, OpenStax, MIT OCW, IETF, MDN). Search returns the matching chapter, not a blurb.
 5. **Optional Network Tools**: When Hands are on, EasyLM can also look up live weather forecasts, foreign exchange rates, and Wikipedia/Wikiquote entries. In **Kid Safe** mode, all network tools stay permanently off.`
+  },
+  {
+    id: 'studio',
+    title: '📚 Studio — class walks',
+    summary: 'Courses, homework, quizzes, essays, exams, streaks. Pass/fail. No due dates.',
+    content: `### Studio
+
+Studio is a local university walk. Enroll on this device. No account.
+
+- **Pass / fail.** Completion, not letters.
+- **As many tries as it takes.** Tries are not a mark.
+- **No due dates.** A suggested pace shifts if you fall behind.
+- **Soft timers** on exams show a sitting length. Time running out does not fail you.
+- **Badges** live here. Persistence after a hard exam is the point. First-try speed is not.
+- Footer: study record on this device. Not a diploma.
+
+AI coach is aimed at 14+. Kid Safe stays local: stacks, calc, Studio — no network Hands.
+
+Readings are The Stacks. Quizzes use authored keys, never the model's memory.`
   },
   {
     id: 'hallucination',
@@ -154,6 +173,6 @@ Tone & Demeanor:
 
 Core Features:
 - WebGPU Local Inference: Running Qwen 2.5 3B (default), DeepSeek-R1 (reasoning), or lightweight models.
-- Deterministic Hands: Calculator (calc), unit converter (units), world clock (datetime), and local academic library (stacks).
+- Deterministic Hands: Calculator (calc), unit converter (units), world clock (datetime), local academic library (stacks), and Studio status (studio).
 - Honest Boundaries: Optional network tools (weather, search, exchange, dictionary) only send lookups when Hands are enabled.
 `;

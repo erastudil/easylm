@@ -23,6 +23,8 @@ import { clockQueryOf, mathExpressionOf, stacksQueryOf, unitConversionOf, wareho
 import { Sidebar } from './components/Sidebar';
 import { MessageItem } from './components/MessageItem';
 import { SettingsModal } from './components/SettingsModal';
+import { DocumentModal } from './components/DocumentModal';
+import { GraphModal } from './components/GraphModal';
 import { ModelModal } from './components/ModelModal';
 import { PersonalityModal } from './components/PersonalityModal';
 import { PERSONALITIES, clampPersonalityIdForRole } from './data/personalities';
@@ -47,15 +49,61 @@ import { AttachmentBar } from './components/AttachmentBar';
 import { WelcomeModal } from './components/WelcomeModal';
 import { HnaiLogo } from './components/HnaiLogo';
 
+const StudioModal = React.lazy(() =>
+  import('./components/StudioModal').then(m => ({ default: m.StudioModal }))
+);
+
 export const App: React.FC = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [activeSessionId, setActiveSessionIdState] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(() => typeof window !== 'undefined' ? window.innerWidth > 768 : false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsTab, setSettingsTab] = useState<'engine' | 'credits'>('engine');
   const [helpOpen, setHelpOpen] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
+
+  const handleOpenCredits = () => {
+    setSettingsTab('credits');
+    setSettingsOpen(true);
+  };
+
+  const handleOpenSettings = () => {
+    setSettingsTab('engine');
+    setSettingsOpen(true);
+  };
+  const [docModalOpen, setDocModalOpen] = useState(false);
+  const [docContent, setDocContent] = useState('');
+  const [docTitle, setDocTitle] = useState('Academic Assignment');
+  const [graphModalOpen, setGraphModalOpen] = useState(false);
+  const [studioOpen, setStudioOpen] = useState(false);
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
+
+  const handleOpenDocument = (content: string, title?: string) => {
+    setDocContent(content);
+    if (title) setDocTitle(title);
+    setDocModalOpen(true);
+  };
+
+  const handleRateMessage = (messageId: string, rating: 'heaven' | 'hell' | 'neutral') => {
+    if (!activeSessionId) return;
+    setSessions((prev) => {
+      const next = prev.map((s) => {
+        if (s.id !== activeSessionId) return s;
+        return {
+          ...s,
+          updatedAt: Date.now(),
+          messages: s.messages.map((m) => (m.id === messageId ? { ...m, rating } : m))
+        };
+      });
+      persistSessions(next);
+      return next;
+    });
+  };
+
+  const handleInsertGraph = (svgCode: string, graphTitle: string) => {
+    setInputPrompt((prev) => prev ? `${prev}\n\n[Graph: ${graphTitle}]\n\`\`\`xml\n${svgCode}\n\`\`\`` : `[Graph: ${graphTitle}]\n\`\`\`xml\n${svgCode}\n\`\`\``);
+  };
 
   // Family Mode, Profiles, Parental Controls, and Sovereign Memory
   const [currentProfile, setCurrentProfile] = useState<UserProfile>(() => getActiveProfile());
@@ -853,8 +901,12 @@ export const App: React.FC = () => {
         isOpen={sidebarOpen}
         onToggleOpen={() => setSidebarOpen(!sidebarOpen)}
         onOpenSupport={() => setSupportOpen(true)}
+        onOpenCredits={handleOpenCredits}
         onOpenPersonalityModal={() => setPersonalityModalOpen(true)}
         onOpenFeedback={() => setFeedbackModalOpen(true)}
+        onOpenDocument={() => handleOpenDocument('', 'New Document')}
+        onOpenGrapher={() => setGraphModalOpen(true)}
+        onOpenStudio={() => setStudioOpen(true)}
       />
 
       {/* Main Chat Area */}
@@ -1100,9 +1152,27 @@ export const App: React.FC = () => {
               <span className="hide-on-mobile"> Feedback</span>
             </button>
 
+            {/* Credits Button */}
+            <button
+              onClick={handleOpenCredits}
+              className="btn-pill"
+              style={{
+                fontSize: '0.75rem',
+                padding: '0.25rem 0.6rem',
+                gap: '0.3rem',
+                borderColor: 'rgba(139, 92, 246, 0.4)',
+                backgroundColor: settingsOpen && settingsTab === 'credits' ? 'rgba(139, 92, 246, 0.25)' : '#111118',
+                color: '#c4b5fd'
+              }}
+              title="Open Credits & Open Source Attributions"
+            >
+              <span>📜</span>
+              <span className="hide-on-mobile"> Credits</span>
+            </button>
+
             {/* Settings Button */}
             <button
-              onClick={() => setSettingsOpen(true)}
+              onClick={handleOpenSettings}
               className="btn-pill"
               style={{ padding: '0.25rem 0.6rem' }}
               title="Configure model, personalities, SearXNG, and tools"
@@ -1264,7 +1334,12 @@ export const App: React.FC = () => {
             ) : (
               <>
                 {activeSession && activeSession.messages.map((m) => (
-                  <MessageItem key={m.id} message={m} />
+                  <MessageItem
+                    key={m.id}
+                    message={m}
+                    onOpenDocument={(text) => handleOpenDocument(text, activeSession.title || 'Assignment Document')}
+                    onRateMessage={(rating) => handleRateMessage(m.id, rating)}
+                  />
                 ))}
                 <div ref={messagesEndRef} style={{ height: '1.5rem', flexShrink: 0 }} />
               </>
@@ -1487,6 +1562,7 @@ export const App: React.FC = () => {
       <SettingsModal
         isOpen={settingsOpen}
         onClose={() => setSettingsOpen(false)}
+        initialTab={settingsTab}
         temperature={temperature}
         onChangeTemperature={setTemperature}
         contextLimit={contextLimit}
@@ -1540,6 +1616,7 @@ export const App: React.FC = () => {
         onRequestPinVerify={handleRequestPinVerify}
         onOpenPinSetup={handleOpenPinSetup}
         onProfileChanged={handleProfileChanged}
+        sessions={sessions}
       />
 
       {/* Parental PIN Lock Modal */}
@@ -1549,6 +1626,34 @@ export const App: React.FC = () => {
         onClose={() => setParentalModalOpen(false)}
         onSuccess={handlePinSuccess}
       />
+
+      {/* Document Studio & Human Touch-Up Modal */}
+      <DocumentModal
+        isOpen={docModalOpen}
+        onClose={() => setDocModalOpen(false)}
+        initialContent={docContent}
+        initialTitle={docTitle}
+        initialSubject="Academic Studies"
+      />
+
+      {/* Math Grapher Modal */}
+      <GraphModal
+        isOpen={graphModalOpen}
+        onClose={() => setGraphModalOpen(false)}
+        onInsertGraph={handleInsertGraph}
+      />
+
+      {studioOpen && (
+        <React.Suspense fallback={null}>
+          <StudioModal
+            isOpen={studioOpen}
+            onClose={() => setStudioOpen(false)}
+            profileId={currentProfile.id}
+            kidSafe={currentProfile.role === 'kid'}
+            onOpenDocument={(text, title) => handleOpenDocument(text, title)}
+          />
+        </React.Suspense>
+      )}
     </div>
   );
 };

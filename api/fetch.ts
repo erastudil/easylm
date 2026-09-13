@@ -69,6 +69,66 @@ function isWikiHost(hostname: string): boolean {
   return roots.some(root => h === root || h.endsWith('.' + root));
 }
 
+const VETTED_WHITELIST_ROOTS = [
+  // Encyclopedic & Wiki
+  'wikipedia.org',
+  'wikisource.org',
+  'wikiquote.org',
+  'wikimedia.org',
+  'mediawiki.org',
+  'wikidata.org',
+
+  // Real-Time News & Wire Feeds
+  'news.google.com',
+  'bbci.co.uk',
+  'bbc.com',
+  'bbc.co.uk',
+  'npr.org',
+  'nytimes.com',
+  'reuters.com',
+
+  // Real-Time Financial & Market Data
+  'finance.yahoo.com',
+  'stooq.com',
+  'sec.gov',
+
+  // Real-Time Sports Scores
+  'espn.com',
+
+  // Open Data & Scientific Reference (Qwen Survey Integration)
+  'nist.gov',
+  'ncbi.nlm.nih.gov',
+  'nih.gov',
+  'census.gov',
+  'govinfo.gov',
+  'uscode.house.gov',
+  'data.gov',
+  'usgs.gov',
+  'weather.gov',
+  'open-meteo.com',
+  'nasa.gov',
+  'arxiv.org',
+  'worldbank.org',
+  'imf.org',
+  'openstreetmap.org',
+  'conceptnet.io',
+  'dbpedia.org',
+  'bnl.gov',
+  'iupac.org',
+  'ciaaw.org',
+  'rfc-editor.org',
+  'w3.org',
+  'whatwg.org',
+  'tc39.es',
+  'unicode.org'
+];
+
+function isWhitelistedHost(hostname: string): boolean {
+  const h = normalizeHostname(hostname);
+  if (!h || hostnameIsBlocked(h)) return false;
+  return VETTED_WHITELIST_ROOTS.some(root => h === root || h.endsWith('.' + root));
+}
+
 function isPrivateIP(ip: string): boolean {
   const s = String(ip || '').trim().toLowerCase().replace(/^\[/, '').replace(/\]$/, '');
   if (!s) return true;
@@ -292,10 +352,10 @@ export default async function handler(req: any, res: any) {
   }
   const targetUrl = parsed.url;
 
-  if (!isWikiHost(targetUrl.hostname)) {
+  if (!isWhitelistedHost(targetUrl.hostname)) {
     return res.status(400).json({
       ok: false,
-      error: 'This origin only fetches Wikipedia, Wikiquote, and Wikisource. EasyLM does not proxy arbitrary URLs.'
+      error: 'This origin only fetches vetted whitelist hosts (Wikipedia, Google News RSS, Yahoo Finance, ESPN, NIST, PubChem, Census, ArXiv, World Bank, etc.). Arbitrary URLs are blocked.'
     });
   }
 

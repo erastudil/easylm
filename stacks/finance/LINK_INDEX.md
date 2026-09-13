@@ -70,7 +70,7 @@ The authoritative directory of verified financial data portals, corporate filing
 
 1. **Verify Before Quoting:** Asset prices, corporate filings, bond yields, tax rates, and macroeconomic prints must be fetched from verified sources. Never quote market numbers from memory.
 2. **Execute via Deterministic Computation:** For any present value, future value, annuity, WACC, duration, or option pricing calculation, compute deterministically using exact mathematical formulas (the EasyLM calc hand / `calc`).
-3. **Empty Source = DONT_KNOW:** If a historical financial ratio, unlisted corporate valuation, or specific statutory paragraph cannot be retrieved via verified doors, immediately return **DONT_KNOW**.
+3. **Empty Source = cite the primary door or state unverified:** If a historical financial ratio, unlisted corporate valuation, or specific statutory paragraph cannot be retrieved via verified doors, immediately return **cite the primary door or state unverified**.
 
 ---
 

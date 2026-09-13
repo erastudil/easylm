@@ -65,313 +65,228 @@ The Earth's atmosphere is a giant thermodynamic heat engine driven by differenti
 
 ---
 
-## 1. what weather is
 
-**weather** is the state of the atmosphere at a **time** and **place**. **meteorology** is the science of that state and its change. **climatology** is the statistics of weather over a **stated period** (normals are a NCEI / WMO product — fetch the period).
+## 1. The First Principles of Atmospheric Science & Meteorology
 
-four questions, every time:
+### 1.1 The Atmosphere as a Planetary Heat Engine
 
-1. **now**, a **forecast** (hours–days), or **climate** (years)?
-2. what is **measured** (temperature, pressure, wind, water in air, precipitation)?
-3. which **system** (front, cyclone, convection, tropical cyclone, orographic)?
-4. a live number or “what is it doing today” — **fetch** NWS / the named Met service. this pack is the vocabulary.
+The Earth's atmosphere is a massive, solar-powered thermodynamic heat engine. The sun does not heat the planetary sphere uniformly:
+- **Tropical Surplus:** Near the equator, solar radiation strikes the surface at near-perpendicular angles, depositing concentrated energy with minimal atmospheric scattering. The tropics absorb significantly more radiant energy than they emit to space.
+- **Polar Deficit:** Near the poles, sunlight strikes at oblique grazing angles, spreading solar flux across large areas and traversing longer atmospheric path lengths, exacerbated by high ice albedo. The polar regions radiate more infrared energy to space than they absorb from the sun.
 
-**atmosphere** is the fluid envelope held by gravity. weather lives mostly in the **troposphere**. space-edge conventions (Kármán line) are a fetch if the job is aerospace, not rain.
+This planetary temperature gradient drives the entire atmospheric and oceanic circulation. The global winds, jet streams, mid-latitude storm tracks, and ocean currents exist for one physical purpose: **to transport surplus thermal energy from the equator toward the thermodynamic cold sinks at the poles**.
 
-**check:** if you cannot say the clock and the place, you do not have weather yet.
+### 1.2 State Variables & The Equation of State for Moist Air
 
----
+The thermodynamic state of an air parcel is completely specified by five physical state variables:
+1. **Pressure ($P$):** The force exerted per unit area by the weight of overlying air molecules ($\text{Pa} = \text{N}\cdot\text{m}^{-2}$ or $\text{hPa} = \text{mb}$, where standard sea-level pressure is $1013.25\text{ hPa}$).
+2. **Temperature ($T$):** Average kinetic energy of molecular translation (Kelvin, $\text{K}$).
+3. **Density ($\rho$):** Mass of air per unit volume ($\text{kg}\cdot\text{m}^{-3}$, typically $\approx 1.225\text{ kg}\cdot\text{m}^{-3}$ at standard sea level).
+4. **Humidity (Moisture Content):** Mass of water vapor dissolved in the air (specific humidity $q$, mixing ratio $w$, or partial vapor pressure $e$).
+5. **Wind Velocity ($\mathbf{v} = (u, v, w)$):** Three-dimensional kinematic fluid motion.
 
-## 2. the atmosphere (structure)
-
-air is a **mixture**. dry-air majority: nitrogen, oxygen, argon; **carbon dioxide** and other traces; **water vapor** is the big variable. mole fractions and a current CO₂ value: fetch NOAA GML / a NASA fact sheet. do not recite a percent from wiki.
-
-**layers** (temperature-structure names, bottom up):
-
-| layer | temperature story (qualitative) | weather job |
-|---|---|---|
-| **troposphere** | T generally falls with height; weather lives here | clouds, storms, fronts |
-| **tropopause** | the lid | aircraft and sounding landmark |
-| **stratosphere** | T generally rises with height (ozone heating) | ozone chemistry; few weather clouds |
-| **mesosphere** | T falls again | later atmospheric science |
-| **thermosphere** | T rises; very thin | aurora, orbit drag as names |
-| **exosphere** | fades into space | not rain |
-
-heights of the tropopause vary with latitude and season — fetch a sounding or a standard-atmosphere table (COESA / ICAO), do not recite km. polar tropopause is lower than tropical, as a pattern; today’s number is a sounding.
-
-**standard atmosphere** is a *defined* profile for engineering (ICAO / NASA). it is not today’s sounding.
-
-**hydrostatic** (structure): in the vertical, pressure decrease balances weight of the air above when the fluid is at rest in that direction. dp/dz = −ρg in the usual sign. the equation and g: physics pack + EasyLM units. a sounding is a measured profile (NWS / University of Wyoming archive / the Met service).
-
-**boundary layer** is the lowest part of the troposphere coupled to the ground by turbulence on a diurnal clock. fog, frost, and gusts often live there. night inversions trap smoke and cold; afternoon mixing can break them. a sounding shows the inversion as a layer where T *rises* with height near the ground.
-
-**composition vs weather.** the N2/O2/Ar mix is almost a constant for meteorology; water vapor is not. a CO2 ppm from NOAA GML is a climate/composition number, not this afternoon’s rain. do not paste a remembered 78% / 21% as a substitute for a fetch if the job is a mole fraction.
-
-**check:** mixture vs layer vs today’s profile. today’s profile is an observation.
+**The Ideal Gas Law for Atmospheric Air:**
+Because dry air is a non-reacting mixture of diatomic gases ($\text{N}_2 \approx 78.08\%$, $\text{O}_2 \approx 20.95\%$, $\text{Ar} \approx 0.93\%$), it obeys the ideal gas law using the specific gas constant for dry air ($R_d = 287.058\text{ J}\cdot\text{kg}^{-1}\cdot\text{K}^{-1}$):
+$$P = \rho R_d T_v$$
+where $T_v$ is the **Virtual Temperature**—the hypothetical temperature dry air must possess to have the identical density and pressure as a moist air parcel:
+$$T_v = T(1 + 0.608 q)$$
+*(Key Physical Fact: Water vapor has a molecular weight of $18.015\text{ g/mol}$, which is significantly lighter than dry air at $28.964\text{ g/mol}$. Therefore, moist air is less dense and more buoyant than dry air at the identical temperature and pressure!).*
 
 ---
 
-## 3. the state of the air
+## 2. Atmospheric Vertical Structure & The Hydrostatic Equation
 
-four working variables:
+### 2.1 The Hydrostatic Equation & Hypsometric Thickness
 
-| variable | is |
-|---|---|
-| **temperature** | kinetic story of the gas; thermometer, radiosonde, satellite retrieval |
-| **pressure** | force per area; falls with height. meteorology often reports **hPa** (same size as millibar) |
-| **humidity** | water in the air — vapor pressure, mixing ratio, relative humidity, dew point as *different* numbers. name which |
-| **wind** | air in motion. direction is **from** which it blows in the usual METAR/NWS convention. say the convention |
+In the absence of violent convective updrafts, the vertical pressure gradient force is balanced almost exactly by Earth's downward gravitational pull. This is **Hydrostatic Balance**:
+$$\frac{\partial P}{\partial z} = -\rho g$$
 
-**station vs sea-level pressure.** maps that look like “highs and lows” are usually reduced to a common level. a station pressure without the reduction is a different sentence.
+Substituting the ideal gas law $\rho = \frac{P}{R_d T_v}$:
+$$\frac{dP}{P} = -\frac{g}{R_d T_v} dz$$
 
-**density** ties T, p, composition through the gas law (`../physics/` · `pV = nRT` or the meteorology form with specific gas constant). **R** from NIST. compute only from stated numbers with EasyLM calc. T in K: T/K = t/°C + 273.15.
+Integrating vertically between two pressure levels $P_1$ and $P_2$ yields the **Hypsometric Equation**:
+$$\Delta z = z_2 - z_1 = \frac{R_d \bar{T}_v}{g} \ln\left( \frac{P_1}{P_2} \right)$$
+where $\bar{T}_v$ is the mean virtual temperature of the atmospheric layer.
+- **Physical Interpretation:** Warmer air expands vertically. The geometric thickness $\Delta z$ separating two isobaric surfaces (such as $1000\text{ hPa}$ and $500\text{ hPa}$) is directly proportional to the mean temperature of that layer. Synoptic meteorologists track the "1000–500 mb thickness" to locate cold polar air masses and forecast rain-snow transitions.
 
-**units.** SI first. convert with **EasyLM units**. knot, mph, °F are allowed *after* you name them. do not mix in one equation.
+### 2.2 The Thermal Layering of the Atmosphere
 
-**Beaufort** is a 0–12 force scale of *effect* on sea (and a land cousin). knot bands: WMO / NWS fetch. this book is not a speed table.
+The atmosphere is organized into distinct vertical layers defined by their thermal lapse rate ($\Gamma = -dT/dz$):
 
-**METAR / TAF** are coded obs and airport forecasts. decode from the issuing office; do not guess a group.
+```
+Height (km)
+  100 |--------------------------------------------- THERMOSPHERE (T rises rapidly)
+      |                                              [Aurora, Molecular Dissociation]
+   85 |============================================= MESOPAUSE
+      |                                              MESOSPHERE (T drops to -90°C)
+      |                                              [Noctilucent Clouds, Meteors burn]
+   50 |============================================= STRATOPAUSE
+      |                                              STRATOSPHERE (T rises with height)
+      |                                              [Ozone Layer: UV Absorption Inversion]
+   12 |============================================= TROPOPAUSE (Varies: 8km Polar, 17km Equator)
+      |                                              TROPOSPHERE (T falls at ~6.5°C/km)
+      |                                              [99% Water Vapor, Weather, Storms]
+    0 +--------------------------------------------- EARTH SURFACE
+```
 
-**check:** which humidity. station or MSLP. which wind convention.
-
----
-
-## 4. energy and radiation
-
-the sun is the input. the earth-atmosphere system emits infrared. **weather is redistribution** of that energy plus latent heat in water.
-
-**budget** (structure): incoming shortwave, reflected (albedo), absorbed, outgoing longwave, greenhouse trapping as a *named process* (gases absorb and emit IR). a global number of W/m², an imbalance, a climate sensitivity: **NASA / NOAA / IPCC fetch**. do not recite.
-
-**diurnal cycle** is the day-night swing. **seasons** are orbital geometry (physics / astronomy), not a mood.
-
-**greenhouse effect** is physics in the air. **climate change** as an observed and forced change of the statistics is ch 12. they are not the same sentence.
-
-**check:** which flux. which period. number → named budget page.
-
----
-
-## 5. water in the air
-
-**phase.** vapor, liquid, ice. latent heat is why condensation heats the parcel and evaporation cools it (physics thermo).
-
-**saturation.** enough vapor at that T (and p) that net condensation can begin. **dew point** is the T where that happens for this mixing ratio. **relative humidity** is not “how much water” by itself — it is a ratio. name the variable. **wet-bulb** is another T; it is not dew point. mixing ratio and specific humidity are mass-based; they travel with the parcel better than RH.
-
-**cloud** is condensed water (or ice) suspended. form names (cumulus, stratus, cirrus, nimbus as the old genera) are a classification. a satellite product is a fetch.
-
-**precipitation:** rain, drizzle, snow, sleet, graupel, hail as kinds. **how** (warm rain, ice process) is a microphysics course. **amount** is a measurement (gauge, radar estimate with a method). radar QPE is a model+obs blend — say so.
-
-**fog** is a cloud on the ground. **dew** and **frost** are surface condensation/deposition.
-
-**check:** vapor vs condensate. RH vs dew point. amount → obs.
+1. **The Troposphere:** Heated from below by terrestrial radiation absorbed at Earth's surface. Convection and turbulent mixing dominate. Temperature decreases with height at an average environmental lapse rate of $\Gamma \approx 6.5\text{ K/km}$.
+2. **The Stratosphere:** Exhibits a permanent **temperature inversion** ($dT/dz > 0$). Solar ultraviolet radiation ($\lambda < 240\text{ nm}$) photolyzes molecular oxygen to create the **Ozone Layer** ($\text{O}_3$); absorption of UV-B and UV-C heats the upper stratosphere. This strong thermal inversion acts as a rigid lid, suppressing vertical convection and capping thunderstorm updrafts into flat anvil clouds.
 
 ---
 
-## 6. stability and convection
+## 3. Atmospheric Moisture, Condensation & Cloud Microphysics
 
-a **parcel** lifted (or pushed) may be denser or lighter than its surroundings. **stability** is that comparison.
+### 3.1 The Clausius-Clapeyron Relationship
 
-**lapse rate** is how T changes with height in the environment. **adiabatic** rates are the parcel’s T change if no mixing and no condensation / with condensation. the numbers (K/km): fetch a meteo table / COESA. do not recite.
+Water is the only atmospheric constituent that undergoes phase transitions between vapor, liquid, and solid within ordinary terrestrial temperature ranges. 
 
-**CAPE, CIN, lifted index** are sounding-derived indices. they are computed, not remembered. a live sounding: SPC / University of Wyoming archive / the Met service.
+The saturation vapor pressure $e_s(T)$—the partial pressure of water vapor in dynamic equilibrium with a flat surface of pure liquid water—is governed by the **Clausius-Clapeyron Equation**:
+$$\frac{de_s}{dT} = \frac{L_v e_s}{R_v T^2}$$
+where $L_v \approx 2.50 \times 10^6\text{ J}\cdot\text{kg}^{-1}$ is the latent heat of vaporization and $R_v = 461.5\text{ J}\cdot\text{kg}^{-1}\cdot\text{K}^{-1}$.
 
-**convection** is buoyancy-driven vertical motion. it makes showers and thunderstorms (ch 9) when moisture and a trigger join.
+Approximated empirically by the Tetens equation:
+$$e_s(T) = 6.112 \exp\left( \frac{17.67 T}{T + 243.5} \right) \quad [\text{hPa, with } T \text{ in } ^\circ\text{C}]$$
+- **The Core Climatological Rule:** Atmospheric water-holding capacity increases exponentially with temperature at approximately **$7\%$ per degree Celsius**. A warm tropical air mass at $30^\circ\text{C}$ can hold more than three times as much water vapor as a temperate air mass at $10^\circ\text{C}$, fueling extreme precipitation events.
 
-**orographic** lift: the mountain is the trigger. **convergence** at the surface is another.
+### 3.2 Atmospheric Humidity Metrics
 
-**check:** environment vs parcel. index → computed from a named sounding.
-
----
-
-## 7. wind
-
-wind exists because **pressure is not uniform** and the earth **rotates**.
-
-**pressure-gradient** force: air is pushed toward lower pressure. **Coriolis** (named): apparent deflection in the rotating frame — right in the northern hemisphere, left in the southern, for the usual large-scale wind. **friction** slows and turns the wind near the surface. **geostrophic** is the balance of PGF and Coriolis when you neglect friction and acceleration — a model, not the ground. **gradient wind** adds curvature. **ageostrophic** leftovers are how systems intensify.
-
-**Buys Ballot** (rule of thumb, NH): with the wind at your back, low pressure is on the left — a geostrophic cartoon, not a forecast.
-
-**global cells** (names): Hadley, Ferrel, polar. **trade winds, westerlies, doldrums, ITCZ** as observed patterns. they move with season. a climatology map: NCEI / NASA.
-
-**jet stream** is a fast upper current. position *today*: fetch NCEP / NWS. this book does not place it from memory.
-
-**local:** sea breeze, mountain/valley, downslope (chinook / foehn as names), urban. fetch the local forecast discussion if the job is *this afternoon*.
-
-**check:** scale (global / synoptic / meso / local). model vs obs.
+- **Relative Humidity ($RH$):** Ratio of actual vapor pressure to saturation vapor pressure:
+  $$RH = \frac{e}{e_s(T)} \times 100\%$$
+- **Dewpoint Temperature ($T_d$):** The temperature to which moist air must be cooled at constant pressure and moisture content to reach complete saturation ($RH = 100\%$). Dewpoint directly measures absolute moisture content; relative humidity is a function of both moisture and current temperature.
 
 ---
 
-## 8. fronts and midlatitude cyclones
+## 4. Atmospheric Stability & Parcel Thermodynamics
 
-a **front** is a boundary between air masses. weather at a front is the *change*: wind shift, T, dew point, pressure tendency, clouds. on a surface chart, fronts are drawn where those gradients concentrate.
+### 4.1 Dry and Moist Adiabatic Lapse Rates
 
-| front | working picture |
-|---|---|
-| **cold** | colder air advances; often a sharper T drop, a wind shift, a line of convection possible |
-| **warm** | warmer air advances; often a broader cloud/precip shield ahead |
-| **stationary** | air masses stall; weather can hang |
-| **occluded** | the cold front has caught the warm front in the classic cartoon; the warm sector is lifted off the surface |
+When an air parcel rises, it expands against lower ambient environmental pressure, performing mechanical work and cooling adiabatically without exchanging heat with surrounding air:
+1. **Dry Adiabatic Lapse Rate ($\Gamma_d$):** Un-saturated air cools at a constant rate governed by the First Law of Thermodynamics:
+   $$\Gamma_d = \frac{g}{c_p} \approx 9.8\text{ K}\cdot\text{km}^{-1} \quad (\approx 9.8^\circ\text{C}\text{ per 1,000 meters})$$
+2. **Moist (Saturated) Adiabatic Lapse Rate ($\Gamma_m$):** Once rising air reaches its **Lifting Condensation Level (LCL)**, water vapor condenses into liquid cloud droplets. Condensation releases latent heat ($L_v$), partially offsetting expansion cooling:
+   $$\Gamma_m = \Gamma_d \left[ \frac{1 + \frac{L_v w_s}{R_d T}}{1 + \frac{L_v^2 w_s}{c_p R_v T^2}} \right] \approx 4 - 7\text{ K}\cdot\text{km}^{-1}$$
+   $\Gamma_m$ is lowest in warm, tropical air where latent heat release is massive.
 
-these are **names of analyses**, not laws. a real chart can be messier than the four icons. fetch the NWS WPC surface analysis if the job is *today’s* fronts.
+### 4.2 Vertical Atmospheric Stability Criteria
 
-an **air mass** is a large body of air with a history (continental/maritime, polar/tropical as the usual letters: cP, mT, …). source region is geography. air masses modify as they move.
+Atmospheric stability dictates whether vertical convection is suppressed or erupts into deep thunderstorms:
+```
+Stability Regime             Environmental Lapse Rate (Γ_env = -dT/dz)
+-----------------------------------------------------------------------
+Absolutely Stable            Γ_env < Γ_m < Γ_d
+Conditionally Unstable       Γ_m < Γ_env < Γ_d   (Unstable IF saturated)
+Neutral                      Γ_env = Γ_d (dry) or Γ_env = Γ_m (saturated)
+Absolutely Unstable          Γ_env > Γ_d         (Violent mixing, rare)
+```
 
-**midlatitude cyclone** (extratropical): a low with fronts, fed by temperature contrast (**baroclinic**). it is not a tropical cyclone. the Norwegian-school cartoon (open wave → occlusion) is a *sketch*. a real storm is a chart: NWS WPC / Met Office. upper-level support (trough, jet streak) is why some surface lows deepen and some do not — fetch the discussion, do not diagnose a bomb from a memory of millibars.
-
-**high** (anticyclone): often quieter, not always. night fog, winter cold: possible. fetch the discussion.
-
-**how to read a surface chart (NWS WPC):**
-
-1. find the **lows and highs** (MSLP labels). the number is reduced pressure, not station pressure.
-2. find the **fronts** (symbols: cold triangles, warm semicircles, occluded pips, stationary both).
-3. note **isobars**: close packing means a strong pressure gradient and, usually, stronger wind.
-4. match to the **forecast discussion** if the job is *why this weather*, not just the icon.
-5. a cartoon in this book is not the chart. the chart is the fetch.
-
-**check:** extra-tropical vs tropical. front type. chart vs cartoon.
-
----
-
-## 9. thunderstorms and tornadoes
-
-a **thunderstorm** is a convective storm with lightning. ingredients (usual undergrad list): moisture, instability, lift. **shear** organizes it.
-
-**kinds** (names): single-cell, multicell, supercell, squall line, MCS. **severe** is a *definition* on a NWS/SPC page (hail size, wind, tornado) — fetch the threshold. do not recite an inch.
-
-**lightning** is an electrical discharge. distance tricks and “count the seconds” mnemonics are not this book’s SoT; shelter is the safety page (NWS).
-
-**tornado** is a violently rotating column, from cloud to ground. **EF scale** is a *damage* scale (NWS/SPC). wind bands on that scale: fetch. a tornado is not a tropical cyclone and not a dust devil.
-
-**watch vs warning.** watch: conditions favorable in a region and window. warning: the hazard is occurring or imminent for a smaller place. NWS. this book does not issue either.
-
-**check:** convective vs synoptic. watch vs warning. EF is damage, not a measured wind unless they measured one.
+- **Skew-T $\log P$ Thermodynamics:**
+  - **Level of Free Convection (LFC):** Altitude where an air parcel becomes warmer and more buoyant than the surrounding environment.
+  - **Equilibrium Level (EL):** Altitude where the parcel temperature drops back to match environmental temperature (the anvil cap).
+  - **Convective Available Potential Energy (CAPE):** The integrated buoyant energy powering thunderstorm updrafts:
+    $$\text{CAPE} = \int_{z_{\text{LFC}}}^{z_{\text{EL}}} g \left( \frac{T_{v,\text{parcel}} - T_{v,\text{env}}}{T_{v,\text{env}}} \right) dz \quad [\text{J}\cdot\text{kg}^{-1}]$$
+    $\text{CAPE} > 2000\text{ J/kg}$ indicates high potential for severe convective weather.
 
 ---
 
-## 10. tropical cyclones
+## 5. Dynamic Meteorology: Forces & The Geostrophic Balance
 
-a **tropical cyclone** is a warm-core low over warm water, with organized convection and a closed surface circulation. **hurricane / typhoon / cyclone** are regional names for the same class above a stated wind threshold. the threshold and the **Saffir–Simpson** (or regional) category: **NHC / JTWC / JMA / WMO** fetch. do not recite a knot.
+Air motion in the horizontal plane is governed by Newton's Second Law formulated in an accelerating, rotating terrestrial frame of reference:
+$$\frac{D\mathbf{v}}{Dt} = -\frac{1}{\rho}\nabla P - 2\boldsymbol{\Omega} \times \mathbf{v} + \mathbf{g}^* + \mathbf{F}_{\text{friction}}$$
 
-**not** a midlatitude cyclone: no fronts as the engine; the engine is latent heat and a warm ocean. **extratropical transition** is a named change of type.
+### 5.1 The Four Horizontal Atmospheric Forces
 
-**track and intensity** *now*: NHC (Atlantic/East Pacific) / CPHC / JTWC / JMA / the RSMC. this book does not forecast a landfall.
+1. **Horizontal Pressure Gradient Force ($\mathbf{F}_{\text{PGF}}$):** The primary initiating force of all wind, directed perpendicular to isobars from high pressure toward low pressure:
+   $$\mathbf{F}_{\text{PGF}} = -\frac{1}{\rho}\nabla P$$
+2. **The Coriolis Force ($\mathbf{F}_{\text{Co}}$):** An apparent inertial force arising from Earth's counterclockwise rotation (angular velocity $\Omega \approx 7.292 \times 10^{-5}\text{ rad}\cdot\text{s}^{-1}$):
+   $$\mathbf{F}_{\text{Co}} = -f (\mathbf{k} \times \mathbf{v}), \quad \text{where } f = 2\Omega \sin\phi \text{ (Coriolis Parameter)}$$
+   Deflects moving air to the **right** in the Northern Hemisphere and to the **left** in the Southern Hemisphere. $f = 0$ at the equator ($\phi = 0^\circ$); maximum at the poles.
+3. **Centripetal Acceleration:** Operates along curved isobars around circular pressure centers.
+4. **Boundary Layer Friction:** Slows wind within the lowest $1\text{ km}$ of the troposphere, causing surface winds to angle across isobars into low pressure centers (**Ekman pumping**).
 
-**storm surge, rain, wind, tornadoes** are different hazards of the same storm. name which.
+### 5.2 The Geostrophic Wind Balance
 
-**check:** basin and the issuing centre. category is a wind definition, not a total-damage score.
+In the free troposphere above the friction layer, horizontal air motion reaches a quasi-steady balance between the Pressure Gradient Force and the Coriolis Force:
+```
+Northern Hemisphere Geostrophic Balance:
+                     LOW PRESSURE
+                          ^
+                          |  Pressure Gradient Force (PGF)
+                          |
+   WIND DIRECTION --------*-------->
+   (Along Isobars)        |
+                          |  Coriolis Force (Co)
+                          v
+                     HIGH PRESSURE
+```
 
----
+$$\mathbf{v}_g = \frac{1}{\rho f} \mathbf{k} \times \nabla P$$
+In component form:
+$$u_g = -\frac{1}{\rho f} \frac{\partial P}{\partial y}, \quad v_g = \frac{1}{\rho f} \frac{\partial P}{\partial x}$$
+- **Buys Ballot's Law:** In the Northern Hemisphere, if you stand with your back to the wind, lower atmospheric pressure lies to your left and higher pressure lies to your right.
 
-## 11. forecasting
+### 5.3 The Thermal Wind & Jet Streams
 
-a **forecast** is a model (or a human using models and obs) speaking about a **valid time**. it has a **source**. it is not a feeling and not this textbook.
+The **Thermal Wind** is not a physical wind, but the vertical vector shear of the geostrophic wind between two pressure levels ($\mathbf{v}_T = \mathbf{v}_{g2} - \mathbf{v}_{g1}$). 
 
-**obs:** surface stations, radiosondes, radar, satellite, aircraft, ships, profilers. **analysis** is the estimated state now. **NWP** is the equations stepped forward (physics + numerics + a grid). **ensemble** is many runs for spread. **MOS** and **nowcast** are other layers. name which.
-
-**verification** is methods pack: a score on a stated set. do not quote a “percent accurate” from memory.
-
-**how to fetch a US forecast (NWS).** for a place in the US:
-
-1. open **https://www.weather.gov/** (or the local WFO page).
-2. set the **point**: lat/lon, city, or click the map.
-3. read **now** (obs, radar, warnings) vs **forecast** (period, valid time).
-4. open the **forecast discussion** (AFD) when you need the *why* — that is the human meteorologist’s reasoning on the models.
-5. watches / warnings / advisories are products with a VTEC and a polygon. the map on weather.gov is the living list. this book does not issue them.
-6. aviation: `aviationweather.gov` / the state’s AIS.
-7. if they asked *today*, fetch *today*. yesterday’s screenshot is not a forecast.
-
-elsewhere: Met Office, JMA, ECMWF, the named national service. say the issuing office.
-
-**NWS product names you will actually open:**
-
-| product | is |
-|---|---|
-| **AFD** | area forecast discussion — the why |
-| **ZFP / PFM** | zone / point forecast — the what, with valid times |
-| **hazard map** | watches, warnings, advisories in force |
-| **radar / satellite** | obs now, not a day-3 forecast |
-| **WPC surface analysis** | fronts and lows as drawn this hour |
-| **SPC convective outlook** | severe risk *categories* for a day, not a warning |
-| **NHC advisory** | tropical cyclone track/intensity for a named storm |
-
-**limits.** chaos: small errors grow. a day-8 forecast is a different object from a nowcast. say the lead time.
-
-**check:** valid time. issuing office. deterministic vs ensemble.
+Combining the geostrophic and hydrostatic equations yields:
+$$\frac{\partial \mathbf{v}_g}{\partial \ln P} = -\frac{R_d}{f} \mathbf{k} \times \nabla_p T$$
+- **The Jet Stream Engine:** The sharp horizontal temperature gradient between the cold polar air mass and warm mid-latitude air mass forces geostrophic winds to intensify with height. This vertical thermal wind shear concentrates into narrow, high-velocity atmospheric rivers near the tropopause ($300-200\text{ hPa}$): the **Polar Front Jet Stream** (speeds exceeding $150\text{ knots}$).
 
 ---
 
-## 12. climate as statistics
+## 6. Synoptic Meteorology: Air Masses, Fronts & Extratropical Cyclones
 
-**climate** is the distribution of weather over a stated period at a place (or a globe). **normals** (often 30 years) are a product: NCEI / WMO. a “climate of X” without the period is incomplete.
+### 6.1 Frontal Boundaries
 
-**Köppen** and cousins are *classifications* of those statistics. geography pack owns the atlas of belts.
+A front is a sloping transition zone separating two contrasting air masses:
+1. **Cold Front:** Dense, cold polar air advances, wedging steeply beneath warm, moist air. Produces rapid convective uplift, narrow bands of intense showers or thunderstorms, and sharp post-frontal wind shifts (southwesterly to northwesterly) and pressure rises.
+2. **Warm Front:** Warm, buoyant air overrides retreating cold air along a gentle slope ($1:100$ to $1:200$). Produces widespread stratiform cloud decks (cirrus $\rightarrow$ altostratus $\rightarrow$ nimbostratus) and persistent, steady precipitation.
+3. **Occluded Front:** Occurs when a rapidly advancing cold front overtakes a warm front, lifting the warm sector completely off the surface.
 
-**forcing and feedback** as names: solar, volcanic, greenhouse gases, albedo, water-vapor, clouds. a sensitivity in °C per doubling: IPCC / a named paper, not memory.
+### 6.2 The Life Cycle of an Extratropical Cyclone
 
-**observed change** (global T, sea level, ice, extremes) is an assessment product. **IPCC**, **NASA GISS**, **NCEI**, **WMO state of the climate**. cite the report year. do not invent a degree.
-
-**attribution** of a single storm to climate change is a methods problem. the honest sentence is often “this kind of event, this shift of odds” — fetch the attribution page if the job needs it.
-
-**check:** period. place vs globe. assessment vs this afternoon’s rain.
-
----
-
-## 13. compute and fetch
-
-| job | do |
-|---|---|
-| US forecast, obs, discussion | **NWS** https://www.weather.gov/ |
-| US model/guidance | **NCEP** / WPC |
-| tornado / severe | **SPC** |
-| Atlantic / E. Pacific tropical | **NHC** |
-| climate normals, archives | **NCEI** |
-| climate education / maps | **climate.gov** |
-| seasonal | **CPC** |
-| global assessment | **IPCC** · **WMO** |
-| satellite / earth energy | **NASA** (GISS, Earth Observatory) |
-| CO₂ / gases | **NOAA GML** |
-| standard atmosphere | **ICAO** / **NASA COESA** |
-| international forecast | **Met Office** · **JMA** · **ECMWF** · the national service |
-| undergrad dynamics | **MIT OCW** atmosphere-ocean |
-| NWS education modules | **NWS JetStream** |
-| T/p arithmetic | **EasyLM calc** + **EasyLM units** |
-| R, other constants | **NIST** https://physics.nist.gov/cuu/Constants/ |
-| fluid / gas law | `../physics/` |
-
-never invent a forecast, a category wind, a current temperature, or a climate degree. format a search. cite the URL. `ok` false → DONT_KNOW.
-
-adjacent: `../physics/` (fluid, radiation) · `../geography/` (place, belts) · `../agriculture/` (frost, drought, growing season) · `../methods/` (verification). this pack owns the atmosphere’s *weather* vocabulary and where to fetch the living map.
+Mid-latitude storms (low-pressure cyclones) extract available potential energy from the horizontal temperature gradient via **Baroclinic Instability** (the Norwegian Cyclone Model):
+```
+Stage 1: Stationary Polar Front   Stage 2: Wave Cyclogenesis    Stage 3: Mature Occlusion
+      COLD POLAR AIR                     COLD AIR                     COLD AIR
+   ======================             \       /                     \     /
+                                       \  L  /                       \ L /  (Occlusion)
+      WARM TROPICAL AIR                 \   /                         ---
+                                      WARM SECTOR                  WARM SECTOR (Cut off)
+```
 
 ---
 
-## 14. how to attack a problem
+## 7. Tropical Cyclones: Genesis, Thermodynamic Engines & Saffir-Simpson Scale
 
-1. name **now / forecast / climate**.
-2. name **place** and **clock**.
-3. name what is **measured**.
-4. name the **system** (front, convection, tropical, orographic, …).
-5. if they asked what it is doing **today** — fetch NWS / the Met service. stop inventing.
-6. if they asked a **warning** — the issuing office, not this book.
-7. constants, winds of a category, CO₂, lapse rate → LINK_INDEX, cite.
-8. compute only from stated numbers, with EasyLM calc/units.
+### 7.1 Tropical Cyclogenesis Prerequisites
 
-stuck patterns:
+Unlike mid-latitude cyclones (which derive energy from horizontal temperature contrasts), tropical cyclones (hurricanes, typhoons) are warm-core, non-frontal vortices powered entirely by latent heat release from warm ocean waters.
 
-| symptom | try |
-|---|---|
-| climate sentence for this afternoon | ch 1, 11 |
-| hurricane called a tornado | ch 9–10 |
-| RH treated as water amount | ch 5 |
-| remembered category-3 knots | ch 10. NHC |
-| jet stream placed from memory | ch 7. NCEP |
-| wiki composition percent as SoT | ch 2. NOAA / NASA |
-| Beaufort as a knot from scratch | ch 3. WMO |
-| invented 7-day skill | ch 11. methods |
-| front type from a cartoon only | ch 8. WPC analysis |
+Genesis requires six physical conditions (Gray's parameters):
+1. **Sea Surface Temperature (SST):** Ocean temperatures $\ge 26.5^\circ\text{C}$ ($80^\circ\text{F}$) through a depth of at least $50\text{ meters}$.
+2. **Low Vertical Wind Shear:** Weak shear ($< 20\text{ knots}$) between the surface and $200\text{ hPa}$ to prevent tilting and ventilation of the warm core.
+3. **Coriolis Force:** Distance of at least $5^\circ$ latitude away from the equator ($f \ne 0$) to impart cyclonic spin.
+4. **Mid-Tropospheric Moisture:** High relative humidity at $700\text{ hPa}$ to prevent dry air entrainment from dissipating updrafts.
+5. **Conditional Instability:** Abundant tropical convective available potential energy.
+6. **Pre-Existing Low-Level Disturbance:** An easterly African wave or tropical wave providing convergent vorticity.
+
+### 7.2 The Carnot Heat Engine & Eye Dynamics
+
+Kerry Emanuel modeled the tropical cyclone as a finite-amplitude **Carnot Heat Engine**:
+- **Heat Input ($T_{\text{in}} \approx 300\text{ K}$):** Air spiraling inward across the warm ocean surface absorbs sensible and latent heat at near-constant temperature.
+- **Adiabatic Expansion:** Air erupts violently upward within the **eyewall**, releasing latent heat.
+- **Heat Rejection ($T_{\text{out}} \approx 200\text{ K}$):** Exhaust air flows anticyclonically outward near the tropopause, radiating heat to space.
+- **The Eye:** Sinking air (subsidence) within the central vortex warms adiabatically, dissolving clouds to create a calm, clear center enveloped by the catastrophic winds of the eyewall.
 
 ---
 
-## close
+## 8. Authoritative Meteorological Doors & Observational Repositories
 
-weather is the air at a time and place. climate is the long average. fetch the NWS map. LINK_INDEX.md is doors.
-
-home: `stacks/weather/TEXTBOOK.md`
+Operational meteorology requires access to official real-time satellite, radar, and computational modeling centers:
+- **US Operational Forecasts & Warnings:** National Weather Service (**NWS**) — `https://www.weather.gov/`.
+- **Severe Storm Convective Outlooks & Mesoscale Discussions:** Storm Prediction Center (**SPC**) — `https://www.spc.noaa.gov/`.
+- **Tropical Cyclone Bulletins & Track Ensembles:** National Hurricane Center (**NHC**) — `https://www.nhc.noaa.gov/`.
+- **Global Climate Monitoring & Paleoclimatology:** NOAA National Centers for Environmental Information (**NCEI**) — `https://www.ncei.noaa.gov/`.
+- **Global Medium-Range Numerical Forecasting:** European Centre for Medium-Range Weather Forecasts (**ECMWF**) — `https://www.ecmwf.int/`.
+- **International Atmospheric Standards:** World Meteorological Organization (**WMO**) — `https://wmo.int/`.

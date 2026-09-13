@@ -1,0 +1,192 @@
+{
+  "course": {
+    "id": "math-calc-1",
+    "stack": "math",
+    "dewey": "510",
+    "title": "Calculus I walk",
+    "level": "undergrad",
+    "hours": 48,
+    "license": {
+      "spdx": "CC-BY-4.0",
+      "attribution": "Adapted from OpenStax Calculus Volume 1 (CC BY 4.0) and EasyLM math stack.",
+      "sourceUrl": "https://openstax.org/details/books/calculus-volume-1"
+    },
+    "units": [
+      {
+        "id": "u1",
+        "title": "Logic of proof",
+        "lessons": [
+          {
+            "id": "math-calc-1-u1-l",
+            "title": "Logic of proof",
+            "reading": {
+              "stack": "math",
+              "chapter": "1. Mathematical Logic & Structural Proof Systems"
+            },
+            "doors": [
+              "https://openstax.org/details/books/calculus-volume-1"
+            ],
+            "items": [
+              "math-calc-1-u1-read",
+              "math-calc-1-u1-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u2",
+        "title": "Numbers",
+        "lessons": [
+          {
+            "id": "math-calc-1-u2-l",
+            "title": "Numbers",
+            "reading": {
+              "stack": "math",
+              "chapter": "2. Number Systems & Set-Theoretic Foundations"
+            },
+            "doors": [
+              "https://dlmf.nist.gov/"
+            ],
+            "items": [
+              "math-calc-1-u2-read",
+              "math-calc-1-u2-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u3",
+        "title": "Linear algebra",
+        "lessons": [
+          {
+            "id": "math-calc-1-u3-l",
+            "title": "Linear algebra",
+            "reading": {
+              "stack": "math",
+              "chapter": "4. Linear Algebra, Spectral Theory & Inner Product Spaces"
+            },
+            "doors": [
+              "https://openstax.org/details/books/calculus-volume-1"
+            ],
+            "items": [
+              "math-calc-1-u3-read",
+              "math-calc-1-u3-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u4",
+        "title": "Limits",
+        "lessons": [
+          {
+            "id": "math-calc-1-u4-l",
+            "title": "Limits",
+            "reading": {
+              "stack": "math",
+              "chapter": "5. Real Analysis: Metric Spaces, Continuity & Limits"
+            },
+            "doors": [
+              "https://openstax.org/details/books/calculus-volume-1"
+            ],
+            "items": [
+              "math-calc-1-u4-read",
+              "math-calc-1-u4-quiz",
+              "math-calc-1-midterm"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u5",
+        "title": "Calculus",
+        "lessons": [
+          {
+            "id": "math-calc-1-u5-l",
+            "title": "Calculus",
+            "reading": {
+              "stack": "math",
+              "chapter": "6. Differential & Integral Calculus"
+            },
+            "doors": [
+              "https://openstax.org/details/books/calculus-volume-1",
+              "https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/"
+            ],
+            "items": [
+              "math-calc-1-u5-read",
+              "math-calc-1-u5-quiz",
+              "math-calc-1-essay-1"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u6",
+        "title": "Vector calculus",
+        "lessons": [
+          {
+            "id": "math-calc-1-u6-l",
+            "title": "Vector calculus",
+            "reading": {
+              "stack": "math",
+              "chapter": "7. Vector Calculus & Integral Field Theorems"
+            },
+            "doors": [
+              "https://openstax.org/details/books/calculus-volume-1"
+            ],
+            "items": [
+              "math-calc-1-u6-read",
+              "math-calc-1-u6-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u7",
+        "title": "Differential equations",
+        "lessons": [
+          {
+            "id": "math-calc-1-u7-l",
+            "title": "Differential equations",
+            "reading": {
+              "stack": "math",
+              "chapter": "9. Differential Equations & Dynamical Systems"
+            },
+            "doors": [
+              "https://openstax.org/details/books/calculus-volume-1"
+            ],
+            "items": [
+              "math-calc-1-u7-read",
+              "math-calc-1-u7-quiz",
+              "math-calc-1-project"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u8",
+        "title": "Chance",
+        "lessons": [
+          {
+            "id": "math-calc-1-u8-l",
+            "title": "Chance",
+            "reading": {
+              "stack": "math",
+              "chapter": "10. Probability Theory & Stochastic Processes"
+            },
+            "doors": [
+              "https://dlmf.nist.gov/"
+            ],
+            "items": [
+              "math-calc-1-u8-read",
+              "math-calc-1-u8-quiz",
+              "math-calc-1-essay-2",
+              "math-calc-1-final"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "itemCount": 21
+}

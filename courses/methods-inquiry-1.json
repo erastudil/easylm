@@ -1,0 +1,191 @@
+{
+  "course": {
+    "id": "methods-inquiry-1",
+    "stack": "methods",
+    "dewey": "001",
+    "title": "Inquiry I — How we know",
+    "level": "undergrad",
+    "hours": 40,
+    "license": {
+      "spdx": "AGPL-3.0-or-later",
+      "attribution": "EasyLM The Stacks · methods textbook. Doors: NIST e-handbook, ASA p-value statement, COS.",
+      "sourceUrl": "https://www.itl.nist.gov/div898/handbook/"
+    },
+    "units": [
+      {
+        "id": "u1",
+        "title": "Demarcation",
+        "lessons": [
+          {
+            "id": "methods-inquiry-1-u1-l",
+            "title": "Demarcation",
+            "reading": {
+              "stack": "methods",
+              "chapter": "1. The Philosophy of Science & Epistemological Demarcation"
+            },
+            "doors": [
+              "https://www.itl.nist.gov/div898/handbook/"
+            ],
+            "items": [
+              "methods-inquiry-1-u1-read",
+              "methods-inquiry-1-u1-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u2",
+        "title": "Hypotheses",
+        "lessons": [
+          {
+            "id": "methods-inquiry-1-u2-l",
+            "title": "Hypotheses",
+            "reading": {
+              "stack": "methods",
+              "chapter": "2. Hypothesis Formulation, Operationalization & Decision Errors"
+            },
+            "doors": [
+              "https://www.itl.nist.gov/div898/handbook/"
+            ],
+            "items": [
+              "methods-inquiry-1-u2-read",
+              "methods-inquiry-1-u2-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u3",
+        "title": "Design",
+        "lessons": [
+          {
+            "id": "methods-inquiry-1-u3-l",
+            "title": "Design",
+            "reading": {
+              "stack": "methods",
+              "chapter": "3. Experimental Design, Controls & Randomization"
+            },
+            "doors": [
+              "https://www.itl.nist.gov/div898/handbook/"
+            ],
+            "items": [
+              "methods-inquiry-1-u3-read",
+              "methods-inquiry-1-u3-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u4",
+        "title": "Measurement",
+        "lessons": [
+          {
+            "id": "methods-inquiry-1-u4-l",
+            "title": "Measurement",
+            "reading": {
+              "stack": "methods",
+              "chapter": "4. Measurement Theory & Uncertainty Propagation (GUM)"
+            },
+            "doors": [
+              "https://www.bipm.org/en/committees/jc/jcgm/publications"
+            ],
+            "items": [
+              "methods-inquiry-1-u4-read",
+              "methods-inquiry-1-u4-quiz",
+              "methods-inquiry-1-midterm"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u5",
+        "title": "Inference",
+        "lessons": [
+          {
+            "id": "methods-inquiry-1-u5-l",
+            "title": "Inference",
+            "reading": {
+              "stack": "methods",
+              "chapter": "5. Statistical Inference, Effect Sizes & Power Analysis"
+            },
+            "doors": [
+              "https://www.amstat.org/asa/files/pdfs/P-ValueStatement.pdf"
+            ],
+            "items": [
+              "methods-inquiry-1-u5-read",
+              "methods-inquiry-1-u5-quiz",
+              "methods-inquiry-1-essay-1"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u6",
+        "title": "Bayes",
+        "lessons": [
+          {
+            "id": "methods-inquiry-1-u6-l",
+            "title": "Bayes",
+            "reading": {
+              "stack": "methods",
+              "chapter": "6. Bayesian Inquiry & Belief Revision"
+            },
+            "doors": [
+              "https://openstax.org/details/books/introductory-statistics-2e"
+            ],
+            "items": [
+              "methods-inquiry-1-u6-read",
+              "methods-inquiry-1-u6-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u7",
+        "title": "Cause",
+        "lessons": [
+          {
+            "id": "methods-inquiry-1-u7-l",
+            "title": "Cause",
+            "reading": {
+              "stack": "methods",
+              "chapter": "7. Causal Inference & Directed Acyclic Graphs (DAGs)"
+            },
+            "doors": [
+              "https://www.itl.nist.gov/div898/handbook/"
+            ],
+            "items": [
+              "methods-inquiry-1-u7-read",
+              "methods-inquiry-1-u7-quiz",
+              "methods-inquiry-1-project"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u8",
+        "title": "Surveys",
+        "lessons": [
+          {
+            "id": "methods-inquiry-1-u8-l",
+            "title": "Surveys",
+            "reading": {
+              "stack": "methods",
+              "chapter": "8. Survey Methodology, Sampling & Observational Biases"
+            },
+            "doors": [
+              "https://www.cos.io/"
+            ],
+            "items": [
+              "methods-inquiry-1-u8-read",
+              "methods-inquiry-1-u8-quiz",
+              "methods-inquiry-1-essay-2",
+              "methods-inquiry-1-final"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "itemCount": 21
+}

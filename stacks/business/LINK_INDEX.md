@@ -56,11 +56,11 @@ The authoritative directory of verified government registries, legal entity port
 
 1. **Verify Statutory & Filing Rules:** State corporate formation fees, LLC franchise taxes, licensing requirements, and tax classifications vary by jurisdiction. Never recite statutory fees from memory; fetch the official state or IRS portal.
 2. **Execute via Deterministic Computation:** For any contribution margin, break-even volume, runway, CAC payback, or pipeline velocity calculation, compute deterministically using exact mathematical formulas (`mcp/CALC.md` / `calc`).
-3. **Empty Source = DONT_KNOW:** If a specific industry average margin, customer conversion rate, or local zoning rule cannot be retrieved via verified doors, immediately return **DONT_KNOW**.
+3. **Empty Source = cite the primary door or state unverified:** If a specific industry average margin, customer conversion rate, or local zoning rule cannot be retrieved via verified doors, immediately return **cite the primary door or state unverified**.
 
 ---
 
-## 5. Local Warehouse Cross-References
+## 5. Local Stacks Cross-References
 
 | Domain | File Path |
 |---|---|

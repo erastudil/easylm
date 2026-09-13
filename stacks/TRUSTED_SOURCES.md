@@ -1,5 +1,5 @@
 ---
-title: "EasyLM warehouse — trusted sources"
+title: "The Stacks — Trusted Academic Sources"
 date: "2026-09-13"
 status: living · easylm
 ---
@@ -44,8 +44,30 @@ The Stacks cites **hosts that own the fact**. pack `LINK_INDEX.md` files list th
 | World Bank data | https://data.worldbank.org/ |
 | USGS | https://www.usgs.gov/ |
 
+## open-source reference datasets & knowledge graphs (qwen survey)
+
+vetted, reliable, publicly queryable open-source reference text and table datasets:
+
+| domain | repository / portal | official door |
+|---|---|---|
+| metrology & constants | NIST Reference Measurements | https://physics.nist.gov/ |
+| thermochemistry | NIST Chemistry WebBook | https://webbook.nist.gov/ |
+| chemical biology | NIH PubChem | https://pubchem.ncbi.nlm.nih.gov/ |
+| nuclear physics | BNL NNDC Nuclear Data Archives | https://www.nndc.bnl.gov/ |
+| public law & tax code | US Federal Tax Code (26 U.S.C.) & Statutes | https://www.govinfo.gov/ |
+| national demography | US Census Bureau Open Data | https://data.census.gov/ |
+| relational commons | ConceptNet 5.8 Knowledge Graph | https://conceptnet.io/ |
+| structured knowledge | Wikidata Linked Data Platform | https://www.wikidata.org/ |
+| entity ontologies | DBpedia Semantic Web Extracts | https://dbpedia.org/ |
+| global cartography | OpenStreetMap & Overpass API | https://www.openstreetmap.org/ |
+| citation graphs | ArXiv Open Scientific Preprints | https://arxiv.org/ |
+
 ## refuse as source of truth
 
-homework-help mills, uncited blogs, social proof of a conjecture, a model’s memory of a constant, a scraped formula table with no host.
+homework-help mills, Quizlet dumps, Chegg / CourseHero / Brainly, uncited blogs, social proof of a conjecture, a model’s memory of a constant, a scraped formula table with no host.
+
+## course items
+
+Studio quizzes and exams use **authored keys**. OpenStax CC BY may be adapted with attribution in the pack license line. MIT OCW, PhET, LibreTexts are **doors** — link, do not vendor NC bodies into git. Empty item bank = stub = do not ship.
 
 Wikipedia orients. it does not beat NIST on a constant, IETF on a protocol, or a legislature on a statute.

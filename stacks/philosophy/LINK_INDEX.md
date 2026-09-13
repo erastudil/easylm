@@ -79,11 +79,23 @@ The authoritative directory of verified scholarly portals, primary text reposito
 
 ---
 
-## 5. Verification & Anti-Hallucination Protocol
+## 5. Canonical Philosophers & Thinkers
+
+| Thinker | Era | Tradition / Focus | Wikipedia Reference |
+|---|---|---|---|
+| **Socrates** | c. 470–399 BCE | Classical Greek Ethics, Socratic Method | https://en.wikipedia.org/wiki/Socrates |
+| **René Descartes** | 1596–1650 | Continental Rationalism, Epistemology | https://en.wikipedia.org/wiki/Ren%C3%A9_Descartes |
+| **John Locke** | 1632–1704 | British Empiricism, Epistemology, Social Contract | https://en.wikipedia.org/wiki/John_Locke |
+| **Immanuel Kant** | 1724–1804 | Transcendental Idealism, Deontological Ethics | https://en.wikipedia.org/wiki/Immanuel_Kant |
+| **Bertrand Russell** | 1872–1970 | Analytic Philosophy, Mathematical Logic | https://en.wikipedia.org/wiki/Bertrand_Russell |
+
+---
+
+## 6. Verification & Anti-Hallucination Protocol
 
 1. **Verify Before Quoting:** Never cite an aphorism, maxim, or passage from memory. Always verify against primary text editions (Stephanus, Bekker, ctext, Perseus).
 2. **Translation Sensitivity:** When examining historical texts (e.g., Kant's *Kritik*, Aristotle's *Metaphysics*, Laozi's *Daodejing*), check the original term (e.g., *Anschauung*, *Eudaimonia*, *Wu Wei*) and note standard alternative translations.
-3. **Empty Foundation = DONT_KNOW:** If a specific textual citation, historical publication date, or obscure variant reading cannot be confirmed via verified portals, immediately declare **DONT_KNOW** and initiate a targeted lookup.
+3. **Empty Foundation = cite the primary door or state unverified:** If a specific textual citation, historical publication date, or obscure variant reading cannot be confirmed via verified portals, immediately declare **cite the primary door or state unverified** and initiate a targeted lookup.
 
 ---
 

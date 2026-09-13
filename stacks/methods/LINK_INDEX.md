@@ -42,11 +42,11 @@ if a p-value definition, reporting checklist, or critical value is load-bearing,
 4. fetch the page if you will cite a definition, a checklist item, or a critical value.
 5. if two official pages disagree, say so. do not average them.
 
-## not doors (refuse as SoT)
+## Unverified or Derivative Sources (Do Not Cite as Primary Authority)
 
 homework mills, “p < 0.05 means true,” scraped ANOVA choosers, wiki as the last word on ASA. wiki is **seed** (`ARTICLES.md` / `WIKI_INDEX.md`).
 
-## house paths (local, first)
+## Sovereign Offline Cross-References
 
 | topic | path |
 |---|---|

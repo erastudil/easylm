@@ -59,6 +59,8 @@ The authoritative directory of primary documentation portals, language standards
 | **POSIX** | IEEE POSIX.1 via Open Group | https://pubs.opengroup.org/onlinepubs/9699919799/ |
 | **OCI** | Open Container Initiative specs | https://opencontainers.org/ |
 | **Docker Engine** | One OCI implementation (engine docs) | https://docs.docker.com/engine/ |
+| **OpenStreetMap** | Global geospatial vector data & Overpass | https://www.openstreetmap.org/ |
+| **Wikidata** | Ontological linked data knowledge base | https://www.wikidata.org/ |
 
 ---
 

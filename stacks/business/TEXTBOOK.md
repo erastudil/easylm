@@ -66,6 +66,7 @@ A business enterprise is an institutional system designed to transform economic 
 14. [Chapter 14: Entrepreneurship, Venture Creation & Innovation Systems](#14-entrepreneurship-venture-creation--innovation-systems)
 15. [Chapter 15: Scholarly Corpora, Primary Data Feeds & Citation Standards](#15-scholarly-corpora-primary-data-feeds--citation-standards)
 16. [Chapter 16: Diagnostic Protocols & Organizational Problem-Solving](#16-diagnostic-protocols--organizational-problem-solving)
+17. [Chapter 17: Summary & Synthesis](#17-summary--synthesis)
 
 ---
 
@@ -683,10 +684,7 @@ When analyzing any business enterprise, operations breakdown, or managerial chal
 
 ---
 
-## 17. Summary & Closure
+## 17. Summary & Synthesis
 
-A business enterprise survives only by delivering real value that customers voluntarily purchase, operating with positive unit economics, and aligning human talent around a disciplined operational bottleneck. Measure the fact, respect the constraint, protect the veil, and serve the customer with unwavering integrity.
+A business enterprise survives and compounds over time only by delivering verifiable value that customers voluntarily purchase, maintaining positive unit economics, and aligning human talent around a disciplined operational bottleneck. Measure the reality, respect the bottleneck constraint, protect the corporate legal veil, and serve the customer with unwavering operational integrity.
 
-```
-CITE: stacks/business/TEXTBOOK.md
-```

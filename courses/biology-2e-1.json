@@ -1,0 +1,191 @@
+{
+  "course": {
+    "id": "biology-2e-1",
+    "stack": "biology",
+    "dewey": "570",
+    "title": "Biology 2e walk",
+    "level": "undergrad",
+    "hours": 48,
+    "license": {
+      "spdx": "CC-BY-4.0",
+      "attribution": "Adapted from OpenStax Biology 2e (CC BY 4.0) and EasyLM biology stack. Sequences/accessions: NCBI.",
+      "sourceUrl": "https://openstax.org/details/books/biology-2e"
+    },
+    "units": [
+      {
+        "id": "u1",
+        "title": "Life",
+        "lessons": [
+          {
+            "id": "biology-2e-1-u1-l",
+            "title": "Life",
+            "reading": {
+              "stack": "biology",
+              "chapter": "1. The First Principles of Life and Biological Scale"
+            },
+            "doors": [
+              "https://openstax.org/details/books/biology-2e"
+            ],
+            "items": [
+              "biology-2e-1-u1-read",
+              "biology-2e-1-u1-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u2",
+        "title": "Molecules",
+        "lessons": [
+          {
+            "id": "biology-2e-1-u2-l",
+            "title": "Molecules",
+            "reading": {
+              "stack": "biology",
+              "chapter": "2. Molecular Building Blocks: Water, Carbon & Macromolecules"
+            },
+            "doors": [
+              "https://openstax.org/details/books/biology-2e"
+            ],
+            "items": [
+              "biology-2e-1-u2-read",
+              "biology-2e-1-u2-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u3",
+        "title": "Cell",
+        "lessons": [
+          {
+            "id": "biology-2e-1-u3-l",
+            "title": "Cell",
+            "reading": {
+              "stack": "biology",
+              "chapter": "3. Cellular Architecture: Membranes, Compartments & Rotary Motors"
+            },
+            "doors": [
+              "https://openstax.org/details/books/biology-2e"
+            ],
+            "items": [
+              "biology-2e-1-u3-read",
+              "biology-2e-1-u3-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u4",
+        "title": "Central dogma",
+        "lessons": [
+          {
+            "id": "biology-2e-1-u4-l",
+            "title": "Central dogma",
+            "reading": {
+              "stack": "biology",
+              "chapter": "4. The Central Dogma: Information Flow from DNA to Protein"
+            },
+            "doors": [
+              "https://www.ncbi.nlm.nih.gov/"
+            ],
+            "items": [
+              "biology-2e-1-u4-read",
+              "biology-2e-1-u4-quiz",
+              "biology-2e-1-midterm"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u5",
+        "title": "Genetics",
+        "lessons": [
+          {
+            "id": "biology-2e-1-u5-l",
+            "title": "Genetics",
+            "reading": {
+              "stack": "biology",
+              "chapter": "5. Heredity, Chromosomes & Mendelian Genetics"
+            },
+            "doors": [
+              "https://openstax.org/details/books/biology-2e"
+            ],
+            "items": [
+              "biology-2e-1-u5-read",
+              "biology-2e-1-u5-quiz",
+              "biology-2e-1-essay-1"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u6",
+        "title": "Energy",
+        "lessons": [
+          {
+            "id": "biology-2e-1-u6-l",
+            "title": "Energy",
+            "reading": {
+              "stack": "biology",
+              "chapter": "6. Bioenergetics: Photosynthesis & Cellular Respiration"
+            },
+            "doors": [
+              "https://openstax.org/details/books/biology-2e"
+            ],
+            "items": [
+              "biology-2e-1-u6-read",
+              "biology-2e-1-u6-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u7",
+        "title": "Evolution",
+        "lessons": [
+          {
+            "id": "biology-2e-1-u7-l",
+            "title": "Evolution",
+            "reading": {
+              "stack": "biology",
+              "chapter": "7. Evolution, Natural Selection & The Tree of Life"
+            },
+            "doors": [
+              "https://www.ncbi.nlm.nih.gov/taxonomy"
+            ],
+            "items": [
+              "biology-2e-1-u7-read",
+              "biology-2e-1-u7-quiz",
+              "biology-2e-1-project"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u8",
+        "title": "Ecology",
+        "lessons": [
+          {
+            "id": "biology-2e-1-u8-l",
+            "title": "Ecology",
+            "reading": {
+              "stack": "biology",
+              "chapter": "8. Ecology, Population Dynamics & Biogeochemical Cycles"
+            },
+            "doors": [
+              "https://openstax.org/details/books/biology-2e"
+            ],
+            "items": [
+              "biology-2e-1-u8-read",
+              "biology-2e-1-u8-quiz",
+              "biology-2e-1-essay-2",
+              "biology-2e-1-final"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "itemCount": 21
+}

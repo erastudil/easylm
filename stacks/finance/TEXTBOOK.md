@@ -61,6 +61,7 @@ Finance is the science of **cash flows, claims, valuation, and risk across time 
 14. [Chapter 14: Personal Finance, Capital Allocation & Tax Architecture](#14-personal-finance-capital-allocation--tax-architecture)
 15. [Chapter 15: Scholarly Corpora, Primary Data Feeds & Citation Standards](#15-scholarly-corpora-primary-data-feeds--citation-standards)
 16. [Chapter 16: Diagnostic Protocols & Financial Problem-Solving](#16-diagnostic-protocols--financial-problem-solving)
+17. [Chapter 17: Summary & Synthesis](#17-summary--synthesis)
 
 ---
 
@@ -749,15 +750,12 @@ When analyzing any financial situation, contract, or problem, execute this stand
 | **APR / EAR Confusion** | Treating nominal APR as effective annual compounding| Convert via $\text{EAR} = (1 + r/m)^m - 1$. |
 | **Sunk Cost Fallacy** | Factoring past unrecoverable outlays into NPV | Exclude past costs; evaluate purely incremental cash.|
 | **Single-Name Concentration**| Relying on a single asset's past performance | Diversify non-systematic risk; calculate portfolio $\sigma_p$.|
-| **Hallucinated Market Data** | Stating a stock price or yield from memory | Fetch live quote from verified host or state DONT_KNOW.|
-| **Unauthorized Transfer** | Treating a textbook as a license to move money | Stop. This book does not transfer funds. An admitted, licensed intermediary executes. |
+| **Unverified Market Pricing**| Estimating volatile securities from memory | Verify against primary official exchange feeds (SEC EDGAR, FRED, FINRA).|
+| **Fiduciary Boundary Violation**| Conflating theoretical models with executed transfers | Academic analysis models valuation; execution requires regulated licensed intermediaries.|
 
 ---
 
-## 17. Summary & Closure
+## 17. Summary & Synthesis
 
-Finance connects present decisions to future outcomes through the discipline of accounting and the mathematics of valuation. Verify the identity, name the rate, fetch the price, and ground every claim in verifiable cash.
+Finance connects present decisions to future outcomes through the discipline of accounting and the mathematics of valuation. Verify the identity, name the rate, evaluate discounted cash flows, and ground every claim in verifiable real economic value.
 
-```
-CITE: stacks/finance/TEXTBOOK.md
-```

@@ -235,7 +235,7 @@ the sign is **both sides together**. a sound with no conventional pairing is noi
 
 **langue** vs **parole** (Saussure's names): the shared system vs this utterance. **synchrony** vs **diachrony:** the system at a time vs the system through time. you can study today's grammar without telling the etymology. you can study the etymology without pretending it rules today's meaning (ch 8).
 
-this is a **teaching idea**. Saussure's *Cours de linguistique générale* (1916) was assembled after his death from notes. it is a historical book, not a living standards body. there is no official Saussure site to fetch as SoT. for philosophy of the cut, fetch Stanford Encyclopedia **philosophy of linguistics**. for the text, fetch a named edition from a library. do not invent a homepage.
+this is a **teaching idea**. Saussure's *Cours de linguistique générale* (1916) was assembled after his death from notes. it is a historical book, not a living standards body. there is no official Saussure site to fetch as primary authority. for philosophy of the cut, fetch Stanford Encyclopedia **philosophy of linguistics**. for the text, fetch a named edition from a library. do not invent a homepage.
 
 later structuralists and then **generativists** (ch 11) argued with this picture. you do not need to pick a church to use the two-sided sign as a tool: **form and meaning are paired; neither side is the whole word.**
 
@@ -567,7 +567,7 @@ method against invention:
 
 **morphological transparency** (*un-happy*) is not etymology. it is living structure (ch 2.3). a word can be morphologically opaque and still current (*cranberry*).
 
-**check:** dictionary named, sense numbered, etymology only if the dictionary or a historical grammar funded it. empty hit → DONT_KNOW. never invent a root.
+**check:** dictionary named, sense numbered, etymology only if the dictionary or a historical grammar funded it. empty hit → state unverified. never invent a root.
 
 ---
 
@@ -641,7 +641,7 @@ MIT OCW **24.900 Introduction to Linguistics** is the undergrad door this pack n
 
 ## 11. generative grammar as theory
 
-**Noam Chomsky's** program (from the 1950s onward) is a **theory of what a grammar is**, not a writing handbook and not an official web standard. there is no Chomsky URL in this pack's index. if you need a page, fetch a paper or a textbook citation. do not invent a homepage and call it SoT.
+**Noam Chomsky's** program (from the 1950s onward) is a **theory of what a grammar is**, not a writing handbook and not an official web standard. there is no Chomsky URL in this pack's index. if you need a page, fetch a paper or a textbook citation. do not invent a homepage and call it primary authority.
 
 core teaching claims, as the school actually uses them:
 
@@ -673,7 +673,7 @@ computers and catalogs need **tags**. humans need **names**. they are not the sa
 
 school shape of a tag (read the RFC for the grammar): a **primary language** subtag, then optional **script**, **region**, **variant** subtags, hyphen-separated. examples belong on the IANA registry and W3C's article — fetch them for the language you have. a two-letter code you remember from high school may be ISO 639-1 and still be the wrong tag for the **variety** on the page.
 
-**ISO 639** language codes: the Library of Congress is the coding agency for **ISO 639-2** (Set 2). that LoC page is the authorized list for those three-letter codes. **ISO 639-3** aims at comprehensive coverage of individual languages; it is a different set with a different agency. **do not** treat Ethnologue's product pages as the free public SoT for a code. if you need a catalog of languoids and references, **Glottolog** is a research catalog (Max Planck). speaker counts rot; fetch and date them.
+**ISO 639** language codes: the Library of Congress is the coding agency for **ISO 639-2** (Set 2). that LoC page is the authorized list for those three-letter codes. **ISO 639-3** aims at comprehensive coverage of individual languages; it is a different set with a different agency. **do not** treat Ethnologue's product pages as the free public primary authority for a code. if you need a catalog of languoids and references, **Glottolog** is a research catalog (Max Planck). speaker counts rot; fetch and date them.
 
 **macro-languages** and **language vs dialect** (ch 1) reappear here as tag fights. a tag is an identifier for an information object. it is not a political recognition of a people. still: tagging a person with the wrong language is a practical harm. pick the tag that matches the **text**.
 
@@ -711,7 +711,7 @@ never invent a **code point**, a **byte sequence**, an **etymology**, a **speake
 4. if the job is **a sentence on a page**, ch 6. clauses, then modifiers, then rhetoric.
 5. if the job is **a word**, ch 8. dictionary, numbered sense. no folk root.
 6. if the job is **another language's text**, ch 9. meaning and job, not a swap.
-7. FOUND empty → **DONT_KNOW**. fetch the door in ch 13.
+7. Primary record missing → state unverified. fetch the door in ch 13.
 
 stuck patterns:
 

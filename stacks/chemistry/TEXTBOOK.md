@@ -64,345 +64,445 @@ Chemistry is the science of that interaction. It is the physics of the electron 
 
 ---
 
-## 1. what chemistry is
+## 1. The Atomic Hypothesis and the First Principles of Chemistry
 
-chemistry is what **matter** is made of and how it **changes**. the countable unit is the **mole**. an answer names:
+### 1.1 The Mechanical Intuition: Feynman's Core Axiom
 
-1. the **species** (atoms, ions, molecules, phases)
-2. the **change** (reaction, phase, electron transfer, proton transfer)
-3. the **count** (moles, not grams first)
-4. the **conditions** (T, p, solvent, open vs closed)
-5. the **check** (atoms, charge, units, limiting reagent)
+In his famous lectures on physics, Richard Feynman posed a fundamental question: if all scientific knowledge were erased in a cataclysm and only a single sentence could be passed to the next generation, what statement would convey the most information in the fewest words? The answer was:
 
-four questions, every time:
+> *"All things are made of atoms—little particles that move around in perpetual motion, attracting each other when they are a little distance apart, but repelling upon being squeezed into one another."*
 
-1. what **species**?
-2. is the equation **balanced** (atoms and charge)?
-3. what is **limiting**?
-4. is this **stoich, thermo, equilibrium, acid-base, redox, or organic**?
+Chemistry is the science that governs this attraction and repulsion. At its core, chemistry is not the rote memorization of colorful flames or obscure naming rules; it is the physical study of how atomic nuclei and their surrounding electrons seek lowest-energy configurations.
 
-**macro vs micro.** grams and liters are what you weigh. moles and molecules are what the equation is about. conversion between them is ch 3.
-
-**model.** ideal gas, dilute aqueous, strong acid, elementary step — each has a domain. outside the domain, fetch a better model (van der waals, activity, mechanism).
-
-**check:** if you cannot name the species and the balanced equation, you are not ready to compute a mass.
+Every chemical transformation is governed by five foundational invariants:
+1. **The Conservation of Mass & Nuclei:** In non-nuclear chemical reactions, atoms are neither created nor destroyed. The total number of atoms of each element entering a reaction equals the total number emerging from it.
+2. **The Electrostatic Nature of the Chemical Bond:** Chemical forces are entirely electromagnetic. Negatively charged electrons are attracted to positively charged nuclei; when two atoms share or exchange electrons to achieve lower potential energy, a chemical bond forms.
+3. **The Quantized Nature of the Electron Cloud:** Electrons do not orbit nuclei like planets in continuous solar systems. They occupy discrete, quantized energy states called **orbitals**, defined by solutions to the Schrödinger equation.
+4. **The Thermodynamic Arrow:** Chemical reactions proceed spontaneously only if they increase the net entropy of the universe ($\Delta S_{\text{univ}} > 0$), manifested at constant temperature and pressure as a negative change in Gibbs free energy ($\Delta G < 0$).
+5. **The Countable Bridge (The Mole):** Because atoms are infinitesimally small, macroscopic lab measurements (grams and liters) must be translated into discrete atomic counts via **Avogadro's Constant** ($N_A \approx 6.02214076 \times 10^{23}\text{ mol}^{-1}$).
 
 ---
 
-## 2. atoms and the periodic table
+## 2. Atomic Architecture, Orbitals & The Periodic Table
 
-an **atom** has Z protons (atomic number), a mass number A = Z + neutrons, and electrons that make it neutral or an ion. **isotopes** of an element share Z and differ in neutrons. chemical behavior is mostly Z and the valence electrons; nuclear mass matters for molar mass and for spectroscopy.
+### 2.1 The Nuclear Core and Isotopes
 
-**nuclide notation.** \(^{A}_{Z}\mathrm{X}\) names the isotope. number of neutrons = A − Z. a **neutral atom** has Z electrons. a cation has fewer; an anion has more. write the charge on the species (`Fe^{2+}`, `Cl^{-}`), not as a vibe about “iron-ness.”
+An individual atom consists of a dense, positively charged nucleus surrounded by an electron cloud. The identity of an element is determined exclusively by its **atomic number** $Z$, the number of protons in its nucleus:
+- **Mass Number ($A$):** The total count of nucleons: $A = Z + N$, where $N$ is the number of neutrons.
+- **Nuclide Notation:** $^{A}_{Z}\text{X}$ denotes an isotope of element $\text{X}$. For example, $^{12}_{\phantom{0}6}\text{C}$ has 6 protons and 6 neutrons, while $^{14}_{\phantom{0}6}\text{C}$ has 6 protons and 8 neutrons.
+- **Isotopes:** Atoms with identical $Z$ (same chemical element) but differing $N$. Because chemical behavior is determined by the valence electrons, isotopes exhibit nearly identical chemical reactivity, but differ in mass, nuclear stability (radioactivity), and vibrational/rotational spectra.
 
-**electron configuration** (undergrad): shells and subshells, aufbau as a first sketch, pauli, hund. fill order is a sketch of ground-state occupancy, not a law of every ion. exceptions exist; fetch a named configuration rather than forcing the sketch. valence electrons are the ones that do chemistry; core electrons mostly do not.
+### 2.2 Quantum Numbers and Orbital Architecture
 
-**periodic table** is a map of Z, groups (valence pattern), periods (shell). groups 1 and 2 and 13–18 (IUPAC numbering) carry the main-group story; d-block is the transition metals; f-block the lanthanoids/actinoids. trends to name, values to **fetch** (OpenStax / a table door): atomic radius, ionization energy, electron affinity, electronegativity. do not recite a Pauling number from memory.
+Electrons occupy three-dimensional probability density distributions called **atomic orbitals**, defined by four quantum numbers:
+1. **Principal Quantum Number ($n \in \{1, 2, 3, \dots\}$):** Dictates the main energy level and radial distance of the electron cloud from the nucleus.
+2. **Azimuthal / Angular Momentum Quantum Number ($l \in \{0, 1, \dots, n-1\}$):** Dictates the geometric shape of the orbital ($l = 0 \rightarrow s\text{ (spherical)}$, $l = 1 \rightarrow p\text{ (dumbbell)}$, $l = 2 \rightarrow d\text{ (four-lobed)}$, $l = 3 \rightarrow f$).
+3. **Magnetic Quantum Number ($m_l \in \{-l, \dots, 0, \dots, +l\}$):** Dictates the spatial orientation of the orbital in three dimensions ($2l + 1$ distinct orientations per subshell).
+4. **Spin Magnetic Quantum Number ($m_s \in \{+\frac{1}{2}, -\frac{1}{2}\}$):** Dictates the intrinsic angular momentum of the electron.
 
-**standard atomic weights** are CIAAW/IUPAC recommended values for normal terrestrial material. some elements are **intervals** (H, C, Li, …) because isotopic composition varies. for a precise mass, fetch **CIAAW**. a bottle’s certificate beats the table if they disagree.
+```
+Subshell Structure:
+  s-subshell (l = 0):  1 orbital  --> Holds max  2 electrons
+  p-subshell (l = 1):  3 orbitals --> Holds max  6 electrons
+  d-subshell (l = 2):  5 orbitals --> Holds max 10 electrons
+  f-subshell (l = 3):  7 orbitals --> Holds max 14 electrons
+```
 
-**ions.** metals tend to lose electrons (cations); nonmetals tend to gain (anions). polyatomic ions are named species — fetch the formula if you cannot write it without guessing. isoelectronic species share an electron count; they need not share chemistry.
+### 2.3 Electron Filling Principles
 
-physics pack owns nuclei as particles and spectra as QM. this pack owns the *chemical* atom: valence, table, mole.
+The electronic ground state of an atom is governed by three fundamental physical laws:
+1. **The Aufbau Principle ("Building Up"):** Electrons fill subshells in order of increasing energy, generally approximated by the $(n + l)$ Madelung rule: $1s \rightarrow 2s \rightarrow 2p \rightarrow 3s \rightarrow 3p \rightarrow 4s \rightarrow 3d \rightarrow 4p \dots$
+2. **The Pauli Exclusion Principle:** No two electrons in the same atom can possess the identical set of all four quantum numbers. Consequently, each spatial orbital ($n, l, m_l$) can hold a maximum of two electrons, and they must have opposite (anti-parallel) spins ($m_s = \pm 1/2$).
+3. **Hund's Rule of Maximum Multiplicity:** For degenerate orbitals (orbitals of identical energy, such as the three $2p$ orbitals), electrons occupy separate orbitals singly with parallel spins before pairing up, minimizing electron-electron electrostatic repulsion.
 
----
+### 2.4 Periodic Trends
 
-## 3. the mole and measurement
-
-the **mole** is an SI base unit. it counts specified entities (atoms, molecules, ions, electrons, formula units). **N_A** (Avogadro constant) is a defining constant of the 2019 SI. do not improvise digits: fetch **NIST** CODATA at https://physics.nist.gov/cuu/Constants/ then do arithmetic with EasyLM calc.
-
-**molar mass** M: mass per mole of the specified entity, from CIAAW weights (or a bottle assay). lab units often g/mol, which is the same size as kg/kmol. **n = m / M**. invert: m = n M. entity must match: molar mass of O is not molar mass of O2.
-
-**amount concentration.** amount concentration c = n / V of solution. the old name **molarity** with symbol M meaning mol/L is still lab speech; say T if it matters (volume of the solution depends on T). **molality** b = n(solute) / mass(solvent in kg) — use when T-independence matters. **mole fraction** x_i = n_i / n_total. **mass percent** is 100 × m_i / m_total. these are different numbers; name which.
-
-worked method (dilution, conservation of solute amount):
-
-1. name the solute.
-2. n is the same before and after if you only add solvent: n = c1 V1 = c2 V2.
-3. put the stated volumes and concentrations into EasyLM calc. do not convert mL in your head if you might drop a factor of 1000 — use EasyLM units.
-
-**SI.** chemistry shares m, kg, s, K, mol, A, cd with physics. dimensional check still applies. **R** (molar gas constant) and **F** (Faraday constant): fetch NIST. do not mix cal and J in one line without converting (EasyLM units).
-
-**measurement.** a mass to three decimals is not three decimals of moles unless M is that good. propagate the uncertainty you actually have. significant figures follow the data, not a vibe.
-
-**check:** entity named? n before m? concentration kind named?
-
----
-
-## 4. bonding and molecular shape
-
-**chemical bond:** a lasting arrangement of nuclei and electrons with a lower energy than the separated pieces, on the chemical time scale.
-
-three undergrad sketches:
-
-| kind | picture |
-|---|---|
-| **ionic** | electron transfer; lattice of ions. metals + nonmetals is the cartoon, not a law |
-| **covalent** | shared electron pair. polarity when the atoms differ |
-| **metallic** | delocalized electrons in a lattice of cations |
-
-**lewis** structures are bookkeeping: count valence electrons for the species (watch the charge), place a skeleton, complete octets (hydrogen duet), then multiple bonds if needed. **formal charge** = (valence electrons on the free atom) − (nonbonding electrons) − (½ of bonding electrons). rank candidate structures by small formal charges and negative charge on the more electronegative atom. exceptions (odd electron, expanded octet, electron deficient) exist — fetch the named molecule.
-
-**VSEPR** predicts shape from electron-pair domains around a central atom. two domains: linear. three: trigonal planar (bent if one is a lone pair). four: tetrahedral (trigonal pyramidal or bent if lone pairs). five: trigonal bipyramidal family. six: octahedral family. electron-domain geometry ≠ molecular geometry when lone pairs occupy domains. bond-angle tables: fetch OpenStax. a sketch is not a crystal structure.
-
-**polarity.** a bond is polar when the two atoms differ in electronegativity. a **molecule** is polar if the vector sum of bond dipoles is nonzero. shape decides: CO2 is linear and the bond dipoles cancel; H2O is bent and they do not. do not dump a dipole moment in debye from memory — fetch NIST webbook if you need the number.
-
-**bond order, length, strength (qualitative).** more shared pairs → shorter, stronger, as a trend. bond enthalpies in tables are **averages** over molecules; they estimate, they do not beat a webbook ΔHf for a named reaction.
-
-**intermolecular.** hydrogen bonding (H on N/O/F toward a lone pair), dipole–dipole, dispersion. they set boiling-point and solubility *trends*. values: NIST webbook. “like dissolves like” is a polarity heuristic, not a calculation.
-
-**beyond lewis.** valence bond / hybridization (sp, sp2, sp3 as names for domain counts 2, 3, 4), MO theory: later course. enough undergrad: lewis + VSEPR + polarity get you through general chemistry; organic will demand them fluently.
-
-**check:** electron count, formal charge, domain count, then polarity.
+The layout of the Periodic Table mirrors the quantum filling of subshells. Across periods and down groups, four foundational periodic trends emerge:
+- **Effective Nuclear Charge ($Z_{\text{eff}}$):** The net positive nuclear charge experienced by valence electrons after accounting for the electrostatic shielding (screening) of inner core electrons: $Z_{\text{eff}} = Z - S$. $Z_{\text{eff}}$ increases steadily from left to right across a period.
+- **Atomic Radius:** Decreases from left to right across a period because increasing $Z_{\text{eff}}$ pulls the electron cloud tighter toward the nucleus. Increases down a group as new principal quantum shells ($n$) are added.
+- **Ionization Energy ($IE$):** The minimum energy required to remove the most loosely bound valence electron from an isolated gaseous atom: $\text{X}(g) \rightarrow \text{X}^+(g) + e^-$. Increases across a period; decreases down a group.
+- **Electronegativity ($\chi$):** The dimensionless relative measure (Linus Pauling scale) of an atom's ability to attract shared electron density within a chemical bond. Fluorine is the most electronegative element ($\chi \approx 3.98$), while cesium and francium are the lowest ($\chi \approx 0.79$).
 
 ---
 
-## 5. reactions and stoichiometry
+## 3. The Mole Bridge, Molar Mass & Solution Concentration
 
-a **chemical reaction** rearranges atoms into new species. the **equation** is the map.
+### 3.1 The Mole as the Macroscopic-to-Microscopic Bridge
 
-**balance:** atoms in = atoms out. charge in = charge out (including e⁻ in half-reactions). states (s)(l)(g)(aq) change what “exists” and what K looks like. if you omit them, K and thermo later will lie.
+Because individual atoms have masses on the order of $10^{-24}$ grams, chemical experiments cannot weigh single molecules. The **mole** (symbol: $\text{mol}$) is the SI base unit of amount of substance. 
 
-worked balance (inspection, combustion of propane as a type):
+By international definition (SI Redefinition of 2019), exactly one mole contains:
+$$N_A = 6.02214076 \times 10^{23} \text{ elementary entities}$$
 
-1. write formulas you actually have, not names.
-2. balance C, then H, then O (O2 last is the usual combustion move).
-3. clear fractions by multiplying through.
-4. check every element and the charge.
+The numerical value is chosen so that the mass of exactly one mole of Carbon-12 ($^{12}\text{C}$) atoms is almost exactly 12 grams. Thus:
+$$n = \frac{m}{M}$$
+where:
+- $n$ is the amount of substance in moles ($\text{mol}$).
+- $m$ is the macroscopic sample mass in grams ($\text{g}$).
+- $M$ is the molar mass in grams per mole ($\text{g}\cdot\text{mol}^{-1}$), obtained by summing standard atomic weights from the periodic table (CIAAW standards).
 
-example skeleton: `C3H8 + O2 → CO2 + H2O` balances to `C3H8 + 5 O2 → 3 CO2 + 4 H2O`. count: C 3=3, H 8=8, O 10=10.
+### 3.2 Quantitative Concentration in Aqueous Solutions
 
-**stoichiometry** is mole ratios from the balanced equation. grams are not the ratio. map:
+Chemical reactions in biology, industry, and laboratory synthesis frequently occur in liquid solutions. The composition of a solution is quantified using standard concentration metrics:
 
-grams A → moles A (÷ M_A) → moles B (× coefficient B / coefficient A) → grams B (× M_B)
+1. **Molarity (Amount Concentration, $c$ or $M$):** Moles of dissolved solute per liter of total solution:
+   $$c = \frac{n_{\text{solute}}}{V_{\text{solution}}} \quad \left[\text{mol}\cdot\text{L}^{-1} \text{ or } \text{M}\right]$$
+   *(Note: Because liquid volume expands with temperature, molarity varies slightly with temperature).*
+2. **Molality ($b$ or $m$):** Moles of solute per kilogram of pure solvent:
+   $$b = \frac{n_{\text{solute}}}{m_{\text{solvent}}} \quad \left[\text{mol}\cdot\text{kg}^{-1}\right]$$
+   *(Temperature-independent; essential for thermodynamic and colligative calculations).*
+3. **Mole Fraction ($x_i$):** Dimensionless ratio of moles of component $i$ to total moles in the mixture:
+   $$x_i = \frac{n_i}{\sum_j n_j}$$
+4. **Mass Percent:**
+   $$\text{Mass } \% = \left(\frac{m_{\text{solute}}}{m_{\text{total solution}}}\right) \times 100\%$$
 
-M from CIAAW / the bottle. arithmetic with EasyLM calc. never skip the mole step.
+### 3.3 Conservation of Solute in Dilution
 
-**limiting reagent:** the reactant that runs out. the other is excess.
-
-worked method:
-
-1. convert each given mass (or volume of gas/solution) to moles.
-2. divide each mole amount by its coefficient.
-3. the smallest ratio is limiting.
-4. theoretical product moles = (limiting moles) × (coeff product / coeff limiting).
-5. leftover excess = starting excess moles − moles consumed.
-
-example with stated amounts (no invented M): 2.00 mol H2 and 2.00 mol O2 for `2 H2 + O2 → 2 H2O`. ratios: H2 / 2 = 1.00; O2 / 1 = 2.00. H2 limits. water produced = 2.00 mol. O2 leftover = 2.00 − 1.00 = 1.00 mol.
-
-**percent yield:** actual / theoretical, as a fraction or percent. theoretical is from the limiting reagent, not from whichever bottle looks bigger. a yield over 100% is a measurement or identity problem, not a miracle. **percent by mass composition** of a compound is n_element × M_element / M_compound; empirical formula from mass percents is the reverse (assume 100 g, convert to moles, divide by smallest, clear to integers).
-
-**reaction types** to recognize: combination, decomposition, single replacement, double replacement (including precipitation), combustion, acid-base, redox. the type is a label; the balanced equation is the work.
-
-**net ionic.** in aqueous ionic reactions, strong electrolytes are written as ions; spectator ions drop. write the species that actually change. solubility of a named salt: fetch a table; do not guess “all nitrates” from a half-remembered rule if the job cares — then fetch OpenStax solubility rules and still treat them as a first cut, not a measurement.
+When pure solvent is added to a concentrated stock solution, the mass and amount of solute remain strictly conserved:
+$$n_{\text{initial}} = n_{\text{final}} \implies c_1 V_1 = c_2 V_2$$
 
 ---
 
-## 6. gases, solutions, phases
+## 4. Chemical Bonding, Electronegativity & Molecular Geometry
 
-**ideal gas:** `p V = n R T`. assumptions: point particles, no interactions, elastic collisions — good when the gas is dilute and far from condensation. **R**: fetch NIST (https://physics.nist.gov/cuu/Constants/). T is absolute (K). Celsius to kelvin is definitional: T/K = t/°C + 273.15. convert other pressure and volume units with EasyLM units. do not mix torr, atm, and Pa in one equation without converting.
+### 4.1 The Three Classical Bonding Archetypes
 
-rearrangements you will use: n = pV / RT; density ρ = m/V = p M / R T for an ideal gas of molar mass M. **standard pressure and temperature** for a gas table: say which standard (IUPAC vs old “STP” vs SATP). they are not the same; fetch the table’s footnote.
+Chemical bonding occurs when atoms lower their total electrostatic potential energy:
+1. **Ionic Bonding ($\Delta \chi \gtrsim 2.0$):** Complete or near-complete transfer of valence electrons from an electropositive metal to an electronegative nonmetal, creating discrete cations and anions held together in an extended three-dimensional crystalline lattice by Coulombic attraction:
+   $$E_{\text{Coulomb}} = -\frac{1}{4\pi\varepsilon_0} \frac{|z_1 z_2| e^2}{r}$$
+2. **Covalent Bonding ($\Delta \chi \lesssim 1.7$):** Electrostatic attraction between two positive atomic nuclei and a shared pair of valence electrons localized between them. If $\Delta \chi = 0$, the bond is **nonpolar covalent**; if $0.4 < \Delta \chi < 1.7$, the bond is **polar covalent**, creating a permanent bond dipole moment $\boldsymbol{\mu} = q \cdot \mathbf{r}$.
+3. **Metallic Bonding:** Positive metallic cation cores immersed in a delocalized, mobile "sea" of valence conduction electrons. This delocalization explains high electrical conductivity, thermal conductivity, and mechanical ductility.
 
-**dalton:** total pressure is the sum of partial pressures of non-reacting ideal gases. p_i = x_i p_total. collecting a gas over water: p_gas = p_total − p_water(T); p_water is a fetch (webbook), not a remembered 23 torr.
+### 4.2 Lewis Dot Structures and Formal Charge Bookkeeping
 
-**real gases.** at high p / low T, fetch a better EOS (van der waals, virial) and the constants for *that* gas (NIST webbook fluids).
+Lewis structures map the connectivity and valence electron distribution in covalent molecules:
+- **The Octet Rule:** Main group elements (Periods 2 and 3) strive to achieve a noble gas valence shell of 8 electrons (hydrogen strives for a duet of 2).
+- **Formal Charge ($FC$):** A bookkeeping tool that tracks hypothetical charge localization:
+  $$FC = V - N - \frac{B}{2}$$
+  where $V$ is valence electrons of the neutral free atom, $N$ is number of non-bonding lone pair electrons, and $B$ is number of shared bonding electrons.
+- **Resonance:** When a single Lewis formula cannot accurately represent a molecule with delocalized $\pi$-electrons (such as the planar benzene ring $\text{C}_6\text{H}_6$ or carbonate ion $\text{CO}_3^{2-}$), the true electronic structure is a quantum superposition (resonance hybrid) of canonical contributing structures.
 
-**phases.** solid, liquid, gas, and aqueous as a named mixture. a **phase change** at constant p eats or gives latent heat; temperature does not climb through the plateau. heating curves: qualitative here; numbers from webbook. **phase diagram:** solid/liquid/gas regions, fusion and vaporization curves, critical point, triple point as names. a named substance’s triple point: fetch.
+### 4.3 VSEPR Theory & 3D Molecular Geometry
 
-**solutions.** solute in solvent. dilute aqueous is the general-chemistry default. **solubility** is a measured equilibrium (Ksp later). concentration: ch 3. colligative properties (vapor-pressure lowering, boiling-point elevation, freezing-point depression, osmotic pressure): fetch OpenStax for the formulas and the van ’t Hoff factor; do not invent Kb of water.
+The **Valence Shell Electron Pair Repulsion (VSEPR)** model posits that electron pairs (both bonding pairs and non-bonding lone pairs) surrounding a central atom repel each other electrostatically, adopting spatial orientations that maximize mutual distance.
 
-**electrolytes.** strong: essentially fully dissociated in the dilute-water story. weak: equilibrium. nonelectrolyte: no ions. this split drives ch 9–10.
+```
+Steric No.  Electron-Domain Shape     Lone Pairs   Molecular Geometry     Example
+----------------------------------------------------------------------------------
+    2       Linear (180°)                 0        Linear                 CO2, BeCl2
+    3       Trigonal Planar (120°)        0        Trigonal Planar        BF3
+                                          1        Bent (<120°)           SO2, NO2-
+    4       Tetrahedral (109.5°)          0        Tetrahedral            CH4, CCl4
+                                          1        Trigonal Pyramidal     NH3 (107°)
+                                          2        Bent (<109.5°)         H2O (104.5°)
+    5       Trigonal Bipyramidal          0        Trigonal Bipyramidal   PCl5
+                                          1        Seesaw                 SF4
+                                          2        T-Shaped               ClF3
+                                          3        Linear                 XeF2
+    6       Octahedral (90°)              0        Octahedral             SF6
+                                          1        Square Pyramidal       BrF5
+                                          2        Square Planar          XeF4
+```
 
-**check:** T in K. R from NIST. which concentration. real vs ideal.
+*Core Distinction:* Non-bonding lone pairs exert greater electrostatic repulsion than bonding pairs because they are anchored to only one nucleus. Consequently, lone pairs compress adjacent bond angles (e.g. the tetrahedral angle of $109.5^\circ$ in $\text{CH}_4$ shrinks to $107^\circ$ in $\text{NH}_3$ and $104.5^\circ$ in $\text{H}_2\text{O}$).
 
----
+### 4.4 Intermolecular Forces (IMFs)
 
-## 7. thermochemistry and kinetics
-
-**thermochemistry** is the heat of chemical change. **ΔH** (enthalpy change) at constant pressure is the usual lab number. **exothermic** ΔH < 0 (system releases heat). **endothermic** ΔH > 0. sign convention: state it. physics pack first law still holds; here the system is the reaction.
-
-**first-law bookkeeping for a reaction.** ΔU = q + w with the sign convention stated (physics pack). at constant pressure, q_p = ΔH. at constant volume, q_v = ΔU. they differ by the pΔV work of gases; for ideal-gas mole change, ΔH = ΔU + Δn_g R T (derivation in OpenStax; R from NIST; Δn_g from the balanced equation).
-
-**hess’s law:** ΔH is a state function. add reactions, add ΔH. formation enthalpies ΔHf°: fetch **NIST webbook**. bond enthalpies are averages, useful for estimates, worse than webbook ΔHf.
-
-worked Hess move: reverse a formation reaction → change the sign of ΔH; multiply a reaction by n → multiply ΔH by n; add. the target reaction’s ΔH is the sum.
-
-**calorimetry** measures q. q = m c ΔT for a single phase with no phase change; c is a fetch. bomb vs coffee-cup: constant V vs constant p. the calorimeter constant (energy per kelvin of the apparatus) is measured, not guessed.
-
-**spontaneity** is ΔG, not ΔH. ΔG = ΔH − TΔS (constant T). negative ΔG is the direction a process can go *under the stated conditions*. a slow reaction can still have ΔG < 0. that is why kinetics is a separate half of this chapter. ΔG° refers to the standard state; ΔG at other Q is ΔG = ΔG° + RT ln Q (log form: fetch OpenStax; R from NIST).
-
-**kinetics** is how fast. **rate law** is experimental: rate = k [A]^m [B]^n with m, n from data, not from stoich unless the step is elementary. **k** depends on T (Arrhenius: k = A e^{−Ea/RT}; Ea and A from a plot or a table, not from memory). **activation energy** Ea is the barrier. **catalyst** lowers the barrier for *both* directions; it does not change K or ΔG_rxn. **rate ≠ equilibrium**.
-
-integrated rate laws (undergrad): zeroth, first, second order have different plots that are linear. half-life of a first-order process is ln 2 / k — ln 2 is math; k is data. do not steal a half-life from a different order.
-
-mechanisms: elementary steps that sum to the net reaction. the slow step dominates the rate law. intermediates are not in the net equation. enzymes are biological catalysts (biology pack).
-
----
-
-## 8. chemical equilibrium
-
-many reactions do not “finish.” **equilibrium** is when forward and reverse rates are equal. amounts stop changing; both species are still there.
-
-**K** is the equilibrium constant, a number **at a stated T**, built from the balanced equation. gases: often Kp in partial pressures; aqueous: Kc in concentrations, later activities. **pure solids and pure liquids do not appear** in the usual K expression. if you put them in, you are not using the general-chemistry convention.
-
-example form (do not invent a number): for `a A(g) + b B(g) ⇌ c C(g) + d D(g)`, Kp is built from partial pressures raised to the stoichiometric powers. Kc analogously from concentrations. relation Kp vs Kc involves (RT)^{Δn}; R from NIST; do the exponent with EasyLM calc.
-
-**Q** is the same expression with the current amounts. Q < K → net forward. Q > K → net reverse. Q = K → at equilibrium.
-
-**ICE table** (initial, change, equilibrium) is the worked method:
-
-1. write the balanced equation.
-2. row I: initial moles or concentrations (gases: sometimes p).
-3. row C: change is −x times coefficient on reactants, +x on products (or the reverse if Q > K).
-4. row E: add.
-5. plug E into K and solve. quadratic formula is math pack + EasyLM calc. approximation x ≪ initial is a check after, not a religion.
-
-**le chatelier:** stress → shift. add a product, net reverse. add a reactant, net forward. change volume of a gas system: the side with more gas moles is favored by expansion. raise T: treat heat as a product if exo, a reactant if endo — **K itself changes with T**. a catalyst does **not** shift K; it only gets you there faster. inert gas at constant volume does not change partial pressures of the reactants; at constant pressure it dilutes them — say which.
-
-**K from ΔG°.** the relation is a thermo identity (ΔG° = −RT ln K); fetch OpenStax for the exact log form and the standard state. do not invent a numerical K.
-
-multiple equilibria (solubility + acid, buffers): stack K expressions. **Ksp** is K for dissolving a sparingly soluble ionic solid. do not invent a Ksp. common-ion effect: extra ion from another source lowers solubility of the salt that shares it (le chatelier on the dissolve equation).
+The bulk physical properties of liquids and solids (boiling point, vapor pressure, surface tension, viscosity) are dictated by intermolecular non-covalent forces:
+1. **London Dispersion Forces:** Temporary, quantum-fluctuation induced dipole-induced dipole attractions present in all molecules. Strength scales with molecular polarizability and surface contact area.
+2. **Dipole-Dipole Attractions:** Electrostatic attractions between the permanent dipoles of polar molecules.
+3. **Hydrogen Bonding:** An unusually strong, highly directional dipole attraction occurring when hydrogen is covalently bonded to a small, highly electronegative atom ($\text{F}, \text{O}, \text{N}$) and interacts with a lone pair on an adjacent $\text{F}, \text{O}, \text{N}$ atom. Responsible for water's anomalously high boiling point, surface tension, and open crystalline ice structure.
 
 ---
 
-## 9. acids, bases, pH
+## 5. Stoichiometry: Conservation of Mass & Limiting Reactants
 
-**acid–base** is proton transfer (Brønsted–Lowry) in the water story that general chemistry uses. acid donates H+; base accepts H+. the **conjugate** of an acid is what remains after the proton leaves. Lewis (electron pair) is the wider net; organic will need it. Arrhenius (H+ / OH− in water) is the narrow historical cut.
+### 5.1 Balancing Chemical Equations
 
-**strong vs weak.** strong acids/bases: treat as fully dissociated in the dilute-water story (named list: fetch OpenStax — do not guess whether HNO3 is strong). weak: Ka or Kb equilibrium. for a conjugate pair, Ka × Kb = Kw at that T.
+A chemical equation represents the reorganization of atomic bonds:
+$$a\text{A} + b\text{B} \longrightarrow c\text{C} + d\text{D}$$
 
-**pH:** `pH = −log₁₀ a(H+)` ; the dilute-aqueous working form is `pH = −log₁₀[H+]`. pOH analogously. in that story, pH + pOH = 14 only when Kw matches that T. **Kw is T-dependent.** fetch the value at the T you have. do not assume 1.0×10⁻¹⁴ at every temperature.
+Mass conservation requires that for every chemical element, the sum of atoms on the reactant side equals the sum on the product side.
 
-worked strong-acid method (stated concentration): a strong monoprotic acid at 0.010 mol/L, dilute-water story, complete dissociation → [H+] = 0.010 mol/L → pH = −log10(0.010). pass that log to EasyLM calc. do not do the log in weights. if the acid is so dilute that water’s own H+ is comparable, you needed Kw and a better charge-balance — fetch the treatment.
+*Inspection Balance Method (Combustion Example):*
+$$\text{C}_3\text{H}_8(g) + \text{O}_2(g) \longrightarrow \text{CO}_2(g) + \text{H}_2\text{O}(g)$$
+1. Balance Carbon: 3 carbons in propane $\implies 3\text{CO}_2$.
+2. Balance Hydrogen: 8 hydrogens in propane $\implies 4\text{H}_2\text{O}$.
+3. Balance Oxygen: Product side has $(3 \times 2) + (4 \times 1) = 10$ oxygen atoms $\implies 5\text{O}_2$.
+4. Result: $\text{C}_3\text{H}_8(g) + 5\text{O}_2(g) \longrightarrow 3\text{CO}_2(g) + 4\text{H}_2\text{O}(g)$.
 
-worked weak-acid method: HA ⇌ H+ + A− with given Ka (from a table door, not memory). ICE as in ch 8. if you approximate [H+] ≈ √(Ka c0), check that x is small compared with c0 after. if not, quadratic.
+### 5.2 The Stoichiometric Highway & Limiting Reactants
 
-**buffers.** weak acid + its conjugate base (or weak base + conjugate acid). they resist pH change. Henderson–Hasselbalch is an approximation: pH ≈ pKa + log10([A−]/[HA]). fetch the conditions (comparable amounts, not too dilute). do not invent a pKa. adding strong acid converts A− → HA; adding strong base converts HA → A−; then recompute the ratio.
+Stoichiometric coefficients define molar ratios, *never* direct mass ratios. The universal problem-solving pathway is:
+$$\text{Mass A (g)} \xrightarrow{\div M_A} \text{Moles A} \xrightarrow{\times \frac{c}{a}} \text{Moles C} \xrightarrow{\times M_C} \text{Mass C (g)}$$
 
-**titration.** strong–strong is a stoich problem plus the water equilibrium at the equivalence point. weak–strong needs Ka. at half-equivalence for a weak acid, [HA] = [A−] and pH ≈ pKa under the usual approximation. indicators: fetch their range; they are themselves weak acids.
-
-**polyprotic.** stepwise Ka1, Ka2, … fetch the table. the first step usually dominates if the K’s are well separated.
-
-**check:** strong or weak? T on Kw? log via EasyLM calc? pKa from a door?
-
----
-
-## 10. redox and electrochemistry
-
-**redox:** oxidation is loss of electrons; reduction is gain. **oxidation numbers** are bookkeeping. working rules (apply in order; fetch OpenStax if a case fights you):
-
-1. atoms in an element: 0.
-2. monatomic ion: the charge.
-3. fluorine in compounds: −1. oxygen usually −2 (peroxides −1; O2+ exceptions exist). hydrogen usually +1 (hydrides −1).
-4. the sum over a species equals the charge of the species.
-
-they are not ion charges except when they are.
-
-**half-reactions.** oxidation and reduction written separately, then added so e⁻ cancel. **balance atoms and charge**, including H2O, H⁺ or OH⁻ in aqueous media. say acidic or basic.
-
-worked aqueous acidic method:
-
-1. split into halves.
-2. balance atoms other than O and H.
-3. add H2O for O, then H+ for H.
-4. add e⁻ to balance charge.
-5. multiply halves so e⁻ match; add; cancel spectators.
-
-basic medium: do the acidic balance, then add OH− to both sides to neutralize H+, and cancel water.
-
-**electrochemical cell.** oxidation at the **anode**, reduction at the **cathode**. electrons run in the external wire from anode to cathode. ions run in the electrolyte / salt bridge to keep charge neutrality. **E°** values: fetch a standard reduction potential table (OpenStax / a CRC-shaped door). do not remember E°(Cu²⁺/Cu). **E°_cell = E°_cathode − E°_anode** with both written as reductions, or add E°_ox + E°_red consistently — pick a convention and hold it. E°_cell > 0 (that convention) means the reaction as written is spontaneous under standard conditions.
-
-**nernst** corrects E for nonstandard Q. formula: fetch OpenStax (the RT/nF form; R, F from NIST; T in K). the “0.0592 / n” classroom form is a special case at one T — do not treat it as a constant of nature. **ΔG° = −n F E°** (n moles of e⁻ per reaction as written; F from NIST).
-
-**batteries, electrolysis, corrosion** are the same bookkeeping plus engineering. current and time give moles of e⁻ (Faraday). plating: n(e⁻) = I t / F, then stoich to metal moles. I in amperes is C/s; t in seconds; F from NIST; EasyLM calc for the quotient.
-
-**check:** oxidation numbers before and after; e⁻ cancel; acidic vs basic; E° from a table.
+**Identifying the Limiting Reactant:**
+When two or more reactants are mixed in arbitrary quantities, one reactant will be exhausted first, halting the reaction:
+1. Convert the starting mass of each reactant into moles ($n_i$).
+2. Divide each molar amount by its stoichiometric coefficient: $\frac{n_i}{\nu_i}$.
+3. The species with the smallest ratio $\frac{n_i}{\nu_i}$ is the **limiting reactant**.
+4. All theoretical yields must be computed strictly from the moles of this limiting reactant.
+5. **Percent Yield:**
+   $$\text{Percent Yield} = \left(\frac{\text{Actual Experimental Yield}}{\text{Theoretical Stoichiometric Yield}}\right) \times 100\%$$
 
 ---
 
-## 11. organic chemistry and polymers
+## 6. States of Matter: Ideal & Real Gases, Solutions & Phase Transitions
 
-**organic** is the chemistry of carbon skeletons, with H, O, N, S, halogens, and a few others as the usual extras. carbon’s four bonds and catenation make the zoo.
+### 6.1 The Ideal Gas Law
 
-**hydrocarbon frames:** alkane (single bonds), alkene (C=C), alkyne (C≡C), arene (aromatic ring). isomerism: constitutional (different connectivity), then stereo (cis/trans, E/Z, R/S) when the course needs it. **functional groups:** alcohol, carbonyl (aldehyde/ketone), carboxyl, amine, haloalkane, ether, ester, amide. the group is the reactivity. name the longest chain; the group suffix/prefix is IUPAC — fetch Gold Book / a nomenclature door if the name is the job.
+At low pressures and high temperatures, gases behave as collections of non-interacting point particles undergoing elastic collisions. The state of an ideal gas is governed by:
+$$P V = n R T$$
+where:
+- $P$ is absolute pressure ($\text{Pa} = \text{N}\cdot\text{m}^{-2}$ or $\text{atm}$, where $1\text{ atm} = 101,325\text{ Pa}$).
+- $V$ is volume ($\text{m}^3$ or $\text{L}$).
+- $n$ is amount of gas ($\text{mol}$).
+- $T$ is thermodynamic temperature in Kelvin ($T/\text{K} = t/^\circ\text{C} + 273.15$).
+- $R$ is the universal gas constant ($R = 8.314462618\text{ J}\cdot\text{mol}^{-1}\cdot\text{K}^{-1} = 0.082057\text{ L}\cdot\text{atm}\cdot\text{mol}^{-1}\cdot\text{K}^{-1}$).
 
-**curly arrows** move electrons. nucleophile (electron pair donor) / electrophile (electron pair acceptor). undergrad map: addition, substitution, elimination, carbonyl addition, acid–base at heteroatoms. **SN1 / SN2, E1 / E2**: later organic course (MIT 5.12). this chapter only demands: name the group, don’t break carbon’s tetravalence without a reason, count hydrogens.
+### 6.2 Dalton's Law of Partial Pressures
 
-**aromaticity** (benzene as the type): extra stability, substitution not addition as the default. fetch 5.12 when that is the job.
+In a mixture of non-reacting ideal gases, each gas exerts a partial pressure equal to the pressure it would exert if it occupied the entire container alone:
+$$P_{\text{total}} = \sum_{i} P_i, \quad \text{where } P_i = x_i P_{\text{total}}$$
 
-**polymers:** repeating units. addition (olefin chain growth) vs condensation (small-molecule byproduct). plastics, proteins, nucleic acids, polysaccharides are polymers with different links. biology pack owns the living ones as function; this pack owns the repeat-unit chemistry.
+### 6.3 Deviations in Real Gases: The Van der Waals Equation
 
-**inorganic** rest of the table: coordination complexes, crystal-field as a later sketch, main-group patterns from the table. nuclear chemistry (decay, half-life): NNDC / physics; this pack only if the job is a radioisotope as a *reagent*.
+At high pressures (molecules crowded close together) and low temperatures (molecules moving slowly), real gases deviate from ideal behavior because:
+1. Gas molecules possess finite volume ($b$).
+2. Gas molecules exert attractive intermolecular forces ($a$).
 
----
-
-## 12. safety
-
-hazards are **facts on a page**, not vibes. if someone asks “is this safe,” treat it as serious.
-
-| need | do |
-|---|---|
-| identity of a bottle | label + **PubChem** / CAS |
-| workplace exposure, PPE, first aid | **NIOSH** pocket guide · **SDS** from the supplier |
-| regulatory / hazcom | **OSHA** · **GHS** |
-| lab procedure | trained human. this book does not run a hood |
-
-do not invent an LD50, a flash point, or a “just dilute it.” do not write a synthesis that is an exploit of a person or a facility. no recipes for harm.
-
-SDS beats wiki. a supplier SDS beats a random PDF. if fetch is empty → DONT_KNOW, and do not proceed as if it were water.
+Johannes Diderik van der Waals corrected the ideal equation:
+$$\left( P + a \frac{n^2}{V^2} \right) (V - n b) = n R T$$
+- The pressure term $a \frac{n^2}{V^2}$ accounts for attractive forces reducing wall collisions.
+- The volume term $n b$ accounts for the excluded volume occupied by the molecules themselves.
 
 ---
 
-## 13. compute and tables
+## 7. Chemical Thermodynamics & Reaction Kinetics
 
-| job | do |
-|---|---|
-| arithmetic, logs (pH), algebra | **EasyLM calc** |
-| unit conversion | **EasyLM units** |
-| N_A, R, F, k, h | **NIST** CODATA https://physics.nist.gov/cuu/Constants/ |
-| atomic weights | **CIAAW** |
-| ΔHf, spectra, vapor pressure, fluids | **NIST webbook** |
-| compound identity, structure | **PubChem** |
-| terminology | **IUPAC gold book** |
-| particle / nuclear | PDG / NNDC (physics pack) |
-| hazard | SDS · NIOSH · OSHA |
-| what is a mole, what is K | this book, then a door |
+### 7.1 Enthalpy ($\Delta H$) and Thermochemistry
 
-never do the stoich arithmetic in model weights. format expr. pass `result`. `ok` false → DONT_KNOW.
+Chemical reactions absorb or release thermal energy:
+- **Exothermic ($\Delta H < 0$):** Chemical bonds formed in the products are more stable and release more energy than the bonds broken in the reactants (heat released to surroundings).
+- **Endothermic ($\Delta H > 0$):** Energy absorbed from surroundings to break stronger reactant bonds.
+- **Hess's Law of Heat Summation:** Because enthalpy is a thermodynamic state function, the net enthalpy change for a chemical process is independent of the pathway or number of steps:
+  $$\Delta H^\circ_{\text{rxn}} = \sum \nu_p \Delta H^\circ_{f,\text{products}} - \sum \nu_r \Delta H^\circ_{f,\text{reactants}}$$
+  where $\Delta H^\circ_f$ is the standard molar enthalpy of formation from elements in their standard reference states (by definition, $\Delta H^\circ_f = 0$ for pure elements in standard states).
 
-adjacent: `../physics/` (thermo, QM, SI) · `../math/` (logs, DE for rate laws) · `../biology/` (enzymes, metabolism). this pack owns species, the mole, and the reaction.
+### 7.2 Entropy ($\Delta S$) and Gibbs Free Energy ($\Delta G$)
 
----
+The Second Law of Thermodynamics dictates that spontaneous processes must increase total universal entropy: $\Delta S_{\text{universe}} = \Delta S_{\text{system}} + \Delta S_{\text{surroundings}} > 0$.
 
-## 14. how to attack a problem
+At constant temperature and pressure, the criterion for chemical spontaneity is the **Gibbs Free Energy** $G = H - TS$:
+$$\Delta G = \Delta H - T\Delta S$$
 
-1. name the **species** and the **phase**.
-2. write a **balanced** equation (atoms + charge).
-3. mark **knowns / unknowns** with units. moles before grams.
-4. ask which **chapter-tool**: stoich, gas, thermo, K, acid-base, redox, organic.
-5. **limiting**? if two amounts, yes until proven otherwise.
-6. **compute** with EasyLM calc / units. table values from CIAAW / webbook / OpenStax, not from weights.
-7. **check:** atoms, charge, units, magnitude (pH of a strong acid is not 11), T on K and Kw.
-8. named constant or Ka missing → fetch LINK_INDEX, cite.
+```
+Spontaneity Decision Table:
+  ΔH      ΔS      ΔG = ΔH - TΔS           Reaction Behavior
+-------------------------------------------------------------------------
+  < 0     > 0     Always < 0               Spontaneous at all temperatures
+  > 0     < 0     Always > 0               Non-spontaneous at all temperatures
+  < 0     < 0     < 0 at low T, > 0 at high T Spontaneous at low T (enthalpy driven)
+  > 0     > 0     > 0 at low T, < 0 at high T Spontaneous at high T (entropy driven)
+```
 
-stuck patterns:
+### 7.3 Reaction Kinetics: The Clock vs. The Scale
 
-| symptom | try |
-|---|---|
-| grams that ignore coefficients | you skipped moles |
-| pH of a weak acid treated as strong | you needed Ka |
-| K with solids in it | drop pure s and l |
-| catalyst “shifts equilibrium” | it does not; it speeds both ways |
-| ΔH as spontaneity | you wanted ΔG, and maybe kinetics |
-| redox that will not balance | split halves; say acid or base |
-| “safe because dilute” | fetch SDS |
-| log or quadratic in weights | EasyLM calc |
+Thermodynamics predicts whether a reaction *can* occur ($\Delta G < 0$); **kinetics** dictates *how fast* it actually occurs. A mixture of gasoline vapor and oxygen has a large negative $\Delta G$, yet sits indefinitely at room temperature because it lacks activation energy ($E_a$).
+
+1. **Differential Rate Law:** Determined exclusively by laboratory experiment, not by overall stoichiometric coefficients:
+   $$\text{Rate} = -\frac{1}{a}\frac{d[\text{A}]}{dt} = k [\text{A}]^m [\text{B}]^n$$
+   where $m$ and $n$ are reaction orders with respect to reactants $\text{A}$ and $\text{B}$, and $k$ is the temperature-dependent rate constant.
+2. **The Arrhenius Equation:** Rate constants increase exponentially with temperature:
+   $$k = A e^{-\frac{E_a}{R T}}$$
+   where $E_a$ is the activation energy barrier and $A$ is the frequency factor (collision frequency and steric orientation).
+3. **Catalysis:** A catalyst accelerates a reaction by introducing an alternative reaction mechanism with a lower activation energy ($E_a$). A catalyst speeds up both forward and reverse rates equally; **a catalyst never changes the equilibrium constant $K$ or the net thermodynamic $\Delta G$**.
 
 ---
 
-## close
+## 8. Dynamic Chemical Equilibrium
 
-chemistry is species plus a balanced change plus a count. mole first. fetch the table. compute with EasyLM calc. LINK_INDEX.md is doors.
+### 8.1 The Nature of Dynamic Balance
 
-home: `stacks/chemistry/TEXTBOOK.md`
+Most chemical reactions are reversible. When reactants $\text{A}$ and $\text{B}$ form products $\text{C}$ and $\text{D}$, the accumulating products begin colliding to regenerate reactants. **Chemical equilibrium** is reached when the forward reaction rate equals the reverse reaction rate:
+$$\text{Rate}_{\text{forward}} = \text{Rate}_{\text{reverse}}$$
+At equilibrium, molecular transformations continue ceaselessly at the microscopic level, but macroscopic concentrations remain invariant.
+
+### 8.2 The Equilibrium Constant ($K$) and Mass Action
+
+For a general reversible reaction:
+$$a\text{A} + b\text{B} \rightleftharpoons c\text{C} + d\text{D}$$
+
+The **Law of Mass Action** defines the equilibrium constant:
+$$K_c = \frac{[\text{C}]^c [\text{D}]^d}{[\text{A}]^a [\text{B}]^b}$$
+
+*Core Conventions:*
+- **Pure solids and pure liquid solvents are omitted** from $K$ expressions because their chemical activities are unity ($a = 1$).
+- For gas-phase equilibria, $K_p$ is expressed in partial pressures:
+  $$K_p = K_c (R T)^{\Delta n_g}, \quad \text{where } \Delta n_g = (c + d) - (a + b)$$
+- Connection to Thermodynamics:
+  $$\Delta G^\circ = -R T \ln K$$
+
+### 8.3 The Reaction Quotient ($Q$) and Predicting Direction
+
+The reaction quotient $Q$ has the identical algebraic form as $K$, but uses instantaneous non-equilibrium concentrations:
+- If $Q < K$: Products are deficient; reaction shifts **forward** (left to right).
+- If $Q > K$: Products are in excess; reaction shifts **reverse** (right to left).
+- If $Q = K$: The system is at dynamic equilibrium.
+
+### 8.4 Le Chatelier's Principle
+
+When a chemical system at equilibrium is subjected to an external disturbance (change in concentration, pressure, or temperature), the system shifts its equilibrium position in a manner that counteracts the disturbance:
+1. **Adding Reactant or Product:** Adding reactant shifts equilibrium forward ($\rightarrow$); adding product shifts equilibrium reverse ($\leftarrow$).
+2. **Volume / Pressure Change (Gases):** Compressing a gas mixture (increasing pressure) shifts equilibrium toward the side with fewer moles of gas ($\Delta n_g$). Expanding volume shifts toward more gas moles.
+3. **Temperature Changes:**
+   - For exothermic reactions ($\Delta H < 0$), heat acts as a product. Raising temperature shifts equilibrium reverse ($\leftarrow$) and decreases the numerical value of $K$.
+   - For endothermic reactions ($\Delta H > 0$), heat acts as a reactant. Raising temperature shifts equilibrium forward ($\rightarrow$) and increases the numerical value of $K$.
+
+---
+
+## 9. Aqueous Equilibria: Acids, Bases, pH & Buffers
+
+### 9.1 Acid-Base Models
+
+1. **Arrhenius Model:** Acids produce $\text{H}^+$ ions in aqueous solution; bases produce $\text{OH}^-$ ions.
+2. **Brønsted-Lowry Model:** An acid is a **proton donor** ($\text{H}^+$); a base is a **proton acceptor**. Every acid-base reaction involves conjugate pairs:
+   $$\underbrace{\text{HA}}_{\text{Acid}} + \underbrace{\text{H}_2\text{O}}_{\text{Base}} \rightleftharpoons \underbrace{\text{H}_3\text{O}^+}_{\text{Conjugate Acid}} + \underbrace{\text{A}^-}_{\text{Conjugate Base}}$$
+3. **Lewis Model:** An acid is an **electron-pair acceptor** (electrophile); a base is an **electron-pair donor** (nucleophile). Encompasses reactions without protons (e.g. $\text{BF}_3 + \text{NH}_3 \rightarrow \text{F}_3\text{B-NH}_3$).
+
+### 9.2 The Autoionization of Water and the pH Scale
+
+Water undergoes self-ionization:
+$$2\text{H}_2\text{O}(l) \rightleftharpoons \text{H}_3\text{O}^+(aq) + \text{OH}^-(aq)$$
+$$K_w = [\text{H}_3\text{O}^+][\text{OH}^-] = 1.0 \times 10^{-14} \quad (\text{at } 25^\circ\text{C})$$
+
+The logarithmic scale defines:
+$$\text{pH} = -\log_{10}[\text{H}_3\text{O}^+], \quad \text{pOH} = -\log_{10}[\text{OH}^-]$$
+$$\text{pH} + \text{pOH} = \text{pK}_w = 14.00 \quad (\text{at } 25^\circ\text{C})$$
+
+### 9.3 Weak Acids, Weak Bases and ICE Calculations
+
+Strong acids ($\text{HCl}, \text{HBr}, \text{HI}, \text{HNO}_3, \text{HClO}_4, \text{H}_2\text{SO}_4$) dissociate completely in water ($[\text{H}^+] = c_0$). 
+
+Weak acids dissociate partially, governed by the acid dissociation constant $K_a$:
+$$\text{HA}(aq) + \text{H}_2\text{O}(l) \rightleftharpoons \text{H}_3\text{O}^+(aq) + \text{A}^-(aq), \quad K_a = \frac{[\text{H}_3\text{O}^+][\text{A}^-]}{[\text{HA}]}$$
+
+*Worked Example:* Calculate pH of $0.10\text{ M}$ acetic acid ($\text{CH}_3\text{COOH}$, $K_a = 1.8 \times 10^{-5}$):
+```
+Species:        HA     + H2O  <===> H3O+   + A-
+Initial (I):    0.10                0        0
+Change  (C):    -x                 +x       +x
+Equil   (E):    0.10 - x            x        x
+```
+$$K_a = \frac{x^2}{0.10 - x} \approx \frac{x^2}{0.10} = 1.8 \times 10^{-5} \implies x^2 = 1.8 \times 10^{-6} \implies x \approx 1.34 \times 10^{-3}\text{ M}$$
+$$\text{pH} = -\log_{10}(1.34 \times 10^{-3}) \approx 2.87$$
+*(The approximation $0.10 - x \approx 0.10$ is valid because $\frac{1.34 \times 10^{-3}}{0.10} \times 100\% = 1.34\% < 5\%$).*
+
+### 9.4 Buffer Solutions & The Henderson-Hasselbalch Equation
+
+A **buffer** is an aqueous solution containing comparable concentrations of a weak conjugate acid-base pair ($\text{HA}$ and $\text{A}^-$). Buffers resist changes in pH when small amounts of strong acid or base are added.
+
+Applying the logarithm to the $K_a$ definition yields the **Henderson-Hasselbalch Equation**:
+$$\text{pH} = \text{pK}_a + \log_{10}\left( \frac{[\text{A}^-]}{[\text{HA}]} \right)$$
+
+When $[\text{A}^-] = [\text{HA}]$, $\text{pH} = \text{pK}_a$. Effective buffering capacity is generally constrained to the window $\text{pH} = \text{pK}_a \pm 1$.
+
+---
+
+## 10. Electrochemistry: Redox Systems & Galvanic Cells
+
+### 10.1 Oxidation-Reduction Mechanics
+
+Redox reactions involve electron transfer:
+- **Oxidation:** Loss of electrons ($\text{LEO}$); oxidation number increases.
+- **Reduction:** Gain of electrons ($\text{GER}$); oxidation number decreases.
+- **Oxidation Numbers:** Bookkeeping formalisms assigned according to electronegativity:
+  1. Pure elemental forms have oxidation state 0 (e.g. $\text{Fe}, \text{O}_2, \text{P}_4$).
+  2. Monatomic ions equal ionic charge ($\text{Na}^+ = +1, \text{Fe}^{3+} = +3, \text{Cl}^- = -1$).
+  3. Fluorine is always $-1$. Oxygen is $-2$ (except in peroxides where it is $-1$, and in $\text{OF}_2$ where it is $+2$).
+  4. Hydrogen is $+1$ with nonmetals, $-1$ with metal hydrides ($\text{NaH}$).
+  5. The sum of oxidation states over a neutral molecule equals 0; in a polyatomic ion, it equals the net ionic charge.
+
+### 10.2 Galvanic (Voltaic) Cells & Standard Potentials
+
+A **galvanic cell** separates oxidation and reduction half-reactions into physical compartments, forcing electron flow through an external circuit to generate electric work:
+- **Anode:** The electrode where **oxidation** occurs. Electrons flow *out* of the anode.
+- **Cathode:** The electrode where **reduction** occurs. Electrons flow *into* the cathode.
+- **Salt Bridge:** Completes the electrical circuit by permitting mobile ions to migrate, neutralizing charge buildup in each half-cell.
+
+```
+Galvanic Cell Layout:
+  [ Anode Compartment ]                 [ Cathode Compartment ]
+     Zn(s) Electrode                       Cu(s) Electrode
+            |                                     |
+            v                                     ^
+     Zn -> Zn2+ + 2e-    --- External Wire --->  Cu2+ + 2e- -> Cu
+    (Oxidation / Anode)     [e- flow ----->]     (Reduction / Cathode)
+            \                                     /
+             \------- Salt Bridge (K+, Cl-) -----/
+```
+
+The standard cell potential $E^\circ_{\text{cell}}$ is computed from tabulated standard reduction potentials ($E^\circ$):
+$$E^\circ_{\text{cell}} = E^\circ_{\text{cathode}} - E^\circ_{\text{anode}}$$
+
+### 10.3 Thermodynamic & Non-Standard Cell Equations
+
+Cell potential directly measures the thermodynamic driving force of the reaction:
+$$\Delta G^\circ = -n F E^\circ_{\text{cell}}$$
+where:
+- $n$ is moles of electrons transferred in the balanced reaction.
+- $F$ is Faraday's constant ($F = 96,485.33212\text{ C}\cdot\text{mol}^{-1}$).
+
+Under non-standard concentrations, cell voltage obeys the **Nernst Equation**:
+$$E_{\text{cell}} = E^\circ_{\text{cell}} - \frac{R T}{n F} \ln Q$$
+At $T = 298.15\text{ K}$ ($25^\circ\text{C}$), this reduces to:
+$$E_{\text{cell}} = E^\circ_{\text{cell}} - \frac{0.05916}{n} \log_{10} Q$$
+
+---
+
+## 11. Organic Chemistry: Functional Groups & Reaction Mechanisms
+
+Carbon possesses the unique capacity for **catenation**—forming stable, covalent carbon-carbon bonds in chains, branched frameworks, and rings of limitless complexity.
+
+### 11.1 Major Organic Functional Families
+
+```
+Family        Structure             Functional Group           Example
+-----------------------------------------------------------------------------------
+Alkane        R-CH2-CH3             C-C Single Bond            Ethane (CH3CH3)
+Alkene        R-CH=CH-R'            C=C Double Bond            Ethene (H2C=CH2)
+Alkyne        R-C≡C-R'              C≡C Triple Bond            Ethyne (HC≡CH)
+Arene         Ar-H                  Aromatic Ring              Benzene (C6H6)
+Alcohol       R-OH                  Hydroxyl                   Ethanol (CH3CH2OH)
+Ether         R-O-R'                Alkoxy                     Diethyl ether
+Aldehyde      R-CH=O                Carbonyl (terminal)        Acetaldehyde
+Ketone        R-C(=O)-R'            Carbonyl (internal)        Acetone (CH3COCH3)
+Carboxylic    R-COOH                Carboxyl                   Acetic acid
+Ester         R-COOR'               Carboalkoxy                Ethyl acetate
+Amine         R-NH2                 Amino                      Methylamine
+Amide         R-CONH2               Carboxamide                Acetamide
+```
+
+### 11.2 Core Mechanistic Paradigms
+
+Organic reactions proceed via curved-arrow mechanisms tracking electron-pair movement:
+1. **Nucleophilic Substitution ($S_N1$ and $S_N2$):**
+   - $S_N2$: Concerted, bimolecular backside attack by a nucleophile with simultaneous displacement of a leaving group. Inverts stereochemical configuration (Walden inversion).
+   - $S_N1$: Stepwise, unimolecular loss of leaving group forming a planar carbocation intermediate, followed by nucleophilic attack. Yields racemic mixtures.
+2. **Elimination ($E1$ and $E2$):** Dehydrohalogenation producing alkenes governed by Zaitsev's rule (forming the more substituted, thermodynamically stable alkene).
+3. **Electrophilic Aromatic Substitution (EAS):** Benzene rings preserve their resonance-stabilized aromaticity by undergoing substitution rather than addition when attacked by powerful electrophiles ($\text{NO}_2^+, \text{Br}^+, \text{R}^+$).
+
+---
+
+## 12. Chemical Safety, Hazards & Authoritative Standards
+
+Chemical manipulation demands strict empirical adherence to verified toxicology and thermodynamics:
+- **Safety Data Sheets (SDS):** Under the UN Globally Harmonized System (GHS), every pure chemical and commercial mixture must carry an SDS detailing:
+  1. Section 2: Hazard Identification (pictograms, signal words "DANGER" vs "WARNING", H-statements).
+  2. Section 8: Exposure Controls and Personal Protection (OSHA PEL, ACGIH TLV).
+  3. Section 10: Chemical Stability and Incompatibility (e.g. avoiding mixing bleach and ammonia, which liberates lethal chloramine gas $\text{NH}_2\text{Cl}$).
+- **Authoritative Doors:**
+  - Standard Thermodynamic Properties: **NIST Chemistry WebBook** (`https://webbook.nist.gov/chemistry/`).
+  - Fundamental Physical Constants: **NIST CODATA** (`https://physics.nist.gov/cuu/Constants/`).
+  - Standard Atomic Weights: **IUPAC CIAAW** (`https://www.ciaaw.org/`).
+  - Chemical Structure and Toxicology: **NIH PubChem** (`https://pubchem.ncbi.nlm.nih.gov/`) and **NIOSH Pocket Guide** (`https://www.cdc.gov/niosh/npg/`).

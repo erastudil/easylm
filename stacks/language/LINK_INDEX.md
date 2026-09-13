@@ -51,11 +51,15 @@ if a code point, a byte sequence, a language tag, an etymology, or a speaker cou
 4. fetch the page if you will cite a **code point**, a **byte sequence**, a **language tag**, an **etymology**, or a **count**.
 5. if two official pages disagree, say so. do not average them. Unicode beats memory on a character. IETF / Unicode beat wiki on UTF-8.
 
-## not doors (refuse as SoT)
+## Unverified or Derivative Sources (Do Not Cite as Primary Authority)
 
 remembered `U+` values, folk etymology, Ethnologue paywalled counts as the last word, a Chomsky quote as a style rule, homework-help sites, “English has no grammar.” wiki is **seed**, not the book.
 
-Saussure has **no** living standards site. teach the sign in the textbook. for the field’s philosophy, use the Stanford Encyclopedia door above. Chomsky is **theory in the book**, not a URL.
+## Canonical Linguists & Language Thinkers
+
+| Thinker | Era | Focus / Contribution | Wikipedia Reference |
+|---|---|---|---|
+| **Noam Chomsky** | 1928–present | Generative Grammar, Universal Grammar, Formal Language Hierarchy | https://en.wikipedia.org/wiki/Noam_Chomsky |
 
 ## local paths (this tree)
 
@@ -67,4 +71,4 @@ Saussure has **no** living standards site. teach the sign in the textbook. for t
 | encodings as computing | `stacks/computing/` |
 | history / place | `stacks/history/` · `../geography/` |
 | trusted hosts | `stacks/TRUSTED_SOURCES.md` |
-| warehouse law | `stacks/LAW.md` |
+| Stacks Law | `stacks/LAW.md` |

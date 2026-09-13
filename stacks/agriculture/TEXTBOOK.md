@@ -60,308 +60,194 @@ At its physical first principles, agriculture is humanity's primary solar harves
 
 ---
 
-## 1. what agriculture is
+## 1. The First Principles of Agronomy & Agroecosystems
 
-**agriculture** is how humans grow and raise food, fiber, fuel, and other biomass on purpose. **agronomy** is the field-crop science. **horticulture** is fruits, vegetables, ornamentals. **animal science** is livestock. **forestry** and **aquaculture** sit next door; name them if that is the system.
+### 1.1 The Capture and Conversion of Solar Radiant Energy
 
-four questions, every time:
+Agriculture is the applied biophysical science of capturing solar photons and converting them into harvested biochemical energy (food, fiber, fuel, and raw materials) through managed terrestrial ecosystems.
 
-1. **plant** or **animal** (or both, as a mixed farm)?
-2. what is the **limit** this season (water, nitrogen, light, frost, pest, labor, cash)?
-3. is a **yield, rate, or mix** required — is it on a label, a soil test, or an official table?
-4. is this **food security** (a population) or **this field** (a place)?
+At its core, an agricultural field is an open thermodynamic converter governed by three fundamental efficiencies:
+1. **Interception Efficiency ($\epsilon_i$):** The fraction of incident photosynthetically active radiation (PAR, $\lambda = 400-700\text{ nm}$) intercepted by the green crop canopy, dictated by the **Leaf Area Index (LAI)**—the ratio of total upper leaf surface area to ground surface area:
+   $$\text{LAI} = \frac{\text{Leaf Area (m}^2\text{)}}{\text{Ground Area (m}^2\text{)}}$$
+2. **Radiation-Use Efficiency ($\epsilon_c$):** The biochemical efficiency with which intercepted photons are converted into dry plant biomass via carbon fixation ($\text{g dry matter}\cdot\text{MJ}^{-1}\text{ PAR}$).
+3. **Harvest Index ($HI$):** The fraction of total accumulated biological biomass partitioned into the economically harvested organ (e.g. grain, tuber, lint, or seed):
+   $$HI = \frac{\text{Economic Yield (Grain Mass)}}{\text{Total Biological Yield (Aboveground Biomass)}}$$
+   *(Historical Note: The 20th-century Green Revolution engineered by Norman Borlaug achieved massive yield leaps in wheat and rice primarily by increasing $HI$ from $\approx 0.30$ to $\approx 0.50$ using semi-dwarf genes that prevented lodging, rather than increasing total photosynthetic rate).*
 
-**domestication** is a long conversation of selection. dates and hearths: fetch FAO / a named archaeology door. this book does not recite a millennium.
+### 1.2 The Soil-Plant-Atmosphere Continuum (SPAC)
 
-**systems** (names): rainfed vs irrigated; annual vs perennial; mixed vs specialized; extensive vs intensive; organic vs conventional as *rule-sets*, not moral teams. a certification is a statute plus a standard — fetch.
+Water does not move through crops by active pumping; it is pulled along a continuous physical gradient of decreasing **Water Potential ($\Psi$)**, from the damp soil, through root xylem vessels, up stem tracheids, out into leaf mesophyll cells, and finally evaporating through stomata into the dry atmosphere:
+$$\Psi_{\text{soil}} \ (> -0.1\text{ MPa}) > \Psi_{\text{root}} > \Psi_{\text{stem}} > \Psi_{\text{leaf}} > \Psi_{\text{atmosphere}} \ (< -100\text{ MPa})$$
 
-**check:** if you cannot name the organism and the limit, you are not ready to name a yield.
+Transpiration is the inevitable physiological cost of photosynthesis: to absorb atmospheric carbon dioxide ($\text{CO}_2$), plants must open their microscopic stomatal pores, through which water vapor inevitably escapes along this steep thermodynamic vapor pressure gradient. A typical crop transpires between $300$ and $500$ liters of water to synthesize a single kilogram of dry biomass!
 
----
+### 1.3 Liebig's Law of the Minimum
 
-## 2. soil
-
-**soil** is a structured body: mineral particles, organic matter, water, air, and living organisms, with horizons. **dirt** is soil out of place. treat soil as capital that can be spent.
-
-five working pieces in every handful:
-
-| piece | job |
-|---|---|
-| mineral particles | skeleton; chemistry surface |
-| organic matter | carbon that was alive; holds water; feeds biota |
-| water | solvent and transpiration supply |
-| air in pores | oxygen for roots and aerobes |
-| biota | recycle, structure, sometimes pathogen |
-
-**texture:** sand, silt, clay as size classes (USDA sizes: fetch NRCS; do not invent a micrometer cut). sand feels gritty and drains; clay feels sticky and holds; silt is silky. the **USDA texture triangle** maps the three percents to a class (loam, silt loam, sandy clay, …). a handful test is a field hint, not a lab hydrometer.
-
-**structure:** how those particles clump (granular, blocky, platy, massive as names). structure holds pores; pores hold water and air. compaction is a structure failure (platy, massive). tillage can make a seedbed this season and a plow pan next.
-
-**organic matter** is carbon that was alive. it holds water, feeds biota, buffers nutrients. a percent on a test is a measurement — do not invent one.
-
-**horizons** (usual school): O (organic), A (topsoil, mixed), E (leached, when present), B (accumulated clays/oxides), C (parent), R (rock) as names. a map unit is a **Web Soil Survey** / national soil map fetch, not a vibe. series name + slope + erosion class is how a US field is spoken.
-
-**pH, CEC, salinity** are measurements. pH is chemistry pack (log of activity); it gates nutrient availability as a *trend* (Fe, Mn vs Ca, Mo as classroom cartoons — the field still wants a test). **CEC** (cation exchange capacity) is the soil’s ability to hold K+, Ca2+, Mg2+, NH4+ on charged surfaces. **salinity / sodicity** are different problems (salts vs sodium on the exchanger). lime and gypsum are responses to a *test*, not a habit.
-
-**color and drainage.** mottles and gray matrix are redoximorphic features: the soil sat wet. they are a drainage story, not a fertilizer story.
-
-**erosion** is soil leaving. water (sheet, rill, gully) and wind. cover, residue, contour, terrace, windbreak as named controls. a loss in t/ha: NRCS / FAO fetch. USLE/RUSLE are models with factors from a door — do not invent K or R.
-
-**soil test, not folklore.** a lab report is a measurement plus a method. pH in water is not pH in CaCl2. P by Bray is not P by Olsen. if you mix methods you cannot compare numbers. the extension bulletin that matches the lab is the one that may recommend a rate. this book does not.
-
-worked soil-read (no invented ppm):
-
-1. fetch the map unit (Web Soil Survey) for texture, drainage class, slope.
-2. read the lab: pH, P, K, and whatever else was run, with the method named.
-3. walk the field: structure, residue, wet spots, compaction. the map unit is not a point sample.
-4. only then open the nutrient worksheet (ch 4).
-
-**check:** texture vs structure vs test. this field’s map unit → NRCS Web Soil Survey.
+Formulated by Carl Sprengel and popularized by Justus von Liebig in 1840, the **Law of the Minimum** states that crop growth and yield are governed not by the total abundance of available resources, but by the scarcest essential resource (the **limiting factor**):
+```
+                       +---------------------------+
+                       |   CROP YIELD CEILING      |
+                       +---------------------------+
+                       |    |     |  !  |     |    |
+                       |    |     | [P] |     |    |  <-- Phosphorus is limiting!
+                       |    | [K] | [P] |     |    |
+                       | [N]| [K] | [P] |[H2O]|    |
+                       | [N]| [K] | [P] |[H2O]|[Zn]|
+                       +----+-----+-----+-----+----+
+```
+Pouring additional nitrogen ($N$) onto a field deficient in phosphorus ($P$) or zinc ($Zn$) yields zero yield increase, while driving groundwater contamination and economic waste.
 
 ---
 
-## 3. water
+## 2. Pedology & Soil Physics
 
-plants spend water to take carbon (biology: stomata, transpiration). **no water, no yield** long before “no nitrogen” in many places.
+### 2.1 The Five Components of Soil
 
-**soil water.** named states:
+Soil is a dynamic, structured natural body composed of mineral particles, organic matter, water, air, and living organisms organized into distinct horizontal horizons.
 
-| name | is |
-|---|---|
-| **saturation** | pores full; air gone; roots can drown |
-| **field capacity** | after free drain; water films remain |
-| **permanent wilting point** | plant cannot pull more (species- and texture-dependent) |
-| **available water** | between field capacity and wilting, as a working cut |
+1. **Mineral Matrix ($\approx 45\%$ by volume):** Weathered inorganic fragments categorized by size according to the USDA particle size classification:
+   - **Sand ($0.05 - 2.0\text{ mm}$):** Large, gritty particles providing macropores for rapid drainage and root aeration, but with negligible nutrient-holding capacity.
+   - **Silt ($0.002 - 0.05\text{ mm}$):** Smooth, floury particles with moderate water retention.
+   - **Clay ($< 0.002\text{ mm}$ / $< 2\ \mu\text{m}$):** Microscopic, plate-like secondary phyllosilicate aluminosilicate minerals (e.g. kaolinite, smectite, illite) with immense specific surface areas ($10 - 800\text{ m}^2\cdot\text{g}^{-1}$) and negative surface charges.
+2. **Soil Organic Matter (SOM, $\approx 1-5\%$):** Decomposed biological tissues, microbial biomass, and stable, high-molecular-weight **humic substances**. Humus dramatically improves soil aggregation, water-holding capacity, and cation retention.
+3. **Pore Space ($\approx 50\%$ total volume):** Divided dynamically between **Soil Solution (Water)** and **Soil Air ($\text{O}_2, \text{CO}_2$)**.
 
-the mm in this texture: fetch a table or a test. **drainage** is the other half: roots drown too. tile, ditch, bed: named hardware; a design is an engineer/extension job.
+### 2.2 Soil Water Dynamics: Field Capacity & Wilting Point
 
-**rainfed** farming lives on the weather pack’s clock. **irrigation** is a method: surface (furrow, flood, basin), sprinkler (set, center pivot), drip/micro as kinds. each has an efficiency *class* — a number for *this* system is a measurement or an extension sheet. over-irrigate and you leach N and raise a water table.
+Soil water is held by matric suction forces (capillary attraction and surface adsorption):
+- **Saturation ($\Psi \approx 0\text{ kPa}$):** All soil pores are completely filled with water. Prolonged saturation causes root anoxia, halting respiration and causing iron/manganese reduction.
+- **Field Capacity ($FC$, $\Psi \approx -10\text{ to } -33\text{ kPa}$):** The water content retained in the soil after excess gravitational water has drained away (typically $24-48\text{ hours}$ post-precipitation).
+- **Permanent Wilting Point ($PWP$, $\Psi \approx -1500\text{ kPa}$ / $-1.5\text{ MPa}$):** The soil water content at which plants can no longer exert sufficient matric suction to extract water; leaves wilt irreversibly and cellular plasmolysis occurs.
+- **Plant-Available Water ($PAW$):** The functional reservoir of soil moisture:
+  $$PAW = FC - PWP$$
+  Silt loams and clay loams possess the highest $PAW$, whereas coarse sands have minimal available water.
 
-**ET (evapotranspiration)** is the crop + soil water use. a reference ET from a station (NOAA / a state mesonet) plus a crop coefficient Kc: fetch both. do not recite a mm/day. seasonal water use is the integral of ET; EasyLM calc only on stated daily values.
+### 2.3 Cation Exchange Capacity (CEC) & Soil Chemistry
 
-**quality.** salt, boron, pathogens. a water test is a lab. irrigation with untreated sewage is a public-health statute (health pack + the ministry).
+Clay mineral lattices (via isomorphic substitution of $\text{Mg}^{2+}$ for $\text{Al}^{3+}$ or $\text{Al}^{3+}$ for $\text{Si}^{4+}$) and organic matter carboxyl/phenolic groups possess permanent and pH-dependent **negative surface charges**.
 
-**aquifer and river.** a withdrawal is geography + law. this book does not allocate a river. a well log and a water right are different objects; the first is geology, the second is statute.
+These negative charges electrostatically adsorb exchangeable basic and acidic cations:
+$$\text{Basic Cations:} \quad \text{Ca}^{2+}, \ \text{Mg}^{2+}, \ \text{K}^+, \ \text{Na}^+ \qquad \text{Acidic Cations:} \quad \text{H}^+, \ \text{Al}^{3+}$$
 
-worked water check (no invented mm):
+**Cation Exchange Capacity (CEC):** The total quantity of exchangeable cations a soil can hold per unit dry mass, expressed in centimoles of positive charge per kilogram of dry soil ($\text{cmol}_c\cdot\text{kg}^{-1}$ or $\text{meq}/100\text{g}$):
+- Sandy soils: $\text{CEC} \approx 1 - 5\text{ cmol}_c\cdot\text{kg}^{-1}$.
+- Silt loams: $\text{CEC} \approx 10 - 20\text{ cmol}_c\cdot\text{kg}^{-1}$.
+- Organic soils / Humus: $\text{CEC} > 50\text{ cmol}_c\cdot\text{kg}^{-1}$.
 
-1. name the crop and stage (Kc changes with canopy).
-2. fetch reference ET for the station and window.
-3. soil available-water from texture / test.
-4. rain vs irrigation vs drainage this week (NWS + the pump log).
-5. if a rate (mm, gpm, hours) is required — extension sheet or a meter, not this chapter.
-
-**check:** rain vs irrigation vs drainage. ET from a named station.
-
----
-
-## 4. nutrients (N-P-K and the rest)
-
-a plant is chemistry assembled with light. **macronutrients** (usual school names): N, P, K, Ca, Mg, S. **micronutrients:** Fe, Mn, Zn, Cu, B, Mo, Cl, and others as the table lists. the table: extension / FAO. **Liebig’s law of the minimum:** the scarcest required factor sets the yield until you change it. a surplus of N does not fix a P hole.
-
-**N-P-K on a bag** is **guaranteed analysis**, as percent N, percent P2O5-equivalent, percent K2O-equivalent (the oxide convention is labeling, not the form in the bag). a bag marked 10-10-10 is a ratio of those three guarantees, not a soil prescription. converting oxide-equivalent to elemental P or K is a labeled factor on extension sheets — fetch the factor; then EasyLM calc. do not invent the factor.
-
-**roles (undergrad, qualitative):**
-
-| element | plant job (sketch) | soil behavior (sketch) |
-|---|---|---|
-| **N** | amino acids, nucleic acids, chlorophyll | mobile, leaky (nitrate); gas losses too |
-| **P** | ATP, nucleic acids, membranes | binds to soil; moves with erosion |
-| **K** | stomata, enzyme cofactor, water relations | cation; leaching on sands |
-| Ca, Mg, S | walls, chlorophyll, proteins as sketches | test, not folklore |
-
-**N cycle** (biology/chemistry): fixation (biotic, or industrial Haber–Bosch as a named process), mineralization, nitrification, denitrification, leaching, volatilization, harvest export. N is mobile and leaky. timing vs crop uptake is the agronomy. a fall nitrate leftover is a water-quality story.
-
-**P** binds to Fe/Al at low pH and to Ca at high pH as a classroom cartoon; the soil test method (Bray, Olsen, Mehlich — names) must match the lab that wrote the number. **K** is a cation on the exchanger (ch 2 CEC).
-
-**fertilizer** is a labeled product. a **rate** is: soil test × crop × yield *goal* × the extension worksheet. do not invent a mix. **manure** is a fertilizer with a water and pathogen clock; analysis, not folklore. credit the manure N that will mineralize *this* season; the worksheet says how — fetch it.
-
-**compost** is managed decay. carbon:nitrogen as a *ratio you measure or fetch*, not a remembered integer. temperature and turning are process control. finished compost is not a pesticide.
-
-**deficiency symptoms** are hints (chlorosis patterns, purpling, marginal scorch as classroom cartoons); a tissue or soil test is the check. methods pack: a yellow leaf is not a proof of N (waterlog, cold, S, and virus can yellow a leaf).
-
-worked nutrient method:
-
-1. soil test in hand (pH, P, K, and whatever the lab ran).
-2. crop and yield *goal* stated (goal is a plan, not a NASS fact).
-3. extension worksheet for *this* state and crop.
-4. subtract credits (manure, previous legume, residual nitrate if tested).
-5. the bag’s N-P-K is how you buy the remainder. rate on the field = the worksheet, not the bag ratio.
-6. if any number is missing → DONT_KNOW, do not blend from memory.
-
-**check:** which element. test vs bag. bag rate → label + extension, not this chapter.
+**Soil pH and Nutrient Availability:**
+Soil pH ($-\log[\text{H}^+]$) controls the chemical speciation and solubility of essential minerals. Optimum nutrient availability for most temperate crops occurs between **$\text{pH } 6.2\text{ and } 6.8$**:
+- Below $\text{pH } 5.5$: Aluminum ions ($\text{Al}^{3+}$) dissolve into the soil solution, inflicting severe root toxicity and fixing phosphate into insoluble $\text{AlPO}_4$.
+- Above $\text{pH } 7.5$: Calcium ions precipitate phosphate as insoluble apatite ($\text{Ca}_3(\text{PO}_4)_2$), while micronutrients ($\text{Fe}, \text{Mn}, \text{Zn}, \text{Cu}$) become insoluble hydroxides.
 
 ---
 
-## 5. the crop
+## 3. Mineral Nutrition & The Biogeochemical N-P-K Cycles
 
-a **crop** is a plant you intend to harvest. **photosynthesis, phenology, and pests** are the living machine. mechanism: `../biology/` (photosynthesis, respiration, genes). this chapter owns the field.
+Plants require seventeen essential chemical elements: three non-mineral nutrients extracted from air and water ($\text{C}, \text{H}, \text{O}$) and fourteen mineral nutrients extracted from the soil solution.
 
-**kinds** (names): cereals, pulses, oilseeds, roots/tubers, vegetables, fruits, forage, fiber, sugar, specialty. a named species’ physiology: USDA Plants / FAO crop page / the extension bulletin.
+### 3.1 Primary Macronutrients
 
-**phenology.** emergence, vegetative, reproductive, fill, maturity. **GDD (growing degree days)** are a computed clock from *stated* base T and the weather station. fetch the base for *this* crop; then EasyLM calc. do not recite a GDD to silking.
+1. **Nitrogen (N):** The primary constituent of amino acids, proteins, nucleic acids, and the chlorophyll tetrapyrrole ring:
+   - **Forms Absorbed:** Nitrate ($\text{NO}_3^-$) and Ammonium ($\text{NH}_4^+$).
+   - **The Nitrogen Cycle:**
+     - *Biological Fixation:* Symbiotic *Rhizobium* bacteria inside legume root nodules use the nitrogenase enzyme complex to split triple-bonded atmospheric $\text{N}_2$:
+       $$\text{N}_2 + 8\text{H}^+ + 8e^- + 16\text{ATP} \longrightarrow 2\text{NH}_3 + \text{H}_2 + 16\text{ADP} + 16\text{P}_i$$
+     - *Nitrification:* Aerobic chemolithoautotrophic bacteria oxidize ammonium:
+       $$2\text{NH}_4^+ + 3\text{O}_2 \xrightarrow{\text{Nitrosomonas}} 2\text{NO}_2^- + 4\text{H}^+ + 2\text{H}_2\text{O} \xrightarrow[\text{Nitrobacter}]{+\text{O}_2} 2\text{NO}_3^-$$
+     - *Denitrification:* Anaerobic bacteria reduce nitrate back into gaseous $\text{N}_2\text{O}$ and $\text{N}_2$ in waterlogged soils.
+2. **Phosphorus (P):** Structural backbone of DNA/RNA, phosphoanhydride bonds of ATP, and phospholipids in cellular membranes.
+   - **Forms Absorbed:** Orthophosphate anions ($\text{H}_2\text{PO}_4^-$ at $\text{pH} < 7.2$; $\text{HPO}_4^{2-}$ at $\text{pH} > 7.2$). Highly immobile in soil due to rapid mineral fixation.
+3. **Potassium (K):** Not incorporated into organic molecules; acts as an osmoticum and enzyme activator. Drives stomatal opening and closing via guard cell turgor pressure.
 
-**canopy and LAI, harvest index** as names. a yield is mass per area at a stated moisture. **NASS / FAOSTAT** for a region-year. this field: weigh it or DONT_KNOW.
+### 3.2 Fertilizer Guaranteed Analysis Conventions
 
-**rotation and fallow.** break pest cycles, manage N, rest water. a sequence is a plan, not a slogan.
-
-**weed** is a plant in the wrong job. competition is biology. control is ch 7.
-
-**check:** species, stage, limit. yield → NASS or a scale.
-
----
-
-## 6. seed
-
-**seed** is an embryo plus stores plus a coat, in the usual flowering plant. what you plant is a **variety** (or hybrid, landrace, clone) with a history.
-
-**germination** needs water, temperature in range, oxygen, sometimes light or scarification. a **germination percent** is a lab test (AOSA / ISTA rules — fetch). do not guess.
-
-**germplasm.** genebanks hold diversity. **GRIN** / CGIAR centres / the named bank. an accession is an ID, not a vibe.
-
-**breeding.** selection, hybridization, heterosis as names. **GMO / gene edit** are methods under a statute. a country’s approval list: USDA APHIS / FDA / EPA / the named ministry. this book does not approve an event.
-
-**saved seed vs hybrid.** a hybrid’s F2 is not the F1. read the bag and the contract. IP on a variety is law pack.
-
-**check:** species + variety + lot test. accession → GRIN.
+Commercial fertilizer grades are expressed under legal labeling conventions as percentages:
+$$\mathbf{N - P_2O_5 - K_2O}$$
+- **Nitrogen:** Reported as elemental $\% \text{N}$.
+- **Phosphorus:** Reported as phosphate-equivalent $\% \text{P}_2\text{O}_5$. To convert:
+  $$\text{Elemental P} = \text{P}_2\text{O}_5 \times \frac{2 \times 30.974}{141.94} \approx \text{P}_2\text{O}_5 \times 0.4364$$
+- **Potassium:** Reported as potash-equivalent $\% \text{K}_2\text{O}$. To convert:
+  $$\text{Elemental K} = \text{K}_2\text{O} \times \frac{2 \times 39.098}{94.20} \approx \text{K}_2\text{O} \times 0.8302$$
 
 ---
 
-## 7. pests and IPM
+## 4. Crop Physiology, Photosynthetic Pathways & Phenology
 
-a **pest** is an organism that costs the crop or the animal (insect, pathogen, weed, vertebrate). **IPM (integrated pest management)** is: identify, monitor, threshold, then a ranked set of tactics (cultural, biological, mechanical, chemical). the **threshold** is an extension/research number for *this* pest and *this* crop — fetch. spray-by-calendar is the thing IPM was built to stop.
+### 4.1 C3, C4, and CAM Photosynthetic Adaptations
 
-**pathogen kinds** (biology/health literacy): fungus, bacterium, virus, nematode, oomycete as names. a virus is not a fungus; a fungicide is not an antiviral.
+Plants possess three distinct photosynthetic adaptations optimized for different thermal and moisture regimes:
+```
+Pathway   Enzyme               Kranz Anatomy   Water-Use Efficiency   Typical Crops
+----------------------------------------------------------------------------------------
+C3        RuBisCO only         Absent          Low (400-500 L/kg)     Wheat, Rice, Soybeans,
+                                                                      Barley, Potatoes
+C4        PEP Carboxylase      Present         High (200-300 L/kg)    Corn (Maize), Sorghum,
+          + RuBisCO (spatial)  (Bundle sheath)                        Sugarcane, Millet
+CAM       PEP Carboxylase      Absent          Extreme (50-100 L/kg)  Pineapple, Agave,
+          (Temporal: Night/Day)                                       Opuntia (Cactus)
+```
+- **The C3 Photorespiration Penalty:** RuBisCO exhibits oxygenase activity at elevated temperatures ($> 28^\circ\text{C}$), reacting with $\text{O}_2$ instead of $\text{CO}_2$ to yield toxic 2-phosphoglycolate, wasting up to $30-40\%$ of absorbed photosynthetic energy.
+- **The C4 Engine:** C4 crops spatially segregate initial carboxylation (mesophyll cells using PEP carboxylase, which has zero oxygenase affinity) from the Calvin cycle (bundle sheath cells). This biochemical pump concentrates $\text{CO}_2$ around RuBisCO to $1,000-2,000\text{ ppm}$, virtually eliminating photorespiration and maximizing water-use efficiency in hot, arid climates.
 
-**pesticide** is a labeled poison (EPA in the US). the **label is the law**. rate, PHI, REI, PPE: the label. **do not name a rate from this book.** resistance is evolution (biology pack).
+### 4.2 Phenology & Thermal Time: Growing Degree Days (GDD)
 
-**beneficials.** predators, parasitoids, pollinators. a tank mix that kills the bee is a cost you chose.
-
-**quarantine.** APHIS / IPPC / the named service. a hitchhiking pest is a legal fact.
-
-**check:** identified? over threshold? label in hand? if no label, no chemical.
-
----
-
-## 8. livestock
-
-**livestock** are animals kept for food, fiber, work, or other products. **husbandry** is feed, water, shelter, health, breeding, behavior.
-
-**nutrition.** energy, protein, fiber, minerals, water. a ration is a formulated diet from *stated* analyses (NRC/NASEM tables are a fetch). do not recite a TDN percent.
-
-**health.** vaccine and drug are veterinary seats (health pack’s fence, WOAH, the labeled product). **no dose from this book.** zoonoses are a public-health page (CDC / WOAH).
-
-**welfare.** the animal has a physiology. stocking, heat, handling: extension / WOAH / a named code. a stocking rate in AU/ha is a *place* number — fetch or measure forage, do not invent.
-
-**manure** returns to ch 4. it is also a water-quality statute.
-
-**aquaculture, bees, working animals** are named cousins. fetch the bulletin.
-
-**check:** species, class, ration source. drug → veterinarian + label.
+Crop development is driven by accumulated heat units rather than calendar days. **Growing Degree Days (GDD)** quantify thermal time:
+$$GDD = \sum \left[ \frac{T_{\text{max}} + T_{\text{min}}}{2} - T_{\text{base}} \right]$$
+where $T_{\text{base}}$ is the species-specific physiological threshold below which metabolic development arrests ($10^\circ\text{C} / 50^\circ\text{F}$ for corn; $0^\circ\text{C} / 32^\circ\text{F}$ for wheat). If $\frac{T_{\text{max}} + T_{\text{min}}}{2} < T_{\text{base}}$, $GDD = 0$ for that day.
 
 ---
 
-## 9. season and climate
+## 5. Integrated Pest Management (IPM) & Agroecology
 
-crops and animals live on the **weather clock** (`../weather/`). **climate** is the long average (`../geography/` for belts).
+Integrated Pest Management (IPM) suppresses insect pests, plant pathogens, and weeds below damaging thresholds through an ecologically grounded hierarchy of tactics rather than calendar-based chemical eradication.
 
-**frost / freeze.** a temperature at a named height and duration. the forecast: NWS. a crop’s critical T at a stage: extension bulletin for *that* species. do not recite −2 °C as universal.
+```
+                      / \
+                     /   \   [ CHEMICAL CONTROL ]
+                    /-----\   Targeted synthetic pesticides as last resort
+                   /       \
+                  /---------\  [ BIOLOGICAL CONTROL ]
+                 /           \  Conservation of predators, parasitoids, microbials
+                /-------------\
+               /               \ [ MECHANICAL & PHYSICAL CONTROL ]
+              /                 \  Mowing, cultivation, tillage, row covers, traps
+             /-------------------\
+            /                     \ [ CULTURAL & PREVENTIVE CONTROLS ]
+           /_______________________\ Crop rotation, resistant cultivars, sanitation
+```
 
-**growing season** is the window between stated limits (frost dates, monsoon, dry season). normals: NCEI. **this year** is a forecast.
+### 5.1 The Economic Injury Level (EIL) Equation
 
-**drought, flood, heat, hail, wind** are hazards. insurance and disaster programs are policy (USDA / the ministry). this book does not write a claim.
+Chemical intervention is economically justified only when the value of crop yield saved exceeds the monetary cost of application:
+$$EIL = \frac{C}{V \cdot I \cdot D \cdot K}$$
+where:
+- $C$ is the cost of management per unit area ($\$\cdot\text{ha}^{-1}$).
+- $V$ is market value per unit crop yield ($\$\cdot\text{kg}^{-1}$).
+- $I$ is injury per pest density ($\text{defoliation percentage}\cdot\text{pest}^{-1}$).
+- $D$ is damage per unit injury ($\text{yield loss}\cdot\text{injury}^{-1}$).
+- $K$ is proportionate reduction in pest population achieved by the treatment.
 
-**photoperiod** is a biology trigger (flowering). latitude is geography.
-
-**check:** stage of the crop × the forecast. bulletin for the critical T.
-
----
-
-## 10. food as a system
-
-**food security** (FAO as the usual four): **availability, access, utilization, stability**. a slogan without those four is incomplete. counts of hungry people, tonnes of grain: **FAOSTAT / USDA ERS** fetch. do not recite.
-
-**loss and waste** happen at harvest, store, transport, retail, plate. they are different clocks. a percent: fetch the named FAO/USDA series.
-
-**safety.** pathogens, toxins, residues. Codex / FDA / the ministry. ORT and hygiene: health pack. this chapter does not dose.
-
-**trade and stocks.** a calorie at the port is not a calorie in the village. ERS / FAO for the balance sheet.
-
-**check:** which pillar. which year. which door.
-
----
-
-## 11. the farm as a firm
-
-a farm is a **business** on a piece of land. cash is the fact. a yield is not a profit.
-
-**unit math.** price × quantity that paid − variable cost. land, machinery, and labor are the usual fixed/owned constraints. do not invent a margin. EasyLM calc only on stated prices and quantities.
-
-**labor.** seasonality, skill, statute (DOL in the US). this book does not set a wage.
-
-**policy.** subsidy, conservation program, crop insurance, land tenure, water right: USDA / the ministry / `../law/`. a program payment is a fetch.
-
-**land.** soil map + title + water. geography and law.
-
-**check:** cash vs accrual. this field vs the sector (NASS).
+**The Economic Threshold ($ET$):** The pest population density at which management action must be initiated to prevent the increasing population from reaching the Economic Injury Level ($EIL$).
 
 ---
 
-## 12. compute and fetch
+## 6. Animal Science & Ruminant Digestion
 
-| job | do |
-|---|---|
-| US farm / program | **USDA** |
-| soil map, texture, conservation | **NRCS** · **Web Soil Survey** |
-| yields, census, prices (US) | **NASS** · **ERS** |
-| plants, names | **USDA Plants** |
-| germplasm accession | **GRIN** |
-| pest / GMO / import | **APHIS** · **IPPC** |
-| pesticide label (US) | **EPA** |
-| global production, security | **FAO** · **FAOSTAT** |
-| animal health (intl) | **WOAH** |
-| food standards | **Codex** |
-| research / extension umbrella | **NIFA** · the **land-grant** bulletin for the state |
-| frost / ET / forecast | `../weather/` · **NWS** |
-| mechanism of the plant | `../biology/` |
-| ions, pH | `../chemistry/` |
-| arithmetic on *stated* numbers | **EasyLM calc** + **EasyLM units** |
+Ruminant livestock (cattle, sheep, goats) possess specialized four-chambered stomachs (Rumen, Reticulum, Omasum, Abomasum) designed to digest structural plant carbohydrates (cellulose, hemicellulose) that humans cannot hydrolyze.
 
-never invent a yield, an N rate, a GDD, or a stocking. format a search. cite the URL. `ok` false → DONT_KNOW.
-
-adjacent: `../biology/` (organism) · `../chemistry/` (ions, pH) · `../weather/` (clock) · `../geography/` (place) · `../health/` (food safety, no dose). this pack owns the farm system.
+1. **Rumen Microbial Fermentation:** The anaerobic rumen chamber acts as a $100-200\text{ liter}$ fermentation vat hosting billions of symbiotic anaerobic bacteria, ciliate protozoa, and fungi. Microbial cellulase enzymes hydrolyze cellulose and hemicellulose into hexose and pentose sugars, fermenting them into **Volatile Fatty Acids (VFAs)**:
+   - **Acetate ($CH_3COO^-$):** Primary precursor for lipogenesis and milk fat synthesis.
+   - **Propionate ($CH_3CH_2COO^-$):** Absorbed across the rumen wall and converted in the liver into glucose via gluconeogenesis.
+   - **Butyrate ($CH_3(CH_2)_2COO^-$):** Provides metabolic fuel for the rumen epithelium.
+2. **Microbial Protein Synthesis:** Rumen microbes utilize non-protein nitrogen (e.g. urea, plant nitrates) and degraded true protein to build high-quality microbial protein. As microbes pass into the true acidic stomach (**Abomasum**) and small intestine, they are digested, providing the animal with complete essential amino acids.
 
 ---
 
-## 13. how to attack a problem
+## 7. Authoritative Agronomic Doors & Primary Repositories
 
-1. **plant or animal** (or mixed)?
-2. name the **place** and the **season**.
-3. name the **limit** (water, N, frost, pest, cash, labor).
-4. if a **rate / mix / yield** is required — soil test, label, NASS/FAOSTAT, or extension. do not invent.
-5. pest: identified and over threshold? label in hand?
-6. weather this week → NWS. climate belt → geography.
-7. mechanism → biology. cash → stated numbers + calc.
-8. FOUND empty → **DONT_KNOW**.
-
-stuck patterns:
-
-| symptom | try |
-|---|---|
-| remembered N-P-K blend | ch 4. test + label + extension |
-| bushel from a vibe | ch 5, 12. NASS |
-| pesticide rate from memory | ch 7. the label |
-| soil = dirt | ch 2 |
-| irrigation without ET | ch 3 |
-| GDD without a base T | ch 5, 9. bulletin + EasyLM calc |
-| food security as a slogan | ch 10. four pillars + FAOSTAT |
-| vet dose from this pack | ch 8. veterinarian |
-| 10-10-10 as a soil prescription | ch 4. that is a bag, not a test |
-
----
-
-## close
-
-agriculture is a limit, an organism, and a season. soil and water first. N-P-K is a test plus a label. fetch the yield. LINK_INDEX.md is doors.
-
-home: `stacks/agriculture/TEXTBOOK.md`
+Agricultural decisions require empirical soil maps, historical weather data, and standardized germplasm records:
+- **US Soil Surveys & Soil Physical Properties:** USDA NRCS **Web Soil Survey** — `https://websoilsurvey.nrcs.usda.gov/`.
+- **National Agricultural Statistics & Commodity Yields:** USDA **NASS** — `https://www.nass.usda.gov/`.
+- **Plant Genetic Resources & Genebank Accessions:** USDA ARS **GRIN-Global** — `https://www.ars-grin.gov/`.
+- **Global Crop Production & Food Security Statistics:** UN **FAOSTAT** — `https://www.fao.org/faostat/`.
+- **International Agricultural Research Centers:** **CGIAR** (IRRI, CIMMYT, ICRISAT) — `https://www.cgiar.org/`.

@@ -40,9 +40,11 @@ if a date, quote, treaty line, or casualty is load-bearing, fetch the live page 
 4. fetch the page if you will cite a date, a quote, a treaty, or a casualty.
 5. if two official pages disagree, say so. do not average them. a treaty text beats a memory of a year.
 
-## not doors (refuse as SoT)
+## Canonical Historians & Thinkers
 
-remembered casualty totals, fake founding quotes, movie chronology, wiki as the last word on a treaty line. Wikipedia orients; it does not beat the archive.
+| Thinker | Era | Focus / Contribution | Wikipedia Reference |
+|---|---|---|---|
+| **Herodotus** | c. 484–425 BCE | Classical Historiography, Systematic Historical Inquiry | https://en.wikipedia.org/wiki/Herodotus |
 
 ## sibling packs (The Stacks)
 

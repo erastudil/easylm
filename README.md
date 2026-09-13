@@ -42,6 +42,7 @@ Local:
 - Unit converter (unknown pairs error, they do not invent a 1:1 ratio)
 - System clock
 - The Stacks: undergraduate textbooks across 28 academic subjects plus official source doors (`stacks/`)
+- Studio: local class walks — lessons, quizzes, projects, essays, exams. Pass/fail. No due dates. Streaks and badges on this device. Not a diploma.
 
 Optional network (leave the machine):
 

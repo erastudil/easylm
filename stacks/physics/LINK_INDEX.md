@@ -30,6 +30,7 @@ if a constant, cross-section, or ephemeris is load-bearing, fetch the live page 
 | university physics vol 2 | `OpenStax university physics volume 2` | https://openstax.org/details/books/university-physics-volume-2 |
 | university physics vol 3 | `OpenStax university physics volume 3` | https://openstax.org/details/books/university-physics-volume-3 |
 | college physics | `OpenStax college physics 2e` | https://openstax.org/details/books/college-physics-2e |
+| PhET simulations | `PhET interactive simulations Colorado` | https://phet.colorado.edu/ |
 | feynman lectures | `feynman lectures caltech official` | https://www.feynmanlectures.caltech.edu/ |
 | PDG review | `Particle Data Group pdg.lbl.gov` | https://pdg.lbl.gov/ |
 | PDG live | `pdglive lbl` | https://pdglive.lbl.gov/ |
@@ -55,11 +56,11 @@ if a constant, cross-section, or ephemeris is load-bearing, fetch the live page 
 4. fetch the page if you will cite a constant, a mass, or an ephemeris.
 5. if two official pages disagree, say so. do not average them.
 
-## not doors (refuse as SoT)
+## Unverified or Derivative Sources (Do Not Cite as Primary Authority)
 
 homework mills, scraped constant tables, “i remember G”, a youtube derivation as the value of μ, wiki as the last word on a CODATA digit. wiki is **seed** (`ARTICLES.md` / `WIKI_INDEX.md`).
 
-## house paths (local, first)
+## Sovereign Offline Cross-References
 
 | topic | path |
 |---|---|

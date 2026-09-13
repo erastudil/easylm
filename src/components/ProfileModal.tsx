@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Session } from '../types';
 import {
   UserProfile,
   loadProfiles,
@@ -11,6 +12,7 @@ import {
   deleteProfileMemory,
   clearProfileMemories
 } from '../engine/family';
+import { analyzeTriLakePatterns } from '../engine/storage';
 
 interface ProfileModalProps {
   isOpen: boolean;
@@ -18,6 +20,7 @@ interface ProfileModalProps {
   onRequestPinVerify: (onSuccess: () => void) => void;
   onOpenPinSetup: () => void;
   onProfileChanged: (profile: UserProfile) => void;
+  sessions?: Session[];
 }
 
 export const ProfileModal: React.FC<ProfileModalProps> = ({
@@ -25,7 +28,8 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
   onClose,
   onRequestPinVerify,
   onOpenPinSetup,
-  onProfileChanged
+  onProfileChanged,
+  sessions
 }) => {
   const [profiles, setProfiles] = useState<UserProfile[]>(() => loadProfiles());
   const [activeProfile, setActiveProfile] = useState<UserProfile>(() => getActiveProfile());
@@ -34,6 +38,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
   const [newProfileRole, setNewProfileRole] = useState<'parent' | 'kid'>('kid');
   const [isAddingProfile, setIsAddingProfile] = useState(false);
   const [activeTab, setActiveTab] = useState<'profiles' | 'memory' | 'parental'>('profiles');
+  const [analysisBanner, setAnalysisBanner] = useState<{ text: string; ok: boolean } | null>(null);
 
   const memories = getProfileMemories(activeProfile.id);
   const pinConfigured = hasParentalPin();
@@ -73,6 +78,12 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
       clearProfileMemories(activeProfile.id);
       setActiveProfile({ ...activeProfile });
     }
+  };
+
+  const handleAnalyzeLakes = () => {
+    const res = analyzeTriLakePatterns(sessions || [], activeProfile.id);
+    setAnalysisBanner({ text: res.message, ok: res.insightsAdded > 0 || res.totalRated > 0 });
+    setActiveProfile({ ...activeProfile });
   };
 
   const handleExportMemories = () => {
@@ -290,6 +301,31 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
               Standing facts, learning preferences, and goals saved for <strong style={{ color: '#ffffff' }}>{activeProfile.name}</strong>. Stored in this browser. Export a JSON backup from the sidebar to take them with you.
             </div>
 
+            {/* Tri-Lake Analysis Notification Banner */}
+            {analysisBanner && (
+              <div style={{
+                backgroundColor: analysisBanner.ok ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                border: analysisBanner.ok ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid rgba(239, 68, 68, 0.4)',
+                borderRadius: '8px',
+                padding: '0.65rem 0.85rem',
+                marginBottom: '0.85rem',
+                fontSize: '0.78rem',
+                color: analysisBanner.ok ? '#34d399' : '#fca5a5',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '0.5rem'
+              }}>
+                <span>{analysisBanner.text}</span>
+                <button
+                  onClick={() => setAnalysisBanner(null)}
+                  style={{ background: 'transparent', border: 'none', color: '#a1a1aa', cursor: 'pointer', fontSize: '1rem', lineHeight: 1 }}
+                >
+                  ×
+                </button>
+              </div>
+            )}
+
             {/* Add Memory Input */}
             <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
               <input
@@ -348,17 +384,40 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
               )}
             </div>
 
-            {/* Export / Clear */}
-            {memories.length > 0 && (
-              <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                <button onClick={handleExportMemories} className="btn-pill" style={{ fontSize: '0.72rem' }}>
-                  📥 Export Memory (.json)
-                </button>
-                <button onClick={handleClearMemories} className="btn-pill" style={{ fontSize: '0.72rem', color: '#f87171' }}>
-                  🗑 Clear All
-                </button>
+            {/* Analysis & Actions */}
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', marginTop: '0.5rem' }}>
+              <button
+                onClick={handleAnalyzeLakes}
+                className="btn-pill"
+                style={{
+                  fontSize: '0.74rem',
+                  padding: '0.35rem 0.75rem',
+                  backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                  borderColor: '#8b5cf6',
+                  color: '#ffffff',
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.35rem'
+                }}
+                title="Scan approved (👍) and rejected (👎) responses across all chats, extract style & domain patterns, and store them in this profile's memory bank"
+              >
+                <span>⚡</span> Analyze Lakes for Patterns
+              </button>
+
+              <div style={{ display: 'flex', gap: '0.45rem' }}>
+                {memories.length > 0 && (
+                  <>
+                    <button onClick={handleExportMemories} className="btn-pill" style={{ fontSize: '0.72rem' }}>
+                      📥 Export (.json)
+                    </button>
+                    <button onClick={handleClearMemories} className="btn-pill" style={{ fontSize: '0.72rem', color: '#f87171' }}>
+                      🗑 Clear All
+                    </button>
+                  </>
+                )}
               </div>
-            )}
+            </div>
           </div>
         )}
 

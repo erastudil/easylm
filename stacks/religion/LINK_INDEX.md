@@ -29,3 +29,13 @@
 
 10. **The Pluralism Project at Harvard University** — Research mapping religious diversity, interfaith traditions, and constitutional freedoms.
     https://pluralism.org/
+
+---
+
+## Canonical Religious Thinkers & Theologians
+
+| Thinker | Era | Focus / Tradition | Wikipedia Reference |
+|---|---|---|---|
+| **Augustine of Hippo** | 354–430 CE | Patristic Christian Theology & Philosophy | https://en.wikipedia.org/wiki/Augustine_of_Hippo |
+| **Martin Luther King Jr.** | 1929–1968 | Christian Social Gospel, Theology of Nonviolence | https://en.wikipedia.org/wiki/Martin_Luther_King_Jr. |
+

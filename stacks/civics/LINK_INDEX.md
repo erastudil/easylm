@@ -40,9 +40,13 @@ if a clause, a vote total, a rule, or a certified return is load-bearing, fetch 
 4. fetch the page if you will cite a clause, a rule, a docket, or a return.
 5. if two official pages disagree, say so. do not average them. the enacted text beats a memory of the amendment.
 
-## not doors (refuse as SoT)
+## Canonical Political & Civic Thinkers
 
-viral constitution quotes, remembered seat counts, a network “call” as certification, wiki as the last word on a clause. Wikipedia orients; it does not beat the gazette.
+| Thinker | Era | Focus / Contribution | Wikipedia Reference |
+|---|---|---|---|
+| **John Locke** | 1632–1704 | Classical Liberalism, Social Contract, Natural Rights | https://en.wikipedia.org/wiki/John_Locke |
+| **John Dewey** | 1859–1952 | Participatory Democracy, Pragmatic Civic Education | https://en.wikipedia.org/wiki/John_Dewey |
+| **Martin Luther King Jr.** | 1929–1968 | Civil Disobedience, Constitutional Equality, Nonviolence | https://en.wikipedia.org/wiki/Martin_Luther_King_Jr. |
 
 ## sibling packs (The Stacks)
 

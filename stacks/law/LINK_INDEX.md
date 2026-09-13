@@ -24,6 +24,7 @@ if a section, holding, element list, or deadline is load-bearing, fetch the live
 | WorldLII | `World Legal Information Institute` | https://www.worldlii.org/ |
 | US constitution annotated | `constitution.congress.gov` | https://constitution.congress.gov/ |
 | US Code | `uscode.house.gov` | https://uscode.house.gov/ |
+| US Federal Tax Code (26 U.S.C.) & CFR | `GovInfo US Code and Federal Register` | https://www.govinfo.gov/ |
 | US Supreme Court | `supremecourt.gov opinions` | https://www.supremecourt.gov/ |
 | Japan e-gov | `e-gov Japan laws` | https://elaws.e-gov.go.jp/ |
 | Japan law translation | `Japanese Law Translation` | https://www.japaneselawtranslation.go.jp/ |
@@ -40,7 +41,7 @@ if a section, holding, element list, or deadline is load-bearing, fetch the live
 4. fetch the page if you will cite a section, a holding, or a deadline. keep the **date in force**.
 5. if two official pages disagree, say so. do not average them. the gazette beats wiki. an admitted attorney beats this table on a filing.
 
-## not doors (refuse as SoT)
+## Unverified or Derivative Sources (Do Not Cite as Primary Authority)
 
 remembered four-part tests, TV procedure, wiki as the last word on a section, a US mnemonic exported to a civil code. Wikipedia orients; it does not beat the gazette.
 

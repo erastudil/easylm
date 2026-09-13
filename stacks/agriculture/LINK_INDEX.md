@@ -39,11 +39,11 @@ if a yield, fertilizer rate, pesticide rate, stocking, or hunger count is load-b
 4. fetch the page if you will cite a yield, a rate, a map unit, or a food-balance number.
 5. if two official pages disagree, say so. do not average them. the **label** beats this textbook on a pesticide. the **soil test** beats a remembered N mix.
 
-## not doors (refuse as SoT)
+## Unverified or Derivative Sources (Do Not Cite as Primary Authority)
 
-remembered bushels, a “typical” N-P-K, calendar spray rates, wiki tonnes as SoT, a stocking from a forum. wiki is **seed** (`ARTICLES.md` / `WIKI_INDEX.md`).
+remembered bushels, a “typical” N-P-K, calendar spray rates, wiki tonnes as Primary Authority, a stocking from a forum. wiki is **seed** (`ARTICLES.md` / `WIKI_INDEX.md`).
 
-## house paths (local, first)
+## Sovereign Offline Cross-References
 
 | topic | path |
 |---|---|

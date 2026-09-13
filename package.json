@@ -5,11 +5,12 @@
   "license": "AGPL-3.0-or-later",
   "type": "module",
   "scripts": {
-    "dev": "node scripts/compile_stacks.mjs && vite",
+    "dev": "node scripts/compile_stacks.mjs && node scripts/compile_courses.mjs && vite",
     "compile-stacks": "node scripts/compile_stacks.mjs",
+    "compile-courses": "node scripts/compile_courses.mjs",
     "compile-warehouse": "node scripts/compile_stacks.mjs",
-    "prebuild": "node scripts/compile_stacks.mjs",
-    "pretest": "node scripts/compile_stacks.mjs",
+    "prebuild": "node scripts/compile_stacks.mjs && node scripts/compile_courses.mjs",
+    "pretest": "node scripts/compile_stacks.mjs && node scripts/compile_courses.mjs",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest run"

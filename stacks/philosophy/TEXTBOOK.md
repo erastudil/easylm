@@ -56,6 +56,7 @@ Philosophy is the systematic, rational investigation of fundamental questions re
 12. [Chapter 12: Comparative & World Philosophical Traditions](#12-comparative--world-philosophical-traditions)
 13. [Chapter 13: Scholarly Corpora, Primary Editions & Citation Standards](#13-scholarly-corpora-primary-editions--citation-standards)
 14. [Chapter 14: Dialectical Method & Problem-Solving Protocols](#14-dialectical-method--problem-solving-protocols)
+15. [Chapter 15: Summary & Synthesis](#15-summary--synthesis)
 
 ---
 
@@ -324,7 +325,7 @@ FOUNDATIONALISM                           COHERENTISM                          I
 - **Agrippa's Trilemma (Münchhausen Trilemma):** Any attempt to justify a claim must terminate in: (1) Infinite regress, (2) Circular reasoning, or (3) Arbitrary dogmatic cessation.
 - **Cartesian Skepticism:** Radical doubt method testing beliefs against the Evil Demon hypothesis or Dream argument to isolate indubitable foundations (*Cogito, ergo sum*).
 - **External World Skepticism & Brain in a Vat (Putnam):** Semantic externalism argues a brain in a vat cannot coherently refer to real brains or vats, demonstrating limits of radical skeptical hypotheses.
-- **Epistemic Humility & DONT_KNOW:** Recognizing when evidence is absent and suspending judgment rather than asserting ungrounded claims.
+- **Epistemic Humility & Suspension of Judgment:** Recognizing when evidence is absent and suspending judgment rather than asserting ungrounded claims.
 
 ---
 
@@ -734,15 +735,12 @@ When confronted with a philosophical claim, problem, or argument, execute this e
 | **Category Mistake** | Assigning properties of a system to its parts | Apply Composition/Division and Type/Token cuts. |
 | **Falsification Failure** | Asserting a claim that fits every possible state| Demand the empirical or conceptual falsification condition.|
 | **Authority Appeal** | Citing a philosopher's name instead of a reason| Extract the premise-conclusion structure and test validity.|
-| **Fabricated Quotation** | Reciting memorized or invented lines | Fetch verified primary text via SEP, Perseus, or ctext. |
-| **Empty Foundation** | Asserting in the absence of evidence | Return **DONT_KNOW**; cite missing evidence. |
+| **Fabricated Quotation** | Reciting memorized or invented lines | Consult verified primary text via SEP, Perseus, or ctext. |
+| **Empty Foundation** | Asserting in the absence of evidence | Acknowledge lack of verification; cite missing primary sources. |
 
 ---
 
-## 15. Summary & Closure
+## 15. Summary & Synthesis
 
-Philosophy is neither vague speculation nor dogmatic assertion. It is the precise discipline of making claims that can be rationally examined, defended with valid logic, and tested against reality.
+Philosophy is neither vague speculation nor dogmatic assertion. It is the disciplined enterprise of formulating explicit claims that can be rationally examined, defended with valid logic, tested against counterexamples, and evaluated in the light of truth.
 
-```
-CITE: stacks/philosophy/TEXTBOOK.md
-```

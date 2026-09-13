@@ -3,6 +3,7 @@ import {
   hostLooksPrivate,
   hostnameIsBlocked,
   isPrivateIP,
+  isWhitelistedHost,
   isWikiHost,
   parsePublicHttpsUrl
 } from './ssrf';
@@ -47,6 +48,46 @@ describe('isWikiHost', () => {
     expect(isWikiHost('wikipedia.org')).toBe(true);
     expect(isWikiHost('not-wikipedia.org')).toBe(false);
     expect(isWikiHost('wikipedia.org.evil.com')).toBe(false);
+  });
+});
+
+describe('isWhitelistedHost', () => {
+  it('allows safe vetted news, sports, finance, and open data hosts', () => {
+    // news & rss
+    expect(isWhitelistedHost('news.google.com')).toBe(true);
+    expect(isWhitelistedHost('feeds.bbci.co.uk')).toBe(true);
+    expect(isWhitelistedHost('feeds.npr.org')).toBe(true);
+
+    // sports & scores
+    expect(isWhitelistedHost('site.api.espn.com')).toBe(true);
+    expect(isWhitelistedHost('espn.com')).toBe(true);
+
+    // finance & stocks
+    expect(isWhitelistedHost('query1.finance.yahoo.com')).toBe(true);
+    expect(isWhitelistedHost('finance.yahoo.com')).toBe(true);
+    expect(isWhitelistedHost('data.sec.gov')).toBe(true);
+
+    // Qwen open data & metrology
+    expect(isWhitelistedHost('physics.nist.gov')).toBe(true);
+    expect(isWhitelistedHost('webbook.nist.gov')).toBe(true);
+    expect(isWhitelistedHost('pubchem.ncbi.nlm.nih.gov')).toBe(true);
+    expect(isWhitelistedHost('api.census.gov')).toBe(true);
+    expect(isWhitelistedHost('govinfo.gov')).toBe(true);
+    expect(isWhitelistedHost('arxiv.org')).toBe(true);
+    expect(isWhitelistedHost('conceptnet.io')).toBe(true);
+    expect(isWhitelistedHost('wikidata.org')).toBe(true);
+    expect(isWhitelistedHost('api.worldbank.org')).toBe(true);
+    expect(isWhitelistedHost('openstax.org')).toBe(true);
+    expect(isWhitelistedHost('ocw.mit.edu')).toBe(true);
+    expect(isWhitelistedHost('phet.colorado.edu')).toBe(true);
+    expect(isWhitelistedHost('libretexts.org')).toBe(true);
+  });
+
+  it('rejects arbitrary external hosts and local/private domains', () => {
+    expect(isWhitelistedHost('evil.com')).toBe(false);
+    expect(isWhitelistedHost('attacker.io')).toBe(false);
+    expect(isWhitelistedHost('localhost')).toBe(false);
+    expect(isWhitelistedHost('metadata.google.internal')).toBe(false);
   });
 });
 

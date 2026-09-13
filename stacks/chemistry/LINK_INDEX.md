@@ -46,11 +46,11 @@ if a mass, K, ΔH, spectrum, or hazard is load-bearing, fetch the live page and 
 4. fetch the page if you will cite a mass, a K, a ΔH, or a hazard.
 5. if two official pages disagree, say so. do not average them. a bottle SDS wins on *that bottle*.
 
-## not doors (refuse as SoT)
+## Unverified or Derivative Sources (Do Not Cite as Primary Authority)
 
 homework mills, scraped Ka tables, “i remember N_A to nine places,” a social-media SDS, wiki as the last word on a webbook enthalpy. wiki is **seed** (`ARTICLES.md` / `WIKI_INDEX.md`).
 
-## house paths (local, first)
+## Sovereign Offline Cross-References
 
 | topic | path |
 |---|---|

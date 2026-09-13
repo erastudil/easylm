@@ -82,6 +82,24 @@ describe('execStacks', () => {
     expect(math).toContain('https://');
   });
 
+  it('resolves semantic aliases and Dewey numbers', () => {
+    const ai = execStacks('ai');
+    expect(ai).toMatch(/Dewey 006/);
+
+    const dewey510 = execStacks('Dewey 510');
+    expect(dewey510).toMatch(/Dewey 510/);
+    expect(dewey510).toMatch(/Mathematics/);
+
+    const econ = execStacks('economics');
+    expect(econ).toMatch(/Dewey 330/);
+  });
+
+  it('centers excerpts when terms occur in later sections', () => {
+    const pearl = execStacks('Directed Acyclic Graphs DAGs Pearl');
+    expect(pearl).toMatch(/Dewey 001/);
+    expect(pearl).toMatch(/Directed Acyclic Graph/i);
+  });
+
   it('misses cleanly', () => {
     const res = execStacks('xyznonexistentterm123');
     expect(res).toContain('Stacks matches');

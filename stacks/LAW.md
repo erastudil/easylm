@@ -27,7 +27,7 @@ a chapter names the object, explains from first principles with intuitive physic
 |---|---|
 | teaches a structure another person can use from first principles | table of contents with no body |
 | Feynman/Greene clarity with memorable intuitive analogies | terse telegraphic roleplaying or dry jargon |
-| constants cited to a named door, or DONT_KNOW | invented numbers |
+| constants cited to a named door, or acknowledged unverified | invented numbers |
 | worked method (first principles → definition → claim → check) | one-paragraph Dewey blurb |
 | empty hit → say so | fluent filler |
 
@@ -50,10 +50,12 @@ load-bearing number, date, quote, statute, identity → fetch the door. do not f
 
 if two official pages disagree, say so. do not average them.
 
-if the textbook and a wiki page disagree on a number → DONT_KNOW, fetch.
+if the textbook and a wiki page disagree on a number → state unverified and fetch the primary source.
 
 ## who this is for
 
 EasyLM is public AGPL-3.0-or-later. packs here are **general education**. no house internals, no personal life, no unpublished product law.
 
 Hands: `calc` and `units` do arithmetic. The Stacks tool returns the chapter. the model does not invent the constant.
+
+Studio: pass / fail. as many tries as it takes. no due dates. keys never enter the model prompt.

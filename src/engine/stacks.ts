@@ -12,12 +12,98 @@ export interface StackChapter {
 const STOP = new Set([
   'a', 'an', 'the', 'of', 'and', 'or', 'to', 'in', 'on', 'for', 'is', 'it',
   'what', 'does', 'how', 'why', 'with', 'from', 'this', 'that', 'are', 'be',
-  'about', 'which', 'explain', 'show', 'tell', 'me'
+  'about', 'which', 'explain', 'show', 'tell', 'me', 'find', 'search', 'stacks',
+  'library', 'textbook', 'chapter', 'dewey'
 ]);
 
 const CHAPTER_MAX = 3500;
 const HIT_MAX = 2;
 const DOOR_MAX = 8;
+
+const SUBJECT_ALIASES: Record<string, string[]> = {
+  ai: ['ai_ml', 'computing'],
+  ml: ['ai_ml'],
+  neural: ['ai_ml'],
+  deeplearning: ['ai_ml'],
+  transformer: ['ai_ml'],
+  code: ['software', 'computing'],
+  coding: ['software'],
+  programming: ['software'],
+  algorithm: ['computing', 'software'],
+  data: ['computing', 'methods'],
+  stats: ['methods', 'math'],
+  statistics: ['methods', 'math'],
+  probability: ['math', 'methods'],
+  bayes: ['methods', 'math'],
+  econ: ['finance', 'business'],
+  economics: ['finance'],
+  money: ['finance'],
+  stocks: ['finance', 'business'],
+  markets: ['finance', 'business'],
+  constitution: ['civics', 'law'],
+  court: ['law'],
+  rights: ['civics', 'law'],
+  democracy: ['civics'],
+  government: ['civics'],
+  politics: ['civics'],
+  stars: ['astronomy'],
+  cosmos: ['astronomy'],
+  space: ['astronomy'],
+  planets: ['astronomy'],
+  mind: ['psychology', 'philosophy'],
+  cognition: ['psychology'],
+  behavior: ['psychology', 'sociology'],
+  mental: ['psychology', 'health'],
+  society: ['sociology'],
+  culture: ['sociology', 'history'],
+  god: ['religion', 'philosophy'],
+  theology: ['religion'],
+  faith: ['religion'],
+  verse: ['poetry'],
+  sonnet: ['poetry'],
+  poem: ['poetry'],
+  novel: ['literature'],
+  author: ['literature'],
+  fiction: ['literature'],
+  drama: ['literature'],
+  climate: ['weather', 'geography'],
+  meteorology: ['weather'],
+  atmosphere: ['weather'],
+  biology: ['biology'],
+  genetics: ['biology'],
+  dna: ['biology'],
+  evolution: ['biology'],
+  cells: ['biology'],
+  medicine: ['health'],
+  disease: ['health'],
+  anatomy: ['health'],
+  nutrition: ['health'],
+  circuits: ['engineering'],
+  robotics: ['engineering', 'computing'],
+  structures: ['engineering'],
+  farming: ['agriculture'],
+  crops: ['agriculture'],
+  soil: ['agriculture'],
+  marketing: ['business'],
+  management: ['business'],
+  accounting: ['business', 'finance'],
+  painting: ['art'],
+  sculpture: ['art'],
+  design: ['art'],
+  aesthetic: ['art', 'philosophy'],
+  harmony: ['music'],
+  tempo: ['music'],
+  melody: ['music'],
+  counterpoint: ['music'],
+  empire: ['history'],
+  war: ['history'],
+  revolution: ['history'],
+  ancient: ['history'],
+  cartography: ['geography'],
+  gis: ['geography'],
+  maps: ['geography'],
+  oceans: ['geography']
+};
 
 export function tokenize(query: string): string[] {
   return query
@@ -79,20 +165,31 @@ function packBonus(pack: StackPack, terms: string[]): number {
   const slug = pack.slug.toLowerCase();
   const keys = pack.keywords.join(' ').toLowerCase();
   for (const t of terms) {
-    if (pack.dewey === t) s += 40;
-    if (slug === t) s += 20;
-    if (title.includes(t)) s += 12;
-    if (cat.includes(t)) s += 8;
-    if (keys.includes(t)) s += 10;
+    if (pack.dewey === t) s += 50;
+    if (slug === t) s += 30;
+    if (title.includes(t)) s += 15;
+    if (cat.includes(t)) s += 10;
+    if (keys.includes(t)) s += 12;
+
+    const targetSlugs = SUBJECT_ALIASES[t];
+    if (targetSlugs && targetSlugs.includes(slug)) {
+      s += 25;
+    }
   }
   return s;
 }
 
-function scoreChapter(ch: StackChapter, terms: string[]): number {
+function scoreChapter(ch: StackChapter, terms: string[], rawPhrase?: string): number {
   const h = ch.heading.toLowerCase();
   const b = ch.body.toLowerCase();
   let s = scoreHay(h, terms) * 4;
-  s += Math.min(scoreHay(b, terms), 30);
+  s += Math.min(scoreHay(b, terms), 45);
+
+  if (rawPhrase && rawPhrase.length > 3) {
+    if (b.includes(rawPhrase)) s += 35;
+    if (h.includes(rawPhrase)) s += 50;
+  }
+
   if (/^0[\.\s]|how to use|syllabus|table of contents/i.test(ch.heading)) {
     s = Math.floor(s / 4);
   }
@@ -102,6 +199,44 @@ function scoreChapter(ch: StackChapter, terms: string[]): number {
 function clip(text: string, max: number): string {
   if (text.length <= max) return text;
   return text.slice(0, max).trimEnd() + '\n…';
+}
+
+function excerptChapter(body: string, terms: string[], rawPhrase: string, max = CHAPTER_MAX): string {
+  if (body.length <= max) return body;
+
+  const paragraphs = body.split(/\n\s*\n/);
+  let bestIdx = 0;
+  let bestScore = -1;
+
+  paragraphs.forEach((p, idx) => {
+    const pLow = p.toLowerCase();
+    let score = 0;
+    if (rawPhrase && rawPhrase.length > 3 && pLow.includes(rawPhrase)) {
+      score += 20;
+    }
+    for (const t of terms) {
+      if (pLow.includes(t)) score += 4;
+    }
+    if (score > bestScore) {
+      bestScore = score;
+      bestIdx = idx;
+    }
+  });
+
+  if (bestIdx <= 1) {
+    return clip(body, max);
+  }
+
+  const selected: string[] = [];
+  let charCount = 0;
+  const start = Math.max(0, bestIdx - 1);
+  for (let i = start; i < paragraphs.length; i++) {
+    if (charCount + paragraphs[i].length > max && selected.length > 0) break;
+    selected.push(paragraphs[i]);
+    charCount += paragraphs[i].length;
+  }
+
+  return `[… context preceding …]\n\n${clip(selected.join('\n\n'), max)}`;
 }
 
 function listCatalog(): string {
@@ -142,7 +277,7 @@ export function execStacks(query: string): string {
   for (const pack of STACKS_PACKS) {
     const bonus = packBonus(pack, terms);
     for (const ch of splitChapters(pack.textbook)) {
-      const score = bonus + scoreChapter(ch, terms);
+      const score = bonus + scoreChapter(ch, terms, lower);
       if (score > 0) ranked.push({ pack, ch, score });
     }
   }
@@ -157,8 +292,9 @@ export function execStacks(query: string): string {
   const doorsFor = new Set<string>();
 
   for (const { pack, ch } of chosen) {
+    const excerpt = excerptChapter(ch.body, terms, lower, CHAPTER_MAX);
     blocks.push(
-      `[Dewey ${pack.dewey} · ${pack.title} — ${ch.heading}]\n${clip(ch.body, CHAPTER_MAX)}`
+      `[Dewey ${pack.dewey} · ${pack.title} — ${ch.heading}]\n${excerpt}`
     );
     if (!doorsFor.has(pack.slug)) {
       doorsFor.add(pack.slug);

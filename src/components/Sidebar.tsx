@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { Session } from '../types';
-import { exportBackupToDisk, restoreBackupFromDisk, wipeAllStoredSessions } from '../engine/storage';
+import { exportBackupToDisk, restoreBackupFromDisk, wipeAllStoredSessions, classifySessionLake, exportTriLakeLogsToDisk } from '../engine/storage';
 import { HnaiLogo } from './HnaiLogo';
 
 interface SidebarProps {
@@ -13,8 +13,12 @@ interface SidebarProps {
   isOpen: boolean;
   onToggleOpen: () => void;
   onOpenSupport: () => void;
+  onOpenCredits?: () => void;
   onOpenPersonalityModal?: () => void;
   onOpenFeedback?: () => void;
+  onOpenDocument?: () => void;
+  onOpenGrapher?: () => void;
+  onOpenStudio?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -27,8 +31,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isOpen,
   onToggleOpen,
   onOpenSupport,
+  onOpenCredits,
   onOpenPersonalityModal,
-  onOpenFeedback
+  onOpenFeedback,
+  onOpenDocument,
+  onOpenGrapher,
+  onOpenStudio
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -61,7 +69,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const handleWipe = () => {
-    if (confirm('Are you sure you want to delete all local sessions from this browser? This cannot be undone unless you backed up to disk.')) {
+    if (confirm('Delete all local chat sessions from this browser? Studio progress stays. Backup first if you want the chats.')) {
       wipeAllStoredSessions();
       onSessionsReload();
     }
@@ -137,6 +145,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           ) : (
             sessions.map((s) => {
               const isActive = s.id === activeSessionId;
+              const lake = classifySessionLake(s);
               return (
                 <div
                   key={s.id}
@@ -158,8 +167,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     transition: 'all 0.15s ease'
                   }}
                 >
-                  <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '0.85rem', flex: 1 }}>
-                    {s.title}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', overflow: 'hidden', flex: 1 }}>
+                    {lake === 'heaven' && <span title="Heaven Lake: Approved session" style={{ fontSize: '0.72rem' }}>👍</span>}
+                    {lake === 'hell' && <span title="Hell Lake: Rejected session" style={{ fontSize: '0.72rem' }}>👎</span>}
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '0.85rem' }}>
+                      {s.title}
+                    </span>
                   </div>
                   <button
                     onClick={(e) => {
@@ -206,6 +219,63 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <span>🎭</span> Voices Gallery
               </button>
             )}
+            {onOpenDocument && (
+              <button
+                onClick={onOpenDocument}
+                className="btn-pill"
+                style={{
+                  width: '100%',
+                  fontSize: '0.78rem',
+                  justifyContent: 'center',
+                  gap: '0.4rem',
+                  backgroundColor: 'rgba(139, 92, 246, 0.15)',
+                  borderColor: 'rgba(139, 92, 246, 0.4)',
+                  color: '#c4b5fd',
+                  fontWeight: 500
+                }}
+                title="Open Document Studio for writing, editing, and exports"
+              >
+                <span>📝</span> Document Studio
+              </button>
+            )}
+            {onOpenGrapher && (
+              <button
+                onClick={onOpenGrapher}
+                className="btn-pill"
+                style={{
+                  width: '100%',
+                  fontSize: '0.78rem',
+                  justifyContent: 'center',
+                  gap: '0.4rem',
+                  backgroundColor: 'rgba(52, 211, 153, 0.1)',
+                  borderColor: 'rgba(52, 211, 153, 0.35)',
+                  color: '#34d399',
+                  fontWeight: 500
+                }}
+                title="Plot mathematical functions and export SVG graphs"
+              >
+                <span>📈</span> Math Grapher
+              </button>
+            )}
+            {onOpenStudio && (
+              <button
+                onClick={onOpenStudio}
+                className="btn-pill"
+                style={{
+                  width: '100%',
+                  fontSize: '0.78rem',
+                  justifyContent: 'center',
+                  gap: '0.4rem',
+                  backgroundColor: 'rgba(139, 92, 246, 0.18)',
+                  borderColor: 'rgba(139, 92, 246, 0.45)',
+                  color: '#c4b5fd',
+                  fontWeight: 500
+                }}
+                title="Courses, homework, quizzes, streaks. Pass/fail. No due dates."
+              >
+                <span>📚</span> Studio
+              </button>
+            )}
             <button
               onClick={onOpenSupport}
               className="btn-pill"
@@ -223,6 +293,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
             >
               <span>💜</span> Support EasyLM
             </button>
+            {onOpenCredits && (
+              <button
+                onClick={onOpenCredits}
+                className="btn-pill"
+                style={{
+                  width: '100%',
+                  fontSize: '0.78rem',
+                  justifyContent: 'center',
+                  gap: '0.4rem',
+                  backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                  borderColor: 'rgba(139, 92, 246, 0.35)',
+                  color: '#c4b5fd',
+                  fontWeight: 500
+                }}
+                title="View Open Source Credits, AGPL Covenant, and upstream projects"
+              >
+                <span>📜</span> Credits &amp; Attributions
+              </button>
+            )}
             {onOpenFeedback && (
               <button
                 onClick={onOpenFeedback}
@@ -249,6 +338,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
               title="Download all chats as a local JSON file"
             >
               <span>💾</span> Backup to Disk
+            </button>
+            <button
+              onClick={() => exportTriLakeLogsToDisk(sessions, 'all')}
+              className="btn-pill"
+              style={{
+                width: '100%',
+                fontSize: '0.78rem',
+                justifyContent: 'center',
+                gap: '0.4rem',
+                backgroundColor: 'rgba(167, 139, 250, 0.12)',
+                borderColor: 'rgba(167, 139, 250, 0.3)',
+                color: '#c4b5fd'
+              }}
+              title="Export Tri-Lake memory logs categorized into Heaven (Approved), Purgatory (Neutral), and Hell (Rejected)"
+            >
+              <span>🏛️</span> Export Tri-Lake Memory
             </button>
             <button
               onClick={handleRestoreClick}

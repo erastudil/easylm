@@ -42,11 +42,11 @@ if an obs, forecast, category wind, CO₂ value, or climate degree is load-beari
 4. fetch the page if you will cite a temperature, a track, a category, a CO₂ ppm, or a climate series.
 5. if two official pages disagree, say so. do not average them. the issuing office beats this textbook on *today*.
 
-## not doors (refuse as SoT)
+## Unverified or Derivative Sources (Do Not Cite as Primary Authority)
 
-remembered 7-day skill, wiki composition percents as SoT, a category-3 knot from memory, house Beaufort scratch as a speed table, social-media storm tracks. wiki is **seed** (`ARTICLES.md` / `WIKI_INDEX.md`).
+remembered 7-day skill, wiki composition percents as Primary Authority, a category-3 knot from memory, house Beaufort scratch as a speed table, social-media storm tracks. wiki is **seed** (`ARTICLES.md` / `WIKI_INDEX.md`).
 
-## house paths (local, first)
+## Sovereign Offline Cross-References
 
 | topic | path |
 |---|---|

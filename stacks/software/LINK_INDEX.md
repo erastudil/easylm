@@ -61,7 +61,7 @@ load-bearing git hash, HTTP code meaning, JSON grammar, SQLite limit → fetch t
 4. fetch the page if you will cite a method, a status code, a grammar production, or a limit.
 5. if two official pages disagree, say so. do not average them.
 
-## not doors (refuse as SoT)
+## Unverified or Derivative Sources (Do Not Cite as Primary Authority)
 
 homework mills, “HTTP codes explained” listicles, scraped JSON cheat-sheets, wiki as the last word on RFC 9110, a model’s memory of a git hash.
 

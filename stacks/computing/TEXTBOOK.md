@@ -84,20 +84,21 @@ The abstract foundation of modern computing is the Universal Turing Machine (UTM
 
 Alan Turing proved that there exists no general algorithm that can determine whether an arbitrary program $P$ running on input $I$ will eventually halt or loop indefinitely.
 
-### 1.3b Information entropy (Claude Shannon)
-
-Information theory is not “computers feel informative.” Shannon’s 1948 measure of uncertainty for a discrete source:
-
-`H(X) = −Σ p(x) log2 p(x)`  (bits when the log is base 2)
-
-A fair coin is 1 bit. A sure event is 0 bits. Channel capacity bounds error-free rate; the noisy-channel coding theorem is the existence proof that codes can approach that bound. Fetch Shannon’s paper or a named information-theory door for proofs. Do not invent a capacity number for a radio you did not measure.
-
 $$\text{HALT}(P, I) = \begin{cases} \text{true} & \text{if } P(I) \text{ terminates} \\ \text{false} & \text{if } P(I) \text{ runs forever} \end{cases}$$
 
-**Theorem:** $\text{HALT}(P, I)$ is undecidable.
-*Consequence for software engineering:* No static analyzer, compiler, or verification engine can universally prove arbitrary code terminates or is free of infinite loops without restricting the language's computational power.
+**Theorem:** $\text{HALT}(P, I)$ is mathematically undecidable.
+*Consequence for computer science:* No static analyzer, compiler, or automated verification engine can universally prove that arbitrary code will terminate or remain free of infinite loops without restricting the language's computational expressiveness.
 
-### 1.4 The Chomsky Hierarchy
+### 1.4 Information Theory & Entropy (Claude Shannon)
+
+In 1948, Claude Shannon founded mathematical information theory by defining the fundamental measure of uncertainty for a discrete random variable $X$:
+
+$$H(X) = -\sum_{x} p(x) \log_2 p(x) \quad \text{(measured in bits)}$$
+
+- **Intuition:** A fair coin flip has $p = 0.5$ for each outcome, yielding exactly $H(X) = - (0.5 \log_2 0.5 + 0.5 \log_2 0.5) = 1.0\text{ bit}$. A loaded coin that always lands heads has $p = 1.0$, yielding $H(X) = 0\text{ bits}$ of information (zero surprise).
+- **Shannon's Noisy-Channel Coding Theorem:** Every communications channel has a theoretical maximum information capacity $C = B \log_2(1 + S/N)$, where $B$ is bandwidth and $S/N$ is the signal-to-noise ratio. Error-correcting codes (e.g. Reed-Solomon, Low-Density Parity Check) allow communication arbitrarily close to this bound with vanishingly small error probabilities.
+
+### 1.5 The Chomsky Hierarchy
 
 Formal grammars and computational languages are classified by the Chomsky Hierarchy:
 
@@ -679,58 +680,66 @@ Languages are tools with different cost models. No single “lane” is required
 | **Query** | set-oriented data | SQL (SQLite, PostgreSQL, …) |
 | **Sandbox bytecode** | in-browser or plugin compute | WebAssembly |
 
-Official doors live in `LINK_INDEX.md` (Python docs, ECMA-262, MDN, Rust book, Kotlin, SQLite). fetch the language’s own book; do not invent a standard from memory.
+Primary authoritative language specifications and official standard documentation (Python PEPs, ECMA-262, MDN Web Docs, Rust Reference, ISO/IEC C/C++, SQLite File Format) are referenced in `LINK_INDEX.md`. Always consult primary normative specifications when resolving compiler behaviors or protocol semantics.
 
-### 13.1 Language Selection Matrix (worked examples)
+### 13.1 Language Selection Matrix
 
-| Language | Primary machine target | Type system | Memory model | When it earns its keep |
+| Language | Primary Target Architecture | Type System | Memory Model | Optimal Problem Domain |
 |---|---|---|---|---|
-| **Python 3** | CPython VM | Dynamic + optional type hints | Reference counting + cycle GC | Scripts, services, scientific glue |
-| **TypeScript** | Emitted JavaScript → a JS engine | Static (structural, erased) | Tracing GC of the host | Typed web programs |
-| **JavaScript** | Browser / Node / Deno | Dynamic, with coercions | Tracing GC | The web execution runtime |
-| **Rust** | Native (and Wasm) | Static, ownership/lifetimes | RAII, no tracing GC | Memory-critical native code |
-| **Kotlin** | JVM / Android ART | Static, null-safe | Tracing GC | JVM and Android clients |
-| **SQL** | A database engine | Manifest types per engine | Engine buffer / WAL | Persistent relational data |
+| **Python 3** | CPython VM / Bytecode | Dynamic with gradual typing | Reference counting + generational GC | Scientific computing, AI glue, rapid automation |
+| **TypeScript** | JavaScript Engine (V8, JSC) | Static (structural, erased at runtime) | Tracing GC of the host runtime | Large-scale typed web and enterprise applications |
+| **JavaScript** | Browser, Node, Deno, Bun | Dynamic with loose coercions | Generational tracing GC | Ubiquitous web client interface execution |
+| **Rust** | Native LLVM Machine Code, Wasm | Static, affine ownership & lifetimes | RAII, compile-time tracking, zero-GC | Latency-critical systems, memory safety, infrastructure |
+| **Kotlin** | JVM Bytecode, Android ART | Static, null-safe type system | Tracing JVM generational GC | Android native client software and JVM services |
+| **SQL** | Relational Database Engine | Declared relational schemas | Buffer cache, Write-Ahead Logging (WAL) | Declarative set-oriented transactional persistence |
 
-These are **examples**. Fortran, Haskell, Swift, COBOL, and assembly remain real languages with real jobs.
-
-**check:** target machine, type story, who frees the memory. a language slogan is not an architecture.
+When selecting an architectural language, evaluate the target machine execution model, type safety guarantees, concurrency paradigms, and memory management lifecycle. A language slogan is not a technical justification; engineering decisions must reflect real latency, memory, and maintenance constraints.
 
 ---
 
-## 14. Specification, Testing & Problem Decomposition
+## 14. Software Engineering Foundations: Specification, Testing & Verification
 
-### 14.1 Work order: why → what → how
+### 14.1 The First-Principles Engineering Cycle
 
-Do not start at “how.” Resolve:
+Reliable software construction moves deliberately through three foundational stages:
+1. **The Purpose (Why):** Clearly articulate the physical or commercial capability required, or the precise failure mode observed, in unambiguous declarative language.
+2. **The Specification (What):** Establish explicit state machine models, data schemas, invariants, preconditions, postconditions, and failure domains before writing code.
+3. **The Implementation (How):** Select appropriate algorithms and data structures, construct failing automated verification tests, implement the minimal state transition required to satisfy the invariant, and refactor while keeping tests green.
 
-1. **Why:** what capability is missing, or what failure occurs. one sentence.
-2. **What:** machine model, data contracts (schemas, lifetimes, invariants), failure modes.
-3. **How:** pick a language, write a spec or a type, write a failing test, implement the smallest fix, then refactor.
-
-### 14.2 Tests as checks
-
-| kind | asks |
-|---|---|
-| **unit** | one function, mocked neighbors |
-| **integration** | two real pieces together |
-| **end-to-end** | the user-visible path |
-| **property / fuzz** | random inputs against an invariant |
-
-a test that cannot fail is decoration. a test that needs the network for a pure function is in the wrong layer.
-
-### 14.3 Debugging
-
-1. **reproduce** with a small input.
-2. **locate** (stack, log, bisect, type error).
-3. **name the invariant** that broke.
-4. **fix the invariant**, not the symptom.
-5. **add a check** so the class of bug cannot return unnoticed.
-
-**undefined behavior** (C, C++, data races) is not a “heisenbug personality.” it is a contract hole. sanitizers and race detectors are tools; fetch their docs.
-
-Doors: `LINK_INDEX.md`. Load-bearing constants and RFCs → fetch the named host.
+### 14.2 The Verification Hierarchy: Automated Testing Paradigms
 
 ```
-CITE: stacks/computing/TEXTBOOK.md
++---------------------------------------------------------------------------------------------------+
+| THE TEST PYRAMID & VERIFICATION METHODS                                                           |
++----------------------+-----------------------+----------------------------------------------------+
+| Test Classification  | Target Scope          | Primary Engineering Objective                      |
++----------------------+-----------------------+----------------------------------------------------+
+| Unit Tests           | Isolated Function     | Verify algorithmic correctness and edge cases      |
+|                      | or Module             | under deterministic inputs without I/O.            |
++----------------------+-----------------------+----------------------------------------------------+
+| Integration Tests    | Subsystem Boundaries  | Validate network protocols, database persistence,  |
+|                      | & Inter-Module APIs   | and serialization contracts between real components|
++----------------------+-----------------------+----------------------------------------------------+
+| Property / Fuzzing   | Mathematical Invariant| Subject code to millions of pseudo-random inputs   |
+| (QuickCheck, AFL)    | across State Space    | to uncover unexpected crashes and logic panics.    |
++----------------------+-----------------------+----------------------------------------------------+
+| End-to-End Tests     | Complete System Flow  | Verify user-visible workflows across the full      |
+|                      | from Client to Backend| production deployment stack.                       |
++----------------------+-----------------------+----------------------------------------------------+
 ```
+
+A test that cannot fail is mere decoration. A test that depends on external network connectivity to verify pure arithmetic indicates an architectural boundary violation.
+
+### 14.3 Systematic Debugging Methodology
+
+When encountering an unexpected software failure:
+1. **Reproduce Minimally:** Isolate the smallest deterministic input or sequence of state transitions that reliably triggers the defect.
+2. **Locate the Boundary:** Trace call stacks, inspect structured logs, bisect revision history, and identify the exact line where execution diverges from expectation.
+3. **Identify the Violated Invariant:** Determine which fundamental assumption (e.g. non-null pointer, array bounds, monotonic clock, balance equation) was compromised.
+4. **Repair the Invariant:** Correct the structural design defect rather than masking the symptom with ad-hoc conditional guards.
+5. **Codify Regression Coverage:** Append a regression test to the automated test suite ensuring that the failure mode can never recur undetected.
+
+### 14.4 Undefined Behavior & Concurrency Safety
+
+In unmanaged systems languages (C, C++), **Undefined Behavior (UB)**—such as buffer overruns, null pointer dereferences, use-after-free, and uninitialized reads—allows compilers to make invalid optimization assumptions, leading to exploitable security vulnerabilities. Similarly, in multithreaded systems, **data races** corrupt memory state unpredictably. Modern software engineering mandates the use of memory-safe language semantics (Rust), compile-time static analyzers, and automated dynamic sanitizers (AddressSanitizer, ThreadSanitizer) to prove system invariants before production deployment.
+

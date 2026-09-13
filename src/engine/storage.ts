@@ -1,4 +1,6 @@
-import { Session, Message } from '../types';
+import { Session, Message, LakeType } from '../types';
+import { loadAllProgress, restoreAllProgress } from './progress';
+import { getProfileMemories, addProfileMemory } from './family';
 
 const SESSIONS_STORAGE_KEY = 'easylm_sessions';
 const ACTIVE_SESSION_ID_KEY = 'easylm_active_session_id';
@@ -90,7 +92,10 @@ export function sanitizeSession(raw: unknown): Session | null {
       thinking: typeof (m as Message).thinking === 'string' ? (m as Message).thinking.slice(0, MAX_MESSAGE_CHARS) : undefined,
       toolsUsed: Array.isArray((m as Message).toolsUsed) ? (m as Message).toolsUsed : undefined,
       thoughtDurationMs: typeof (m as Message).thoughtDurationMs === 'number' ? (m as Message).thoughtDurationMs : undefined,
-      loopProtected: Boolean((m as Message).loopProtected)
+      loopProtected: Boolean((m as Message).loopProtected),
+      rating: ((m as Message).rating === 'heaven' || (m as Message).rating === 'hell' || (m as Message).rating === 'neutral')
+        ? (m as Message).rating
+        : undefined
     });
   }
   return {
@@ -161,7 +166,8 @@ export function exportBackupToDisk(sessions: Session[]): void {
     version: '0.1.0',
     exportedAt: new Date().toISOString(),
     sessionsCount: sessions.length,
-    sessions
+    sessions,
+    progress: loadAllProgress()
   };
 
   const jsonStr = JSON.stringify(exportData, null, 2);
@@ -210,6 +216,9 @@ export function restoreBackupFromDisk(jsonStr: string): { ok: boolean; count?: n
     if (saved.quota) {
       return { ok: false, error: saved.error || 'Storage full' };
     }
+    if (parsed && parsed.progress && typeof parsed.progress === 'object' && !Array.isArray(parsed.progress)) {
+      restoreAllProgress(parsed.progress as Record<string, unknown>);
+    }
     return { ok: true, count: newCount };
   } catch (err: any) {
     return { ok: false, error: err.message || 'JSON parse error' };
@@ -221,3 +230,187 @@ export function wipeAllStoredSessions(): void {
   localStorage.removeItem(ACTIVE_SESSION_ID_KEY);
   void idbSet(SESSIONS_STORAGE_KEY, '[]');
 }
+
+export function classifySessionLake(session: Session): LakeType {
+  const assistantMsgs = (session.messages || []).filter(m => m.role === 'assistant');
+  if (assistantMsgs.length === 0) return 'purgatory';
+
+  const hasHell = assistantMsgs.some(m => m.rating === 'hell');
+  if (hasHell) return 'hell';
+
+  const hasHeaven = assistantMsgs.some(m => m.rating === 'heaven');
+  if (hasHeaven) return 'heaven';
+
+  return 'purgatory';
+}
+
+export interface TriLakeExportDataset {
+  app: string;
+  version: string;
+  exportedAt: string;
+  lakeFilter: 'all' | LakeType;
+  counts: {
+    heaven: number;
+    purgatory: number;
+    hell: number;
+    total: number;
+  };
+  lakes: {
+    heaven: Session[];
+    purgatory: Session[];
+    hell: Session[];
+  };
+}
+
+export function buildTriLakeExport(sessions: Session[], filter: 'all' | LakeType = 'all'): TriLakeExportDataset {
+  const lakes: { heaven: Session[]; purgatory: Session[]; hell: Session[] } = {
+    heaven: [],
+    purgatory: [],
+    hell: []
+  };
+
+  for (const s of sessions) {
+    const lake = classifySessionLake(s);
+    lakes[lake].push(s);
+  }
+
+  return {
+    app: 'EasyLM',
+    version: '0.1.0',
+    exportedAt: new Date().toISOString(),
+    lakeFilter: filter,
+    counts: {
+      heaven: lakes.heaven.length,
+      purgatory: lakes.purgatory.length,
+      hell: lakes.hell.length,
+      total: sessions.length
+    },
+    lakes: filter === 'all' ? lakes : {
+      heaven: filter === 'heaven' ? lakes.heaven : [],
+      purgatory: filter === 'purgatory' ? lakes.purgatory : [],
+      hell: filter === 'hell' ? lakes.hell : []
+    }
+  };
+}
+
+export function exportTriLakeLogsToDisk(sessions: Session[], filter: 'all' | LakeType = 'all'): void {
+  const dataset = buildTriLakeExport(sessions, filter);
+  const jsonStr = JSON.stringify(dataset, null, 2);
+  const blob = new Blob([jsonStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const dateStr = new Date().toISOString().split('T')[0];
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `easylm-trilake-memory-${filter}-${dateStr}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+export interface TriLakeAnalysisResult {
+  totalRated: number;
+  approvedCount: number;
+  rejectedCount: number;
+  insightsAdded: number;
+  insights: string[];
+  message: string;
+}
+
+export function analyzeTriLakePatterns(sessions: Session[], profileId: string): TriLakeAnalysisResult {
+  const heavenMsgs: Message[] = [];
+  const hellMsgs: Message[] = [];
+
+  for (const s of sessions) {
+    for (const m of s.messages || []) {
+      if (m.role === 'assistant') {
+        if (m.rating === 'heaven') heavenMsgs.push(m);
+        else if (m.rating === 'hell') hellMsgs.push(m);
+      }
+    }
+  }
+
+  const totalRated = heavenMsgs.length + hellMsgs.length;
+  if (totalRated === 0) {
+    return {
+      totalRated: 0,
+      approvedCount: 0,
+      rejectedCount: 0,
+      insightsAdded: 0,
+      insights: [],
+      message: 'No rated messages found yet. Rate answers with 👍 (Approve) or 👎 (Reject) in chat to train your personal profile.'
+    };
+  }
+
+  const generatedInsights: string[] = [];
+
+  // 1. Analyze Heaven (Approved) patterns
+  if (heavenMsgs.length > 0) {
+    const totalWords = heavenMsgs.reduce((acc, m) => acc + m.content.trim().split(/\s+/).length, 0);
+    const avgWords = Math.round(totalWords / heavenMsgs.length);
+
+    if (avgWords < 90) {
+      generatedInsights.push('Prefers concise, punchy answers under 90 words with zero preamble.');
+    } else if (avgWords > 250) {
+      generatedInsights.push('Prefers thorough, comprehensive explanations with deep step-by-step breakdowns.');
+    }
+
+    const withCode = heavenMsgs.filter(m => /```[\s\S]*?```/.test(m.content)).length;
+    if (withCode / heavenMsgs.length >= 0.35) {
+      generatedInsights.push('Values runnable code snippets and concrete programming examples.');
+    }
+
+    const withMath = heavenMsgs.filter(m => /\$\$[\s\S]*?\$\$|\$[^$\n]+\$|\\\[[\s\S]*?\\\]/.test(m.content)).length;
+    if (withMath / heavenMsgs.length >= 0.25) {
+      generatedInsights.push('Values formal mathematical equations and explicit formula derivations.');
+    }
+
+    const withTables = heavenMsgs.filter(m => /\|[\s-:]+\|/.test(m.content)).length;
+    if (withTables / heavenMsgs.length >= 0.25) {
+      generatedInsights.push('Values structured comparison tables and tabular layouts.');
+    }
+
+    const withBullets = heavenMsgs.filter(m => /^[\s]*[-*+]\s+/m.test(m.content)).length;
+    if (withBullets / heavenMsgs.length >= 0.5) {
+      generatedInsights.push('Prefers answers structured with clear bullet-point takeaways.');
+    }
+  }
+
+  // 2. Analyze Hell (Rejected) patterns
+  if (hellMsgs.length > 0) {
+    const apologetic = hellMsgs.filter(m => /\b(sorry|apologize|apologies|as an ai|as a language model)\b/i.test(m.content)).length;
+    if (apologetic / hellMsgs.length >= 0.25) {
+      generatedInsights.push('Dislikes apologetic or sycophantic filler (e.g. "I apologize", "As an AI").');
+    }
+
+    const wallsOfText = hellMsgs.filter(m => {
+      const words = m.content.trim().split(/\s+/).length;
+      const hasStructure = /```|\||\n#|\n-|\n\*/.test(m.content);
+      return words > 200 && !hasStructure;
+    }).length;
+    if (wallsOfText / hellMsgs.length >= 0.3) {
+      generatedInsights.push('Dislikes unstructured walls of text; requires headings, lists, or code breaks.');
+    }
+  }
+
+  // Deduplicate against existing profile memories
+  const existing = new Set(getProfileMemories(profileId).map(m => m.text.toLowerCase().trim()));
+  const newInsights = generatedInsights.filter(ins => !existing.has(ins.toLowerCase().trim()));
+
+  for (const ins of newInsights) {
+    addProfileMemory(profileId, ins);
+  }
+
+  return {
+    totalRated,
+    approvedCount: heavenMsgs.length,
+    rejectedCount: hellMsgs.length,
+    insightsAdded: newInsights.length,
+    insights: newInsights,
+    message: newInsights.length > 0
+      ? `Analyzed ${totalRated} rated responses (${heavenMsgs.length} approved, ${hellMsgs.length} rejected). Added ${newInsights.length} new insight${newInsights.length === 1 ? '' : 's'} to memory bank!`
+      : `Analyzed ${totalRated} rated responses. All discovered patterns are already recorded in memory.`
+  };
+}
+

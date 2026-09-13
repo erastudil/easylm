@@ -48,11 +48,11 @@ if a sequence, clade, pathway, or public-health number is load-bearing, fetch th
 4. fetch the page if you will cite a sequence, a taxon, a pathway, or a health statistic.
 5. if two official pages disagree, say so. do not average them. a clinician beats this table on a person.
 
-## not doors (refuse as SoT)
+## Unverified or Derivative Sources (Do Not Cite as Primary Authority)
 
 homework mills, scraped codon tables, “i remember 36 ATP,” a social-media outbreak chart, wiki as the last word on an accession. wiki is **seed** (`ARTICLES.md` / `WIKI_INDEX.md`).
 
-## house paths (local, first)
+## Sovereign Offline Cross-References
 
 | topic | path |
 |---|---|

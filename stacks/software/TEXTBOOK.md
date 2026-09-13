@@ -109,7 +109,7 @@ a usable spec answers:
 
 **why before how.** if you start at how, you will invent a stack and then hunt for a problem that fits it. name the job in the user’s words. then pick the smallest mechanism.
 
-**acceptance is a test, not a vibe.** “feels fast” is not acceptance. “p95 under 200 ms on this fixture” is, and then you measure. numbers you did not measure → DONT_KNOW / fetch / **calc**.
+**acceptance is a test, not a vibe.** “feels fast” is not acceptance. “p95 under 200 ms on this fixture” is, and then you measure. numbers you did not measure → state unverified / fetch / **calc**.
 
 **invariants.** an invariant is a sentence that stays true across calls. examples: “every order has exactly one owner”; “GET does not create a row”; “retrying a paid invoice does not charge twice.” write invariants in the spec. tests encode them. logs prove you looked.
 
@@ -133,7 +133,7 @@ better spec:
 - fail: unknown unit → error string, note unchanged
 - unchanged: other notes, any secret store
 
-EasyLM’s calc and units hands are this pattern: arithmetic is a tool with a spec, not a fluent guess. warehouse returns a chapter. the model does not invent the constant.
+EasyLM’s calc and units hands are this pattern: arithmetic is a tool with a spec, not a fluent guess. the Stacks returns a chapter. the model does not invent the constant.
 
 **check.** if a teammate can implement the spec without asking what “success” looks like, the spec is ready. if they have to guess the status code, it is not. write the failing test or the refused case before the happy path.
 
@@ -294,7 +294,7 @@ def test_parse_int_bad_fails():
 
 if `parse_int` returns `0` on junk, the second test is the one that catches it. the first test alone is fail open on the error path.
 
-EasyLM’s own bar, as a worked product example: unknown units **error**; they do not invent 1:1. warehouse miss **says miss**. those are tests you can write without a browser. calc does arithmetic; the model does not.
+EasyLM’s own bar, as a worked product example: unknown units **error**; they do not invent 1:1. the Stacks miss **says miss**. those are tests you can write without a browser. calc does arithmetic; the model does not.
 
 **check.** delete the implementation; the test must go red. if it stays green, it was not testing the thing. run the suite until it fails on purpose (break the code). if nothing goes red, you do not have a test. you have a script that prints ok.
 
@@ -530,7 +530,7 @@ common classes, slowest last among these:
 | `O(n²)` | quadratic | nested loops over the same n |
 | `O(2^n)` | exponential | naive subset / recursion without memory |
 
-**law.** measure the **input that actually grows**. if you sort 20 config keys, `O(n²)` is noise. if you nest a linear scan inside a linear scan over a million rows, you will wait. constants matter at small n; structure matters at large n. if you did not measure, you DONT_KNOW the millisecond cost — call a profiler, not a model.
+**law.** measure the **input that actually grows**. if you sort 20 config keys, `O(n²)` is noise. if you nest a linear scan inside a linear scan over a million rows, you will wait. constants matter at small n; structure matters at large n. if you did not measure, you do not know the millisecond cost — call a profiler, not a model.
 
 ### 9.1 structures
 
@@ -553,7 +553,7 @@ you have `n` user ids and want “is this id in the set?” `n` times.
 - list scan each time: `n` queries × `n` scan = `O(n²)`
 - put ids in a hash set once `O(n)`, then `n` lookups average `O(1)` each = `O(n)`
 
-for n=10 both feel instant. for n=10^6 the nested scan is a bug. **calc** `n*n` if you want the comparison count; warehouse does not invent a clock time.
+for n=10 both feel instant. for n=10^6 the nested scan is a bug. **calc** `n*n` if you want the comparison count; the Stacks does not invent a clock time.
 
 **check.** name n, name the structure, name the class. if you wrote a double `for` over the same array and n is unbounded, you owe a reason or a different structure. if you say O(1) and you walk the whole table, you lied.
 
@@ -718,7 +718,7 @@ GET https://example.com/assets/index-<hash>.js → 200, application/javascript
 
 **check.** after deploy, fetch the page yourself. read the status code. if you only looked at the CI green check, you have not shipped; you have compiled. if `index.html` still references a JS hash that 404s, the upload was partial — fail closed, roll back. Network tab on first paint: every host you see is in the README split.
 
-EasyLM as a public example of this shape: a static web app, local model inference in the browser, calc/units/warehouse as local hands. the production URL is the product. prove the live bundle; do not assume a git push updated every host.
+EasyLM as a public example of this shape: a static web app, local model inference in the browser, calc/units/stacks as sovereign hands. the production URL is the product. prove the live bundle; do not assume a git push updated every host.
 
 ---
 
@@ -750,7 +750,7 @@ work this list in order. do not skip to rewriting the module.
 6. **bisect.** `git bisect` on a failing test is faster than staring. Git records snapshots; use them.
 7. **check the RFC / language door** if the fight is about HTTP, JSON, SQL, or git. folklore loses.
 8. **arithmetic** goes to **calc**. units go to **units**. this book does not multiply in prose.
-9. if the official page and this textbook disagree on a load-bearing number → **DONT_KNOW**, fetch the door, then fix the book.
+9. if the official page and this textbook disagree on a load-bearing number → state unverified, fetch the door, then fix the book.
 
 do not add a second stack because the first one hurt. fix the contract.
 

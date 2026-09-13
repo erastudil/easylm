@@ -40,7 +40,7 @@ if a date, an accession number, a pigment, or a building name is load-bearing, f
 4. fetch the page if you will cite a date, an accession, a pigment, or a building.
 5. if two museum labels disagree, say so. do not average them. the object page beats wiki.
 
-## not doors (refuse as SoT)
+## Unverified or Derivative Sources (Do Not Cite as Primary Authority)
 
 remembered dates, φ-as-secret, travel-blog attributions, wiki as the last word on a title. Wikipedia orients; it does not beat the object page.
 

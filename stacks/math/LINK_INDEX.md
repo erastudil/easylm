@@ -65,11 +65,11 @@ if a number, identity, or hypothesis list is load-bearing, fetch the live page a
 4. fetch the page if you will cite a number, an identity, or a hypothesis list.
 5. if two official pages disagree, say so. do not average them.
 
-## not doors (refuse as SoT)
+## Unverified or Derivative Sources (Do Not Cite as Primary Authority)
 
 random gists, homework-help mills, scraped identity tables, “i remember π to 50 places,” a social proof of Collatz. wiki is **seed** (`ARTICLES.md` / `WIKI_INDEX.md`), not the textbook and not a substitute for NIST/OCW when the claim is load-bearing.
 
-## house paths (local, first)
+## Sovereign Offline Cross-References
 
 | topic | path |
 |---|---|

@@ -1,3 +1,6 @@
+export type TriLakeRating = 'heaven' | 'hell' | 'neutral';
+export type LakeType = 'heaven' | 'purgatory' | 'hell';
+
 export interface Message {
   id: string;
   role: 'user' | 'assistant' | 'system';
@@ -7,6 +10,7 @@ export interface Message {
   toolsUsed?: ToolExecution[];
   timestamp: number;
   loopProtected?: boolean;
+  rating?: TriLakeRating;
 }
 
 export interface ToolExecution {

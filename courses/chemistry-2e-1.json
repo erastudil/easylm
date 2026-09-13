@@ -1,0 +1,191 @@
+{
+  "course": {
+    "id": "chemistry-2e-1",
+    "stack": "chemistry",
+    "dewey": "540",
+    "title": "Chemistry 2e walk",
+    "level": "undergrad",
+    "hours": 48,
+    "license": {
+      "spdx": "CC-BY-4.0",
+      "attribution": "Adapted from OpenStax Chemistry 2e (CC BY 4.0) and EasyLM chemistry stack. Masses: CIAAW. Terms: IUPAC Gold Book.",
+      "sourceUrl": "https://openstax.org/details/books/chemistry-2e"
+    },
+    "units": [
+      {
+        "id": "u1",
+        "title": "Atoms",
+        "lessons": [
+          {
+            "id": "chemistry-2e-1-u1-l",
+            "title": "Atoms",
+            "reading": {
+              "stack": "chemistry",
+              "chapter": "1. The Atomic Hypothesis and the First Principles of Chemistry"
+            },
+            "doors": [
+              "https://goldbook.iupac.org/"
+            ],
+            "items": [
+              "chemistry-2e-1-u1-read",
+              "chemistry-2e-1-u1-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u2",
+        "title": "Periodic",
+        "lessons": [
+          {
+            "id": "chemistry-2e-1-u2-l",
+            "title": "Periodic",
+            "reading": {
+              "stack": "chemistry",
+              "chapter": "2. Atomic Architecture, Orbitals & The Periodic Table"
+            },
+            "doors": [
+              "https://www.ciaaw.org/atomic-weights.htm"
+            ],
+            "items": [
+              "chemistry-2e-1-u2-read",
+              "chemistry-2e-1-u2-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u3",
+        "title": "Mole",
+        "lessons": [
+          {
+            "id": "chemistry-2e-1-u3-l",
+            "title": "Mole",
+            "reading": {
+              "stack": "chemistry",
+              "chapter": "3. The Mole Bridge, Molar Mass & Solution Concentration"
+            },
+            "doors": [
+              "https://openstax.org/details/books/chemistry-2e"
+            ],
+            "items": [
+              "chemistry-2e-1-u3-read",
+              "chemistry-2e-1-u3-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u4",
+        "title": "Bonding",
+        "lessons": [
+          {
+            "id": "chemistry-2e-1-u4-l",
+            "title": "Bonding",
+            "reading": {
+              "stack": "chemistry",
+              "chapter": "4. Chemical Bonding, Electronegativity & Molecular Geometry"
+            },
+            "doors": [
+              "https://goldbook.iupac.org/"
+            ],
+            "items": [
+              "chemistry-2e-1-u4-read",
+              "chemistry-2e-1-u4-quiz",
+              "chemistry-2e-1-midterm"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u5",
+        "title": "Stoichiometry",
+        "lessons": [
+          {
+            "id": "chemistry-2e-1-u5-l",
+            "title": "Stoichiometry",
+            "reading": {
+              "stack": "chemistry",
+              "chapter": "5. Stoichiometry: Conservation of Mass & Limiting Reactants"
+            },
+            "doors": [
+              "https://openstax.org/details/books/chemistry-2e"
+            ],
+            "items": [
+              "chemistry-2e-1-u5-read",
+              "chemistry-2e-1-u5-quiz",
+              "chemistry-2e-1-essay-1"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u6",
+        "title": "Gases",
+        "lessons": [
+          {
+            "id": "chemistry-2e-1-u6-l",
+            "title": "Gases",
+            "reading": {
+              "stack": "chemistry",
+              "chapter": "6. States of Matter: Ideal & Real Gases, Solutions & Phase Transitions"
+            },
+            "doors": [
+              "https://webbook.nist.gov/"
+            ],
+            "items": [
+              "chemistry-2e-1-u6-read",
+              "chemistry-2e-1-u6-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u7",
+        "title": "Thermo & kinetics",
+        "lessons": [
+          {
+            "id": "chemistry-2e-1-u7-l",
+            "title": "Thermo & kinetics",
+            "reading": {
+              "stack": "chemistry",
+              "chapter": "7. Chemical Thermodynamics & Reaction Kinetics"
+            },
+            "doors": [
+              "https://webbook.nist.gov/"
+            ],
+            "items": [
+              "chemistry-2e-1-u7-read",
+              "chemistry-2e-1-u7-quiz",
+              "chemistry-2e-1-project"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u8",
+        "title": "Equilibrium & acid-base",
+        "lessons": [
+          {
+            "id": "chemistry-2e-1-u8-l",
+            "title": "Equilibrium & acid-base",
+            "reading": {
+              "stack": "chemistry",
+              "chapter": "9. Aqueous Equilibria: Acids, Bases, pH & Buffers"
+            },
+            "doors": [
+              "https://openstax.org/details/books/chemistry-2e"
+            ],
+            "items": [
+              "chemistry-2e-1-u8-read",
+              "chemistry-2e-1-u8-quiz",
+              "chemistry-2e-1-essay-2",
+              "chemistry-2e-1-final"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "itemCount": 21
+}

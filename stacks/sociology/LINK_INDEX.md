@@ -29,3 +29,13 @@
 
 10. **MIT OpenCourseWare Anthropology & Sociology** — Lecture courses on ethnographic theory, cultural symbols, and institutional structures.
     https://ocw.mit.edu/courses/anthropology/
+
+---
+
+## Canonical Anthropologists & Sociological Thinkers
+
+| Thinker | Era | Focus / Tradition | Wikipedia Reference |
+|---|---|---|---|
+| **Franz Boas** | 1858–1942 | Cultural Anthropology, Historical Particularism | https://en.wikipedia.org/wiki/Franz_Boas |
+| **Bronisław Malinowski** | 1884–1942 | Social Anthropology, Participant Observation | https://en.wikipedia.org/wiki/Bronis%C5%82aw_Malinowski |
+

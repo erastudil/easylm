@@ -38,11 +38,11 @@ if a quoted line, a scheme, a mora count, or a translation is load-bearing, fetc
 4. fetch the page if you will quote a line or police a count.
 5. if two editions disagree, say so. do not average them. the fetched text beats wiki. the original beats a remembered translation.
 
-## not doors (refuse as SoT)
+## Unverified or Derivative Sources (Do Not Cite as Primary Authority)
 
 remembered quotes, English 5-7-5 as Japanese law, iambs exported into tonal verse, quote-cards, wiki as the last word on a wording. wiki is **seed** (`ARTICLES.md` / `WIKI_INDEX.md`). house poems are not a door here.
 
-## house paths (local, first)
+## Sovereign Offline Cross-References
 
 | topic | path |
 |---|---|

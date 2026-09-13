@@ -314,7 +314,7 @@ English school meter is **one** grammar.
 
 never invent a line, a scheme, a mora count, or a translation. format a search. cite the URL. wiki is seed.
 
-house poems: not here. do not pull the way or the daily report into The Stacks pack.
+Personal verse and private journals: outside the scope of this undergraduate academic survey. Focus strictly on canonical metric systems and public literary history.
 
 ---
 
@@ -327,7 +327,7 @@ house poems: not here. do not pull the way or the daily report into The Stacks p
 5. **figures** that do jobs.
 6. **form** contract — kept, broken, free.
 7. then meaning. theme last, not first.
-8. FOUND empty → **DONT_KNOW**.
+8. Primary record missing → state unverified.
 
 stuck patterns:
 
@@ -340,7 +340,7 @@ stuck patterns:
 | English 5-7-5 as Japanese law | ch 9 |
 | translation treated as the original’s meter | ch 12 |
 | wiki as the poem | the fetched text |
-| house poem asked | stop. that is the way / daily report, not this pack |
+| unverified personal verse | redirect to canonical poetic forms and primary texts |
 
 ---
 

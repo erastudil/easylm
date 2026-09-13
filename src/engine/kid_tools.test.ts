@@ -7,6 +7,7 @@ describe('isKidAllowedTool', () => {
     expect(isKidAllowedTool('units')).toBe(true);
     expect(isKidAllowedTool('clock')).toBe(true);
     expect(isKidAllowedTool('warehouse')).toBe(true);
+    expect(isKidAllowedTool('studio')).toBe(true);
   });
 
   it('blocks network hands including dictionary (external API)', () => {

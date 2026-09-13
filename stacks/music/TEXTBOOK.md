@@ -48,372 +48,361 @@ Music is acoustic physics transformed into mathematical architecture and aesthet
 
 ### Table of Contents
 
-1. [Chapter 1: The First Principles of Music and Acoustic Sound](#1-what-music-is)
-2. [Chapter 2: The Physics of Sound: Waves, Harmonics, and Overtones](#2-frequency-amplitude-spectrum-harmonic-series)
-3. [Chapter 3: Intervals and Mathematical Ratios: Pitch and Octaves](#3-pitch-interval-octave)
-4. [Chapter 4: The Temperament Dilemma: Scales, Modes, and Equal Temperament](#4-scale-mode-key-temperament)
-5. [Chapter 5: Rhythm and Metric Architecture: Pulse, Meter, and Subdivision](#5-rhythm-meter-tempo)
-6. [Chapter 6: Melodic Contour, Phrase Structure, and Motific Development](#6-melody)
-7. [Chapter 7: Aural Analysis Drill: Identifying Musical Phrases](#6b-listening-drill-phrase)
-8. [Chapter 8: Functional Harmony: Triads, Seventh Chords, and Cadential Progressions](#7-chords-function)
-9. [Chapter 9: Counterpoint and Voice Leading: Polyphonic Independence](#8-counterpoint-voice-leading)
-10. [Chapter 10: Musical Texture: Monophony, Polyphony, and Homophony](#9-texture)
-11. [Chapter 11: Architectural Form: Binary, Ternary, and Sonata-Allegro](#10-form)
-12. [Chapter 12: Notation Systems: The Semiotics of the Score](#11-notation)
-13. [Chapter 13: Timbre, Orchestration, and the Acoustic Properties of Instruments](#12-instruments-ensemble-timbre)
-14. [Chapter 14: Non-Western Tuning and Rhythmic Paradigms](#13-other-pitchtime-systems)
-15. [Chapter 15: Electroacoustic Sound, Synthesis, and Recording Mechanics](#14-recording-electroacoustic)
-16. [Chapter 16: Primary Musicological Doors: IMSLP, Open Music Theory, and ISO 16](#15-imslp-open-music-theory-iso-16)
-17. [Chapter 17: Systematic Analysis of Aural and Harmonic Ambiguities](#16-stuck-on-a-hearing)
+1. [Chapter 1: The First Principles of Music and Acoustic Sound](#1-the-first-principles-of-music-and-acoustic-sound)
+2. [Chapter 2: Acoustic Wave Mechanics and the Harmonic Overtone Series](#2-acoustic-wave-mechanics-and-the-harmonic-overtone-series)
+3. [Chapter 3: Intervals and Small-Integer Frequency Ratios](#3-intervals-and-small-integer-frequency-ratios)
+4. [Chapter 4: The Temperament Dilemma: The Pythagorean Comma and 12-TET](#4-the-temperament-dilemma-the-pythagorean-comma-and-12-tet)
+5. [Chapter 5: Rhythm, Metric Hierarchy, and Temporal Architecture](#5-rhythm-metric-hierarchy-and-temporal-architecture)
+6. [Chapter 6: Melodic Contour, Voice Leading, and Phrase Structure](#6-melodic-contour-voice-leading-and-phrase-structure)
+7. [Chapter 7: Functional Diatonic Harmony: Triads, Seventh Chords, and Cadences](#7-functional-diatonic-harmony-triads-seventh-chords-and-cadences)
+8. [Chapter 8: Species Counterpoint and Polyphonic Voice Independence](#8-species-counterpoint-and-polyphonic-voice-independence)
+9. [Chapter 9: Musical Texture: Monophony, Polyphony, and Homophony](#9-musical-texture-monophony-polyphony-and-homophony)
+10. [Chapter 10: Architectural Forms: Binary, Ternary, Rondo, and Sonata-Allegro](#10-architectural-forms-binary-ternary-rondo-and-sonata-allegro)
+11. [Chapter 11: Notation Systems and the Semiotics of the Western Score](#11-notation-systems-and-the-semiotics-of-the-western-score)
+12. [Chapter 12: Timbre, Orchestration, and Instrument Acoustic Physics](#12-timbre-orchestration-and-instrument-acoustic-physics)
+13. [Chapter 13: Global Non-Western Tuning and Rhythmic Paradigms](#13-global-non-western-tuning-and-rhythmic-paradigms)
+14. [Chapter 14: Electroacoustic Sound, Synthesis, and Digital Audio Physics](#14-electroacoustic-sound-synthesis-and-digital-audio-physics)
+15. [Chapter 15: Primary Musicological Repositories and Open Score Doors](#15-primary-musicological-repositories-and-open-score-doors)
+16. [Chapter 16: Analytical Method: Step-by-Step Harmonic Analysis](#16-analytical-method-step-by-step-harmonic-analysis)
 
 ---
 
-## 1. what music is
+## 1. The First Principles of Music and Acoustic Sound
 
-**music** is sound organized in time so that pitch, duration, loudness, timbre, and form can be named. noise can be material. silence can be material. a celebrity story is not a parameter.
+### 1.1 The Physical Nature of Sound
+Sound is a mechanical disturbance propagating through an elastic medium (such as air) as a longitudinal pressure wave. Regions of compressed air molecules (**compressions**) alternate with regions of expanded air molecules (**rarefactions**).
+- **Propagation Speed ($v$):** In dry air at $20^\circ\text{C}$, the speed of sound is approximately:
+  $$v \approx 343\text{ m/s}$$
+- **Wavelength ($\lambda$), Frequency ($f$), and Speed ($v$):**
+  $$v = f \cdot \lambda$$
+  where $f$ is measured in cycles per second (**Hertz**, $\text{Hz}$) and $\lambda$ is measured in meters.
 
-four questions, every time:
+### 1.2 The Four Psychoacoustic Parameters
+Every musical event can be analyzed across four distinct perceptual dimensions that correspond directly to physical wave properties:
 
-1. **pitch, time, loudness, or color of sound** — which parameter is the job?
-2. which **system** (major/minor, mode, raga, maqam, 12-tone, groove, free)?
-3. what is the **form** (cell, phrase, song, movement, cycle)?
-4. is there a **score, recording, or treatise** to fetch?
-
-**work** vs **performance** vs **recording** vs **score**. they are four objects. a MIDI file is another map. do not mash them.
-
-**check:** if you cannot name the parameter, you are doing vibe, not music.
-
----
-
-## 2. sound, and the harmonic series
-
-a **tone** has a **frequency** (pitch-ish), an **amplitude** (loudness-ish), and a **spectrum** (timbre-ish). physics pack owns the wave. here: musicians name what they hear; the lab names Hz and dB.
-
-**periodic** sound repeats. a **fundamental** frequency \(f\) is the repetition rate. **overtones / partials** sit above it. when those partials fall at integer multiples, you have a **harmonic series**:
-
-| partial | frequency | interval from fundamental (just, as a ratio) |
-|---|---|---|
-| 1 | \(1f\) | unison |
-| 2 | \(2f\) | octave (2:1) |
-| 3 | \(3f\) | octave + just fifth (3:2 above the octave’s root) |
-| 4 | \(4f\) | two octaves (4:1) |
-| 5 | \(5f\) | just major third above two octaves (5:4 above that root) |
-| 6 | \(6f\) | just fifth above two octaves |
-| 8 | \(8f\) | three octaves |
-
-brass and strings *live on* this series: a bugle’s open tones are the series. a “pure” sine is one partial. a clarinet’s closed-pipe habit emphasizes odd partials — fetch an acoustics chapter if you will recite the spectrum.
-
-**concert A.** ISO 16 names **440 Hz** as a standard tuning frequency. orchestras and eras wander. if the hertz is load-bearing, **fetch ISO 16**. do not invent a baroque pitch from memory.
-
-**cents.** one equal-tempered semitone is 100 cents; the octave is 1200. a just interval and its equal-tempered neighbor disagree by a few cents — **fetch a tuning table** if the comma is the job.
-
-**envelope:** attack, decay, sustain, release as a school sketch for how loudness changes. fetch a synthesis text if you will recite ADSR as a spec.
-
-**beats.** two close frequencies produce a slow amplitude pulse at their difference. piano tuners use it. it is physics; it is also a craft.
-
-**standing wave on a string.** length, tension, mass per length set the fundamental. harmonics are the series. a fret is a length-stop. fetch a physics chapter if you will compute; this chapter names the hearing.
-
-**check:** Hz or staff? series or “bright”? fetch if a number must travel.
+| Perceptual Parameter | Physical Correlate | Measurement Unit | Primary Governing Mechanism |
+| :--- | :--- | :--- | :--- |
+| **Pitch** | Fundamental Frequency ($f_0$) | Hertz ($\text{Hz}$) | Rate of periodic repetition of the waveform |
+| **Loudness** | Sound Pressure Level (SPL) | Decibels ($\text{dB}$) | Amplitude of acoustic pressure deviations ($p$) |
+| **Duration** | Temporal Duration | Seconds ($\text{s}$) / Beats | Time envelope and metric subdivision |
+| **Timbre (Tone Color)** | Harmonic Spectrum & Formants | Spectral distribution | Relative amplitudes of harmonic overtones and ADSR envelope |
 
 ---
 
-## 3. pitch, interval, octave
+## 2. Acoustic Wave Mechanics and the Harmonic Overtone Series
 
-**pitch** is how high. **octave** is the interval where frequency doubles (the 2:1 that cultures keep rediscovering). notes an octave apart often share a name.
+### 2.1 Standing Waves in Resonators
+When a stretched string or an air column vibrates, waves reflect back and forth between the fixed boundaries, interfering constructively to generate **standing waves**. The boundaries enforce boundary conditions:
+- Stretched strings and open pipes enforce zero displacement (**nodes**) or maximum displacement (**antinodes**) at the ends.
+- This mechanical constraint dictates that the resonator can vibrate steadily *only* at integer multiples of its fundamental resonant frequency $f_0$.
 
-**interval** is the distance between two pitches. name it two ways until you are fluent: **staff distance** (second, third, …) and **quality** (perfect, major, minor, diminished, augmented) in the common-practice dialect. other dialects (cents, śruti, commas) exist — fetch that system.
+```
+                        STANDING WAVE HARMONIC MODES
+    Mode 1 (n = 1):  [Node]===================Antinode===================[Node]  (f0)
+    Mode 2 (n = 2):  [Node]=========Antinode=========[Node]=========Antinode=========[Node]  (2*f0)
+    Mode 3 (n = 3):  [Node]====Anti====[Node]====Anti====[Node]====Anti====[Node]  (3*f0)
+```
 
-common-practice interval qualities (school drill):
+### 2.2 The Harmonic Series
+When an acoustic instrument plays a single note (e.g., $C_2 = 65.4\text{ Hz}$), it produces not a pure sinusoidal frequency, but a complex composite wave containing an entire ladder of integer harmonics:
+$$f_n = n \cdot f_0, \quad \text{for } n = 1, 2, 3, 4, 5, \dots$$
 
-| staff distance | perfect possible? | major/minor possible? |
-|---|---|---|
-| unison, 4th, 5th, octave | yes | no (except the augmented/diminished versions) |
-| 2nd, 3rd, 6th, 7th | no | yes |
-
-**melodic** interval is successive. **harmonic** interval is simultaneous. same distance, different job.
-
-**enharmonic.** F♯ and G♭ can be the same piano key and different spelling jobs. spelling is theory; the key is hardware.
-
-**inversion.** a fifth inverted is a fourth (they add to nine in the school count). useful at the keyboard; not a law of nature.
-
-**check:** which two pitches. successive or together. which naming system.
-
----
-
-## 4. scale, mode, key, temperament
-
-a **scale** is a collection of pitches in order. a **mode** is a scale plus a way of using it (a final, a character, a grammar). a **key** is a center plus a collection (tonic, major/minor as the common-practice pair). **scale ≠ key.**
-
-**diatonic** seven-note collection is the European school default. **chromatic** fills the 12 piano keys. **pentatonic** five. these are counts of a type, not a census of the world’s music.
-
-**major scale as a school pattern** of whole and half steps (W = whole, H = half):
-
-`W W H W W W H`
-
-starting on C, that pattern yields the white keys — a teaching fact about a keyboard, not a privilege of C. **natural minor** as a school pattern: `W H W W H W W`. **harmonic** and **melodic** minor are variants with a raised seventh (and sixth) — fetch Open Music Theory before you police a folk tune with them.
-
-**major / minor.** two modes of the diatonic collection with different tonic–third coloring. **church modes** (dorian, phrygian, …) are another European grammar. **raga, maqam, pelog/slendro** are other grammars — ch 13. do not squeeze them into major/minor.
-
-**scale degree names** (common practice): tonic, supertonic, mediant, subdominant, dominant, submediant, leading tone. **solfège** (do re mi…) is a singing map of the same.
-
-**circle of fifths** as a school map: keys whose signatures differ by one sharp or flat sit next door. it is a geography of *key signatures*, not a law of feeling. modulation to the dominant is a common-practice habit because 3:2 is close in the series (ch 2) *and* because the signature is one sharp away — two different reasons. do not mash them.
-
-**relative major/minor** share a signature (A minor and C major as the white-key pair). **parallel** major/minor share a tonic (C major / C minor). say which.
-
-**temperament** is how you tune the keyboard (or the choir). **just** intonation uses small ratios (2:1, 3:2, 4:3, 5:4…). **Pythagorean** stacks fifths (3:2). **equal temperament** splits the octave into twelve equal steps (frequency ratio \(2^{n/12}\) as the math). they disagree on thirds. **fetch a tuning table** if a comma or a cent value is the job. do not invent cents.
-
-**check:** collection, center, tuning system. pattern vs key-name.
+```
+                          THE HARMONIC OVERTONE LADDER
+    Harmonic (n)   Frequency Ratio    Musical Interval from Root    Example (from C2)
+    ---------------------------------------------------------------------------------
+    n = 1          1 : 1              Fundamental (Unison)          C2  (65.4 Hz)
+    n = 2          2 : 1              Octave                        C3  (130.8 Hz)
+    n = 3          3 : 1              Octave + Perfect Fifth        G3  (196.2 Hz)
+    n = 4          4 : 1              Two Octaves                   C4  (261.6 Hz)
+    n = 5          5 : 1              Two Octaves + Major Third     E4  (327.0 Hz)
+    n = 6          6 : 1              Two Octaves + Perfect Fifth   G4  (392.4 Hz)
+    n = 7          7 : 1              Two Octaves + Harmonic 7th    Bb4 (approximate)
+    n = 8          8 : 1              Three Octaves                 C5  (523.2 Hz)
+```
+The natural acoustic harmonic series embeds the major triad ($4 : 5 : 6 \rightarrow C : E : G$) directly inside physical law.
 
 ---
 
-## 5. rhythm, meter, tempo
+## 3. Intervals and Small-Integer Frequency Ratios
 
-**rhythm** is when events happen. **beat** is a felt pulse. **tempo** is how fast the beat goes (often in beats per minute — **fetch the marking** on the score; do not invent a composer’s BPM).
+In the 6th century BCE, Pythagoras discovered that musical intervals sound harmonious and consonant to the human ear when their string lengths form simple, small-integer ratios:
+- **Octave ($2 : 1$):** Doubling the frequency raises the pitch by exactly one octave. In human perception, notes separated by a factor of 2 share **octave equivalence** and are assigned the identical pitch class name.
+- **Perfect Fifth ($3 : 2$):** The frequency of the 3rd harmonic divided by the 2nd harmonic:
+  $$f_{\text{fifth}} = 1.5 \cdot f_{\text{root}}$$
+- **Perfect Fourth ($4 : 3$):** The inversion of the fifth within an octave:
+  $$\frac{2 / 1}{3 / 2} = \frac{4}{3} \approx 1.3333$$
+- **Just Major Third ($5 : 4$):** Ratio $1.2500$.
+- **Just Minor Third ($6 : 5$):** Ratio $1.2000$.
 
-**meter** is how beats group: duple, triple, quadruple; simple vs compound. a time signature is notation for meter, not the feeling. **meter ≠ tempo.** a slow 3/4 is still triple.
-
-**simple** meter divides the beat in two (2/4, 3/4, 4/4 as school names). **compound** divides in three (6/8, 9/8, 12/8). the written 6/8 can be *felt* as two dotted beats.
-
-**hypermeter** is meter of the measures (groups of 2, 4, 8 as a school habit). a phrase that is “one bar short” is often a hypermetric joke.
-
-**additive meter** (5 = 2+3 or 3+2; 7 = 2+2+3, …) is a grouping story, not a time-signature tattoo. **mixed meter** changes the written signature. **free rhythm** (chant, some taqsim, some recitative) still has duration; it refuses a pulse.
-
-**syncopation** puts weight off the expected beat. **polyrhythm** stacks different groupings (3 against 2 as the school drill). **groove** is a practice-name for a stable rhythmic feel in popular and dance musics — describe the pattern; do not hide behind the word.
-
-**duration names** (whole, half, quarter, …) are **relative** on the staff. the tempo marking (or a recording) gives the clock. a **tie** adds; a **dot** adds half the value (school rule).
-
-**check:** beat, grouping, speed. which of the three is the question.
+### Consonance, Dissonance, and Acoustic Roughness
+Hermann von Helmholtz (*On the Sensations of Tone*, 1863) proved that musical **dissonance** is caused by rapid acoustic **beating** between overlapping upper partials. When two frequencies differ by $10$ to $40\text{ Hz}$, the human inner ear cannot resolve them into distinct pitches; they produce a harsh, sensory roughness perceived as dissonant. Small integer ratios align harmonic overtones so their partials coincide, minimizing auditory roughness and maximizing consonance.
 
 ---
 
-## 6. melody
+## 4. The Temperament Dilemma: The Pythagorean Comma and 12-TET
 
-a **melody** is a pitched line in time. **motive** is a small reusable cell. **phrase** is a breath-length span. **period** (antecedent/consequent) is a common-practice sentence shape — fetch Open Music Theory if you will label one.
+### 4.1 The Pythagorean Comma
+If one attempts to tune an instrument (like a piano or organ) by stacking twelve pure acoustic perfect fifths ($3 : 2$) up the scale, one should theoretically arrive back at the same note class as stacking seven pure octaves ($2 : 1$):
+- Stacking twelve perfect fifths:
+  $$\left(\frac{3}{2}\right)^{12} = \frac{531441}{4096} \approx 129.7463$$
+- Stacking seven octaves:
+  $$2^7 = 128.0000$$
 
-**contour:** up, down, leap, step. **range.** **climax.** **cadence** as a close (ch 7).
+The two numbers do not match! The mathematical discrepancy is the **Pythagorean Comma**:
+$$\text{Comma} = \frac{(3/2)^{12}}{2^7} = \frac{531441}{524288} \approx 1.013643 \quad (\approx 23.46\text{ cents})$$
+Because $3^{12} \neq 2^{19}$, it is mathematically impossible to construct a fixed-pitch scale where all octaves are pure ($2 : 1$) and all fifths are pure ($3 : 2$).
 
-**step vs leap.** common-practice melody often fills a leap by step in the other direction — a habit, not physics.
+```
+             THE PYTHAGOREAN CIRCLE GAP
+     12 Pure Fifths: (3/2)^12 = 129.746  ─────────┐
+                                                  ├──► GAP: 23.46 Cents (The Comma)
+      7 Pure Octaves:    2^7  = 128.000  ─────────┘
+```
 
-singability and instrument limits are craft constraints, not morals.
-
-**sequence** repeats a cell at a new pitch. **call and response** is a social texture as well as a melody shape. **theme** is a melody you are meant to recognize later (form, ch 10).
-
-**check:** cell, phrase, or whole tune. where it cadences. fetched example if you name a tune.
-
----
-
-## 6b. a listening drill (phrase)
-
-when they play a passage and ask “what is happening”:
-
-1. tap a beat. if you cannot, say so (free rhythm, or you have not found it).
-2. group the beat (duple / triple; simple / compound).
-3. find a **cadence** (a close, even a weak one). that is a phrase end.
-4. ask whether the next phrase **repeats, contrasts, or continues**.
-5. only then name a form (binary, verse, period).
-
-do not start at “sonata.” sonata is a large map of many phrase-cadence events.
-
-**check:** beat → group → cadence → repeat/contrast. then the label.
+### 4.2 Historical Solutions and 12-Tone Equal Temperament (12-TET)
+- **Just Intonation:** Tunes all triads to pure integer ratios ($4:5:6$). Pure chords sound luminous, but modulating to distant keys produces unplayable, howling dissonances ("wolf intervals").
+- **Meantone Temperament:** Narrows the fifths to preserve pure major thirds ($5:4$), common in Renaissance and early Baroque music.
+- **12-Tone Equal Temperament (12-TET):** Solves the dilemma by distributing the Pythagorean comma equally across all twelve semitones in the octave. The mathematical semitone frequency ratio is the twelfth root of 2:
+  $$r = 2^{1/12} = \sqrt[12]{2} \approx 1.059463094$$
+- In 12-TET, every semitone is defined as exactly **100 cents** ($1\text{ octave} = 1200\text{ cents}$). An equal-tempered fifth ($700\text{ cents}$) is flattened by only $1.96\text{ cents}$ compared to a pure acoustic fifth ($701.96\text{ cents}$), a compromise the human ear readily tolerates in exchange for total freedom to modulate to any key.
 
 ---
 
-## 7. harmony and chords
+## 5. Rhythm, Metric Hierarchy, and Temporal Architecture
 
-**harmony** is pitches sounding in relation (together, or implied in turn). a **chord** is a named simultaneous set. a **triad** is the three-note school default (root, third, fifth). **seventh** chords add another third. jazz **extensions** (9, 11, 13) keep stacking — fetch a jazz harmony text before you name an altered dominant as law.
-
-**roman numerals** (I, IV, V…) name function relative to a tonic. **lead-sheet symbols** (C, G7, B♭m7) name quality from a root. **figured bass** names intervals above a bass. three dialects. say which.
-
-**tonal function** (common practice): tonic, dominant, predominant as a school cut. **cadence** types:
-
-| school name | usual job |
-|---|---|
-| **authentic (PAC / IAC)** | V → I, with PAC as the strongest close (soprano on tonic, both chords in root) |
-| **plagal** | IV → I |
-| **half** | arrives on V, feels open |
-| **deceptive** | V → vi (or another non-I), a dodge |
-
-fetch the chapter in Open Music Theory; do not fake a catalog from a mnemonic if the example is on the page.
-
-**consonance / dissonance** are practice-relative. a major third is sweet in one grammar and a problem in another. name the grammar.
-
-**progression** is chords in order. **modulation** changes key. **tonicization** visits.
-
-**check:** which dialect (roman, lead sheet, figures). which tonic. which cadence.
+Rhythm is the organization of musical duration and accent in time.
+- **Pulse (Tactus):** The underlying, regular, isochronous beat that listeners tap their feet to.
+- **Meter:** The periodic grouping of pulses into recurring metric units called **measures (bars)**, marked by hierarchical patterns of strong and weak accents:
+  - *Duple Meter ($2/4$ or $4/4$):* Strong-weak or Strong-weak-Medium-weak.
+  - *Triple Meter ($3/4$):* Strong-weak-weak (e.g., Minuet, Waltz).
+  - *Compound Meter ($6/8, 9/8, 12/8$):* The beat is divided into three equal subdivisions rather than two.
+- **Syncopation:** A deliberate metric displacement where an accent or articulation occurs on a normally weak beat or off-beat, creating dynamic rhythmic tension.
+- **Polyrhythm:** The simultaneous sounding of two or more conflicting rhythmic subdivisions (e.g., $3 : 2$ "three against two", or $4 : 3$ "four against three").
 
 ---
 
-## 8. counterpoint and voice leading
+## 6. Melodic Contour, Voice Leading, and Phrase Structure
 
-**counterpoint** is lines that make sense alone and together. **species** (first through fifth) is a school drill from Fux onward — a pedagogy, not the only historical practice.
+### 6.1 Melodic Mechanics
+A melody is a coherent linear succession of musical tones perceived as a singular aesthetic entity.
+- **Conjunct Motion (Stepwise):** Moving by intervals of a second (smooth, vocal, connected).
+- **Disjunct Motion (Leaps):** Moving by intervals of a third or larger.
+- **Law of Recovery:** In classical melodic design, a large disjunct leap is followed by conjunct stepwise motion in the opposite direction (*post-leap reversal*), restoring equilibrium to the vocal contour.
 
-**voice leading:** how each voice moves. common-practice habits (prefer step, careful with parallel perfect fifths/octaves, resolve tendency tones) are **style rules**, not physics. Bach is not a police.
-
-**outer voices** (bass + soprano) often carry the grammar; inner voices fill. **inversion** of a chord is which member is in the bass.
-
-**check:** how many voices. which style’s rules. species drill or a real piece?
-
----
-
-## 9. texture
-
-**texture** is how parts relate.
-
-| name | is |
-|---|---|
-| **monophony** | one line |
-| **heterophony** | one line, simultaneous variants |
-| **polyphony / counterpoint** | independent lines |
-| **homophony** | melody + accompaniment, or chordal block |
-| **ostinato / riff** | repeating cell under change |
-
-**density** (how many) is not the same as texture type. a thick homophony is still homophony.
-
-**check:** how many real parts. who has the tune.
+### 6.2 Structural Period Design
+Classical melodies are structured around linguistic-style symmetry:
+- **The Antecedent-Consequent Period:**
+  - *Antecedent Phrase (Question):* Typically 4 bars, terminating on a weak, unresolved **half cadence** (resting on the dominant V).
+  - *Consequent Phrase (Answer):* 4 bars, beginning similarly to the antecedent but resolving definitively on an **authentic cadence** (resting on the tonic I).
 
 ---
 
-## 10. form
+## 7. Functional Diatonic Harmony: Triads, Seventh Chords, and Cadences
 
-**form** is the large time-shape: what returns, what contrasts, what grows.
+### 7.1 Diatonic Triad Construction
+Building triads in thirds on the degrees of a major scale produces seven diatonic chords:
 
-school names (fetch a score before you tattoo them on a hearing):
+```
+    DEGREE:      I         ii        iii       IV        V         vi        vii°
+    NAME:      Tonic   Supertonic  Mediant  Subdominant Dominant Submediant Leading-Tone
+    QUALITY:   Major     minor      minor     Major     Major    minor     diminished
+    FUNCTION:  Home      Pre-Dom    Color    Pre-Dom    Tension   Color      Tension
+```
 
-| name | usual job |
-|---|---|
-| **strophic** | same music, new text |
-| **binary / ternary** | two parts / ABA |
-| **verse–chorus** | popular-song engine; a **bridge** contrasts both |
-| **12-bar blues** | a harmonic/phrase cycle — fetch the changes |
-| **sonata** | exposition / development / recapitulation as a **common-practice** drama, not a law of nature |
-| **rondo** | refrain returns (ABACA as a school sketch) |
-| **fugue** | imitative polyphony with a subject |
-| **through-composed** | little exact return |
-| **theme and variations** | a theme, then altered repeats |
-| **cycle / suite / album** | several movements or tracks as one work |
+### 7.2 The Tonal Syntax: T-PD-D-T
+Western functional tonal harmony is driven by a syntactic gravitational pull:
+$$\text{Tonic (I)} \longrightarrow \text{Pre-Dominant (IV or ii)} \longrightarrow \text{Dominant (V or } \text{V}^7) \longrightarrow \text{Tonic (I)}$$
+- The dominant chord ($\text{V}$) contains the **leading tone** (7th scale degree, e.g., $B$ in $C$ major), which has an intense melodic tendency to resolve upward by semitone to the tonic ($C$).
+- When an added minor 7th is placed on the dominant chord ($\text{V}^7$, e.g., $G-B-D-F$), an internal **tritone** interval ($B$ to $F$, $600\text{ cents}$) is formed. This unstable tritone resolves with immense acoustic satisfaction: $B$ steps up to $C$, while $F$ steps down to $E$, collapsing tension into the root tonic triad.
 
-**phrase → period → section → movement → work.** do not skip levels.
+```
+                  THE DOMINANT 7TH TRITONE RESOLUTION
+                  F (4th scale degree)  ──────►  E (Steps down to 3rd)
+                     \                 /
+                      Tritone (600 cents)
+                     /                 \
+                  B (Leading tone)      ──────►  C (Steps up to Tonic root)
+```
 
-**sonata as a drama, not a cookie cutter:** two (or more) themes in contrasting keys, a development that destabilizes, a recapitulation that restabilizes in the tonic. many pieces titled “sonata” refuse the school map. fetch the score.
-
-**popular song as a map** (school sketch, not every hit): intro — verse — chorus — verse — chorus — bridge — chorus — outro. a **pre-chorus** lifts. a **hook** is the memorable cell (often the chorus title-line). production (mix, beat, timbre) is part of the composition on a record.
-
-**cadence** and **double bar** are local; form is the map of locals. **repeat signs, da capo, dal segno** are notation for return. read them; do not invent a repeat.
-
-**check:** what returns. what is new. where is the biggest close. score in hand if you will name sonata.
-
----
-
-## 11. notation
-
-**staff notation** maps pitch (vertical) and time (horizontal) for a European-descended practice. **clef** names the staff. **key signature** and **time signature** are defaults, not the music.
-
-**other maps:** tablature, neumes, cipher, graphic scores, piano roll, MIDI, lead sheet, Nashville numbers, figured bass. a DAW timeline is a map. **the sound is the work.**
-
-**dynamics** (p, f, …) and **articulation** (staccato, legato, accent) are performance instructions. they are not the spectrum.
-
-read the **clef and the key signature first**, then rhythm, then markings. same order as reading a legal text: caption, then operative.
-
-**check:** which map. can you sing or tap what you named?
+### 7.3 Canonical Cadences
+- **Perfect Authentic Cadence (PAC):** $\text{V} \rightarrow \text{I}$ with both chords in root position and the tonic scale degree in the soprano voice. The strongest conclusive harmonic punctuation.
+- **Half Cadence (HC):** Pauses on $\text{V}$, leaving the phrase unresolved.
+- **Plagal Cadence:** $\text{IV} \rightarrow \text{I}$ ("Amen" cadence).
+- **Deceptive Cadence:** $\text{V} \rightarrow \text{vi}$ (the dominant resolves unexpectedly to the submediant, thwarting resolution).
 
 ---
 
-## 12. instruments, ensemble, timbre
+## 8. Species Counterpoint and Polyphonic Voice Independence
 
-**timbre** is why a flute and a violin can share a pitch and not be the same. spectrum + envelope + noise. **orchestration** is assigning lines to instruments.
+Counterpoint is the art of combining distinct, independent melodic lines into a coherent harmonic whole. Formulated systematically by Johann Joseph Fux in *Gradus ad Parnassum* (1725):
 
-families (Western orchestra school list): strings, woodwinds, brass, percussion, keyboard, voice, plus plucked and electronic. **idiophone / membranophone / chordophone / aerophone / electrophone** is the Hornbostel–Sachs cut — fetch if you will classify.
+```
+                   THE FIVE SPECIES OF COUNTERPOINT
+    Species 1: Note-against-note (1:1)       Whole note against whole note
+    Species 2: Two notes against one (2:1)   Two half notes against each whole note
+    Species 3: Four notes against one (4:1)  Four quarter notes (passing & neighboring tones)
+    Species 4: Suspensions (Syncopated)      Tied notes creating prepared dissonances
+    Species 5: Florid Counterpoint           Free combination of all four previous species
+```
 
-**ensemble** names (string quartet, SATB choir, big band, gamelan, chamber orchestra) are practice-packages: expected roles, not just headcount.
-
-range and transposition: some instruments sound at a different pitch than written. **fetch a transposition chart**; do not guess a horn in F from vibe.
-
-**check:** who plays. written pitch or sounding pitch.
-
----
-
-## 13. other systems
-
-common-practice major/minor is **one** grammar. it is the grammar most conservatory sequences drill. it is not the world.
-
-name the system, then fetch a real introduction:
-
-| practice (name) | what to fetch |
-|---|---|
-| **raga** (South / North Indian) | a raga’s scale, time of day, pakad — do not reduce to “major with ornaments” |
-| **maqam** | tetrachords, modulation habits |
-| **gamelan** (pélog / sléndro) | two collections, not 12-TET |
-| **12-tone / serial** | a row and its transforms — fetch the row chart |
-| **jazz harmony** | chord-scale, ii–V–I, tritone sub — Open Music Theory jazz units |
-| **popular form** | verse/chorus/bridge, riff, production as composition |
-| **free / aleatory** | the rule that remains (if any) |
-
-**ethnomusicology** is the university name for studying practice in place. geography pack for the map. **do not invent a scale from a travel video.**
-
-**check:** which grammar. who taught it. which recording or treatise.
+### Core Voice-Leading Rules
+1. **Motion Types:** Contrary motion (voices move in opposite directions) is preferred over similar or parallel motion because it maximally preserves the acoustic independence of the voices.
+2. **Prohibition of Parallel Fifths and Octaves:** Two voices may never move from one perfect fifth to another perfect fifth, or from one perfect octave to another octave, by parallel motion. Parallel octaves destroy voice independence, causing the two voices to acoustically fuse into a single reinforced timbre.
 
 ---
 
-## 14. recording and electric sound
+## 9. Musical Texture: Monophony, Polyphony, and Homophony
 
-a **recording** is a work-object (sometimes legally; `../law/` IP chapter). **microphone, mix, edit, master** are compositional moves. **sampling** quotes. **synthesis** builds spectrum from oscillators or tables.
-
-**MIDI** is a control protocol, not audio. spec: midi.org. a piano-roll is notation.
-
-**electroacoustic / musique concrète / computer music:** IRCAM and university studios as named doors. fetch the piece; do not fake a patch.
-
-**check:** score, tape, DAW session, or live patch?
+- **Monophony:** A single melodic line sounded alone without harmonic accompaniment (e.g., Gregorian chant, solo flute).
+- **Polyphony:** Two or more independent melodic lines occurring simultaneously, possessing equal rhythmic and melodic importance (e.g., Bach fugues, Renaissance motets by Palestrina).
+- **Homophony:** A single dominant melodic line supported by chordal harmonic accompaniment moving in the same rhythm or supporting arpeggiation (e.g., Classical string quartets, modern popular songs).
+- **Heterophony:** The simultaneous performance of different ornamental variations of the same underlying melody across multiple instruments (common in traditional East Asian, Irish, and Middle Eastern ensembles).
 
 ---
 
-## 15. fetch on this stack
+## 10. Architectural Forms: Binary, Ternary, Rondo, and Sonata-Allegro
 
-| job | door |
-|---|---|
-| undergrad theory sequence | **Open Music Theory** (OMT2) |
-| rudiments course | **MIT OCW** fundamentals of music |
-| listening survey | **Yale OYC** MUSI 112 |
-| public-domain scores | **IMSLP** |
-| choral public-domain | **CPDL** |
-| concert A in Hz | **ISO 16** |
-| theory research | **SMT** · **Music Theory Online** |
-| encyclopedia | **Grove / Oxford Music Online** (often paywalled — still the named book) |
-| recordings as documents | **Library of Congress** · **Smithsonian Folkways** |
-| MIDI spec | **midi.org** |
-| computer-music studio | **IRCAM** |
+Form is the macroscopic architecture of musical time, balancing unity (repetition) with variety (contrast).
 
-never invent an opus, a Köchel, a BWV, a Hertz off the cuff, or a lyric. format a search. cite the URL. wiki is seed.
+```
+                      MACROSCOPIC MUSICAL FORMS
+    BINARY FORM (AB):           [ Section A (Tonic) ] ──► [ Section B (Dominant) ]
+    TERNARY FORM (ABA):         [ A (Tonic) ] ──► [ B (Contrasting Key) ] ──► [ A (Tonic) ]
+    RONDO FORM:                 [ A ] ──► [ B ] ──► [ A ] ──► [ C ] ──► [ A ]
+```
 
----
+### 10.1 Sonata-Allegro Form
+The preeminent large-scale structural form of the Classical and Romantic eras (symphonies, sonatas, concertos):
 
-## 16. how to attack a hearing or a score
-
-1. **parameter** — pitch, time, loudness, timbre, form.
-2. **system** — which grammar.
-3. **texture**, then **form** (what returns).
-4. if a **label** (sonata, raga, 12-bar) — fetch a textbook chapter or the score.
-5. if a **number** (Hz, BPM, catalogue) — fetch.
-6. FOUND empty → **DONT_KNOW**.
-
-stuck patterns:
-
-| symptom | try |
-|---|---|
-| “it sounds sad” | ch 1, 4. name mode/tempo/register before mood |
-| scale called a key | ch 4 |
-| meter called tempo | ch 5 |
-| roman numerals on a raga | ch 13 |
-| fake opus / remembered lyric | ch 15 · IMSLP / the recording |
-| wiki as the piece | the score or the audio |
-| celebrity childhood | stop. name the parameter |
-| harmonic series called “the major scale” | ch 2 vs ch 4. ratios vs a WWHWWWH pattern |
+```
+                      THE SONATA-ALLEGRO ARCHITECTURE
+    1. EXPOSITION (Introduces thematic material):
+       - Primary Theme (Theme 1) in Tonic key
+       - Modulating Transition (Bridge)
+       - Secondary Theme (Theme 2) in Dominant / Relative Major
+       - Closing Theme & Repeat
+            │
+            ▼
+    2. DEVELOPMENT (Harmonic instability and transformation):
+       - Fragmentation, sequence, and recombining of themes
+       - Modulations through distant, volatile tonal regions
+       - Retransition building pedal point on dominant
+            │
+            ▼
+    3. RECAPITULATION (Tonal resolution):
+       - Theme 1 returns in Tonic
+       - Transition modified (does not modulate)
+       - Theme 2 returns resolved in the TONIC key
+       - Coda (Definitive structural conclusion)
+```
 
 ---
 
-## close
+## 11. Notation Systems and the Semiotics of the Western Score
 
-music is parameters in a system in time. harmonic series, scale, form. fetch the score.
+The standard Western musical score provides a two-dimensional Cartesian graph: the horizontal axis represents chronological time; the vertical axis represents acoustic frequency.
+- **Clefs:** Anchor specific pitches on the 5-line staff:
+  - *Treble Clef (G-Clef):* Curls around $G_4$ ($392\text{ Hz}$).
+  - *Bass Clef (F-Clef):* Two dots frame $F_3$ ($174.6\text{ Hz}$).
+  - *C-Clefs (Alto / Tenor):* Center indentation designates Middle $C$ ($C_4 = 261.6\text{ Hz}$).
+- **The Circle of Fifths:** A clockwise geometric progression by perfect fifths adding sharps ($F^\sharp, C^\sharp, G^\sharp, D^\sharp, A^\sharp, E^\sharp, B^\sharp$), or counter-clockwise by fourths adding flats ($B^\flat, E^\flat, A^\flat, D^\flat, G^\flat, C^\flat, F^\flat$).
+
+---
+
+## 12. Timbre, Orchestration, and Instrument Acoustic Physics
+
+### 12.1 The Hornbostel-Sachs Taxonomic Classification
+Instruments are categorized by the physical mechanism that initiates the acoustic vibration:
+1. **Chordophones:** Sound produced by vibrating strings (violins, pianos, harps, guitars).
+2. **Aerophones:** Sound produced by vibrating air columns (flutes, oboes, trumpets, pipe organs).
+3. **Membranophones:** Sound produced by a tightly stretched vibrating membrane (timpani, snare drums).
+4. **Idiophones:** Sound produced by the vibration of the instrument's own rigid resonant body (cymbals, xylophones, bells).
+5. **Electrophones:** Sound generated primarily through electronic oscillation and amplified circuitry (analog synthesizers, digital samplers).
+
+### 12.2 The Acoustic Envelope (ADSR)
+The temporal evolution of an instrument's timbre is governed by its ADSR envelope:
+
+```
+          THE ATTACK-DECAY-SUSTAIN-RELEASE (ADSR) ENVELOPE
+          Amplitude
+             ^        /\  <-- Peak Attack Level
+             |       /  \
+             |      /    \______  <-- Sustain Level (Held)
+             |     /            \
+             |    /              \
+             +---+----+---------+----+---> Time
+                 | A  | D|   S   | R |
+                 Attack  Decay  Sustain Release
+```
+
+---
+
+## 13. Global Non-Western Tuning and Rhythmic Paradigms
+
+- **Indian Classical Music:** Governed by **Raga** (a nuanced modal framework embodying specific melodic ascending/descending contours, microtonal inflections termed *shrutis*, and emotional moods) and **Tala** (metric rhythmic cycles, such as the 16-beat *Tintal*, counted by claps and wave gestures).
+- **Arabic Maqam System:** Built upon modal scales employing microtonal quarter-tones and three-to-four note scalar cells (**jins**).
+- **Indonesian Gamelan:** Employs non-Western equidistant scale temperaments: **Slendro** (a five-tone scale dividing the octave into roughly five equal steps) and **Pelog** (a seven-tone scale with unequal intervals), combined in intricate, stratified polyphonic layers (*colotomic meter*).
+
+---
+
+## 14. Electroacoustic Sound, Synthesis, and Digital Audio Physics
+
+- **Subtractive Synthesis:** Starts with harmonically rich waveforms (sawtooth, square, triangle waves generated by voltage-controlled oscillators) and carves away frequencies using low-pass, high-pass, or band-pass filters.
+- **The Nyquist-Shannon Sampling Theorem:** To digitally reconstruct an analog acoustic wave without aliasing distortion, the digital sampling rate $f_s$ must be at least twice the highest frequency present in the signal:
+  $$f_s \ge 2 \cdot f_{\max}$$
+  Since human hearing extends to approximately $20\text{ kHz}$, standard CD audio specifies a sampling rate of $44.1\text{ kHz}$ ($> 2 \times 20\text{ kHz}$).
+- **Bit Depth and Dynamic Range:** The resolution of each audio sample. Each bit of quantization precision yields approximately $6.02\text{ dB}$ of dynamic range:
+  $$\text{Dynamic Range} \approx 6.02 \times N\text{ dB}$$
+  A 16-bit digital audio system achieves $\approx 96.3\text{ dB}$ of signal-to-noise dynamic range.
+
+---
+
+## 15. Primary Musicological Repositories and Open Score Doors
+
+Rigorous musicological analysis requires consulting uncompressed scores and historical treatises:
+
+| Repository / Project | Organization / Host | Holdings & Collections |
+| :--- | :--- | :--- |
+| **IMSLP (Petrucci Music Library)** | [IMSLP.org](https://imslp.org/) | Over 700,000 public domain musical scores and historical parts |
+| **Open Music Theory (OMT)** | [OpenMusicTheory.com](https://openmusictheory.com/) | Peer-reviewed, open-source undergraduate music theory curriculum |
+| **ISO 16 Acoustic Standard** | [ISO.org](https://www.iso.org/standard/3601.html) | International standard reference pitch ($A_4 = 440.0\text{ Hz}$) |
+| **MusicBrainz** | [MusicBrainz.org](https://musicbrainz.org/) | Open encyclopedia of music metadata, discography, and recordings |
+| **Choral Public Domain Library (CPDL)** | [CPDL.org](https://www.cpdl.org/) | Thousands of free choral and vocal scores in modern notation |
+
+---
+
+## 16. Analytical Method: Step-by-Step Harmonic Analysis
+
+When performing Roman numeral analysis on a classical score excerpt, execute this rigorous protocol:
+
+```
++---------------------------------------------------------------------------------------------------+
+|                            HARMONIC ANALYSIS PROTOCOL                                             |
++---------------------------------------------------------------------------------------------------+
+| 1. IDENTIFY KEY & TONIC CENTER     | Check key signature and cadential landing points             |
+| 2. ISOLATE BASS NOTE & INVERSION   | Note bass pitch: root, 3rd (6), 5th (6/4), or 7th (4/2)      |
+| 3. ASSEMBLE PITCH COLLECTION       | Stack notes into thirds to identify underlying chord quality  |
+| 4. DETECT NON-CHORD TONES (NCTs)   | Identify passing tones, neighbor tones, suspensions, escapes |
+| 5. ASSIGN ROMAN NUMERAL & FUNCTION | Determine syntax: Tonic (I), Pre-Dominant (IV/ii), Dominant (V)|
+| 6. EVALUATE CADENCE TYPE           | Classify termination: PAC, IAC, HC, or Deceptive             |
++---------------------------------------------------------------------------------------------------+
+```
+
+### Worked Analytical Check: Bach Chorale Excerpt
+**Measure:** Final cadence in $G$ Major. Bass sings $D_3$, Soprano sings $F^\sharp_4$, Tenor sings $A_3$, Alto sings $C_4$. This is immediately followed by Bass $G_2$, Soprano $G_4$, Tenor $B_3$, Alto $D_4$.
+1. **Chord 1:** Pitches are $D-F^\sharp-A-C$. Stacked in thirds: root $D$, major 3rd $F^\sharp$, perfect 5th $A$, minor 7th $C$. This is a dominant 7th chord. Bass has the root $D$. Roman numeral: $\text{V}^7$.
+2. **Chord 2:** Pitches are $G-B-D-G$. Stacked in thirds: root $G$, major 3rd $B$, perfect 5th $D$. Bass has the root $G$. Soprano ends on the tonic $G$. Roman numeral: $\text{I}$.
+3. **Cadence:** $\text{V}^7 \rightarrow \text{I}$ in root position with tonic in the soprano voice. Classification: **Perfect Authentic Cadence (PAC)**.
+
+---
+
+## Close & Archival Citation
+
+Music is the architecture of acoustic time. By bridging mathematical ratios, vibrational physics, and structural form, music theory unlocks the deep order underlying human auditory expression.
 
 ```
 CITE: stacks/music/TEXTBOOK.md
+AUTHORITY: The Stacks Copyleft Academic Repositories
+LICENSING: GNU AGPL-3.0-or-later & The Open Covenant
 ```

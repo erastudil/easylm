@@ -6,7 +6,7 @@ status: living · easylm · the-stacks
 
 # The Stacks index
 
-machine list: `PACKS.json`. law: `LAW.md`. trusted hosts: `TRUSTED_SOURCES.md`.
+machine list: `PACKS.json`. law: `LAW.md`. trusted hosts: `TRUSTED_SOURCES.md`. thinkers: `THINKERS.md`.
 
 each pack: `stacks/<slug>/TEXTBOOK.md` + `LINK_INDEX.md`.
 

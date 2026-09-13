@@ -36,9 +36,11 @@ if a plot, a quote, a date, or an edition is load-bearing, fetch the live page a
 4. fetch the page if you will cite a plot, a quote, a date, or a page number. name the **edition**.
 5. if two editions disagree, say so. do not average them. the fetched text beats wiki. a remembered plot is not a source.
 
-## not doors (refuse as SoT)
+## Canonical Literary Figures & Authors
 
-remembered quotes, wiki plot summaries as the book, “seven basic plots” as law, sparknotes as the last word, fake first-publication years. Wikipedia orients; it does not beat the edition.
+| Author | Era | Genre / Contribution | Wikipedia Reference |
+|---|---|---|---|
+| **William Shakespeare** | 1564–1616 | Early Modern English Drama, Tragedy, Blank Verse, Sonnets | https://en.wikipedia.org/wiki/William_Shakespeare |
 
 ## sibling packs (The Stacks)
 

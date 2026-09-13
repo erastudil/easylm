@@ -144,7 +144,7 @@ Imagine an enormous sound-mixing console in an arena. It has 100 billion sliders
 
 You have an automated microphone that records the master output and compares it to a pristine recording of Beethoven's Ninth Symphony. For every note, the system notes the discrepancy.
 
-Now comes the crucial question: which of the 100 billion knobs should you turn, and in which direction, to make the output sound closer to Beethoven?
+Now comes the core question: which of the 100 billion knobs should you turn, and in which direction, to make the output sound closer to Beethoven?
 
 If you had to test each knob individually, it would take longer than the age of the universe. Instead, calculus provides **The Chain Rule**. By propagating the error backward through the circuitry—from the output speakers back through each amplifier, equalizer, and potentiometer—we can calculate the exact sensitivity of the total error with respect to every single knob simultaneously.
 

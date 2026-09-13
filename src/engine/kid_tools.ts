@@ -18,7 +18,13 @@ const ALLOWED_SUBSTRINGS = [
   'library',
   'warehouse',
   'canon',
-  'dewey'
+  'dewey',
+  'zcabs',
+  'canary',
+  'zcahc',
+  'studio',
+  'course',
+  'lesson'
 ];
 
 const BLOCKED_SUBSTRINGS = [
@@ -60,4 +66,4 @@ export function isKidAllowedTool(name: string): boolean {
 }
 
 export const KID_TOOL_REFUSAL =
-  'Kid Safe mode: network tools are off. Local calculator, units, clock, and university library stacks only.';
+  'Kid Safe mode: network tools are off. Local calculator, units, clock, university library stacks, and Studio only.';

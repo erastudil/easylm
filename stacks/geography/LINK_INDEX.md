@@ -41,9 +41,12 @@ if a population, GDP, capital, coordinate, or border is load-bearing, fetch the 
 4. fetch the page if you will cite a population, GDP, capital, coordinate, or rank. **keep the year.**
 5. if two official pages disagree, say so. do not average them. a national statistical office beats a remembered wiki table.
 
-## not doors (refuse as SoT)
+## Canonical Geographers & Earth Scientists
 
-remembered world population, GDP rank from memory, Mercator-as-truth, wiki list-of-countries tables as the last word, a capital from a quiz show. Wikipedia orients; it does not beat a census.
+| Thinker | Era | Focus / Contribution | Wikipedia Reference |
+|---|---|---|---|
+| **Alexander von Humboldt** | 1769–1859 | Modern Physical Geography, Biogeography, *Kosmos* | https://en.wikipedia.org/wiki/Alexander_von_Humboldt |
+| **Carl Ritter** | 1779–1859 | Comparative Regional Geography, *Die Erdkunde* | https://en.wikipedia.org/wiki/Carl_Ritter |
 
 ## sibling packs (The Stacks)
 

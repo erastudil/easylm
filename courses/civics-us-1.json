@@ -1,0 +1,192 @@
+{
+  "course": {
+    "id": "civics-us-1",
+    "stack": "civics",
+    "dewey": "320",
+    "title": "Civics I — constitutions and power",
+    "level": "high",
+    "hours": 40,
+    "license": {
+      "spdx": "CC-BY-4.0",
+      "attribution": "Adapted from OpenStax American Government 3e (CC BY 4.0) and EasyLM civics stack. Text of the U.S. Constitution: NARA.",
+      "sourceUrl": "https://openstax.org/details/books/american-government-3e"
+    },
+    "units": [
+      {
+        "id": "u1",
+        "title": "Social contract",
+        "lessons": [
+          {
+            "id": "civics-us-1-u1-l",
+            "title": "Social contract",
+            "reading": {
+              "stack": "civics",
+              "chapter": "1. First Principles: Sovereignty, Power, and the Social Contract"
+            },
+            "doors": [
+              "https://openstax.org/details/books/american-government-3e"
+            ],
+            "items": [
+              "civics-us-1-u1-read",
+              "civics-us-1-u1-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u2",
+        "title": "Regimes",
+        "lessons": [
+          {
+            "id": "civics-us-1-u2-l",
+            "title": "Regimes",
+            "reading": {
+              "stack": "civics",
+              "chapter": "2. Typologies of Regimes: Democracies, Republics, and Autocracies"
+            },
+            "doors": [
+              "https://openstax.org/details/books/american-government-3e"
+            ],
+            "items": [
+              "civics-us-1-u2-read",
+              "civics-us-1-u2-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u3",
+        "title": "Constitutions",
+        "lessons": [
+          {
+            "id": "civics-us-1-u3-l",
+            "title": "Constitutions",
+            "reading": {
+              "stack": "civics",
+              "chapter": "3. Constitutional Architecture: Codification, Entrenchment, and Amendment"
+            },
+            "doors": [
+              "https://www.archives.gov/founding-docs/constitution",
+              "https://constitution.congress.gov/"
+            ],
+            "items": [
+              "civics-us-1-u3-read",
+              "civics-us-1-u3-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u4",
+        "title": "Separation of powers",
+        "lessons": [
+          {
+            "id": "civics-us-1-u4-l",
+            "title": "Separation of powers",
+            "reading": {
+              "stack": "civics",
+              "chapter": "4. The Separation of Powers and Checks & Balances"
+            },
+            "doors": [
+              "https://constitution.congress.gov/"
+            ],
+            "items": [
+              "civics-us-1-u4-read",
+              "civics-us-1-u4-quiz",
+              "civics-us-1-midterm"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u5",
+        "title": "Federalism",
+        "lessons": [
+          {
+            "id": "civics-us-1-u5-l",
+            "title": "Federalism",
+            "reading": {
+              "stack": "civics",
+              "chapter": "5. Federalism and Devolution: Multi-Tier Sovereignty"
+            },
+            "doors": [
+              "https://constitution.congress.gov/"
+            ],
+            "items": [
+              "civics-us-1-u5-read",
+              "civics-us-1-u5-quiz",
+              "civics-us-1-essay-1"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u6",
+        "title": "Legislation",
+        "lessons": [
+          {
+            "id": "civics-us-1-u6-l",
+            "title": "Legislation",
+            "reading": {
+              "stack": "civics",
+              "chapter": "6. The Legislative Process: Representation and Statutory Drafting"
+            },
+            "doors": [
+              "https://www.congress.gov/"
+            ],
+            "items": [
+              "civics-us-1-u6-read",
+              "civics-us-1-u6-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u7",
+        "title": "Judiciary",
+        "lessons": [
+          {
+            "id": "civics-us-1-u7-l",
+            "title": "Judiciary",
+            "reading": {
+              "stack": "civics",
+              "chapter": "9. The Judiciary and Constitutional Review"
+            },
+            "doors": [
+              "https://www.supremecourt.gov/"
+            ],
+            "items": [
+              "civics-us-1-u7-read",
+              "civics-us-1-u7-quiz",
+              "civics-us-1-project"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u8",
+        "title": "Rights",
+        "lessons": [
+          {
+            "id": "civics-us-1-u8-l",
+            "title": "Rights",
+            "reading": {
+              "stack": "civics",
+              "chapter": "12. Civil Liberties, Procedural Rights, and the Citizen's Shield"
+            },
+            "doors": [
+              "https://www.archives.gov/founding-docs/constitution"
+            ],
+            "items": [
+              "civics-us-1-u8-read",
+              "civics-us-1-u8-quiz",
+              "civics-us-1-essay-2",
+              "civics-us-1-final"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "itemCount": 21
+}

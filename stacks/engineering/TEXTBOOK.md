@@ -7,10 +7,8 @@ related:
   - "../physics/"
   - "../math/"
   - "../chemistry/"
-  - "../ops_5s_kaizen/"
   - "../computing/"
   - "../methods/"
-  - "EasyLM calc and units hands"
   - "stacks/LAW.md"
 ---
 
@@ -66,6 +64,7 @@ Engineering is the application of mathematical and physical principles to the **
 14. [Chapter 14: Control Systems & Feedback Theory](#14-control-systems--feedback-theory)
 15. [Chapter 15: Engineering Standards, Scholarly Corpora & Primary Doors](#15-engineering-standards-scholarly-corpora--primary-doors)
 16. [Chapter 16: Diagnostic Protocols, Failure Modes & Engineering Problem-Solving](#16-diagnostic-protocols-failure-modes--engineering-problem-solving)
+17. [Chapter 17: Summary & Synthesis](#17-summary--synthesis)
 
 ---
 
@@ -597,22 +596,20 @@ When designing, testing, or diagnosing any physical, mechanical, or electrical s
 
 | Diagnostic Failure | Underlying Error | Algorithmic Correction |
 |---|---|---|
-| **Unit System Mixing** | Combining Inches with Millimeters or lbf with Newtons | Enforce strict single-system conversion (the EasyLM units hand).|
+| **Unit System Mixing** | Combining Inches with Millimeters or lbf with Newtons | Enforce strict single-system conversion (SI or coherent US Customary).|
 | **Omitted FBD Reaction** | Missing moment or shear at fixed support boundary | Draw complete isolated Free-Body Diagram before equations.|
 | **Unchecked Buckling** | Sizing slender compression member purely for yield ($\sigma_y$)| Compute Euler critical buckling load $P_{cr} = \frac{\pi^2 EI}{(KL)^2}$.|
 | **Static Fatigue Error** | Using static yield strength for cyclic oscillating loads | Apply S-N curve and Modified Goodman fatigue criterion.|
-| **G-Code Feed Crash** | Confusing Feed per Rev/Tooth with Inches per Minute | Verify $F_{\text{IPM}} = \text{RPM} \times z \times \text{IPT}$ via `calc`.|
+| **G-Code Feed Crash** | Confusing Feed per Rev/Tooth with Inches per Minute | Verify $F_{\text{IPM}} = \text{RPM} \times z \times \text{IPT}$ via exact algebra.|
 | **Zero-Tolerance Drawing** | Specifying exact nominal dimensions without limits | Apply ANSI B4.1 fit classes and ASME Y14.5 GD&T datum frames.|
 | **Pump Cavitation** | Suction pressure dropping below fluid vapor pressure ($p_v$)| Ensure $\text{NPSH}_{\text{available}} > \text{NPSH}_{\text{required}}$ at operating temp.|
 | **Floating Circuit Node** | High-impedance input picking up environmental noise | Install pull-up/pull-down resistor or tied ground reference.|
 | **Thermal Over-Constraint** | Clamping expanding metal shaft rigidly at both ends | Use floating bearing arrangement on one end for expansion.|
-| **Hallucinated Material Spec**| Quoting steel yield or wire ampacity from memory | Fetch official ASTM mill certificate or NFPA 70 table.|
+| **Unverified Material Spec**| Quoting steel yield or wire ampacity from memory | Consult official ASTM mill certificate, ASME code, or NFPA 70 table.|
 
 ---
 
-## 17. Summary & Closure
+## 17. Summary & Synthesis
 
-Engineering transforms abstract mathematical models into reliable physical reality through rigorous unit accounting, conservation laws, standardized tolerances, and deterministic safety limits. Draw the boundary, name the failure mode, compute with precision, verify against *Machinery's Handbook* and statutory codes, and build systems that protect human life.
+Engineering transforms abstract mathematical models and physical conservation laws into reliable physical reality through rigorous dimensional accounting, standardized tolerances, deterministic safety factors, and disciplined failure mode analyses. Draw the boundary, identify the failure modes, compute stresses and currents with precision, verify against *Machinery's Handbook* and statutory codes, and build durable systems that protect human life.
 
-```
-```

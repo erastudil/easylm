@@ -36,7 +36,7 @@ if a hertz, an opus, a lyric, a row, or a tempo marking is load-bearing, fetch t
 4. fetch the page if you will cite a Hz, a catalogue number, a lyric, or a labeled form.
 5. if two scores or two tunings disagree, say so. do not average them. the named edition beats wiki.
 
-## not doors (refuse as SoT)
+## Unverified or Derivative Sources (Do Not Cite as Primary Authority)
 
 remembered opus numbers, lyric sites with no source, “sad = minor,” travel-video ragas, wiki as the last word on a pitch. Wikipedia orients; it does not beat the score.
 

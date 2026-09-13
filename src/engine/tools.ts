@@ -1,13 +1,16 @@
 import { ToolExecution } from '../types';
 import { isKidAllowedTool, KID_TOOL_REFUSAL, normalizeToolName } from './kid_tools';
 import { execMath } from './math';
-import { isWikiHost, parsePublicHttpsUrl } from './ssrf';
+import { isWhitelistedHost, isWikiHost, parsePublicHttpsUrl } from './ssrf';
 import { execStacks } from './stacks';
 import { execWarehouse } from './warehouse';
+import { execZcabsCanary } from './zcabs';
+import { execStudio } from './studio_tool';
 
 export { execMath } from './math';
 export { execStacks } from './stacks';
 export { execWarehouse } from './warehouse';
+export { execZcabsCanary } from './zcabs';
 
 export const SYSTEM_TOOLS_PROMPT = `
 You have access to the following built-in tools:
@@ -18,16 +21,18 @@ You have access to the following built-in tools:
 5. datetime(timezone?: string) - current local or global time & date (e.g. "" for local time, or "Tokyo", "London", "New York").
 6. fact(topic: string) - verified encyclopedic summary for notable people, concepts, history, or science (e.g. "Alan Turing", "photosynthesis", "James Webb Space Telescope").
 7. dictionary(word: string) - exact definition, pronunciation, part of speech, and origin for English words (e.g. "obfuscate", "serendipity").
-8. web_search(query: string) - search the web for recent events, specific websites, literary quotations, or classic book chapters (via Wikiquote, Wikisource, Wikipedia).
-9. web_fetch(url: string) - read Wikipedia, Wikiquote, and Wikisource pages. Other URLs only if the site allows browser CORS. EasyLM does not proxy arbitrary websites.
+8. web_search(query: string) - search the web for real-time sports scores (ESPN), live stock & crypto prices (Yahoo Finance), breaking news & world pulse (Google News RSS), literary citations, and open data.
+9. web_fetch(url: string) - fetch verified content from safe whitelist sources (Wikipedia, Google News, Yahoo Finance, ESPN, NIST, Census, PubChem, ArXiv, World Bank, etc.). Arbitrary proxying is blocked.
 10. stacks(query: string) - search local university library stacks across 28 academic subjects (Dewey 000–900). Sovereign, offline university reference books. (alias: warehouse).
+11. zcabs(key: string) - inspect system invariant canary register for execution verification (e.g. "zcabs <register>").
+12. studio(query: string) - local Studio status: current course and lesson, or "list" for the catalog. Never returns answer keys.
 
 CRITICAL INSTRUCTIONS:
 - For casual conversation, greetings, or questions about yourself (e.g. "hi", "how are you?", "who are you?"), DO NOT call any tools. Answer naturally.
 - For weather inquiries, call "weather".
 - For currency conversion, call "exchange".
 - For word definitions, pronunciations, and etymology, call "dictionary".
-- For encyclopedic overviews of people, concepts, science, history, or literary quotes/works, call "fact" or "web_search".
+- For real-time sports scores (e.g. "NFL scores", "Chiefs game"), stock/crypto prices (e.g. "AAPL stock", "NVDA price"), breaking news, encyclopedic summaries, or literary quotes/works, call "web_search".
 - For specific book chapters (e.g. "Count of Monte Cristo Chapter 5" or "Moby Dick Chapter 1") or literary quotations, call "web_search".
 - MANDATORY TOOL USE FOR LITERATURE & CITATIONS: You do NOT have verbatim book chapters, literary quotations, or historical texts stored in memory. You must NEVER guess or fabricate quotes from memory. When asked for quotes, famous lines, or specific chapters from any book, novel, author, or play (e.g. Dumas, Shakespeare, Homer, Austen), you MUST emit <tool_call>{"name": "web_search", "query": "quotes from [Work]"}</tool_call> BEFORE answering.
 - When you do need a tool, emit EXACTLY this syntax on its own line:
@@ -46,6 +51,10 @@ or
 <tool_call>{"name": "web_fetch", "query": "https://example.com"}</tool_call>
 or
 <tool_call>{"name": "stacks", "query": "Bayes theorem"}</tool_call>
+or
+<tool_call>{"name": "zcabs", "query": "reg_corvus_0000"}</tool_call>
+or
+<tool_call>{"name": "studio", "query": "where am I"}</tool_call>
 `;
 
 export const SYSTEM_TOOLS_PROMPT_KID = `
@@ -54,6 +63,8 @@ You have access to these local tools only:
 2. units(from: string, to: string, amount: number) - convert physical units.
 3. datetime(timezone?: string) - current local or world time.
 4. stacks(query: string) - local university library stacks across academic subjects.
+5. zcabs(key: string) - local canary register inspection.
+6. studio(query: string) - local Studio course/lesson status. No answer keys.
 
 Do not call dictionary, web_search, web_fetch, weather, exchange, or fact. Those leave the machine (dictionary uses an external API).
 When you need a tool, emit EXACTLY:
@@ -502,7 +513,7 @@ export async function execWebFetch(targetUrl: string): Promise<string> {
   const target = parsed.url;
   cleanUrl = target.toString();
 
-  if (isWikiHost(target.hostname)) {
+  if (isWhitelistedHost(target.hostname)) {
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 9000);
@@ -604,8 +615,14 @@ export async function dispatchTool(
     } else {
       result = await execWebSearch(query, searxngUrl);
     }
+  } else if (normName.includes('studio') || normName.includes('course') || normName === 'lesson') {
+    result = execStudio(query);
+  } else if (normName.includes('zcabs') || normName.includes('canary') || normName.includes('zcahc')) {
+    const res = execZcabsCanary(query);
+    result = res.ok ? res.result! : `Error: ${res.error}`;
+    isError = !res.ok;
   } else {
-    result = `Unknown tool "${normName || name}". Local hands: calc, units, datetime, stacks. Network hands: weather, exchange, fact, dictionary, web_search, web_fetch.`;
+    result = `Unknown tool "${normName || name}". Local hands: calc, units, datetime, stacks, studio, zcabs. Network hands: weather, exchange, fact, dictionary, web_search, web_fetch.`;
     isError = true;
   }
 

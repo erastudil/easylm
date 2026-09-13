@@ -1,4 +1,4 @@
-export interface HelpSection {
+﻿export interface HelpSection {
   id: string;
   title: string;
   summary: string;
@@ -9,249 +9,151 @@ export const EASYLM_HELP_SECTIONS: HelpSection[] = [
   {
     id: 'intro',
     title: '👋 Welcome to EasyLM',
-    summary: 'What is EasyLM and how does it work?',
-    content: `### Welcome to EasyLM
+    summary: 'What is EasyLM and how does it work inside your browser?',
+    content: `### The Fabric of Local Intelligence
 
-EasyLM is an open, private learning environment and research assistant. It runs locally on your device's graphics processor (WebGPU) inside this browser window.
+Imagine sitting down to research, write, or study, and the intelligence you interact with isn't beaming in from an airplane hangar of distant corporate servers. Instead, every sentence, every calculation, and every creative spark is computed right here on your own desk—inside the microscopic circuits of your device's graphics card.
 
-Unlike cloud services (such as ChatGPT, Claude, or Gemini), EasyLM does not transmit your prompts, documents, or conversation history to external company inference servers.
+That is EasyLM. It brings open-weight language models directly into your web browser using **WebGPU**, a modern browser technology that lets your computer's graphics processor run complex mathematical operations in parallel.
 
-- **Private & Sovereign**: Chat tokens are computed locally on your GPU. History stays in this browser unless you export it.
-- **Hands**: Local math, units, clock, warehouse. Optional network Hands send that lookup when you use them. Turn Hands off to skip those lookups.
-- **Weights**: Stream once from Hugging Face into browser cache. Cached weights can be reused; this page still needs a network fetch unless the browser already has it.
-- **Zero Account & Free Forever**: Official app is free. GNU GPLv3 copyleft. No logins, subscriptions, or analytics cookies.`
+- **Your Device, Your Tokens**: Everything you write and every answer the model generates stays strictly inside your browser's sandbox. Nothing is transmitted to external AI cloud servers.
+- **Model Weights in Local Cache**: When you select a model, its neural weights stream once from Hugging Face into your browser's local cache. Once cached, they run locally whenever you visit.
+- **Deterministic Hands**: Language models are poets of probability, not calculators. EasyLM equips the model with "Hands"—real, exact calculators, physical unit converters, and clocks that compute real answers rather than guessing.
+- **Free Software Forever**: EasyLM is licensed under the **GNU General Public License (GPLv3)**. It is free to use, inspect, and modify. No accounts, no paywalls, and no tracking.`
   },
   {
     id: 'topbar',
-    title: '🧭 Header HUD & Top Bar Controls',
-    summary: 'Guide to all buttons, indicators, and toggles on the top navigation bar.',
-    content: `### Top Bar (Header HUD) Controls
+    title: '🧭 Top Bar Controls & Status Indicators',
+    summary: 'A guided tour of the model menu, status light, Hands toggle, and think mode.',
+    content: `### Top Bar Controls at a Glance
 
-The top bar provides quick access to runtime states, reasoning modes, and active tools:
+The top navigation bar gives you real-time visibility and control over the local neural engine:
 
-1. **EasyLM Title & Public Beta Badge**: Indicates the active version of EasyLM. EasyLM is currently in Public Beta with active community feedback.
-2. **Model Pill Badge**: Displays the currently active local language model (e.g., *Qwen 2.5 3B*). Click Settings (⚙) to switch models.
-3. **🧠 Think (Extended Thinking Toggle)**:
-   - When **ON**: The model engages step-by-step chain-of-thought reasoning before answering. An expandable **Thought Drawer** appears above the response displaying internal analysis, hypothesis testing, and logical deductions.
-   - When **OFF**: The model produces direct, concise answers without intermediate reasoning traces.
-4. **⚡ Hands (Tools Status Indicator)**:
-   - Green indicator confirming that built-in tools are active.
-   - In **Kid Safe** mode, Hands are restricted strictly to deterministic local tools (calculator, unit converter, clock, knowledge warehouse). Dictionary is network-backed and stays off.
-   - In standard mode, Hands can also access live web search, webpage reading, weather forecasts, and currency exchange when requested.
-5. **👤 Profile & Family Mode**:
-   - Displays the current active profile avatar and name (e.g., *Student*, *Parent*, *Curious Learner*).
-   - Click to open the **Profiles Modal**, switch user profiles, configure 4-digit **Parental Lock PIN**, manage sovereign memory items, or enable Kid Safe mode.
-6. **🎭 Perspectives / Voices Gallery Pill**:
-   - Displays the currently selected intellectual voice or literary character.
-   - Click to browse 35+ historical philosophers, authors, scientists, and classic literary personas with extensive biographical stacks.
-7. **? Help Guide**: Opens this comprehensive guide, prompting tips, and interface reference.
-8. **💬 Public Beta Feedback**:
-   - Opens the beta feedback dialog with a 5,000-character cap and a strict safe-attachment whitelist (\`.txt\`, \`.md\`, \`.docx\`, \`.png\`, \`.jpeg\`).
-   - Generates an email draft directly to **humansandai@atomicmail.io** from your native mail client, accompanied by system diagnostics.
-9. **⚙ Settings**: Opens the comprehensive application configuration panel.`
+1. **Model Selector Button**:
+   - Displays the currently selected model (such as *Qwen 2.5 3B*).
+   - Clicking it opens the **Model & VRAM Menu**, where you can browse models organized by graphics memory tier (from lightweight 4GB models for phones and laptops up to 16GB–32GB powerhouses), or search Hugging Face for community WebLLM models.
+2. **Engine Status Light**:
+   - 🔴 **Red ("Not Ready")**: The model has not yet been loaded into graphics memory.
+   - 🟢 **Green ("Ready")**: The neural weights are loaded and resident in your GPU VRAM, primed for instant response.
+   - ❇️ **Pulsing Green ("Working")**: The model is actively calculating tokens, reasoning, or loading weights.
+3. **⚡ Load Model Button**:
+   - Next to the model status, click **Load** to pre-warm the model into graphics memory before you start chatting.
+4. **⚡ Hands Toggle (Tools)**:
+   - Click to turn Hands **ON** or **OFF**.
+   - When **ON**: The model can reach out to real arithmetic tools, unit converters, world clocks, and optional web lookups.
+   - When **OFF**: The model relies purely on its internal training weights with zero external lookups.
+5. **🧠 Think Toggle (Extended Reasoning)**:
+   - When **ON**: The model engages step-by-step chain-of-thought analysis before giving its final answer. A collapsible **Thought Drawer** appears above the message so you can watch its internal deductions unfold.
+   - When **OFF**: The model delivers direct, concise responses.
+6. **👤 Family & Profiles**:
+   - Switch between Parent, Student, and Kid Safe profiles, set up a household PIN, or review the sovereign memory vault.
+7. **🎭 Voices & Perspectives**:
+   - Choose from over 35 distinct philosophical, scientific, and literary voices (from Richard Feynman to Ada Lovelace to Socrates).
+8. **⚙ Settings**:
+   - Fine-tune sampling temperature, set your context memory limit, or point to a custom search gateway.`
   },
   {
-    id: 'sidebar',
-    title: '📂 Sidebar & Session Management',
-    summary: 'Organize chats, backup to local disk, and manage sovereign memories.',
-    content: `### Sidebar Navigation & Data Management
+    id: 'hardware',
+    title: '🖥️ Hardware Tiers: Matching Model to GPU',
+    summary: 'How much VRAM does your device have, and which model is your sweet spot?',
+    content: `### Choosing the Right Model for Your Machine
 
-The sidebar allows you to organize your studies, manage conversation threads, and backup your work:
+Think of your graphics card's Video RAM (VRAM) like a workbench. A 3-billion parameter model needs about 2.2 gigabytes of bench space to lay out its billions of numbers. If you try to fit an oversized model onto a small bench, your browser tab can run out of memory.
 
-1. **➕ New Chat**:
-   - Immediately initializes a clean, isolated conversation session.
-2. **Session List (Chat History)**:
-   - Displays all active sessions stored in your browser's local sandbox.
-   - Click any session to switch to it instantly.
-   - **Rename**: Click the pencil icon to assign a descriptive title to any chat.
-   - **Delete**: Click the trash icon to permanently remove a session.
-3. **💾 Backup to Disk**:
-   - Exports conversations as a local JSON file. No intermediate servers.
-4. **📥 Restore from Disk**:
-   - Imports an EasyLM JSON backup. Sessions merge by id. Memories live in a separate local vault and are not in that JSON.
-5. **🎭 Voices Gallery**:
-   - Direct shortcut to open the Perspectives Gallery modal.
-6. **🔒 Parental Controls**:
-   - Quick access to setup or verify the parental PIN and enforce safe study settings.
-7. **💜 Support & Free Software**:
-   - Opens the Support dialog with official **GNU GPL-3.0** licensing information, GitHub repository fork links, and verified donation addresses (Bitcoin, Solana, Cash App) to support independent development.`
-  },
-  {
-    id: 'settings',
-    title: '⚙️ All Settings & Configuration Options',
-    summary: 'Detailed explanation of every parameter available in the Settings panel.',
-    content: `### Settings Panel Configuration
+Here is the simple, real-world breakdown:
 
-The Settings dialog allows you to calibrate inference parameters, tool availability, and interface behavior:
+| GPU / Hardware Tier | Typical Devices | Recommended Models | Why It Fits |
+| :--- | :--- | :--- | :--- |
+| **4GB (Ultralight)** | Phones, tablets, older laptops, Intel UHD iGPU | **Qwen 2.5 1.5B**, **SmolLM2 1.7B**, **DeepSeek-R1 1.5B** | Tiny footprint (~1.4 GB VRAM). Snappy and impossible to crash. |
+| **6GB–8GB (Standard)** | Modern laptops (Intel Iris Xe, Radeon 780M, RTX 3050/4050, Apple M1/M2) | **Qwen 2.5 3B (Default)**, **Llama 3.2 3B**, **Phi-3.5 3.8B** | **The sweet spot.** Qwen 3B is light work on an 8GB card—fast, articulate, and highly capable. |
+| **8GB–16GB (High Performance)** | Gaming laptops, desktops with RTX 3060/4060/4070, Apple M Pro | **Gemma 2 9B**, **Qwen 2.5 7B**, **Mistral 7B**, **DeepSeek-R1 7B** | 9B runs comfortably and gives near-frontier nuance without straining the card. |
+| **16GB–32GB (Workstation)** | High-end PCs with RTX 3090/4080/4090, Apple M Max/Ultra | **Qwen 2.5 14B**, large context 8B/9B models | Massive context window (8k–16k tokens) with plenty of breathing room. |
 
-1. **Local Model Selection**:
-   - **Qwen 2.5 3B (Recommended)**: Default for desktop GPUs (~2.2 GB VRAM).
-   - **Qwen 2.5 1.5B (Ultralight)**: Phones, iGPU, low RAM (~1.4 GB VRAM).
-   - **DeepSeek R1 Distill Qwen 1.5B**: Reasoning model. Temperature floor 0.6.
-2. **Creativity & Temperature**:
-   - Sliders range from **0.0 to 1.0** (Default: \`0.3\`).
-   - **Low Temperature (0.0 - 0.2)**: Highly deterministic, focused, and precise. Ideal for mathematics, formal logic, coding, and factual analysis.
-   - **Medium Temperature (0.3 - 0.5)**: Balanced, articulate responses with natural phrasing.
-   - **High Temperature (0.7 - 1.0)**: Exploratory, poetic, and diverse. Recommended for creative writing, worldbuilding, and brainstorming.
-3. **⚡ In-App Hands (Tools) Toggle**:
-   - **ON**: Enables EasyLM to execute deterministic tools (calculator, unit converter, clock, dictionary, weather, currency, search) whenever relevant.
-   - **OFF**: Completely disables all tool calls. The model answers using only its internal knowledge weights with zero external lookups.
-4. **Kid Safe Mode**:
-   - When active, restricts all tool calling strictly to local hands: math calculator, unit converter, world clock, and offline warehouse facts.
-   - All network lookups (web search, webpage reader, live weather, currency, dictionary) are permanently disabled.
-5. **Custom System Instructions**:
-   - Enter standing instructions or personal guidelines that prepend to every conversation (e.g., *"Always format mathematical proofs step-by-step"* or *"Cite relevant historical primary sources"*).
-6. **SearXNG Search Engine URL**:
-   - EasyLM supports private decentralized web search. By default, it uses a public SearXNG instance. You can input your own private, self-hosted SearXNG endpoint here for maximum query privacy.
-7. **Show Welcome Guide on New Chat**:
-   - When enabled, new conversations start with the structured welcome toolbox and capability reference.
-   - When disabled, new conversations open to a clean, empty canvas.
-8. **Storage Management & Model Cache**:
-   - Displays estimated browser storage utilization and provides a clean reset option if you ever need to clear cached weights or reset local state.`
-  },
-  {
-    id: 'prompting',
-    title: '💡 Prompting 101: How to Inquire & Learn',
-    summary: 'Effective strategies for asking questions, studying, and research.',
-    content: `### Guide to Effective Inquiry
-
-Interacting with a local model is like consulting an extensive academic library and working with an attentive scholar. Follow these practical techniques:
-
-1. **Be Specific & Contextual**:
-   - Instead of asking *"explain physics"*, specify: *"explain the difference between special and general relativity for a high school physics student."*
-2. **State Your Objective**:
-   - Let the model know what format you desire: a summary, a step-by-step tutorial, an outline, or a dialectical debate between two viewpoints.
-3. **Request Step-by-Step Reasoning**:
-   - For mathematical problems, coding logic, or ethical dilemmas, ask: *"Walk me through the reasoning step by step before stating the conclusion."* (You can also turn on the **🧠 Think** toggle in the top bar).
-4. **Iterate & Refine**:
-   - If a response is too dense or omits a nuance, guide it: *"Clarify the second point with a concrete real-world example"* or *"Provide counterarguments to this perspective."*`
-  },
-  {
-    id: 'hallucination',
-    title: '⚠️ Epistemic Limits & Honest Deflection',
-    summary: 'Understanding prediction limits, fact verification, and how EasyLM avoids false claims.',
-    content: `### Epistemic Limits & Honest Deflection
-
-Language models generate text by identifying patterns, grammatical structures, and semantic relationships across vast corpora of literature and scholarship.
-
-Because language generation is predictive rather than an infallible database query, models can occasionally generate plausible-sounding but factually inaccurate statements (referred to as *hallucination*).
-
-#### How EasyLM Maintains Rigor:
-- **Honest Deflection**: EasyLM's system prompts explicitly instruct the model to confess uncertainty rather than invent facts. If evidence is absent, it responds: *"I couldn't find a reliable answer for that, and I don't want to mislead you."*
-- **Deterministic Math & Units**: For arithmetic, trigonometry, and unit conversions, EasyLM invokes real mathematical evaluators rather than guessing numerical values.
-- **Transparent Tool Traces**: Every tool execution displays its inputs and returned values in a visible **Tool Drawer** directly in the chat stream.`
+*Rule of Thumb: If in doubt, stick with **Qwen 2.5 3B**. It is fast, accurate, and gentle on your battery and fans.*`
   },
   {
     id: 'tools',
-    title: '⚡ Built-In Hands Reference',
-    summary: 'Complete reference for math, unit conversion, clock, dictionary, facts, and web tools.',
-    content: `### Built-In Hands (Tools) Reference
+    title: '⚡ Built-In Hands (Deterministic Tools)',
+    summary: 'Why AI needs hands, and how calculators prevent mathematical fiction.',
+    content: `### Why Giving AI "Hands" Matters
 
-EasyLM includes a suite of deterministic local tools and transparent network lookups:
+When you ask a typical cloud AI to calculate \`sqrt(144) * (50 + 2)\`, it doesn't open a calculator. It predicts which digits *look* like they belong next. Most of the time it gets close; sometimes it invents numbers out of thin air.
 
-| Tool | Type | What It Does | Example Query |
-| :--- | :--- | :--- | :--- |
-| **Math Calculator** (\`calc\`) | Local / Offline | Exact arithmetic, powers, square roots, and trigonometric functions | \`calc("sqrt(144) * (50 + 2)")\` |
-| **Unit Converter** (\`units\`) | Local / Offline | Converts temperatures, distances, volumes, weights, and velocities | \`units("100 km/h to mph")\` |
-| **World Clock** (\`datetime\`) | Local / Offline | System time and global timezone calculations | \`datetime("London")\` |
-| **Dictionary** (\`dictionary\`) | Network / API | Exact definitions, etymologies, parts of speech, and pronunciations | \`dictionary("epistemology")\` |
-| **Encyclopedic Facts** (\`fact\`) | Network / API | Verified historical, biographical, and scientific summaries | \`fact("Galileo Galilei")\` |
-| **Weather** (\`weather\`) | Network / API | Real-time meteorological conditions and forecasts | \`weather("Paris")\` |
-| **Currency Exchange** (\`exchange\`) | Network / API | Live foreign exchange rates based on European Central Bank data | \`exchange("100 USD to EUR")\` |
-| **Web Search** | Network / API | Search via this origin, then Wikipedia if needed | \`web_search("James Webb findings")\` |
-| **Page reader** | Network / API | Wikipedia, Wikiquote, Wikisource. Other sites only if they allow CORS. No generic proxy. | \`web_fetch("https://en.wikipedia.org/wiki/Ada_Lovelace")\` |`
+EasyLM solves this by giving the model **Hands**—real, software tools running right alongside it:
+
+1. **Exact Calculator (\`calc\`)**: Evaluates arithmetic, square roots, powers, and trigonometry using a deterministic mathematical parser. Zero guesswork.
+2. **Physical Unit Converter (\`units\`)**: Converts between metric and imperial units (miles to kilometers, pounds to kilograms, Celsius to Fahrenheit). If you ask for an impossible or unknown conversion, it honestly errors instead of inventing a fake 1:1 ratio.
+3. **World Clock (\`datetime\`)**: Checks your real system clock and computes accurate international timezones.
+4. **Offline Knowledge Warehouse**: Fast, local Dewey-decimal reference notes and philosophical primers stored in browser memory.
+5. **Optional Network Tools**: When Hands are on, EasyLM can also look up live weather forecasts, foreign exchange rates, and Wikipedia/Wikiquote entries. In **Kid Safe** mode, all network tools stay permanently off.`
   },
   {
-    id: 'local-vs-cloud',
-    title: '🏠 Local Computing vs Cloud Rented AI',
-    summary: 'Why running locally on your own graphics hardware preserves privacy and freedom.',
-    content: `### Local Computing vs Rented Cloud Services
+    id: 'hallucination',
+    title: '💡 Understanding Predictions & Hallucinations',
+    summary: 'How language models work, why they make mistakes, and how to verify answers.',
+    content: `### Navigating the World of Language Models
 
-| Property | Rented Cloud Services (ChatGPT / Claude / Gemini) | EasyLM (Local WebGPU) |
-| :--- | :--- | :--- |
-| **Execution Location** | Remote proprietary server clusters | Your personal graphics card (GPU) |
-| **Data Privacy** | Prompts, attachments, and chats sent over network | Tokens stay in this browser. Optional Hands send the lookup you asked for. |
-| **Access Cost** | $20+/month subscription paywalls | Official app free forever. GPLv3 copyleft. |
-| **Account Requirement** | Mandatory accounts, phone numbers, tracking cookies | No accounts. No analytics cookies. |
-| **Install** | App store or always-online | Add to home screen. Not a full offline PWA yet (no service worker). |
-| **Software Rights** | Closed proprietary black box | 100% Free & Open Source (copyleft protection) |`
+Language models are fundamentally pattern-matching engines. By digesting vast libraries of human writing, they have learned how words weave together into arguments, stories, and explanations.
+
+Because they predict language rather than looking up verified entries in an encyclopedia, two important truths follow:
+
+1. **They can be brilliantly insightful**: They can synthesize concepts across disparate fields, explain quantum mechanics with everyday analogies, or help you draft poetry in classical meter.
+2. **They can hallucinate**: If a model doesn't know a specific date or citation, its predictive engine will sometimes craft a plausible-sounding falsehood.
+
+#### How EasyLM Keeps You Grounded:
+- **Honest Deflection**: EasyLM's system prompts instruct the model to say: *"I couldn't find a reliable answer for that, and I don't want to guess."*
+- **Hands over Guesswork**: Numbers, units, and dates are delegated to deterministic code.
+- **Inspectable Traces**: When the model reasons or calls a tool, the exact steps are displayed in expandable drawers directly above the answer.`
   },
   {
-    id: 'install',
-    title: '📱 Add to Home Screen (PWA Installation)',
-    summary: 'Install EasyLM as a standalone, full-screen app on iOS, Android, and Desktop.',
-    content: `### Progressive Web App (PWA) Standalone Installation
+    id: 'settings',
+    title: '⚙️ Settings, Temperature & Context Limits',
+    summary: 'Calibrating creativity, memory length, and custom search endpoints.',
+    content: `### Fine-Tuning Your Experience
 
-EasyLM can be installed directly onto your phone, tablet, or desktop without proprietary app store gatekeepers:
+In the **Settings (⚙)** dialog, you can adjust how the neural engine thinks:
 
-- **Apple iOS & iPadOS (Safari)**:
-  1. Navigate to \`https://easylm.vercel.app\` in Safari.
-  2. Tap the **Share button** (the square with an upward arrow ⎋) at the bottom toolbar.
-  3. Scroll down and select **"Add to Home Screen"** ➕.
-  4. Tap **"Add"** in the top-right corner.
-  *EasyLM will launch in full-screen standalone mode without URL bars, running on your device's WebGPU engine.*
-
-- **Android & Chromebooks (Chrome / Edge / Brave)**:
-  1. Open \`https://easylm.vercel.app\`.
-  2. Tap the browser menu (⋮) in the top right.
-  3. Select **"Install App"** or **"Add to Home screen"**.
-
-- **Windows, macOS & Linux (Chrome / Edge / Brave)**:
-  1. Click the install icon (a desktop screen with a down arrow) located on the right side of the address bar.
-  2. Click **"Install"** to launch EasyLM in its own dedicated, native-feeling application window.`
+1. **Sampling Temperature (0.0 to 1.0)**:
+   - Think of temperature like thermal energy in molecules:
+   - **Low Temperature (0.0 to 0.3)**: Molecules move slowly in crystalline order. The model picks only the most statistically probable words. Best for coding, math, and factual research.
+   - **Medium Temperature (0.4 to 0.6)**: A natural, balanced conversational flow.
+   - **High Temperature (0.7 to 1.0)**: Higher kinetic energy. Words take bolder, more poetic leaps. Best for creative brainstorming, fiction, and thought experiments.
+2. **Context Memory Limit (2k, 4k, 8k tokens)**:
+   - The context limit determines how many words of conversation history and document text the model keeps active in your graphics card's memory.
+   - 4,096 tokens (~3,000 words) is the default sweet spot. If you are analyzing a long document on a beefy GPU, expand to 8,192 tokens.
+3. **Custom Web Search Endpoint**:
+   - If you run your own private SearXNG instance, enter its URL here. Otherwise, EasyLM uses its built-in serverless gateway.`
   },
   {
     id: 'support',
-    title: '💜 Mission, Support & GNU GPLv3',
-    summary: 'Our commitment to open research, copyleft licensing, and contributor links.',
-    content: `### Mission & Freedom
+    title: '💜 Free Software & The GPLv3 Covenant',
+    summary: 'Why EasyLM is free, open, and forever owned by the people who use it.',
+    content: `### Digital Sovereignty & Freedom
 
-EasyLM is developed by **humans&ai** with a clear principle: advanced computational learning and tools must belong to everyone, not just those who can pay ongoing monthly subscriptions.
+EasyLM is developed by **humans&ai** around a core conviction: the tools that shape human thought—reading, writing, reasoning, and learning—must never be locked behind proprietary subscription gates.
 
-- **GNU General Public License v3.0 (GPLv3)**:
-  Copyleft. Inspect, run, modify, redistribute. Derivative software stays GPLv3. The official app staying $0 is a project covenant, not a GPL term.
-- **Contribute & Fork**:
-  The official source code repository is available on GitHub. Contributions, bug reports, and pull requests from the community are warmly welcomed.
-- **Voluntary Donations**:
-  EasyLM has no paywalls or advertising. If you would like to support ongoing development, maintenance of web tools, and new model ports, you can contribute voluntarily via Bitcoin, Solana, or Cash App in the Support menu.`
+- **GNU General Public License v3.0**:
+  EasyLM is Free Software. You have the right to inspect its code, run it on your own hardware, modify it, and share it. Any derivative work must remain equally free and open.
+- **The Free Forever Covenant**:
+  The official EasyLM web application is free forever. There will never be monthly paywalls, telemetry trackers, or advertising banners.
+- **Voluntary Support**:
+  If you believe in sovereign local computing and wish to support our work building open browser tools and model ports, voluntary donation links (Bitcoin, Solana, Cash App) are available in the Support menu.`
   }
 ];
 
 export const EASYLM_GUIDE_PROMPT_CONTEXT = `
-[EASYLM SYSTEM ARCHITECTURE & INTERFACE REFERENCE]
-Identity:
-You are EasyLM, a sovereign, local learning assistant developed by humans&ai.
-You run directly inside the user's browser using WebGPU hardware acceleration.
-You never transmit prompts, conversations, or uploaded documents to cloud inference APIs. Optional Hands send only the lookup the user asked for.
+[EASYLM ARCHITECTURE & MISSION GUIDE]
+You are EasyLM, an open, sovereign local intelligence companion developed by humans&ai.
+You run directly on the user's graphics processor (WebGPU) inside this browser tab.
+Tokens and conversation history stay strictly in this browser sandbox.
 
-Architecture & Capabilities:
-1. Local Computing:
-   - Inference runs on the user's graphics processor (WebGPU) with Qwen 2.5 3B, Qwen 2.5 1.5B, or DeepSeek-R1 Distill 1.5B.
-   - Model weights stream from Hugging Face into browser cache. There is no 0.5B SKU.
-2. In-App Hands (Tools):
-   - Deterministic Local Tools: calc (arithmetic/formulas), units (physical unit conversion), datetime (system clock and global timezones), knowledge warehouse.
-   - Transparent Network Tools: dictionary, fact summaries, live weather, currency exchange, web_search, and web_fetch.
-   - Kid Safe Mode: Permanently enforces local-only tools (calc, units, clock, warehouse). Network tools including dictionary stay disabled.
-3. Top Bar (Header HUD) Controls:
-   - EasyLM Title & Public Beta Badge: Current release status.
-   - Model Pill Badge: Shows active model (Qwen 2.5 3B / 1.5B, or DeepSeek-R1 1.5B).
-   - 🧠 Think (Extended Thinking): Toggles chain-of-thought reasoning. When ON, the model deliberates and produces an expandable thought drawer before answering.
-   - ⚡ Hands Badge: Displays whether in-app tool execution is active.
-   - 👤 Profile Button: Switches between user profiles (Parent, Kid, Student), accesses 4-digit Parental PIN lock, and manages sovereign memories.
-   - 🎭 Voices Gallery: Switches between 35+ historical philosophers, authors, scientists, and classic literary characters.
-   - ? Help: Opens the comprehensive user guide and AI primer.
-   - 💬 Feedback: Opens direct beta feedback modal to send writeups to humansandai@atomicmail.io.
-   - ⚙ Settings: Accesses model choice, temperature slider (0.0 - 1.0), tool toggles, SearXNG URL, and welcome message preferences.
-4. Sidebar Features:
-   - ➕ New Chat: Starts a fresh session.
-   - Session List: Search, rename, and delete local chats.
-   - 💾 Backup to Disk: Exports all sessions to a local JSON file.
-   - 📥 Restore from Disk: Imports chats from an EasyLM JSON backup.
-   - 🔒 Parental Controls: Configure PIN lock for kid safety.
-   - 💜 Support: Displays GPLv3 open source license, GitHub contributor links, and donation addresses.
-5. Ethos & Tone:
-   - You are a guide in a grand digital library, an encyclopedia, a university seminar, and a laboratory for learning.
-   - Avoid sterile machine analogies (do NOT describe yourself as a machine, cyborg, or robot).
-   - Epistemic Integrity: If a fact is unverified or unknown, honestly state: "I couldn't find a reliable answer for that, and I don't want to mislead you."
+Tone & Demeanor:
+- Clear, vivid, and grounded in concrete physical intuition—like Brian Greene explaining the cosmos.
+- Avoid sterile corporate jargon and avoid robotic self-descriptions (never call yourself an AI language model trained by a company; you are EasyLM).
+- Epistemic Integrity: When you do not know a fact or cannot verify it, say so with warmth and honesty. Never invent citations.
+
+Core Features:
+- WebGPU Local Inference: Running Qwen 2.5 3B (default), DeepSeek-R1 (reasoning), or lightweight models.
+- Deterministic Hands: Calculator (calc), unit converter (units), world clock (datetime), and local Dewey warehouse notes.
+- Honest Boundaries: Optional network tools (weather, search, exchange, dictionary) only send lookups when Hands are enabled.
 `;
-

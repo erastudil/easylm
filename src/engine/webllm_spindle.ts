@@ -23,36 +23,166 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
 ];
 
 export const AVAILABLE_MODELS: ModelOption[] = [
+  // 6GB - 8GB Tier (Standard / Laptops / 8GB GPU — The Workhorses)
   {
     id: 'Qwen2.5-3B-Instruct-q4f16_1-MLC',
-    label: 'Qwen 2.5 3B Instruct (Default Local Model)',
+    label: 'Qwen 2.5 3B Instruct',
     sizeMB: 1950,
-    vramEst: '~2.2 GB'
+    vramEst: '~2.2 GB VRAM',
+    vramTier: '8gb',
+    isDefault: true,
+    description: 'The everyday workhorse. Lightning fast, high IQ, light work on 8GB cards.'
+  },
+  {
+    id: 'Llama-3.2-3B-Instruct-q4f16_1-MLC',
+    label: 'Llama 3.2 3B Instruct',
+    sizeMB: 2000,
+    vramEst: '~2.3 GB VRAM',
+    vramTier: '8gb',
+    description: "Meta's sharp 3B model. Balanced reasoning and concise conversational flow."
+  },
+  {
+    id: 'DeepSeek-R1-Distill-Qwen-7B-q4f16_1-MLC',
+    label: 'DeepSeek-R1 Distill Qwen 7B',
+    sizeMB: 4500,
+    vramEst: '~5.1 GB VRAM',
+    vramTier: '8gb',
+    isReasoning: true,
+    description: 'Heavyweight reasoning. Deep chain-of-thought analysis for 8GB+ GPUs.'
+  },
+  {
+    id: 'Phi-3.5-mini-instruct-q4f16_1-MLC',
+    label: 'Phi-3.5 Mini 3.8B Instruct',
+    sizeMB: 2400,
+    vramEst: '~3.7 GB VRAM',
+    vramTier: '8gb',
+    description: "Microsoft's high-efficiency 3.8B model. Superb logic and factual recall."
+  },
+
+  // 4GB Tier (Ultralight / Mobile / Laptops with iGPU)
+  {
+    id: 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',
+    label: 'Qwen 2.5 1.5B Instruct',
+    sizeMB: 1100,
+    vramEst: '~1.4 GB VRAM',
+    vramTier: '4gb',
+    description: 'Instant startup, ultra-low memory. Runs comfortably on any laptop or phone.'
   },
   {
     id: 'DeepSeek-R1-Distill-Qwen-1.5B-q4f16_1-MLC',
-    label: 'DeepSeek-R1 1.5B (Extended Thinking / Reasoning)',
+    label: 'DeepSeek-R1 Distill Qwen 1.5B',
     sizeMB: 1020,
-    vramEst: '~1.6 GB',
-    isReasoning: true
+    vramEst: '~1.6 GB VRAM',
+    vramTier: '4gb',
+    isReasoning: true,
+    description: 'Extended reasoning and step-by-step thinking built for 4GB VRAM systems.'
   },
   {
-    id: 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',
-    label: 'Qwen 2.5 1.5B Instruct (Ultralight / Mobile)',
-    sizeMB: 1100,
-    vramEst: '~1.4 GB'
+    id: 'Llama-3.2-1B-Instruct-q4f16_1-MLC',
+    label: 'Llama 3.2 1B Instruct',
+    sizeMB: 880,
+    vramEst: '~0.9 GB VRAM',
+    vramTier: '4gb',
+    description: 'Meta compact 1B. Minimal footprint, instant response for rapid notes.'
+  },
+  {
+    id: 'SmolLM2-1.7B-Instruct-q4f16_1-MLC',
+    label: 'SmolLM2 1.7B Instruct',
+    sizeMB: 1200,
+    vramEst: '~1.8 GB VRAM',
+    vramTier: '4gb',
+    description: 'Hugging Face compact distilled intelligence. Clean, articulate writing.'
+  },
+  {
+    id: 'gemma-2-2b-it-q4f16_1-MLC',
+    label: 'Gemma 2 2B Instruct',
+    sizeMB: 1600,
+    vramEst: '~1.9 GB VRAM',
+    vramTier: '4gb',
+    description: "Google's architectural marvel. Exceptional instruction following at 2B."
+  },
+
+  // 8GB - 16GB Tier (High Performance / Power Workstations)
+  {
+    id: 'gemma-2-9b-it-q4f16_1-MLC',
+    label: 'Gemma 2 9B Instruct',
+    sizeMB: 5800,
+    vramEst: '~6.4 GB VRAM',
+    vramTier: '16gb',
+    description: 'High caliber intelligence. 9B runs comfortably on 8GB-16GB GPUs without overload.'
+  },
+  {
+    id: 'Qwen2.5-7B-Instruct-q4f16_1-MLC',
+    label: 'Qwen 2.5 7B Instruct',
+    sizeMB: 4500,
+    vramEst: '~5.1 GB VRAM',
+    vramTier: '16gb',
+    description: 'Full-sized 7B flagship. Comprehensive world knowledge and complex synthesis.'
+  },
+  {
+    id: 'Llama-3.1-8B-Instruct-q4f16_1-MLC',
+    label: 'Llama 3.1 8B Instruct',
+    sizeMB: 4900,
+    vramEst: '~5.0 GB VRAM',
+    vramTier: '16gb',
+    description: "Meta's flagship open weight model. Nuanced dialogue and robust reasoning."
+  },
+  {
+    id: 'Mistral-7B-Instruct-v0.3-q4f16_1-MLC',
+    label: 'Mistral 7B Instruct v0.3',
+    sizeMB: 4400,
+    vramEst: '~4.6 GB VRAM',
+    vramTier: '16gb',
+    description: 'European open source champion. Exceptional comprehension and natural dialogue.'
+  },
+  {
+    id: 'Qwen2.5-Coder-7B-Instruct-q4f16_1-MLC',
+    label: 'Qwen 2.5 Coder 7B Instruct',
+    sizeMB: 4500,
+    vramEst: '~5.1 GB VRAM',
+    vramTier: '16gb',
+    isCoding: true,
+    description: 'Specialized coding powerhouse. Program synthesis, debugging, and systems architecture.'
   }
 ];
 
-const ALLOWED_MODEL_IDS = new Set(AVAILABLE_MODELS.map(m => m.id));
+export const ALLOWED_MODEL_IDS = new Set(AVAILABLE_MODELS.map(m => m.id));
 
 export const EASYLM_APP_CONFIG: AppConfig = {
   ...prebuiltAppConfig,
   model_list: [
     ...prebuiltAppConfig.model_list.filter(m => ALLOWED_MODEL_IDS.has(m.model_id)),
-    ...CUSTOM_MODEL_RECORDS.filter(m => ALLOWED_MODEL_IDS.has(m.model_id))
+    ...CUSTOM_MODEL_RECORDS
   ]
 };
+
+export function registerCustomHFModel(record: ModelRecord): void {
+  CUSTOM_MODEL_RECORDS.push(record);
+  ALLOWED_MODEL_IDS.add(record.model_id);
+  if (!EASYLM_APP_CONFIG.model_list.some(m => m.model_id === record.model_id)) {
+    EASYLM_APP_CONFIG.model_list.push(record);
+  }
+}
+
+export function isEngineReady(): boolean {
+  return !!activeEngine && !!currentLoadedModel;
+}
+
+export function getLoadedModelId(): string {
+  return currentLoadedModel;
+}
+
+export async function unloadActiveEngine(): Promise<void> {
+  if (activeEngine) {
+    try {
+      await activeEngine.unload();
+    } catch {
+      // ignore
+    }
+    activeEngine = null;
+    currentLoadedModel = '';
+  }
+}
 
 export const DEFAULT_MODEL_ID = 'Qwen2.5-3B-Instruct-q4f16_1-MLC';
 

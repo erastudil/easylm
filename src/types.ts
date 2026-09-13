@@ -32,7 +32,11 @@ export interface ModelOption {
   label: string;
   sizeMB: number;
   vramEst: string;
+  vramTier?: '4gb' | '8gb' | '16gb' | '32gb';
   isReasoning?: boolean;
+  isCoding?: boolean;
+  isDefault?: boolean;
+  description?: string;
 }
 
 export interface Personality {

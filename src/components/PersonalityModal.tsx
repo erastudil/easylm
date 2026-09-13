@@ -135,8 +135,8 @@ export const PersonalityModal: React.FC<PersonalityModalProps> = ({
             )}
           </div>
 
-          {/* Category Filter Pills */}
-          <div style={{ display: 'flex', gap: '0.4rem', overflowX: 'auto', paddingBottom: '0.2rem' }}>
+          {/* Category Filter Pills (wrapped across multiple lines, zero horizontal scrollbar) */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
             {PERSONALITY_CATEGORIES.map(cat => {
               const isActive = selectedCategory === cat.id;
               const count = cat.id === 'all'

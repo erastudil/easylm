@@ -14,13 +14,16 @@ import {
   streamChatCompletion,
   stopGeneration,
   ProgressStatus,
-  AVAILABLE_MODELS
+  AVAILABLE_MODELS,
+  getOrInitEngine,
+  isEngineReady
 } from './engine/webllm_spindle';
 import { dispatchTool, SYSTEM_TOOLS_PROMPT, SYSTEM_TOOLS_PROMPT_KID } from './engine/tools';
 import { clockQueryOf, mathExpressionOf, unitConversionOf, warehouseQueryOf } from './engine/preflight';
 import { Sidebar } from './components/Sidebar';
 import { MessageItem } from './components/MessageItem';
 import { SettingsModal } from './components/SettingsModal';
+import { ModelModal } from './components/ModelModal';
 import { PersonalityModal } from './components/PersonalityModal';
 import { PERSONALITIES, clampPersonalityIdForRole } from './data/personalities';
 import { HelpModal } from './components/HelpModal';
@@ -70,11 +73,43 @@ export const App: React.FC = () => {
     if (saved && AVAILABLE_MODELS.some(m => m.id === saved)) return saved;
     return DEFAULT_MODEL_ID;
   });
+  const [modelModalOpen, setModelModalOpen] = useState<boolean>(false);
+  const [isModelReady, setIsModelReady] = useState<boolean>(() => isEngineReady());
+  const [contextLimit, setContextLimit] = useState<number>(() => {
+    const saved = localStorage.getItem('easylm_context_limit');
+    return saved ? parseInt(saved, 10) : 4096;
+  });
 
   const handleSelectModel = (id: string) => {
     if (!AVAILABLE_MODELS.some(m => m.id === id)) return;
+    if (id !== selectedModel) {
+      setIsModelReady(false);
+    }
     setSelectedModel(id);
     localStorage.setItem('easylm_selected_model', id);
+  };
+
+  const handleUpdateContextLimit = (limit: number) => {
+    setContextLimit(limit);
+    localStorage.setItem('easylm_context_limit', String(limit));
+  };
+
+  const handleLoadModel = async (targetModel?: string) => {
+    const modelToLoad = targetModel || selectedModel;
+    setIsGenerating(true);
+    try {
+      await getOrInitEngine(modelToLoad, (prog) => {
+        setModelProgress(prog);
+      });
+      setIsModelReady(true);
+      setSelectedModel(modelToLoad);
+    } catch (err: any) {
+      console.error('Failed to load model into WebGPU:', err);
+      alert(`Model load failed: ${err?.message || err}`);
+    } finally {
+      setIsGenerating(false);
+      setModelProgress(null);
+    }
   };
 
   const persistSessions = (next: Session[]) => {
@@ -175,6 +210,10 @@ export const App: React.FC = () => {
         setSelectedModel(dev.recommendedModel || DEFAULT_MODEL_ID);
       } else if (!savedModel && dev.recommendedModel) {
         setSelectedModel(dev.recommendedModel);
+      }
+      const savedLimit = localStorage.getItem('easylm_context_limit');
+      if (!savedLimit && dev.recommendedContextLimit) {
+        setContextLimit(dev.recommendedContextLimit);
       }
     });
 
@@ -540,7 +579,7 @@ export const App: React.FC = () => {
         convoMessages,
         selectedModel,
         temperature,
-        2048,
+        contextLimit,
         (delta) => {
           currentStreamed += delta;
           const { displayContent, inFlightThinking } = parseStreamedTokens(currentStreamed);
@@ -558,6 +597,7 @@ export const App: React.FC = () => {
         },
         (prog) => setModelProgress(prog)
       );
+      setIsModelReady(true);
 
       // Check if model emitted a tool call in any supported format
       const rawOutput = result.fullText;
@@ -644,7 +684,7 @@ export const App: React.FC = () => {
             toolFollowUpMessages,
             selectedModel,
             temperature,
-            2048,
+            contextLimit,
             (delta) => {
               followUpStreamed += delta;
               const { displayContent, inFlightThinking } = parseStreamedTokens(followUpStreamed);
@@ -662,6 +702,7 @@ export const App: React.FC = () => {
             },
             (prog) => setModelProgress(prog)
           );
+          setIsModelReady(true);
 
           const finalAssistantMsg: Message = {
             id: assistantMsgId,
@@ -851,17 +892,105 @@ export const App: React.FC = () => {
             }}>
               Public Beta
             </span>
-            <span className="model-pill-badge" style={{
-              fontSize: '0.72rem',
-              fontFamily: 'var(--font-mono)',
-              padding: '0.15rem 0.5rem',
-              borderRadius: '9999px',
-              backgroundColor: 'rgba(139, 92, 246, 0.15)',
-              border: '1px solid rgba(139, 92, 246, 0.4)',
-              color: '#c4b5fd'
-            }}>
-              {currentModelLabel.split('(')[0].trim()}
-            </span>
+
+            {/* Model Selector Button */}
+            <button
+              onClick={() => setModelModalOpen(true)}
+              className="btn-pill"
+              style={{
+                fontSize: '0.74rem',
+                fontFamily: 'var(--font-mono)',
+                padding: '0.2rem 0.6rem',
+                backgroundColor: 'rgba(139, 92, 246, 0.18)',
+                borderColor: '#8b5cf6',
+                color: '#ffffff',
+                gap: '0.35rem',
+                cursor: 'pointer'
+              }}
+              title="Click to view all WebGPU models & VRAM tiers"
+            >
+              <span>🧠</span>
+              <span>{currentModelLabel.split('(')[0].trim()}</span>
+              <span style={{ fontSize: '0.65rem', color: '#a78bfa' }}>▼</span>
+            </button>
+
+            {/* Engine Status Light: red "not ready", green "ready", pulsing green "working" */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                fontSize: '0.7rem',
+                fontFamily: 'var(--font-mono)',
+                padding: '0.18rem 0.5rem',
+                borderRadius: '9999px',
+                backgroundColor: (isGenerating || (modelProgress && modelProgress.progress < 1))
+                  ? 'rgba(16, 185, 129, 0.15)'
+                  : isModelReady
+                  ? 'rgba(16, 185, 129, 0.12)'
+                  : 'rgba(244, 63, 94, 0.12)',
+                border: (isGenerating || (modelProgress && modelProgress.progress < 1))
+                  ? '1px solid #10b981'
+                  : isModelReady
+                  ? '1px solid rgba(16, 185, 129, 0.4)'
+                  : '1px solid rgba(244, 63, 94, 0.4)',
+                color: (isGenerating || (modelProgress && modelProgress.progress < 1))
+                  ? '#34d399'
+                  : isModelReady
+                  ? '#34d399'
+                  : '#fb7185'
+              }}
+              title={
+                (isGenerating || (modelProgress && modelProgress.progress < 1))
+                  ? 'Model is actively computing tokens or warming weights'
+                  : isModelReady
+                  ? 'Model is loaded and resident in WebGPU VRAM'
+                  : 'Model is not loaded into graphics memory yet. Click Load to warm it up.'
+              }
+            >
+              <span
+                style={{
+                  width: '7px',
+                  height: '7px',
+                  borderRadius: '50%',
+                  backgroundColor: (isGenerating || (modelProgress && modelProgress.progress < 1))
+                    ? '#34d399'
+                    : isModelReady
+                    ? '#10b981'
+                    : '#f43f5e'
+                }}
+                className={(isGenerating || (modelProgress && modelProgress.progress < 1)) ? 'animate-pulse' : ''}
+              />
+              <span>
+                {(isGenerating || (modelProgress && modelProgress.progress < 1))
+                  ? 'working'
+                  : isModelReady
+                  ? 'ready'
+                  : 'not ready'}
+              </span>
+            </div>
+
+            {/* Button next to model display that loads the model */}
+            {!isModelReady && (
+              <button
+                onClick={() => handleLoadModel()}
+                disabled={isGenerating || (modelProgress !== null && modelProgress.progress < 1)}
+                className="btn-pill"
+                style={{
+                  fontSize: '0.7rem',
+                  padding: '0.18rem 0.55rem',
+                  backgroundColor: 'rgba(139, 92, 246, 0.25)',
+                  borderColor: '#8b5cf6',
+                  color: '#ffffff',
+                  gap: '0.25rem',
+                  cursor: 'pointer'
+                }}
+                title="Load model into WebGPU graphics memory"
+              >
+                <span>⚡</span>
+                <span>Load</span>
+              </button>
+            )}
           </div>
 
           {/* Right: Controls & Badges */}
@@ -884,18 +1013,23 @@ export const App: React.FC = () => {
               <span><span className="hide-on-mobile">Think </span>{extendedThinking ? 'ON' : 'OFF'}</span>
             </button>
 
-            {/* Tools Indicator */}
-            {toolsEnabled && (
-              <span 
-                style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: '#10b981', padding: '0.2rem 0.45rem', background: 'rgba(16,185,129,0.1)', borderRadius: '9999px', border: '1px solid rgba(16,185,129,0.3)' }}
-                title={currentProfile.role === 'kid'
-                  ? 'Kid Safe hands: local calc, units, clock, warehouse. No network tools (dictionary blocked).'
-                  : 'Hands on. Optional lookups (search, fetch, weather, FX) leave this machine.'}
-              >
-                <span>⚡</span>
-                <span className="hide-on-mobile"> Hands</span>
-              </span>
-            )}
+            {/* Hands Toggle Button */}
+            <button
+              onClick={() => setToolsEnabled(!toolsEnabled)}
+              className="btn-pill"
+              style={{
+                fontSize: '0.75rem',
+                padding: '0.25rem 0.65rem',
+                gap: '0.35rem',
+                backgroundColor: toolsEnabled ? 'rgba(16, 185, 129, 0.2)' : '#111118',
+                borderColor: toolsEnabled ? '#10b981' : 'rgba(139, 92, 246, 0.25)',
+                color: toolsEnabled ? '#34d399' : '#71717a'
+              }}
+              title={toolsEnabled ? 'Hands active: local math/units/clock + optional network lookups (click to turn OFF)' : 'Hands disabled: offline model weights only (click to turn ON)'}
+            >
+              <span>⚡</span>
+              <span><span className="hide-on-mobile">Hands </span>{toolsEnabled ? 'ON' : 'OFF'}</span>
+            </button>
 
             {/* Family Profile Button */}
             <button
@@ -1351,27 +1485,30 @@ export const App: React.FC = () => {
       <SettingsModal
         isOpen={settingsOpen}
         onClose={() => setSettingsOpen(false)}
-        selectedModel={selectedModel}
-        onSelectModel={handleSelectModel}
-        selectedPreset={selectedPersonality}
-        onSelectPreset={(id) => setSelectedPersonality(clampPersonalityIdForRole(id, currentProfile.role))}
-        customPrompt={customPrompt}
-        onChangeCustomPrompt={setCustomPrompt}
-        toolsEnabled={toolsEnabled}
-        onToggleTools={() => setToolsEnabled(!toolsEnabled)}
-        extendedThinking={extendedThinking}
-        onToggleExtendedThinking={() => setExtendedThinking(!extendedThinking)}
         temperature={temperature}
         onChangeTemperature={setTemperature}
+        contextLimit={contextLimit}
+        onChangeContextLimit={handleUpdateContextLimit}
         searxngUrl={searxngUrl}
         onChangeSearxngUrl={handleUpdateSearxng}
         showWelcomeMessage={showWelcomeMessage}
         onToggleWelcomeMessage={handleToggleWelcomeMessage}
-        onOpenProfiles={() => setProfileModalOpen(true)}
-        onOpenPersonalityModal={() => setPersonalityModalOpen(true)}
-        onOpenWelcomeGuide={() => setWelcomeModalOpen(true)}
         deviceInfo={deviceInfo}
-        kidSafe={currentProfile.role === 'kid'}
+        onOpenModelModal={() => setModelModalOpen(true)}
+        onOpenProfiles={() => setProfileModalOpen(true)}
+        onOpenWelcomeGuide={() => setWelcomeModalOpen(true)}
+      />
+
+      {/* Model Selector & HF Streaming Modal */}
+      <ModelModal
+        isOpen={modelModalOpen}
+        onClose={() => setModelModalOpen(false)}
+        selectedModel={selectedModel}
+        onSelectModel={handleSelectModel}
+        deviceInfo={deviceInfo}
+        isModelReady={isModelReady}
+        onLoadModel={handleLoadModel}
+        modelProgress={modelProgress}
       />
 
       {/* Welcome & Toolbox Guide Popup Modal */}

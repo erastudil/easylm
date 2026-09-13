@@ -1,418 +1,123 @@
-import React from 'react';
-import { AVAILABLE_MODELS } from '../engine/webllm_spindle';
-import { PERSONALITIES, getPersonalitiesForRole } from '../data/personalities';
+﻿import React from 'react';
 import { DeviceInfo } from '../engine/device';
-
-export { PERSONALITIES };
-export const SYSTEM_PRESETS = PERSONALITIES;
 
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  selectedModel: string;
-  onSelectModel: (id: string) => void;
-  selectedPreset: string;
-  onSelectPreset: (id: string) => void;
-  customPrompt: string;
-  onChangeCustomPrompt: (prompt: string) => void;
-  toolsEnabled: boolean;
-  onToggleTools: () => void;
-  extendedThinking: boolean;
-  onToggleExtendedThinking: () => void;
   temperature: number;
   onChangeTemperature: (t: number) => void;
+  contextLimit: number;
+  onChangeContextLimit: (limit: number) => void;
   searxngUrl: string;
   onChangeSearxngUrl: (url: string) => void;
   showWelcomeMessage: boolean;
   onToggleWelcomeMessage: () => void;
-  onOpenProfiles?: () => void;
-  onOpenPersonalityModal?: () => void;
-  onOpenWelcomeGuide?: () => void;
   deviceInfo?: DeviceInfo | null;
-  /** When true (kid profile), only kid-safe personalities are listed. */
-  kidSafe?: boolean;
+  onOpenModelModal?: () => void;
+  onOpenProfiles?: () => void;
+  onOpenWelcomeGuide?: () => void;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
   isOpen,
   onClose,
-  selectedModel,
-  onSelectModel,
-  selectedPreset,
-  onSelectPreset,
-  customPrompt,
-  onChangeCustomPrompt,
-  toolsEnabled,
-  onToggleTools,
-  extendedThinking,
-  onToggleExtendedThinking,
   temperature,
   onChangeTemperature,
+  contextLimit,
+  onChangeContextLimit,
   searxngUrl,
   onChangeSearxngUrl,
   showWelcomeMessage,
   onToggleWelcomeMessage,
-  onOpenProfiles,
-  onOpenPersonalityModal,
-  onOpenWelcomeGuide,
   deviceInfo,
-  kidSafe = false
+  onOpenModelModal,
+  onOpenProfiles,
+  onOpenWelcomeGuide
 }) => {
   if (!isOpen) return null;
 
-  const gallery = getPersonalitiesForRole(kidSafe ? 'kid' : 'parent');
+  const getTempDescription = (t: number) => {
+    if (t <= 0.2) return 'Icy & Deterministic — strictly focused on logic, coding, and exact facts.';
+    if (t <= 0.5) return 'Balanced & Articulate — clear, conversational, and reliable.';
+    if (t <= 0.8) return 'Creative & Expressive — richer vocabulary and exploratory connections.';
+    return 'Highly Imaginative — wild associations, poetry, and unpredictable brainstorming.';
+  };
+
+  const recommendedLimit = deviceInfo?.recommendedContextLimit || 4096;
 
   return (
     <div style={{
       position: 'fixed',
       inset: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.8)',
-      backdropFilter: 'blur(6px)',
+      backgroundColor: 'rgba(0, 0, 0, 0.85)',
+      backdropFilter: 'blur(8px)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      zIndex: 100,
+      zIndex: 140,
       padding: '1rem'
     }}>
-      <div className="card-panel" style={{ width: '100%', maxWidth: '580px', padding: '1.75rem', maxHeight: '90vh', overflowY: 'auto' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
-          <h2 style={{ margin: 0, fontSize: '1.2rem', fontFamily: 'var(--font-mono)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span>⚙️</span> EasyLM Settings
-          </h2>
+      <div
+        className="card-panel"
+        style={{
+          width: '100%',
+          maxWidth: '560px',
+          padding: '1.75rem',
+          maxHeight: '90vh',
+          overflowY: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1.25rem'
+        }}
+      >
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <h2 style={{ margin: 0, fontSize: '1.2rem', fontFamily: 'var(--font-mono)', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#ffffff' }}>
+              <span>⚙️</span> EasyLM Settings
+            </h2>
+            <div style={{ fontSize: '0.76rem', color: '#a1a1aa', marginTop: '0.15rem' }}>
+              Inference parameters, context memory, and search gateways.
+            </div>
+          </div>
           <button
             onClick={onClose}
-            style={{ background: 'transparent', border: 'none', color: '#71717a', fontSize: '1.4rem', cursor: 'pointer' }}
-            title="Close settings"
+            style={{ background: 'transparent', border: 'none', color: '#71717a', fontSize: '1.5rem', cursor: 'pointer', padding: '0 0.25rem' }}
+            title="Close"
           >
             ×
           </button>
         </div>
 
-        {/* Family Profiles & Sovereign Memory Access */}
-        {onOpenProfiles && (
-          <div style={{ marginBottom: '1.25rem' }}>
-            <button
-              onClick={() => {
-                onClose();
-                onOpenProfiles();
-              }}
-              className="btn-pill"
-              style={{
-                width: '100%',
-                justifyContent: 'space-between',
-                padding: '0.65rem 0.85rem',
-                backgroundColor: 'rgba(139, 92, 246, 0.12)',
-                borderColor: 'rgba(139, 92, 246, 0.35)',
-                color: '#ffffff'
-              }}
-            >
-              <span style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                <span>👨‍👩‍👧</span>
-                <span style={{ fontWeight: 500 }}>Family Profiles, Kid Safe & Sovereign Memory</span>
-              </span>
-              <span style={{ fontSize: '0.75rem', color: '#a78bfa' }}>Manage →</span>
-            </button>
-          </div>
-        )}
-
-        {/* Model Selector */}
-        <div style={{ marginBottom: '1.25rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem', flexWrap: 'wrap', gap: '0.3rem' }}>
-            <label style={{ fontSize: '0.8rem', fontFamily: 'var(--font-mono)', color: '#a78bfa', margin: 0 }}>
-              Select Local AI Model:
+        {/* Sampling Temperature */}
+        <div style={{
+          backgroundColor: '#111118',
+          border: '1px solid rgba(139, 92, 246, 0.25)',
+          borderRadius: '12px',
+          padding: '1rem'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+            <label style={{ fontSize: '0.84rem', fontWeight: 600, color: '#ffffff', fontFamily: 'var(--font-mono)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+              <span>🌡️</span> Sampling Temperature
             </label>
-            {deviceInfo && (
-              <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: '#a1a1aa' }}>
-                Hardware: {deviceInfo.osName} · {deviceInfo.hardwareTier.toUpperCase()}
-              </span>
-            )}
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            {AVAILABLE_MODELS.map(m => {
-              const isRecommended = deviceInfo?.recommendedModel === m.id;
-              const isSelected = selectedModel === m.id;
-              const isHeavyForDevice = deviceInfo?.hardwareTier === 'ultralight' && (m.id.includes('7B') || m.id.includes('3B'));
-
-              return (
-                <div
-                  key={m.id}
-                  onClick={() => onSelectModel(m.id)}
-                  style={{
-                    padding: '0.65rem 0.85rem',
-                    borderRadius: '12px',
-                    cursor: 'pointer',
-                    backgroundColor: isSelected ? 'rgba(139, 92, 246, 0.18)' : '#111118',
-                    border: isSelected ? '1px solid #8b5cf6' : '1px solid rgba(139, 92, 246, 0.2)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    fontSize: '0.85rem'
-                  }}
-                >
-                  <div style={{ flex: 1, minWidth: 0, paddingRight: '0.5rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
-                      <span style={{ fontWeight: 600, color: '#ffffff' }}>{m.label}</span>
-                      {isRecommended && (
-                        <span style={{
-                          fontSize: '0.62rem',
-                          fontWeight: 700,
-                          fontFamily: 'var(--font-mono)',
-                          padding: '0.1rem 0.4rem',
-                          borderRadius: '6px',
-                          backgroundColor: 'rgba(52, 211, 153, 0.18)',
-                          border: '1px solid #10b981',
-                          color: '#34d399'
-                        }}>
-                          ✨ Recommended
-                        </span>
-                      )}
-                      {isHeavyForDevice && (
-                        <span style={{
-                          fontSize: '0.62rem',
-                          fontFamily: 'var(--font-mono)',
-                          padding: '0.1rem 0.4rem',
-                          borderRadius: '6px',
-                          backgroundColor: 'rgba(234, 179, 8, 0.12)',
-                          color: '#fbbf24',
-                          border: '1px solid rgba(234, 179, 8, 0.3)'
-                        }}>
-                          High VRAM
-                        </span>
-                      )}
-                    </div>
-                    <div style={{ fontSize: '0.75rem', color: '#71717a', marginTop: '0.15rem' }}>
-                      {m.vramEst} VRAM required · Runs 100% on your device
-                    </div>
-                  </div>
-                  {isSelected && <span style={{ color: '#8b5cf6', fontSize: '1.1rem', flexShrink: 0 }}>✓</span>}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* AI Personality Selector */}
-        <div style={{ marginBottom: '1.25rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.45rem' }}>
-            <label style={{ fontSize: '0.8rem', fontFamily: 'var(--font-mono)', color: '#a78bfa', margin: 0 }}>
-              AI Personality & Voice:{kidSafe ? ' (Kid Safe locked)' : ''}
-            </label>
-            {onOpenPersonalityModal && (
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  onOpenPersonalityModal();
-                }}
-                className="btn-pill"
-                style={{
-                  fontSize: '0.72rem',
-                  padding: '0.2rem 0.65rem',
-                  backgroundColor: 'rgba(139, 92, 246, 0.15)',
-                  borderColor: '#8b5cf6',
-                  color: '#c4b5fd',
-                  gap: '0.3rem'
-                }}
-                title="Open Categorized Voices Gallery"
-              >
-                <span>🎭</span>
-                <span>Browse Gallery →</span>
-              </button>
-            )}
-          </div>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '0.45rem',
-            marginBottom: '0.6rem',
-            maxHeight: '200px',
-            overflowY: 'auto',
-            paddingRight: '0.2rem'
-          }}>
-            {gallery.map(p => (
-              <button
-                key={p.id}
-                onClick={() => onSelectPreset(p.id)}
-                className="btn-pill"
-                style={{
-                  fontSize: '0.75rem',
-                  fontFamily: 'var(--font-mono)',
-                  letterSpacing: '0.01em',
-                  padding: '0.5rem 0.55rem',
-                  justifyContent: 'flex-start',
-                  gap: '0.35rem',
-                  backgroundColor: selectedPreset === p.id ? '#8b5cf6' : '#111118',
-                  color: selectedPreset === p.id ? '#000000' : '#ffffff',
-                  border: selectedPreset === p.id ? '1px solid #8b5cf6' : '1px solid rgba(139, 92, 246, 0.25)',
-                  fontWeight: selectedPreset === p.id ? 700 : 500,
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
-                }}
-                title={p.name}
-              >
-                {p.avatar && <span>{p.avatar}</span>}
-                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</span>
-              </button>
-            ))}
-          </div>
-
-          {/* Selected Personality Metadata Box */}
-          {(() => {
-            const active = PERSONALITIES.find(p => p.id === selectedPreset);
-            if (!active) return null;
-            return (
-              <div style={{
-                backgroundColor: 'rgba(139, 92, 246, 0.08)',
-                border: '1px solid rgba(139, 92, 246, 0.2)',
-                borderRadius: '8px',
-                padding: '0.5rem 0.75rem',
-                marginBottom: '0.5rem'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.2rem' }}>
-                  <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                    {active.avatar && <span>{active.avatar}</span>}
-                    <span>{active.name}</span>
-                  </span>
-                  {active.era && (
-                    <span style={{ fontSize: '0.68rem', color: '#8b5cf6', fontFamily: 'var(--font-mono)' }}>
-                      {active.era}
-                    </span>
-                  )}
-                </div>
-                <div style={{ fontSize: '0.74rem', color: '#a1a1aa', lineHeight: 1.4 }}>
-                  {active.description}
-                </div>
-                {active.writingStyle && (
-                  <div style={{ fontSize: '0.68rem', color: '#71717a', fontStyle: 'italic', marginTop: '0.25rem' }}>
-                    ✍️ {active.writingStyle}
-                  </div>
-                )}
-              </div>
-            );
-          })()}
-
-          {selectedPreset === 'custom' && (
-            <textarea
-              value={customPrompt}
-              onChange={(e) => onChangeCustomPrompt(e.target.value)}
-              placeholder="Paste your custom personality instructions here..."
-              rows={4}
-              style={{
-                width: '100%',
-                background: '#07070a',
-                border: '1px solid rgba(139, 92, 246, 0.3)',
-                borderRadius: '12px',
-                color: '#ffffff',
-                padding: '0.75rem',
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.82rem',
-                resize: 'vertical'
-              }}
-            />
-          )}
-        </div>
-
-        {/* SearXNG Endpoint Configuration */}
-        <div style={{ marginBottom: '1.25rem' }}>
-          <label style={{ display: 'block', fontSize: '0.8rem', fontFamily: 'var(--font-mono)', color: '#a78bfa', marginBottom: '0.4rem' }}>
-            Web Search Endpoint (SearXNG / Gateway):
-          </label>
-          <input
-            type="text"
-            value={searxngUrl}
-            onChange={(e) => onChangeSearxngUrl(e.target.value)}
-            placeholder="Default: /api/search (or http://localhost:8080)"
-            style={{
-              width: '100%',
-              background: '#07070a',
-              border: '1px solid rgba(139, 92, 246, 0.3)',
-              borderRadius: '12px',
-              color: '#ffffff',
-              padding: '0.6rem 0.75rem',
+            <span style={{
+              fontSize: '0.78rem',
               fontFamily: 'var(--font-mono)',
-              fontSize: '0.82rem'
-            }}
-          />
-          <div style={{ fontSize: '0.7rem', color: '#71717a', marginTop: '0.25rem', fontFamily: 'var(--font-mono)' }}>
-            Empty uses /api/search. Search queries leave this machine. Kid Safe ignores this.
-          </div>
-        </div>
-
-        {/* Feature Toggles */}
-        <div style={{ marginBottom: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-          <div style={{ padding: '0.65rem 0.75rem', background: '#111118', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
-              <div>
-                <div style={{ fontSize: '0.85rem', fontWeight: 500 }}>👋 Show Welcome Guide popup on startup</div>
-                <div style={{ fontSize: '0.7rem', color: '#71717a' }}>Opens the interactive card grid when you launch EasyLM</div>
-              </div>
-              <input
-                type="checkbox"
-                checked={showWelcomeMessage}
-                onChange={onToggleWelcomeMessage}
-                style={{ accentColor: '#8b5cf6', width: '1.1rem', height: '1.1rem' }}
-              />
-            </label>
-            {onOpenWelcomeGuide && (
-              <div style={{ display: 'flex', justifyContent: 'flex-start', paddingTop: '0.15rem' }}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    onClose();
-                    onOpenWelcomeGuide();
-                  }}
-                  className="btn-pill"
-                  style={{
-                    fontSize: '0.74rem',
-                    padding: '0.25rem 0.65rem',
-                    borderColor: 'rgba(139, 92, 246, 0.3)',
-                    color: '#c4b5fd'
-                  }}
-                >
-                  <span>👁️</span> Open Welcome Guide Popup
-                </button>
-              </div>
-            )}
+              fontWeight: 700,
+              padding: '0.15rem 0.5rem',
+              borderRadius: '6px',
+              backgroundColor: 'rgba(139, 92, 246, 0.2)',
+              color: '#c4b5fd',
+              border: '1px solid rgba(139, 92, 246, 0.4)'
+            }}>
+              {temperature.toFixed(2)}
+            </span>
           </div>
 
-          <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', padding: '0.6rem 0.75rem', background: '#111118', borderRadius: '12px' }}>
-            <span style={{ fontSize: '0.85rem' }}>⚡ Hands (local math/units/clock; optional network lookups)</span>
-            <input
-              type="checkbox"
-              checked={toolsEnabled}
-              onChange={onToggleTools}
-              style={{ accentColor: '#8b5cf6', width: '1.1rem', height: '1.1rem' }}
-            />
-          </label>
+          <p style={{ margin: '0 0 0.75rem 0', fontSize: '0.74rem', color: '#a1a1aa', lineHeight: 1.5 }}>
+            {getTempDescription(temperature)}
+          </p>
 
-          <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', padding: '0.6rem 0.75rem', background: '#111118', borderRadius: '12px' }}>
-            <span style={{ fontSize: '0.85rem' }}>🧠 Extended Thinking Mode (&lt;think&gt; trace)</span>
-            <input
-              type="checkbox"
-              checked={extendedThinking}
-              onChange={onToggleExtendedThinking}
-              style={{ accentColor: '#8b5cf6', width: '1.1rem', height: '1.1rem' }}
-            />
-          </label>
-
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.6rem 0.75rem', background: '#111118', borderRadius: '12px' }}>
-            <div>
-              <div style={{ fontSize: '0.85rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                <span>🛡️ Anti-Loop Sentinel</span>
-                <span style={{ fontSize: '0.65rem', background: 'rgba(52, 211, 153, 0.15)', color: '#34d399', padding: '0.1rem 0.4rem', borderRadius: '6px', border: '1px solid rgba(52, 211, 153, 0.3)' }}>Active</span>
-              </div>
-              <div style={{ fontSize: '0.7rem', color: '#71717a' }}>Real-time cycle detection & runaway reasoning pruning for DeepSeek and local models</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Temperature slider */}
-        <div style={{ marginBottom: '1.5rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontFamily: 'var(--font-mono)', marginBottom: '0.3rem' }}>
-            <span style={{ color: '#a78bfa' }}>Sampling Temperature:</span>
-            <span>{temperature.toFixed(2)}</span>
-          </div>
           <input
             type="range"
             min="0.0"
@@ -420,17 +125,182 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             step="0.05"
             value={temperature}
             onChange={(e) => onChangeTemperature(parseFloat(e.target.value))}
-            style={{ width: '100%', accentColor: '#8b5cf6' }}
+            style={{ width: '100%', accentColor: '#8b5cf6', cursor: 'pointer' }}
+          />
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', color: '#71717a', marginTop: '0.35rem', fontFamily: 'var(--font-mono)' }}>
+            <span>0.0 (Strict Logic)</span>
+            <span>0.5 (Balanced)</span>
+            <span>1.0 (Creative)</span>
+          </div>
+        </div>
+
+        {/* Context Limit Setting */}
+        <div style={{
+          backgroundColor: '#111118',
+          border: '1px solid rgba(139, 92, 246, 0.25)',
+          borderRadius: '12px',
+          padding: '1rem'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+            <label style={{ fontSize: '0.84rem', fontWeight: 600, color: '#ffffff', fontFamily: 'var(--font-mono)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+              <span>📏</span> Context Memory Limit
+            </label>
+            <span style={{
+              fontSize: '0.78rem',
+              fontFamily: 'var(--font-mono)',
+              fontWeight: 700,
+              padding: '0.15rem 0.5rem',
+              borderRadius: '6px',
+              backgroundColor: 'rgba(52, 211, 153, 0.15)',
+              color: '#34d399',
+              border: '1px solid rgba(52, 211, 153, 0.3)'
+            }}>
+              {contextLimit} tokens (~{Math.round(contextLimit * 0.75)} words)
+            </span>
+          </div>
+
+          <p style={{ margin: '0 0 0.75rem 0', fontSize: '0.74rem', color: '#a1a1aa', lineHeight: 1.5 }}>
+            Defines how much conversation history and attached document context is retained in WebGPU memory during inference.
+          </p>
+
+          <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+            {[
+              { val: 2048, label: '2,048 (Ultralight)' },
+              { val: 4096, label: '4,096 (Standard)' },
+              { val: 8192, label: '8,192 (High)' },
+              { val: 16384, label: '16,384 (Max VRAM)' }
+            ].map(opt => {
+              const isSelected = contextLimit === opt.val;
+              const isRec = opt.val === recommendedLimit;
+              return (
+                <button
+                  key={opt.val}
+                  type="button"
+                  onClick={() => onChangeContextLimit(opt.val)}
+                  className="btn-pill"
+                  style={{
+                    fontSize: '0.74rem',
+                    padding: '0.35rem 0.65rem',
+                    backgroundColor: isSelected ? 'rgba(139, 92, 246, 0.25)' : '#07070a',
+                    borderColor: isSelected ? '#8b5cf6' : 'rgba(139, 92, 246, 0.2)',
+                    color: isSelected ? '#ffffff' : '#a1a1aa',
+                    fontWeight: isSelected ? 600 : 400
+                  }}
+                >
+                  {opt.label} {isRec ? '✨' : ''}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Web Search Endpoint (SearXNG / Custom Gateway) */}
+        <div style={{
+          backgroundColor: '#111118',
+          border: '1px solid rgba(139, 92, 246, 0.25)',
+          borderRadius: '12px',
+          padding: '1rem'
+        }}>
+          <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: '#ffffff', fontFamily: 'var(--font-mono)', marginBottom: '0.3rem' }}>
+            <span>🌐</span> Custom Web Search Endpoint
+          </label>
+          <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.74rem', color: '#a1a1aa', lineHeight: 1.5 }}>
+            Optional private SearXNG instance or custom gateway. Leave empty to use EasyLM's built-in serverless proxy (<code style={{ color: '#c4b5fd' }}>/api/search</code>).
+          </p>
+          <input
+            type="text"
+            value={searxngUrl}
+            onChange={(e) => onChangeSearxngUrl(e.target.value)}
+            placeholder="Default: /api/search (or e.g. http://localhost:8080)"
+            style={{
+              width: '100%',
+              background: '#07070a',
+              border: '1px solid rgba(139, 92, 246, 0.3)',
+              borderRadius: '8px',
+              color: '#ffffff',
+              padding: '0.55rem 0.75rem',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.82rem'
+            }}
           />
         </div>
 
-        {/* Close */}
+        {/* Startup Welcome Guide Toggle */}
+        <div style={{
+          backgroundColor: '#111118',
+          border: '1px solid rgba(139, 92, 246, 0.25)',
+          borderRadius: '12px',
+          padding: '0.85rem 1rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          cursor: 'pointer'
+        }} onClick={onToggleWelcomeMessage}>
+          <div>
+            <div style={{ fontSize: '0.84rem', fontWeight: 500, color: '#ffffff' }}>
+              👋 Show Welcome Guide on startup
+            </div>
+            <div style={{ fontSize: '0.72rem', color: '#71717a', marginTop: '0.15rem' }}>
+              Displays the interactive zero-install primer when you launch EasyLM.
+            </div>
+          </div>
+          <input
+            type="checkbox"
+            checked={showWelcomeMessage}
+            onChange={onToggleWelcomeMessage}
+            style={{ accentColor: '#8b5cf6', width: '1.15rem', height: '1.15rem', cursor: 'pointer' }}
+          />
+        </div>
+
+        {/* Quick Links / Hardware Summary */}
+        {deviceInfo && (
+          <div style={{
+            padding: '0.75rem 1rem',
+            backgroundColor: 'rgba(139, 92, 246, 0.08)',
+            border: '1px solid rgba(139, 92, 246, 0.2)',
+            borderRadius: '10px',
+            fontSize: '0.74rem',
+            color: '#a1a1aa',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '0.5rem'
+          }}>
+            <div>
+              <span style={{ color: '#e4e4e7', fontWeight: 600 }}>Detected GPU: </span>
+              <span>{deviceInfo.gpuVendor || 'WebGPU'} {deviceInfo.gpuRenderer || ''} (~{deviceInfo.estimatedVRAMGB || 8}GB VRAM)</span>
+            </div>
+            {onOpenModelModal && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onOpenModelModal();
+                }}
+                className="btn-pill"
+                style={{
+                  fontSize: '0.72rem',
+                  padding: '0.2rem 0.6rem',
+                  backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                  borderColor: '#8b5cf6',
+                  color: '#c4b5fd'
+                }}
+              >
+                Browse Models &amp; VRAM Tiers →
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Action Button */}
         <button
           onClick={onClose}
           className="btn-pill btn-pill-primary"
-          style={{ width: '100%', justifyContent: 'center' }}
+          style={{ width: '100%', justifyContent: 'center', padding: '0.65rem', fontSize: '0.85rem' }}
         >
-          Save & Return to Chat
+          Done
         </button>
       </div>
     </div>

@@ -3,7 +3,7 @@ from pathlib import Path
 import re
 
 SRC = Path(r"C:\Users\jpm05\documents\field\field-kb\warehouse\undergrad")
-DST = Path(r"C:\Users\jpm05\documents\hnai\easylm\warehouse")
+DST = Path(r"C:\Users\jpm05\documents\hnai\easylm\stacks")
 
 # House-contaminated: rewrite, do not copy.
 COPY = [
@@ -32,12 +32,13 @@ COPY = [
 def sanitize(text: str, slug: str) -> str:
     text = re.sub(
         r'home:\s*"[^"]+"',
-        f'home: "warehouse/{slug}/"',
+        f'home: "stacks/{slug}/"',
         text,
         count=1,
     )
-    text = text.replace("field/field-kb/warehouse/undergrad/", "warehouse/")
-    text = text.replace("field/field-kb/warehouse/", "warehouse/")
+    text = text.replace("field/field-kb/warehouse/undergrad/", "stacks/")
+    text = text.replace("field/field-kb/warehouse/", "stacks/")
+    text = text.replace("warehouse/", "stacks/")
     text = text.replace("house-mcp **calc**", "EasyLM **calc** hand")
     text = text.replace("house-mcp **units**", "EasyLM **units** hand")
     text = text.replace("house-mcp", "EasyLM")
@@ -45,7 +46,7 @@ def sanitize(text: str, slug: str) -> str:
     text = text.replace("`mcp/UNITS.md`", "the EasyLM units hand")
     text = text.replace("mcp/CALC.md", "EasyLM calc hand")
     text = text.replace("mcp/UNITS.md", "EasyLM units hand")
-    text = text.replace("../../meta/FETCH_AND_CITE.md", "warehouse/LAW.md")
+    text = text.replace("../../meta/FETCH_AND_CITE.md", "stacks/LAW.md")
     text = text.replace("../tools/", "EasyLM calc and units hands")
     # drop house-only related pointers that would 404 in this repo
     text = re.sub(r'\n  - "\.\./eee/"', "", text)

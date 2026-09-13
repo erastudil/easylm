@@ -19,7 +19,7 @@ import {
   isEngineReady
 } from './engine/webllm_spindle';
 import { dispatchTool, SYSTEM_TOOLS_PROMPT, SYSTEM_TOOLS_PROMPT_KID } from './engine/tools';
-import { clockQueryOf, mathExpressionOf, unitConversionOf, warehouseQueryOf } from './engine/preflight';
+import { clockQueryOf, mathExpressionOf, stacksQueryOf, unitConversionOf, warehouseQueryOf } from './engine/preflight';
 import { Sidebar } from './components/Sidebar';
 import { MessageItem } from './components/MessageItem';
 import { SettingsModal } from './components/SettingsModal';
@@ -452,7 +452,7 @@ export const App: React.FC = () => {
     const mathExpr = mathExpressionOf(trimmed);
     const unitExpr = unitConversionOf(trimmed);
     const clockQuery = clockQueryOf(trimmed);
-    const warehouseQuery = warehouseQueryOf(trimmed);
+    const stacksQuery = stacksQueryOf(trimmed) || warehouseQueryOf(trimmed);
     const directSearchMatch = trimmed.match(/^(?:search|search for|google|web search)\s*:\s*(.+)$/i);
     const urlMatch = trimmed.match(/(https?:\/\/[^\s]+)/i);
     const directFetchMatch = trimmed.match(/^(?:fetch|read|browse|summarize|inspect)\s+(https?:\/\/[^\s]+)$/i);
@@ -479,8 +479,8 @@ export const App: React.FC = () => {
     } else if (toolsEnabled && clockQuery !== null) {
       const toolRes = await dispatchTool('datetime', clockQuery, searxngUrl, toolOpts);
       executedTools.push(toolRes);
-    } else if (toolsEnabled && warehouseQuery) {
-      const toolRes = await dispatchTool('warehouse', warehouseQuery, searxngUrl, toolOpts);
+    } else if (toolsEnabled && stacksQuery) {
+      const toolRes = await dispatchTool('stacks', stacksQuery, searxngUrl, toolOpts);
       executedTools.push(toolRes);
     } else if (toolsEnabled && !kidSafe && directFetchMatch) {
       const toolRes = await dispatchTool('web_fetch', directFetchMatch[1], searxngUrl, toolOpts);

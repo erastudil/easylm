@@ -80,7 +80,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({
                 </span>
               </div>
               <div style={{ fontSize: '0.72rem', color: '#a1a1aa' }}>
-                Zero-Install Local WebGPU Intelligence · Free Forever under GNU GPL-3.0
+                Zero-Install Local WebGPU Intelligence · Free Forever under GNU AGPL-3.0
               </div>
             </div>
           </div>
@@ -144,7 +144,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 <span style={{ color: '#34d399' }}>✓</span>
-                <span>Official app free forever. GPLv3 copyleft.</span>
+                <span>Official app free forever. AGPL-3.0 copyleft.</span>
               </div>
             </div>
           </div>

@@ -5,7 +5,7 @@ WebGPU inference on your machine. Official app stays free forever.
 
 [![Deploy with Vercel](https://vercel.com/button)](https://easylm.vercel.app)
 
-Copyright (C) 2026 Humans and AI. GNU GPLv3 or later. This program comes with ABSOLUTELY NO WARRANTY.
+Copyright (C) 2026 Humans and AI. GNU AGPL-3.0 or later. This program comes with ABSOLUTELY NO WARRANTY.
 
 ---
 
@@ -30,7 +30,7 @@ EasyLM is a consumer alternative to hosted chat that **runs on your GPU** via We
 | **DeepSeek-R1 Distill Qwen 1.5B** | ~1.0 GB | ~1.3 GB | Reasoning. MIT weights. |
 | **Qwen 2.5 1.5B Instruct** | ~1.1 GB | ~1.4 GB | Ultralight / iGPU. Apache-2.0 weights. |
 
-Model weights are not GPL. They keep their upstream licenses. The EasyLM application is GPLv3.
+Model weights are not AGPL. They keep their upstream licenses. The EasyLM application is AGPL-3.0-or-later.
 
 ---
 
@@ -41,7 +41,7 @@ Local:
 - Math evaluator
 - Unit converter (unknown pairs error, they do not invent a 1:1 ratio)
 - System clock
-- Warehouse: undergraduate textbooks by subject plus official source doors (`warehouse/`)
+- The Stacks: undergraduate textbooks across 28 academic subjects plus official source doors (`stacks/`)
 
 Optional network (leave the machine):
 
@@ -76,10 +76,12 @@ A browser with WebGPU:
 
 ## License
 
-GNU General Public License v3.0 or later. See [LICENSE](LICENSE).
+GNU Affero General Public License v3.0 or later. See [LICENSE](LICENSE).
 
-EasyLM is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+EasyLM is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-The official EasyLM app is free forever. That is a project covenant. GPLv3 is how forks stay free software.
+If you run a modified copy for others over a network, you owe them the source. That is AGPL §13.
+
+The official EasyLM app is free forever. Donations only. No company owns this line. That is a project covenant. AGPL is how forks and hosted wraps stay free software.
 
 Security reports: see [SECURITY.md](SECURITY.md).

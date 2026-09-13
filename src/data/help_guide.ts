@@ -19,7 +19,7 @@ That is EasyLM. It brings open-weight language models directly into your web bro
 - **Your Device, Your Tokens**: Everything you write and every answer the model generates stays strictly inside your browser's sandbox. Nothing is transmitted to external AI cloud servers.
 - **Model Weights in Local Cache**: When you select a model, its neural weights stream once from Hugging Face into your browser's local cache. Once cached, they run locally whenever you visit.
 - **Deterministic Hands**: Language models are poets of probability, not calculators. EasyLM equips the model with "Hands"—real, exact calculators, physical unit converters, and clocks that compute real answers rather than guessing.
-- **Free Software Forever**: EasyLM is licensed under the **GNU General Public License (GPLv3)**. It is free to use, inspect, and modify. No accounts, no paywalls, and no tracking.`
+- **Free Software Forever**: EasyLM is licensed under the **GNU Affero General Public License (AGPL-3.0)**. It is free to use, inspect, and modify. A hosted modified copy owes its users the source. No accounts, no paywalls, and no tracking.`
   },
   {
     id: 'topbar',
@@ -126,16 +126,16 @@ In the **Settings (⚙)** dialog, you can adjust how the neural engine thinks:
   },
   {
     id: 'support',
-    title: '💜 Free Software & The GPLv3 Covenant',
+    title: '💜 Free Software & The AGPL Covenant',
     summary: 'Why EasyLM is free, open, and forever owned by the people who use it.',
     content: `### Digital Sovereignty & Freedom
 
 EasyLM is developed by **humans&ai** around a core conviction: the tools that shape human thought—reading, writing, reasoning, and learning—must never be locked behind proprietary subscription gates.
 
-- **GNU General Public License v3.0**:
-  EasyLM is Free Software. You have the right to inspect its code, run it on your own hardware, modify it, and share it. Any derivative work must remain equally free and open.
+- **GNU Affero General Public License v3.0**:
+  EasyLM is Free Software. You have the right to inspect its code, run it on your own hardware, modify it, and share it. Any derivative work must remain equally free. If you run a modified copy for others over a network, you owe them the source.
 - **The Free Forever Covenant**:
-  The official EasyLM web application is free forever. There will never be monthly paywalls, telemetry trackers, or advertising banners.
+  The official EasyLM web application is free forever. Donations only. No company seat on this line. There will never be monthly paywalls, telemetry trackers, or advertising banners.
 - **Voluntary Support**:
   If you believe in sovereign local computing and wish to support our work building open browser tools and model ports, voluntary donation links (Bitcoin, Solana, Cash App) are available in the Support menu.`
   }

@@ -8,7 +8,7 @@ export interface DonationMethod {
   note?: string;
 }
 
-export const SUPPORT_STATEMENT = "EasyLM will always be free. Period. That's the point. However, the more support we receive, the more time we can spend adding capabilities, optimizing models, and refining the experience. If you would like to see EasyLM continue to thrive, please consider supporting our work.";
+export const SUPPORT_STATEMENT = "EasyLM will always be free. Donations only. No company owns this line. That's the point. The more support we receive, the more time we can spend adding capabilities, optimizing models, and refining the experience. If you would like to see EasyLM continue to thrive, please consider supporting our work.";
 
 export const DONATION_METHODS: DonationMethod[] = [
   {

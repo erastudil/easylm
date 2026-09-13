@@ -1,7 +1,8 @@
 from pathlib import Path
 import json, re
 
-root = Path(__file__).resolve().parents[1] / "warehouse"
+# Backward-compatibility pointer to stacks
+root = Path(__file__).resolve().parents[1] / "stacks"
 packs = json.loads((root / "PACKS.json").read_text(encoding="utf-8"))
 print("packs", len(packs))
 doors = 0

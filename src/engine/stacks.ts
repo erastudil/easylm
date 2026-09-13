@@ -1,6 +1,8 @@
-import { WAREHOUSE_PACKS, WarehousePack } from '../data/warehouse_compiled';
+import { STACKS_PACKS, StackPack } from '../data/stacks_compiled';
 
-export type StackPack = WarehousePack;
+export type { StackPack };
+export type WarehousePack = StackPack;
+export const WAREHOUSE_PACKS = STACKS_PACKS;
 
 export interface StackChapter {
   heading: string;
@@ -137,7 +139,7 @@ export function execStacks(query: string): string {
   if (terms.length === 0) return listCatalog();
 
   const ranked: { pack: StackPack; ch: StackChapter; score: number }[] = [];
-  for (const pack of WAREHOUSE_PACKS) {
+  for (const pack of STACKS_PACKS) {
     const bonus = packBonus(pack, terms);
     for (const ch of splitChapters(pack.textbook)) {
       const score = bonus + scoreChapter(ch, terms);
@@ -174,8 +176,8 @@ export function execStacks(query: string): string {
 
 export function stacksStats(): { packs: number; textbooks: number; doors: number } {
   return {
-    packs: WAREHOUSE_PACKS.length,
-    textbooks: WAREHOUSE_PACKS.filter(p => p.textbook.includes('\n## ')).length,
-    doors: WAREHOUSE_PACKS.reduce((n, p) => n + extractDoors(p.links).length, 0)
+    packs: STACKS_PACKS.length,
+    textbooks: STACKS_PACKS.filter(p => p.textbook.includes('\n## ')).length,
+    doors: STACKS_PACKS.reduce((n, p) => n + extractDoors(p.links).length, 0)
   };
 }

@@ -64,11 +64,17 @@ CORE GUIDING PRINCIPLES:
 - Use vivid, playful analogies (exploring oceans, building treehouses, cooking, sports, animal adaptations) to make tough concepts click.
 - Maintain an encouraging, respectful, and age-appropriate tone.
 
-3. DIGITAL CITIZENSHIP & CRITICAL THINKING:
+3. HARD REFUSAL — SEXUAL / ROMANTIC / EXPLOITATIVE CONTENT INVOLVING MINORS:
+- HARD REFUSE any sexual, romantic, erotic, pornographic, or CSAM-adjacent content involving minors (anyone 17 or under), including roleplay, fictional depictions, "aged-up" framing, grooming, or exploitative requests.
+- HARD REFUSE romantic or dating advice framed as involving the child user or other minors.
+- Do not partially answer, soften into innuendo, or continue the topic. Refuse in one short, calm sentence, then redirect to a safe learning activity (homework, science curiosity, reading, games that are age-appropriate).
+- If unsure whether a request is sexual/exploitative involving a minor: refuse.
+
+4. DIGITAL CITIZENSHIP & CRITICAL THINKING:
 - Teach healthy inquiry habits: remind students to never share real personal details (names, home addresses, phone numbers, passwords) online.
 - Emphasize that this environment is a study hall and reference encyclopedia to sharpen their own thinking, not a shortcut around deep reading, teachers, or primary books.
 
-4. HONEST DEFLECTION:
+5. HONEST DEFLECTION:
 - If evidence is absent or a fact is unknown, warmly state: "I couldn't find a reliable answer for that, and I don't want to guess. Let's look it up together in a reference book or ask a teacher!"`
   },
   {
@@ -1376,3 +1382,22 @@ HONEST DEFLECTION:
     systemPrompt: ''
   }
 ];
+
+/** Personality ids allowed when an active profile has role === 'kid'. Adult gallery voices must not load. */
+export const KID_SAFE_PERSONALITY_IDS = ['socratic_kid'] as const;
+
+export function isKidSafePersonality(id: string): boolean {
+  return (KID_SAFE_PERSONALITY_IDS as readonly string[]).includes(id);
+}
+
+export function getPersonalitiesForRole(role: 'parent' | 'kid'): ExtendedPersonality[] {
+  if (role === 'kid') {
+    return PERSONALITIES.filter(p => isKidSafePersonality(p.id));
+  }
+  return PERSONALITIES;
+}
+
+export function clampPersonalityIdForRole(id: string, role: 'parent' | 'kid'): string {
+  if (role !== 'kid') return id;
+  return isKidSafePersonality(id) ? id : 'socratic_kid';
+}

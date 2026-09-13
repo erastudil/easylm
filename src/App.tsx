@@ -20,7 +20,7 @@ import { Sidebar } from './components/Sidebar';
 import { MessageItem } from './components/MessageItem';
 import { SettingsModal } from './components/SettingsModal';
 import { PersonalityModal } from './components/PersonalityModal';
-import { PERSONALITIES } from './data/personalities';
+import { PERSONALITIES, clampPersonalityIdForRole } from './data/personalities';
 import { HelpModal } from './components/HelpModal';
 import { SupportModal } from './components/SupportModal';
 import { FeedbackModal } from './components/FeedbackModal';
@@ -72,7 +72,7 @@ export const App: React.FC = () => {
   };
   const [selectedPersonality, setSelectedPersonality] = useState<string>(() => {
     const prof = getActiveProfile();
-    return prof.personalityId || 'friendly';
+    return clampPersonalityIdForRole(prof.personalityId || 'friendly', prof.role);
   });
   const [personalityModalOpen, setPersonalityModalOpen] = useState(false);
   const [customPrompt, setCustomPrompt] = useState<string>('');
@@ -124,10 +124,16 @@ export const App: React.FC = () => {
 
   const handleProfileChanged = (newProfile: UserProfile) => {
     setCurrentProfile(newProfile);
-    if (newProfile.personalityId) {
-      setSelectedPersonality(newProfile.personalityId);
-    }
+    const nextId = newProfile.personalityId || selectedPersonality;
+    setSelectedPersonality(clampPersonalityIdForRole(nextId, newProfile.role));
   };
+
+  // Kid role: adult gallery voices must never remain selected
+  useEffect(() => {
+    if (currentProfile.role === 'kid') {
+      setSelectedPersonality(prev => clampPersonalityIdForRole(prev, 'kid'));
+    }
+  }, [currentProfile.role]);
 
   // Runtime State
   const [inputPrompt, setInputPrompt] = useState('');
@@ -350,10 +356,11 @@ export const App: React.FC = () => {
 
     setIsGenerating(true);
 
-    // Build system mandate based on Personality
-    const personality = PERSONALITIES.find(p => p.id === selectedPersonality) || PERSONALITIES[0];
+    // Build system mandate based on Personality (kid role: force kid-safe voice only)
+    const effectivePersonalityId = clampPersonalityIdForRole(selectedPersonality, currentProfile.role);
+    const personality = PERSONALITIES.find(p => p.id === effectivePersonalityId) || PERSONALITIES.find(p => p.id === 'socratic_kid') || PERSONALITIES[0];
     let systemInstruction = personality.systemPrompt;
-    if (selectedPersonality === 'custom' && customPrompt) {
+    if (effectivePersonalityId === 'custom' && customPrompt && currentProfile.role !== 'kid') {
       systemInstruction = customPrompt;
     }
 
@@ -366,9 +373,9 @@ export const App: React.FC = () => {
       systemInstruction += '\n\n[USER SOVEREIGN MEMORY & NOTEBOOK]:\n' + profileMemories.map(m => '- ' + m.text).join('\n');
     }
 
-    // Kid Safe / Socratic tutor mandate
+    // Kid Safe / Socratic tutor mandate (+ hard refuse sexual/romantic/CSAM-adjacent involving minors)
     if (currentProfile.role === 'kid' || currentProfile.socraticTutorEnabled) {
-      systemInstruction += '\n\n[KID SAFE & SOCRATIC TUTOR MANDATE]:\nGuide the student step-by-step with inquiry, hints, and questions. Never hand over direct solutions to homework or tests. Keep tone warm, patient, and encouraging.';
+      systemInstruction += '\n\n[KID SAFE & SOCRATIC TUTOR MANDATE]:\nGuide the student step-by-step with inquiry, hints, and questions. Never hand over direct solutions to homework or tests. Keep tone warm, patient, and encouraging.\nHARD REFUSE sexual, romantic, erotic, pornographic, or CSAM-adjacent / exploitative content involving minors (17 or under), including roleplay, fiction, "aged-up" framing, or grooming. Do not partially answer. Refuse in one short calm sentence and redirect to age-appropriate learning.';
     }
 
     // In-chat help detection: if prompt asks about help, features, or how EasyLM works
@@ -723,7 +730,7 @@ export const App: React.FC = () => {
   };
 
   const currentModelLabel = AVAILABLE_MODELS.find(m => m.id === selectedModel)?.label || 'Qwen 2.5 3B';
-  const currentPersonality = PERSONALITIES.find(p => p.id === selectedPersonality) || PERSONALITIES[0];
+  const currentPersonality = PERSONALITIES.find(p => p.id === clampPersonalityIdForRole(selectedPersonality, currentProfile.role)) || PERSONALITIES.find(p => p.id === 'socratic_kid') || PERSONALITIES[0];
 
   return (
     <div 
@@ -842,7 +849,7 @@ export const App: React.FC = () => {
               <span 
                 style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: '#10b981', padding: '0.2rem 0.45rem', background: 'rgba(16,185,129,0.1)', borderRadius: '9999px', border: '1px solid rgba(16,185,129,0.3)' }}
                 title={currentProfile.role === 'kid'
-                  ? 'Kid Safe hands: local calc, units, clock, dictionary, warehouse. No network tools.'
+                  ? 'Kid Safe hands: local calc, units, clock, warehouse. No network tools (dictionary blocked).'
                   : 'Hands on. Optional lookups (search, fetch, weather, FX) leave this machine.'}
               >
                 <span>⚡</span>
@@ -1282,7 +1289,7 @@ export const App: React.FC = () => {
         selectedModel={selectedModel}
         onSelectModel={handleSelectModel}
         selectedPreset={selectedPersonality}
-        onSelectPreset={setSelectedPersonality}
+        onSelectPreset={(id) => setSelectedPersonality(clampPersonalityIdForRole(id, currentProfile.role))}
         customPrompt={customPrompt}
         onChangeCustomPrompt={setCustomPrompt}
         toolsEnabled={toolsEnabled}
@@ -1299,6 +1306,7 @@ export const App: React.FC = () => {
         onOpenPersonalityModal={() => setPersonalityModalOpen(true)}
         onOpenWelcomeGuide={() => setWelcomeModalOpen(true)}
         deviceInfo={deviceInfo}
+        kidSafe={currentProfile.role === 'kid'}
       />
 
       {/* Welcome & Toolbox Guide Popup Modal */}
@@ -1309,15 +1317,16 @@ export const App: React.FC = () => {
         onOpenVoices={() => setPersonalityModalOpen(true)}
       />
 
-      {/* 22-Perspective & Author Voices Gallery Modal */}
+      {/* Perspectives & Author Voices Gallery Modal (kid role: kid-safe subset only) */}
       <PersonalityModal
         isOpen={personalityModalOpen}
         onClose={() => setPersonalityModalOpen(false)}
         selectedPersonality={selectedPersonality}
         onSelectPersonality={(id) => {
-          setSelectedPersonality(id);
+          setSelectedPersonality(clampPersonalityIdForRole(id, currentProfile.role));
         }}
         onOpenCustomSettings={() => setSettingsOpen(true)}
+        kidSafe={currentProfile.role === 'kid'}
       />
 
       {/* Profile & Sovereign Memory Modal */}

@@ -13,6 +13,10 @@ Do not file public GitHub issues for SSRF, XSS, or auth bypasses until we have a
 
 `/api/fetch` is wiki-hosts only (Wikipedia, Wikiquote, Wikisource) and requires a browser Origin on the allowlist. A DNS-rebinding host with a 0-TTL swap between lookup and connect is still a theoretical race on those wiki names. Do not point Hands at untrusted short-TTL names.
 
+## Deploy
+
+GitHub push does not alias this project. After a patch: `npx vercel --prod` from this tree. Prove the live JS hash on `https://easylm.vercel.app` before calling it shipped.
+
 ## Scope
 
 In scope: `https://easylm.vercel.app`, this repository, `/api/*`.

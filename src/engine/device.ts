@@ -75,40 +75,40 @@ export async function detectDevice(): Promise<DeviceInfo> {
   else if (/Win/i.test(ua)) osName = 'Windows';
   else if (/Linux/i.test(ua)) osName = 'Linux';
 
-  // Determine hardware tier:
-  // - Ultralight (4GB class): mobile phones, low-memory tablets, or software fallback WebGPU
-  // - Standard (6GB - 8GB class): all desktop & laptop PCs with WebGPU (handles Qwen 3B as light work)
-  // - High Performance (8GB - 16GB class): discrete GPUs (RTX, Radeon, Apple M Pro) - runs 7B-9B models smoothly
-  // - Workstation (16GB - 32GB class): heavy workstation GPUs (RTX 4080/4090, Apple M Max/Ultra)
+  // Determine hardware tier and context window recommendations:
+  // - Ultralight (4GB class): mobile phones, low-memory tablets -> 8,192 or 16,384 tokens
+  // - Standard (6GB - 8GB class): standard laptops/desktops -> 32,768 tokens (Nexus default)
+  // - High Performance (12GB - 16GB class): discrete GPUs (RTX, Radeon, Apple Pro) -> 65,536 or 131,072 tokens
+  // - Workstation (24GB - 32GB+ class): heavy workstation GPUs (RTX 4080/4090, Apple M Max/Ultra) -> 262,144 tokens (256k max)
   let hardwareTier: HardwareTier = 'standard';
   let estimatedVRAMGB = 8;
-  let recommendedContextLimit = 4096;
+  let recommendedContextLimit = 32768; // 32k comfortable default for 8GB
 
   if (isMobile) {
     if ((maxMemoryGB && maxMemoryGB <= 4) || (maxBufferSizeMB && maxBufferSizeMB < 512)) {
       hardwareTier = 'ultralight';
       estimatedVRAMGB = 4;
-      recommendedContextLimit = 2048;
+      recommendedContextLimit = 8192;
     } else {
       hardwareTier = 'standard';
       estimatedVRAMGB = 6;
-      recommendedContextLimit = 4096;
+      recommendedContextLimit = 16384;
     }
   } else {
     // Desktop or Laptop
     if (isDiscreteGPU && maxMemoryGB && maxMemoryGB >= 32) {
       hardwareTier = 'workstation';
       estimatedVRAMGB = 24;
-      recommendedContextLimit = 8192;
+      recommendedContextLimit = 262144; // 256k max
     } else if (isDiscreteGPU || (maxMemoryGB && maxMemoryGB >= 16)) {
       hardwareTier = 'high_performance';
       estimatedVRAMGB = 12;
-      recommendedContextLimit = 8192;
+      recommendedContextLimit = 65536; // 64k
     } else {
-      // Default laptop/desktop PC
+      // Default laptop/desktop PC (8GB class)
       hardwareTier = 'standard';
       estimatedVRAMGB = 8;
-      recommendedContextLimit = 4096;
+      recommendedContextLimit = 32768; // 32k default
     }
   }
 

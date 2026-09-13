@@ -13,6 +13,9 @@ const ALLOWED_SUBSTRINGS = [
   'time',
   'date',
   'zone',
+  'stacks',
+  'stack',
+  'library',
   'warehouse',
   'canon',
   'dewey'
@@ -57,4 +60,4 @@ export function isKidAllowedTool(name: string): boolean {
 }
 
 export const KID_TOOL_REFUSAL =
-  'Kid Safe mode: network tools are off. Local calculator, units, clock, and warehouse only.';
+  'Kid Safe mode: network tools are off. Local calculator, units, clock, and university library stacks only.';

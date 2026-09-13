@@ -8,10 +8,11 @@ import {
 } from './warehouse';
 
 const REQUIRED = [
-  'methods', 'computing', 'software', 'ai_ml', 'philosophy', 'civics',
-  'finance', 'law', 'language', 'math', 'physics', 'chemistry', 'weather',
-  'biology', 'health', 'engineering', 'agriculture', 'art', 'music',
-  'literature', 'history', 'geography'
+  'methods', 'computing', 'software', 'ai_ml', 'philosophy', 'psychology',
+  'religion', 'sociology', 'civics', 'finance', 'law', 'language', 'math',
+  'astronomy', 'physics', 'chemistry', 'weather', 'biology', 'health',
+  'engineering', 'agriculture', 'business', 'art', 'music', 'literature',
+  'poetry', 'history', 'geography'
 ];
 
 describe('warehouse library', () => {
@@ -19,8 +20,8 @@ describe('warehouse library', () => {
     const slugs = WAREHOUSE_PACKS.map(p => p.slug);
     expect(slugs.sort()).toEqual([...REQUIRED].sort());
     const stats = warehouseStats();
-    expect(stats.packs).toBe(22);
-    expect(stats.textbooks).toBe(22);
+    expect(stats.packs).toBe(28);
+    expect(stats.textbooks).toBe(28);
     expect(stats.doors).toBeGreaterThan(200);
   });
 

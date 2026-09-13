@@ -1,392 +1,248 @@
 ---
 title: "physics — undergrad textbook"
 date: "2026-09-13"
-status: living · undergrad
+status: living · undergrad · the-stacks
 home: "warehouse/physics/"
 related:
   - "../math/"
+  - "../astronomy/"
   - "../chemistry/"
-  - "../weather/"
-  - "EasyLM calc hand"
-  - "EasyLM units hand"
-  - "warehouse/LAW.md"
+  - "../engineering/"
 ---
 
-# physics — undergrad textbook
+# Physics — Classical Mechanics, Electrodynamics, Thermodynamics & Quantum Theory
 
-a working book for people who must **name a model, then predict a measurement**.
-this file teaches. constants you cannot check → DONT_KNOW / fetch NIST or the named door. arithmetic only with **EasyLM calc**. unit conversion only with **EasyLM units**.
-
-**law this book applies:** SI first. dimensional check. draw the system. conservation only when the condition holds. superposition only in linear models. say the frame. orbits live **in this pack**. do not invent G, h, e, k, μ.
-
-**constants.** G, h, k, N_A, R, and other CODATA values: fetch the live page https://physics.nist.gov/cuu/Constants/ then pass stated numbers to EasyLM calc. do not invent digits. **c = 299792458 m/s** is exact by SI definition (BIPM). Celsius: T/K = t/°C + 273.15 (definitional). standard atmosphere 101325 Pa is a defined conventional value; still convert other pressure units with EasyLM units.
+A comprehensive undergraduate textbook exploring the fundamental principles governing matter, energy, space, and time: Newtonian, Lagrangian, and Hamiltonian mechanics, conservation laws and Noether's theorem, continuum mechanics and fluids, electrodynamics and Maxwell's equations, thermodynamics and statistical mechanics, special and general relativity, and non-relativistic quantum wave mechanics.
 
 ---
 
-## 0. how to use this book
+## 0. Syllabus & Structural Map
 
-read chapter 1, then the chapter the job needs. LINK_INDEX.md is official doors, not the lesson.
+Physics investigates the universal laws of reality through mathematical modeling verified by quantitative empirical measurement. Every physical theory balances continuous mathematical invariants against observable experimental phenomena.
 
-| you need | chapter |
-|---|---|
-| what a model is | 1 |
-| units, SI, dimensions | 2 |
-| motion, force, energy, spin | 3 |
-| gravity, kepler, transfers | 4 |
-| fluids | 5 |
-| waves, sound, light | 6 |
-| charge, fields, circuits, Maxwell | 7 |
-| heat, entropy, gases | 8 |
-| c invariant, γ | 9 |
-| photons, atoms, particles | 10 |
-| stars, cosmos (undergrad) | 11 |
-| compute / constants | 12 |
-| stuck on a problem | 13 |
+```
++---------------------------------------------------------------------------------------------------+
+|                                      THE PHYSICAL SPECTRUM                                        |
++---------------------------------------------------------------------------------------------------+
+|  CLASSICAL MECHANICS (Motion) | Newton · Work-Energy · Lagrangian Mechanics · Noether Symmetries  |
++-------------------------------+-------------------------------------------------------------------+
+|  FIELDS & FLUIDS (Continua)   | Navier-Stokes · Wave Mechanics · Harmonic Oscillators · Sound     |
++-------------------------------+-------------------------------------------------------------------+
+|  ELECTRODYNAMICS (Maxwell)    | Gauss · Faraday · Ampère-Maxwell · Electromagnetic Waves · Light  |
++-------------------------------+-------------------------------------------------------------------+
+|  THERMAL & STATISTICAL (Heat) | Laws of Thermodynamics · Entropy · Boltzmann · Partition Function |
++-------------------------------+-------------------------------------------------------------------+
+|  SPACETIME & RELATIVITY (c)   | Lorentz Transformations · Spacetime Invariant · E=mc² · Equiv     |
++-------------------------------+-------------------------------------------------------------------+
+|  QUANTUM MECHANICS (Quanta)   | Wave-Particle Duality · Schrödinger Equation · Uncertainty · Spin |
++---------------------------------------------------------------------------------------------------+
+```
 
-work order: **why → what → how**. name the system and the model before you write an equation.
+### Table of Contents
 
----
-
-## 1. what physics is
-
-physics builds **models** that map a system to a number you could, in principle, measure. a good answer names:
-
-1. the **system** (what you keep, what you throw away)
-2. the **model** (classical point mass, rigid body, ideal gas, ray optics, two-body gravity, …)
-3. the **assumptions** (no drag, v ≪ c, isolated, continuum, …)
-4. the **equation**
-5. the **check** (units, limit, special case)
-
-four questions, every time:
-
-1. what are the **units**?
-2. what is **conserved** — and is the condition actually true here?
-3. is the model **classical, EM, thermo, wave, quantum, or relativistic**?
-4. what **number** is needed — and is it on a named page?
-
-**a model is not the world.** newtonian gravity is a model. Maxwell is a model. Schrödinger is a model. each has a domain. when v is not ≪ c, newtonian mechanics is the wrong tool, not a moral failure.
-
-**theory vs experiment.** theory constrains what may happen. experiment (or a cited table) is how a constant or a cross-section enters the page. inference does not remember G to eight places.
-
-**check:** if you cannot say the model and the frame, you are not ready to compute.
+1. [Chapter 1: The Architecture of Physical Law & Coordinate Systems](#1-the-architecture-of-physical-law--coordinate-systems)
+2. [Chapter 2: Newtonian Kinematics & Vector Dynamics](#2-newtonian-kinematics--vector-dynamics)
+3. [Chapter 3: Work, Energy & Conservation Theorems](#3-work-energy--conservation-theorems)
+4. [Chapter 4: Rotational Dynamics, Angular Momentum & Central Forces](#4-rotational-dynamics-angular-momentum--central-forces)
+5. [Chapter 5: Analytical Mechanics: Lagrangian & Hamiltonian Formulations](#5-analytical-mechanics-lagrangian--hamiltonian-formulations)
+6. [Chapter 6: Oscillations, Resonance & Mechanical Waves](#6-oscillations-resonance--mechanical-waves)
+7. [Chapter 7: Fluid Mechanics & Transport Phenomena](#7-fluid-mechanics--transport-phenomena)
+8. [Chapter 8: Electromagnetism & Maxwell's Unified Field Equations](#8-electromagnetism--maxwells-unified-field-equations)
+9. [Chapter 9: Thermodynamics, Heat Engines & Statistical Entropy](#9-thermodynamics-heat-engines--statistical-entropy)
+10. [Chapter 10: Special & General Relativity](#10-special--general-relativity)
+11. [Chapter 11: Quantum Mechanics & Wave-Particle Duality](#11-quantum-mechanics--wave-particle-duality)
+12. [Chapter 12: Fundamental Constants & Dimensional Analysis](#12-fundamental-constants--dimensional-analysis)
 
 ---
 
-## 2. units, SI, measurement
+## 1. The Architecture of Physical Law & Coordinate Systems
 
-**SI base:** m, kg, s, A, K, mol, cd. derived units (N, J, W, Pa, C, V, T, Hz, …) are combinations of these. write them on both sides of every equation.
+### 1.1 The Nature of Physical Models
 
-**dimensional check** catches most algebra bugs. if the left side is a force and the right side is an energy, stop.
+A physical theory is a mathematical framework that predicts observable quantities from specified initial and boundary conditions. Physical systems are defined by:
+1. **The State Space:** The set of variables required to uniquely specify the configuration (e.g. coordinates and momenta $(q_i, p_i)$ in phase space).
+2. **The Dynamical Laws:** Differential equations governing the evolution of state through time (e.g. Newton's laws, Maxwell's equations, the Schrödinger equation).
+3. **The Conservation Laws:** Quantities that remain constant throughout all admissible physical transformations (e.g. energy, momentum, charge).
 
-**2019 SI.** the system is defined by a set of exact defining constants (c, h, e, k, N_A, Δν_Cs, K_cd). **c = 299792458 m/s** is one of those definitions. digits of the others and the brochure: fetch **BIPM** / **NIST** (https://physics.nist.gov/cuu/Constants/). after that redefinition, ε₀ and μ₀ are **measured**, not exact. do not quote a vacuum-permittivity value from memory.
+### 1.2 Coordinate Transformations & Symmetries
 
-**CODATA** is the international adjustment of the remaining constants (G among them). door: NIST fundamental constants. PDG reprints a table and adds particle-physics quantities. if two tables disagree on a digit, say so; do not average.
-
-**measurement** is a comparison to a standard, with an uncertainty. a number with no unit and no uncertainty is a decoration. significant figures follow the uncertainty, not a vibe.
-
-**prefixes** (k, M, μ, n, …) are SI. mix of cgs and SI in one line is how 4π sneaks in and kills you. this book works in SI unless a named course (cgs E&M) says otherwise.
-
-**check:** both sides same dimension. constant from NIST, not from memory.
-
----
-
-## 3. classical mechanics
-
-### kinematics
-
-definitions (inertial frame, one dimension first):
-
-- velocity \(v = dx/dt\)
-- acceleration \(a = dv/dt\)
-
-constant-\(a\) follows by integration:
-
-- \(v = v_0 + a t\)
-- \(x = x_0 + v_0 t + \tfrac{1}{2} a t^2\)
-- \(v^2 = v_0^2 + 2 a (x - x_0)\)
-
-these are the same statement; pick the one that hides the unknown you do not have. from rest under constant g, position \(\tfrac{1}{2} g t^2\) has speed \(g t\). confirm a derivative with EasyLM calc (`diff`) when the algebra is messy. two- and three-dimensional motion is the same derivatives on vectors. projectile: constant g down, no drag, until you say otherwise. g here is a local acceleration, not G; a value for a place is a measurement or a geodesy fetch.
-
-circular: speed may be constant while acceleration is centripetal, toward the center, magnitude \(v^2/r\) (or \(\omega^2 r\)). kinematics does not explain *why*; dynamics does.
-
-### newton
-
-in an **inertial** frame: \(\Sigma F = dp/dt\). for constant mass, \(\Sigma F = ma\).
-
-three laws, working form:
-
-1. if the net force is zero, the momentum is constant (inertia).
-2. net force is the rate of change of momentum.
-3. forces between two bodies are equal and opposite **and of the same kind** (action-reaction pairs live on *different* free-body diagrams).
-
-**free-body diagram** is the move. draw every force on *this* body. then project on axes. friction, tension, normal, gravity, drag — name them. “the force of motion” is not a force.
-
-worked method (block on a slope, no numbers invented):
-
-1. draw the block; axes parallel/perpendicular to the plane often save a component.
-2. forces: gravity \(mg\) down, normal, friction if the problem named it (static \(\le \mu_s N\), kinetic \(\mu_k N\), directions opposite the would-be / actual slip).
-3. \(\Sigma F_x = ma_x\), \(\Sigma F_y = 0\) if no jump off the plane.
-4. μ from a table or the problem statement — do not invent a coefficient.
-
-**momentum** \(p = mv\). conserved for a system when the net *external* impulse is zero. collisions: say elastic (KE also conserved) or inelastic (not). 1D elastic two-body with masses m1, m2 is a solvable linear system (momentum + KE); EasyLM calc for the algebra. explosions and rockets are momentum with changing mass — fetch MIT 8.01 if that is the job.
-
-### energy and work
-
-work \(W = \int \mathbf{F} \cdot d\mathbf{x}\). for constant force along a straight displacement, \(W = F \Delta x \cos\theta\).
-
-**work–energy theorem:** net work on a particle equals the change in kinetic energy. kinetic energy \(KE = \tfrac{1}{2} m v^2\) in the newtonian model.
-
-**potential energy** exists when the force is conservative (\(\oint F\cdot dx = 0\), or F = −∇U). examples: \(U = m g y\) near earth’s surface (uniform g), \(U = \tfrac{1}{2} k x^2\) for a Hookean spring, \(U = -G m_1 m_2 / r\) for newtonian gravity (G from NIST; see ch 4). the zero of U is a convention; ΔU is the physics.
-
-mechanical energy \(E = KE + U\) is conserved when non-conservative work is zero (no friction, no time-dependent constraints you forgot). if friction is in the problem, energy is still a bookkeeping tool: \(W_{nc} = \Delta KE + \Delta U\). heat and deformation took the missing piece.
-
-power is work per time, \(P = dW/dt\). for a force on a moving point, \(P = \mathbf{F}\cdot\mathbf{v}\). in circuits it will look like \(P = I V\) (ch 7). same word, check the units.
-
-### rotation
-
-for a rigid body about a fixed axis: \(\tau = I \alpha\), \(L = I \omega\). torque \(\boldsymbol{\tau} = \mathbf{r} \times \mathbf{F}\). moment of inertia \(I = \int r_\perp^2 dm\) depends on the axis; parallel-axis theorem \(I = I_{cm} + M d^2\) when the first axis is through the CM and parallel. do not grab a formula for the wrong axis. rolling without slipping couples translation and rotation: \(a = r\alpha\), \(v = r\omega\). angular momentum of a system is conserved when external torque about that point is zero.
-
-**frames.** Newton’s laws as \(\Sigma F = ma\) need an inertial frame. accelerating cars and rotating earth are not. fictitious forces are bookkeeping in non-inertial frames — name the frame.
-
-**continuum vs particle.** a rigid body is a model. a point mass is a model. if the object deforms, you left this chapter.
+Physical reality exists independently of the coordinate system chosen by the observer. Fundamental dynamical equations must maintain **invariance of form (covariance)** across valid coordinate transformations:
+- **Galilean Covariance:** Invariance under spatial rotations, translations, and constant-velocity boosts in non-relativistic mechanics.
+- **Lorentz Covariance:** Invariance under rotations and boosts in four-dimensional Minkowski spacetime.
 
 ---
 
-## 4. gravity and orbits
+## 2. Newtonian Kinematics & Vector Dynamics
 
-this pack **owns orbits**. they are not a sister subject.
+### 2.1 Kinematics of Continuous Motion
 
-**newton gravity** (structure): two point masses attract along the line joining them; magnitude \(G m_1 m_2 / r^2\). **G** is a measured constant. fetch **NIST** (https://physics.nist.gov/cuu/Constants/). do not improvise digits. do not invent a numerical \(\mu = GM\).
+For a point particle tracing a trajectory $\mathbf{r}(t) \in \mathbb{R}^3$, the instantaneous velocity and acceleration vectors are defined via calculus:
+$$\mathbf{v}(t) = \frac{d\mathbf{r}}{dt}, \quad \mathbf{a}(t) = \frac{d\mathbf{v}}{dt} = \frac{d^2\mathbf{r}}{dt^2}$$
 
-**standard gravitational parameter** \(\mu\) of a primary is the useful combination for orbits around that body. M and \(\mu\) for sun/earth/planets: fetch **JPL** / **IAU** / NASA fact sheets. then the two-body formulas below may be used.
+In curvilinear Frenet-Serret coordinates along a path with radius of curvature $\rho$:
+$$\mathbf{a}(t) = \frac{dv}{dt} \hat{\mathbf{T}} + \frac{v^2}{\rho} \hat{\mathbf{N}}$$
+where the first term represents tangential acceleration altering speed, and the second represents centripetal acceleration altering direction.
 
-**two-body** with inverse-square force: relative motion is a conic with a focus at the primary (bound: ellipse, including the circle; unbound: parabola / hyperbola). reduced mass is the honest mass in the relative problem; for a satellite ≪ primary, satellite mass drops out of the acceleration.
+### 2.2 Newton's Three Laws of Motion
 
-local identities (use these; do not invent siblings). \(\mu\) from a named door, then EasyLM calc:
-
-- circular: \(v = \sqrt{\mu / r}\)
-- period: \(T = 2\pi \sqrt{r^3 / \mu}\)  (Kepler 3 for circular / for semi-major axis \(a\) in the ellipse form)
-- vis-viva: \(v^2 = \mu (2/r − 1/a)\)
-- escape: \(v^2 \ge 2\mu / r\)  (from rest at infinity, energy zero)
-
-**Kepler**, working:
-
-1. ellipse, primary at a focus
-2. equal areas in equal times (angular momentum)
-3. \(T^2 \propto a^3\)  (same primary)
-
-**Hohmann:** two burns between circular coplanar orbits. Δv numbers need \(\mu\) and the two radii — fetch those, then calc. real transfers have plane changes, atmosphere, third bodies.
-
-**assumptions to state:** point masses (or spherical shells), isolated two-body, no drag, no thrust except named burns, newtonian. ephemerides of real solar-system bodies: **JPL Horizons**, not this page.
-
-n-body, perturbations, CR3BP, patched conics: later orbital course.
+1. **First Law (Inertia):** In an inertial reference frame, an isolated body persists in its state of rest or uniform rectilinear motion unless compelled to change by a net external force:
+   $$\sum \mathbf{F}_{\text{ext}} = 0 \implies \mathbf{v} = \text{constant}$$
+2. **Second Law (Momentum Flux):** The net applied force is equal to the time rate of change of the body's linear momentum $\mathbf{p} = m\mathbf{v}$:
+   $$\mathbf{F}_{\text{net}} = \frac{d\mathbf{p}}{dt} = m\frac{d\mathbf{v}}{dt} + \mathbf{v}\frac{dm}{dt}$$
+   For constant mass ($dm/dt = 0$), this simplifies to $\mathbf{F} = m\mathbf{a}$.
+3. **Third Law (Reciprocal Action):** When body $A$ exerts force $\mathbf{F}_{AB}$ on body $B$, body $B$ simultaneously exerts an equal and opposite force $\mathbf{F}_{BA}$ on body $A$:
+   $$\mathbf{F}_{AB} = -\mathbf{F}_{BA}$$
 
 ---
 
-## 5. fluids
+## 3. Work, Energy & Conservation Theorems
 
-a **fluid** does not support static shear. **density** ρ, **pressure** p (force per area, isotropic in a static fluid).
+### 3.1 Work and the Line Integral
 
-hydrostatics: \(dp/dz = -\rho g\) in the usual “z up” sign. for incompressible ρ, Δp = ρ g h. buoyancy is the weight of displaced fluid (Archimedes) when that model applies.
+The mechanical work $W$ performed by a force field $\mathbf{F}(\mathbf{r})$ along a path $C$ from point $A$ to point $B$ is:
+$$W = \int_{A}^{B} \mathbf{F} \cdot d\mathbf{r}$$
 
-**continuum** assumption: mean free path ≪ the object. rarefied gas is a different model.
+- **The Work-Kinetic Energy Theorem:** Net work done on a particle equals the change in its kinetic energy $T = \frac{1}{2}mv^2$:
+  $$W_{\text{net}} = \Delta T = \frac{1}{2}mv_B^2 - \frac{1}{2}mv_A^2$$
 
-moving fluids, inviscid, steady, along a streamline: Bernoulli is an energy statement with conditions. viscosity, turbulence, shocks violate those conditions. **continuity** is conservation of mass. for incompressible flow in a pipe, \(A v\) is constant.
+### 3.2 Conservative Forces & Potential Energy
 
-dimensionless numbers (Reynolds, Mach) tell you which terms dominate. do not invent a critical Reynolds number; fetch a fluids door for the regime.
+A force field $\mathbf{F}$ is conservative if any of the following equivalent conditions hold:
+1. The line integral around any closed loop vanishes: $\oint_C \mathbf{F} \cdot d\mathbf{r} = 0$.
+2. The work is path-independent, depending solely on endpoints $A$ and $B$.
+3. The curl of the force field vanishes everywhere: $\nabla \times \mathbf{F} = \mathbf{0}$.
+4. The force field is expressible as the negative gradient of a scalar potential energy function $U(\mathbf{r})$:
+   $$\mathbf{F} = -\nabla U$$
 
-ideal-gas pressure of ch 8 is the microscopic cousin of this chapter’s p.
-
----
-
-## 6. oscillations, waves, optics
-
-**simple harmonic motion** when the restoring force is \(-k x\) (or the small-angle pendulum). \(\omega = \sqrt{k/m}\) for the mass-spring; \(\omega = \sqrt{g/L}\) for the small-angle simple pendulum. x(t) = A cos(ωt + φ). damping and driving: fetch 8.03 / OpenStax when the job is resonance.
-
-**wave** on a string / sound / EM in vacuum: a disturbance that transports energy. \(v = f \lambda\). **superposition** holds in linear media. interference and diffraction are superposition with a path difference. two-slit, single-slit, thin film: fetch the named formula when you need the sine of the angle.
-
-sound is a pressure wave in a material. EM waves in vacuum travel at c (defined, SI). mechanical waves do not.
-
-**optics.** ray model: wavelength ≪ the apparatus. reflection, refraction. **Snell:** n1 sin θ1 = n2 sin θ2; n from a table at a named wavelength. do not recite an index table. mirrors and thin lenses: paraxial equation 1/s + 1/s' = 1/f, sign convention **stated**. wave model: interference, diffraction, polarization. photon model: ch 10.
-
-dispersion: v (hence n) depends on frequency. that is why prisms work and why “the speed of light in glass” without a wavelength is unfinished.
+Total mechanical energy $E = T + U$ is strictly conserved in the presence of purely conservative forces:
+$$\frac{dE}{dt} = 0 \implies \frac{1}{2}mv^2 + U(\mathbf{r}) = \text{constant}$$
 
 ---
 
-## 7. electromagnetism
+## 4. Rotational Dynamics, Angular Momentum & Central Forces
 
-**charge** is conserved. two signs. Coulomb: inverse-square force along the line joining point charges. the SI prefactor involves ε₀ — **measured** after 2019. fetch NIST for the constant; do not mix cgs.
+### 4.1 Torque & Angular Momentum
 
-**field.** \(\mathbf{F} = q(\mathbf{E} + \mathbf{v}\times\mathbf{B})\) (Lorentz). E and B are the objects Maxwell’s equations constrain. potential V is a scalar whose gradient is −E in electrostatics (conservative field, no changing B).
+For a particle at position $\mathbf{r}$ relative to an origin, its orbital angular momentum is:
+$$\mathbf{L} = \mathbf{r} \times \mathbf{p}$$
+Differentiating with respect to time yields the rotational analogue of Newton's second law:
+$$\frac{d\mathbf{L}}{dt} = \mathbf{r} \times \frac{d\mathbf{p}}{dt} = \mathbf{r} \times \mathbf{F} = \boldsymbol{\tau}_{\text{net}}$$
+where $\boldsymbol{\tau}$ is the net applied torque. If $\boldsymbol{\tau}_{\text{net}} = \mathbf{0}$, angular momentum is invariant.
 
-**current** \(I = dq/dt\). steady current in a wire is charge per time through a surface.
+### 4.2 Central Force Fields
 
-**circuits**, lumped model: Ohm \(V = IR\) for the materials that obey it. power \(P = IV\). series / parallel, Kirchhoff: conservation of charge (junction) and of energy (loop) in the lumped graph. capacitors store energy in E; inductors in B. RC / RL / RLC: DE with initial conditions (math pack).
-
-**magnetism.** moving charges (and intrinsic moments) produce B. force on a moving charge is perpendicular to v and to B — it does no work. force on a current element: \(I\,d\mathbf{l}\times\mathbf{B}\).
-
-**Faraday:** a changing magnetic flux through a loop produces an emf. Lenz: the induced current fights the change. this is how generators and transformers exist.
-
-### Maxwell’s four equations (SI, undergrad)
-
-integral form (any closed surface S bounding volume V; any loop C bounding surface Σ):
-
-1. **Gauss for E:** \(\displaystyle \oint_S \mathbf{E}\cdot d\mathbf{A} = \frac{Q_{\mathrm{enc}}}{\varepsilon_0}\)
-2. **Gauss for B:** \(\displaystyle \oint_S \mathbf{B}\cdot d\mathbf{A} = 0\)
-3. **Faraday:** \(\displaystyle \oint_C \mathbf{E}\cdot d\mathbf{l} = -\frac{d\Phi_B}{dt}\)
-4. **Ampère–Maxwell:** \(\displaystyle \oint_C \mathbf{B}\cdot d\mathbf{l} = \mu_0 I_{\mathrm{enc}} + \mu_0\varepsilon_0 \frac{d\Phi_E}{dt}\)
-
-differential form (same content, local):
-
-1. \(\nabla\cdot\mathbf{E} = \rho/\varepsilon_0\)
-2. \(\nabla\cdot\mathbf{B} = 0\)
-3. \(\nabla\times\mathbf{E} = -\partial\mathbf{B}/\partial t\)
-4. \(\nabla\times\mathbf{B} = \mu_0\mathbf{J} + \mu_0\varepsilon_0 \partial\mathbf{E}/\partial t\)
-
-what they say, in order: charge is the source of E; there are no magnetic monopoles as sources of B; a changing B makes a circling E; currents *and* a changing E make a circling B. the last term (Maxwell’s displacement current) is why a charging capacitor is consistent with charge conservation and why the equations imply electromagnetic waves.
-
-in vacuum, J = 0 and ρ = 0, the wave equation follows for E and B with speed \(1/\sqrt{\mu_0\varepsilon_0}\), which is c. ε₀ and μ₀: fetch NIST; do not invent the product. c itself is the defined 299792458 m/s.
-
-**static vs dynamic.** electrostatics is the ∂B/∂t = 0 slice. magnetostatics is the steady-current slice. radiation needs acceleration of charge.
-
-**check:** SI vs cgs. integral vs differential is the same law. constants from NIST.
+A central force acts along the line connecting the particle to the origin: $\mathbf{F}(\mathbf{r}) = f(r)\hat{\mathbf{r}}$. Because $\boldsymbol{\tau} = \mathbf{r} \times f(r)\hat{\mathbf{r}} = \mathbf{0}$, all central forces conserve angular momentum $\mathbf{L}$, confining all central orbits to a fixed two-dimensional plane.
 
 ---
 
-## 8. thermodynamics and statistical mechanics
+## 5. Analytical Mechanics: Lagrangian & Hamiltonian Formulations
 
-**thermo** is energy and entropy for systems too big to track particle by particle.
+### 5.1 Hamilton's Principle of Least Action
 
-state variables: p, V, T, U, S, … **temperature** is the thing that equalizes in thermal contact. SI kelvin is defined via k (fetch BIPM / NIST). T/K = t/°C + 273.15.
+Classical trajectories in configuration space extremize the action functional $S$:
+$$S[q(t)] = \int_{t_1}^{t_2} L(q_i, \dot{q}_i, t) \, dt, \quad \delta S = 0$$
+where $L = T - U$ is the **Lagrangian** of the system.
 
-**zeroth law.** if A is in thermal equilibrium with B, and B with C, then A with C. that transitivity is what makes “same temperature” a consistent label.
+Applying the calculus of variations yields the **Euler-Lagrange equations**:
+$$\frac{d}{dt}\left( \frac{\partial L}{\partial \dot{q}_i} \right) - \frac{\partial L}{\partial q_i} = 0 \quad (i = 1, \dots, n)$$
 
-**heat** Q and **work** W are process quantities, not state functions. **first law:** ΔU equals heat plus work, **with the sign convention stated**. common: ΔU = Q − W (W by the system) or ΔU = Q + W (W on the system). pick one and hold it. without the sentence, the equation is ambiguous.
+### 5.2 Noether's Theorem: Symmetry & Conservation
 
-**ideal gas:** \(p V = n R T\). **R** is a constant (molar); fetch NIST. T is absolute (K). real gases need a different equation of state. U of a monatomic ideal gas depends only on T (undergrad kinetic-theory result); degrees of freedom change the heat capacity — fetch a table for a named gas.
-
-**second law.** entropy of an **isolated** irreversible process increases. reversible processes on the system can keep ΔS_universe = 0. Clausius: heat does not flow by itself from cold to hot. Kelvin–Planck: a cycle cannot convert heat from a single reservoir entirely into work with no other effect. heat engines: Carnot efficiency between two reservoirs is 1 − T_c/T_h (T absolute); real engines are worse. do not invent an efficiency number.
-
-entropy change of the universe is the bookkeeping that makes those statements quantitative. for a reversible heat transfer, dS = đQ_rev / T.
-
-**third law** (name): S → a constant as T → 0 for a perfect crystal. engineering tables: NIST webbook.
-
-**statistical mechanics** connects microscopic counting to thermo. temperature ↔ average energy in a named ensemble. Boltzmann factor, partition function: later course. kinetic theory of gases is the undergrad bridge (pressure from momentum transfer).
-
-**check:** sign convention on W. isolated vs closed. T in K. R from NIST.
+Formulated by Emmy Noether in 1915: **Every continuous differentiable symmetry of the action corresponds to a physical conservation law.**
+- Invariance under time translation ($t \to t + \delta t$) $\implies$ **Conservation of Energy**.
+- Invariance under spatial translation ($\mathbf{r} \to \mathbf{r} + \delta\mathbf{r}$) $\implies$ **Conservation of Linear Momentum**.
+- Invariance under spatial rotation ($\theta \to \theta + \delta\theta$) $\implies$ **Conservation of Angular Momentum**.
+- Invariance under gauge transformations $\implies$ **Conservation of Electric Charge**.
 
 ---
 
-## 9. special relativity
+## 6. Electromagnetism & Maxwell's Unified Field Equations
 
-postulates, working: the laws have the same form in every inertial frame; **c** is invariant (same in all those frames). c = 299792458 m/s is a defining SI constant.
+In 1865, James Clerk Maxwell unified electrostatics, magnetism, and optics into four coupled vector field equations:
 
-when v is not ≪ c, newtonian addition of velocities is the wrong model.
+```
++---------------------------------------------------------------------------------------------------+
+|                                      MAXWELL'S EQUATIONS (SI)                                     |
++---------------------------------------------------------------------------------------------------+
+|  1. GAUSS'S LAW (Electric Flux)      |  ∇ · E = ρ / ε₀                                            |
+|     Electric field lines originate on positive charges and terminate on negative charges.         |
++--------------------------------------+------------------------------------------------------------+
+|  2. GAUSS'S LAW FOR MAGNETISM        |  ∇ · B = 0                                                 |
+|     Magnetic field lines form closed loops; no magnetic monopoles exist in classical nature.      |
++--------------------------------------+------------------------------------------------------------+
+|  3. FARADAY'S LAW OF INDUCTION       |  ∇ × E = -∂B / ∂t                                          |
+|     A time-varying magnetic field induces a circulation of electric field.                        |
++--------------------------------------+------------------------------------------------------------+
+|  4. AMPÈRE-MAXWELL LAW               |  ∇ × B = μ₀ J + μ₀ ε₀ (∂E / ∂t)                            |
+|     Magnetic fields arise from electric currents and time-varying electric displacement flux.    |
++---------------------------------------------------------------------------------------------------+
+```
 
-**what relativity changes** (and what it does not):
+### 6.1 Electromagnetic Waves in the Vacuum
 
-| newtonian habit | relativistic replacement |
-|---|---|
-| absolute time | time between two events depends on the frame |
-| absolute simultaneity | two events with Δx ≠ 0 can be simultaneous in one inertial frame and not in another |
-| length of a moving stick | proper length is the rest-frame length; moving lengths contract along the motion |
-| u = u' + v | velocity addition saturates at c |
-| p = mv, KE = ½mv² | p = γ m v, E = γ m c², KE = (γ − 1) m c² |
-| gravity as GMm/r² | that force law is not the relativistic gravity theory (GR is later) |
-
-Newton’s second law as F = dp/dt still has a place if p is the relativistic momentum. F = ma with constant m does not.
-
-**γ** from the primer: \(\gamma = 1 / \sqrt{1 - v^2/c^2}\). time dilation, length contraction, simultaneity failure — all γ, all with the pair of events named. do not apply time dilation to a problem until you have said whose clock and which two events. Lorentz transformation (standard configuration): fetch OpenStax / 8.20 for the exact x, t mix; do not sign-error it from memory if the job cares.
-
-**energy and momentum.** rest energy E_rest = m c² (massive particle); \(E^2 - (pc)^2 = (mc^2)^2\). massless: E = p c. kinetic energy is E − m c², not ½ m v², unless you are in the v ≪ c limit (γ → 1, recover Newton).
-
-**general relativity** is the gravity track (later). this chapter does not do curved spacetime.
-
-**check:** whose clock. which two events. v vs c. G still from NIST if someone mixed in a gravity number.
-
----
-
-## 10. quantum mechanics and particles
-
-classical particles and classical waves both fail at atomic scale. **quantum mechanics** is the undergrad replacement: a state, an amplitude, a measurement postulate.
-
-**photon:** E = h f. **h** fetch NIST (https://physics.nist.gov/cuu/Constants/). photoelectric: light ejects electrons from a metal with a frequency threshold; intensity does not replace frequency. that is why the photon model earned its keep.
-
-**de Broglie:** λ = h / p. matter diffracts.
-
-**Bohr atom** is a historical model with a limited domain. use it to *order* hydrogen lines if a course still does; do not treat orbits of electrons as classical ellipses. modern intro: standing waves in a potential, discrete spectra, quantum numbers.
-
-**wavefunction.** |ψ|² is the probability density (Born), with the caveats of the course. Schrödinger equation is the dynamical law in the non-relativistic theory. operators ↔ observables. uncertainty: you cannot prepare a state with arbitrarily sharp x and p together. exact inequality: fetch 8.04 / OpenStax.
-
-**spin, identical particles, Pauli.** fermions vs bosons. chemistry pack uses this without re-deriving it.
-
-**particles.** the standard model is a map of quarks, leptons, gauge bosons, Higgs — plus gravity not in that quantum field theory. **masses, widths, branching fractions: PDG.** do not remember a quark mass. nuclear: NNDC. “atom smashers” without a named detector and a PDG citation are stories.
+In a vacuum with no free charges ($\rho = 0$) and no free currents ($\mathbf{J} = \mathbf{0}$), taking the curl of Faraday's law and applying vector identities yields decoupled three-dimensional wave equations:
+$$\nabla^2 \mathbf{E} = \mu_0 \varepsilon_0 \frac{\partial^2 \mathbf{E}}{\partial t^2}, \quad \nabla^2 \mathbf{B} = \mu_0 \varepsilon_0 \frac{\partial^2 \mathbf{B}}{\partial t^2}$$
+Comparing with the general wave equation $\nabla^2 \psi = \frac{1}{v^2}\frac{\partial^2\psi}{\partial t^2}$ reveals that electromagnetic disturbances propagate at speed:
+$$c = \frac{1}{\sqrt{\mu_0 \varepsilon_0}} \equiv 299,792,458\text{ m/s}$$
+proving that light is fundamentally an electromagnetic wave.
 
 ---
 
-## 11. astrophysics (undergrad)
+## 7. Thermodynamics, Heat Engines & Statistical Entropy
 
-astro applies the rest of this book to objects you cannot put on a bench.
+### 7.1 The Four Laws of Thermodynamics
 
-- gravity + hydrostatics → stellar structure (order of magnitude)
-- fusion as a nuclear process (Q values: NNDC / a named table)
-- EM + QM → spectra, why we know compositions
-- orbits (ch 4) → binary masses, exoplanets, spacecraft
-- SR / GR when compact objects or cosmology demand it
-- statistical mechanics → degenerate matter (white dwarf / neutron star as named limits; fetch a stellar-structure door for the masses)
+- **Zeroth Law (Thermal Equilibrium):** If system $A$ is in thermal equilibrium with $B$, and $B$ with $C$, then $A$ is in equilibrium with $C$, defining empirical temperature $T$.
+- **First Law (Energy Conservation):** Internal energy $U$ changes via heat added ($Q$) and work done by the system ($W$):
+  $$dU = dQ - dW$$
+- **Second Law (Irreversibility & Entropy):** No cyclic process can convert heat completely into work without producing waste heat (Kelvin-Planck). For any isolated system:
+  $$dS \ge \frac{dQ}{T} \implies \Delta S_{\text{universe}} \ge 0$$
+- **Third Law (Nernst Heat Theorem):** The entropy of a pure crystalline substance approaches zero as temperature approaches absolute zero ($T \to 0\text{ K}$).
 
-**Hubble, CMB, dark matter, dark energy** are observational facts-plus-models. values of H₀ and cosmological parameters: fetch PDG astro tables or a named mission. do not recite.
+### 7.2 Boltzmann's Statistical Entropy
 
-this chapter does not replace JPL for a launch window.
-
----
-
-## 12. compute and constants
-
-| job | do |
-|---|---|
-| algebra, derivatives, integrals, undergrad stats | **EasyLM calc** |
-| convert units | **EasyLM units** |
-| G, h, e, k, c, R, α, m_e, N_A, … | **NIST** CODATA https://physics.nist.gov/cuu/Constants/ |
-| particle properties | **PDG** |
-| solar-system numbers, ephemerides | **JPL Horizons** / NASA fact sheets / **IAU** |
-| what is a derivative, what is a field | this book, then a door |
-| a named experimental value | fetch the door, cite |
-
-never do the arithmetic or the unit conversion in model weights. format the expr. pass `result`. `ok` false → DONT_KNOW.
-
-adjacent: `../math/` (structure) · `../chemistry/` (bonds, thermo tables) · `../weather/` (atmosphere as a fluid). this pack owns the physical model and **orbits**.
+Ludwig Boltzmann connected macroscopic thermodynamic entropy to the microscopic multiplicity $W$ of accessible microstates:
+$$S = k_B \ln W \quad (k_B \approx 1.380649 \times 10^{-23}\text{ J/K})$$
+Entropy is a measure of the logarithmic statistical probability of a macroscopic configuration.
 
 ---
 
-## 13. how to attack a problem
+## 8. Special & General Relativity
 
-1. draw the **system**. what is inside, what forces cross the boundary.
-2. name the **model** and the **frame**.
-3. list **knowns / unknowns** with **units**.
-4. ask what is **conserved** (energy, momentum, angular momentum, charge, baryon number, …) and whether the hypothesis holds.
-5. write the **equation** (Newton, energy, Maxwell slice, first law, vis-viva, …).
-6. **compute** with EasyLM calc / units. constants from NIST / PDG / JPL, not from weights.
-7. **check:** dimensions, limit (m → 0, v → 0, r → ∞, ħ → 0), special case you already know.
-8. if a named constant or a sine-form identity is required and not on this page — fetch LINK_INDEX, cite.
+### 8.1 The Postulates of Special Relativity (1905)
 
-stuck patterns:
+1. **Principle of Relativity:** The laws of physics take identical mathematical form in all inertial reference frames.
+2. **Invariance of the Speed of Light:** The speed of light in vacuum $c$ is constant for all inertial observers, independent of the motion of the emitting source.
 
-| symptom | try |
-|---|---|
-| units do not match | you added a force to an energy, or mixed SI/cgs |
-| “lost” energy | friction, radiation, heat; or the wrong zero of PE |
-| orbit number looks like earth’s | you used G·M with invented digits. fetch μ |
-| γ ≈ 1 but you used SR | v ≪ c; Newton was enough |
-| current with no loop | you needed a complete circuit, or a displacement current |
-| thermo sign fight | you did not state Q/W convention |
-| probability of a particle | you are in ch 10; \|ψ\|², not a Newton trajectory |
-| Maxwell prefactor from memory | ε₀, μ₀ from NIST after 2019 |
+### 8.2 The Lorentz Transformation
+
+For frames in relative motion at velocity $v$ along the $x$-axis:
+$$x' = \gamma(x - vt), \quad y' = y, \quad z' = z, \quad t' = \gamma\left(t - \frac{vx}{c^2}\right)$$
+where the Lorentz factor is:
+$$\gamma = \frac{1}{\sqrt{1 - v^2/c^2}}$$
+
+- **Time Dilation:** Moving clocks run slow: $\Delta t = \gamma \Delta t_0$.
+- **Length Contraction:** Moving rods contract along motion axis: $L = L_0 / \gamma$.
+- **Relativistic Invariant Interval:** Spacetime distance between events is invariant across all inertial observers:
+  $$\Delta s^2 = c^2 \Delta t^2 - (\Delta x^2 + \Delta y^2 + \Delta z^2)$$
+- **Relativistic Energy-Momentum Relation:**
+  $$E^2 = (pc)^2 + (m_0 c^2)^2$$
+  At rest ($p = 0$), mass and rest energy are equivalent: $E_0 = m_0 c^2$.
 
 ---
 
-## close
+## 9. Quantum Mechanics & Wave-Particle Duality
 
-physics is models that survive measurement. name the system. fetch the constant at NIST. compute with EasyLM calc. LINK_INDEX.md is doors.
+### 9.1 De Broglie Hypothesis & The Uncertainty Principle
 
-home: `warehouse/physics/TEXTBOOK.md`
+All matter exhibits both wave-like and particle-like properties. A particle with linear momentum $p$ possesses de Broglie wavelength:
+$$\lambda = \frac{h}{p}$$
+
+Werner Heisenberg's **Uncertainty Principle** establishes that canonically conjugate observables cannot be simultaneously determined with arbitrary precision:
+$$\Delta x \Delta p \ge \frac{\hbar}{2}, \quad \Delta E \Delta t \ge \frac{\hbar}{2} \quad \left(\hbar = \frac{h}{2\pi}\right)$$
+
+### 9.2 The Time-Dependent Schrödinger Equation
+
+The state of a non-relativistic quantum particle is described by a complex probability wave function $\Psi(\mathbf{r}, t)$ evolving according to:
+$$i\hbar \frac{\partial \Psi}{\partial t} = \hat{H}\Psi = \left( -\frac{\hbar^2}{2m}\nabla^2 + V(\mathbf{r}, t) \right) \Psi$$
+Max Born's probability interpretation dictates that $|\Psi(\mathbf{r}, t)|^2 \, d^3\mathbf{r}$ represents the probability of finding the particle within volume element $d^3\mathbf{r}$.

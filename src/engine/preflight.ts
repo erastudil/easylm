@@ -39,9 +39,11 @@ export function clockQueryOf(text: string): string | null {
   return null;
 }
 
-export function warehouseQueryOf(text: string): string | null {
+export function stacksQueryOf(text: string): string | null {
   const t = String(text || '').trim();
   const dewey = t.match(/\bdewey\s+(\d{3})\b/i);
   if (dewey) return dewey[1];
   return null;
 }
+
+export const warehouseQueryOf = stacksQueryOf;

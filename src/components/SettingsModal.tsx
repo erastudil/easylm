@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { DeviceInfo } from '../engine/device';
 
 interface SettingsModalProps {
@@ -161,15 +161,17 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           </div>
 
           <p style={{ margin: '0 0 0.75rem 0', fontSize: '0.74rem', color: '#a1a1aa', lineHeight: 1.5 }}>
-            Defines how much conversation history and attached document context is retained in WebGPU memory during inference.
+            Defines how much conversation history, long-form documents, and academic library context is retained in WebGPU KV-cache memory during inference. 32k is the standard default for 8GB cards; up to 128k–256k on high-VRAM machines.
           </p>
 
           <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
             {[
-              { val: 2048, label: '2,048 (Ultralight)' },
-              { val: 4096, label: '4,096 (Standard)' },
-              { val: 8192, label: '8,192 (High)' },
-              { val: 16384, label: '16,384 (Max VRAM)' }
+              { val: 8192, label: '8k (Ultralight)' },
+              { val: 16384, label: '16k (Light Laptop)' },
+              { val: 32768, label: '32k (8GB Default)' },
+              { val: 65536, label: '64k (Extended)' },
+              { val: 131072, label: '128k (Deep Context)' },
+              { val: 262144, label: '256k (Workstation Max)' }
             ].map(opt => {
               const isSelected = contextLimit === opt.val;
               const isRec = opt.val === recommendedLimit;

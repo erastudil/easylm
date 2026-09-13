@@ -11,7 +11,7 @@ All tokens and model generations run directly on **your GPU** via WebGPU. No acc
 | 🧮 **Math Calculator** | **100% Local & Offline** | Evaluates formulas directly: \`calc("sqrt(144) * (50 + 2)")\` → \`624\` |
 | 📏 **Unit Converter** | **100% Local & Offline** | Exact physics conversions: \`units("100 km/h to mph")\` or \`units("72 deg F to deg C")\` |
 | 🕒 **World Clock** | **100% Local & Offline** | Instant system time & global timezones: \`datetime("Tokyo")\` |
-| 📚 **Knowledge Warehouse** | **100% Local & Offline** | Subject textbooks + official doors (NIST, OpenStax, MIT OCW). Ask a topic or Dewey class. |
+| 🏛️ **The Stacks (University Library)** | **100% Local & Offline** | 28 undergraduate subject textbooks + official doors across Dewey 000–900: \`stacks("astronomy")\`, \`stacks("psychology")\` |
 | 🌐 **Web Hands** | **Network Lookups** | Live web search, page reader, weather, and FX (*disabled in Kid Safe mode*) |
 
 ---
@@ -19,7 +19,7 @@ All tokens and model generations run directly on **your GPU** via WebGPU. No acc
 ### Privacy & Data Boundaries
 - **What stays strictly on your device**: All prompts, uploaded documents, chat history, and memories stay in this browser's local sandbox.
 - **What is streamed**: Model weights stream once from Hugging Face into browser cache on first run.
-- **Kid Safe Mode**: Restricts tool executions to purely local hands (math, units, clock, warehouse). Network lookups — including dictionary (external API) — stay completely off.
+- **Kid Safe Mode**: Restricts tool executions to purely local hands (math, units, clock, library stacks). Network lookups — including dictionary (external API) — stay completely off.
 
 ### Quick Controls
 - 🧠 **Think (Top Bar)**: Enable step-by-step chain-of-thought reasoning before answers.

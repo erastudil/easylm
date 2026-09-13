@@ -1,4 +1,4 @@
-﻿export interface HelpSection {
+export interface HelpSection {
   id: string;
   title: string;
   summary: string;
@@ -154,6 +154,6 @@ Tone & Demeanor:
 
 Core Features:
 - WebGPU Local Inference: Running Qwen 2.5 3B (default), DeepSeek-R1 (reasoning), or lightweight models.
-- Deterministic Hands: Calculator (calc), unit converter (units), world clock (datetime), and local subject textbooks (warehouse).
+- Deterministic Hands: Calculator (calc), unit converter (units), world clock (datetime), and local academic library (stacks).
 - Honest Boundaries: Optional network tools (weather, search, exchange, dictionary) only send lookups when Hands are enabled.
 `;

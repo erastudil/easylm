@@ -193,6 +193,7 @@ export interface ProgressStatus {
 
 let activeEngine: MLCEngine | null = null;
 let currentLoadedModel: string = '';
+let currentContextLimit: number = 32768;
 let isInitializing: boolean = false;
 let initPromise: Promise<MLCEngine> | null = null;
 
@@ -201,11 +202,12 @@ export function isWebGPUSupported(): boolean {
 }
 
 /**
- * Initialize WebLLM engine with real-time progress callbacks
+ * Initialize WebLLM engine with real-time progress callbacks and custom context window
  */
 export async function getOrInitEngine(
   modelId: string = DEFAULT_MODEL_ID,
-  onProgress?: (p: ProgressStatus) => void
+  onProgress?: (p: ProgressStatus) => void,
+  contextWindowSize?: number
 ): Promise<MLCEngine> {
   if (!isWebGPUSupported()) {
     throw new Error('WebGPU is not supported or not enabled in this browser. Please use Chrome, Edge, or enable WebGPU.');
@@ -214,9 +216,19 @@ export async function getOrInitEngine(
     throw new Error('That model is not offered in this EasyLM build.');
   }
 
+  const targetContext = contextWindowSize || currentContextLimit;
+
   if (activeEngine && currentLoadedModel === modelId) {
+    if (contextWindowSize && contextWindowSize !== currentContextLimit) {
+      currentContextLimit = targetContext;
+      try {
+        await activeEngine.reload(modelId, { context_window_size: targetContext });
+      } catch (e) {
+        console.warn('Could not dynamically reload context window size:', e);
+      }
+    }
     if (onProgress) {
-      onProgress({ text: `Engine resident: ${modelId} active in WebGPU VRAM.`, progress: 1.0 });
+      onProgress({ text: `Engine resident: ${modelId} active in WebGPU VRAM (${targetContext.toLocaleString()} ctx).`, progress: 1.0 });
     }
     return activeEngine;
   }
@@ -237,17 +249,24 @@ export async function getOrInitEngine(
         activeEngine = null;
       }
 
-      const engine = await CreateMLCEngine(modelId, {
-        appConfig: EASYLM_APP_CONFIG,
-        initProgressCallback: (report: InitProgressReport) => {
-          if (onProgress) {
-            onProgress({
-              text: report.text || `Warming weights: ${(report.progress * 100).toFixed(0)}%`,
-              progress: report.progress || 0
-            });
+      currentContextLimit = targetContext;
+      const engine = await CreateMLCEngine(
+        modelId,
+        {
+          appConfig: EASYLM_APP_CONFIG,
+          initProgressCallback: (report: InitProgressReport) => {
+            if (onProgress) {
+              onProgress({
+                text: report.text || `Warming weights: ${(report.progress * 100).toFixed(0)}%`,
+                progress: report.progress || 0
+              });
+            }
           }
+        },
+        {
+          context_window_size: targetContext
         }
-      });
+      );
 
       activeEngine = engine;
       currentLoadedModel = modelId;
@@ -288,9 +307,10 @@ export async function streamChatCompletion(
   temperature: number = 0.4,
   maxTokens: number = 4096,
   onChunk: (chunkText: string) => void,
-  onProgress?: (p: ProgressStatus) => void
+  onProgress?: (p: ProgressStatus) => void,
+  contextWindowSize?: number
 ): Promise<{ fullText: string; thinking?: string; loopDetected?: boolean; loopReason?: string }> {
-  const engine = await getOrInitEngine(modelId, onProgress);
+  const engine = await getOrInitEngine(modelId, onProgress, contextWindowSize);
   abortCurrentGeneration = false;
 
   const isReasoning = modelId.includes('DeepSeek-R1') || modelId.includes('Reasoning');

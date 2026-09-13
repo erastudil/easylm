@@ -100,7 +100,7 @@ export const App: React.FC = () => {
     try {
       await getOrInitEngine(modelToLoad, (prog) => {
         setModelProgress(prog);
-      });
+      }, contextLimit);
       setIsModelReady(true);
       setSelectedModel(modelToLoad);
     } catch (err: any) {
@@ -595,7 +595,8 @@ export const App: React.FC = () => {
             return { ...s, messages: msgs };
           }));
         },
-        (prog) => setModelProgress(prog)
+        (prog) => setModelProgress(prog),
+        contextLimit
       );
       setIsModelReady(true);
 
@@ -700,7 +701,8 @@ export const App: React.FC = () => {
                 return { ...s, messages: msgs };
               }));
             },
-            (prog) => setModelProgress(prog)
+            (prog) => setModelProgress(prog),
+            contextLimit
           );
           setIsModelReady(true);
 

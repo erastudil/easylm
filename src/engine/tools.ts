@@ -2,9 +2,11 @@ import { ToolExecution } from '../types';
 import { isKidAllowedTool, KID_TOOL_REFUSAL, normalizeToolName } from './kid_tools';
 import { execMath } from './math';
 import { isWikiHost, parsePublicHttpsUrl } from './ssrf';
+import { execStacks } from './stacks';
 import { execWarehouse } from './warehouse';
 
 export { execMath } from './math';
+export { execStacks } from './stacks';
 export { execWarehouse } from './warehouse';
 
 export const SYSTEM_TOOLS_PROMPT = `
@@ -18,7 +20,7 @@ You have access to the following built-in tools:
 7. dictionary(word: string) - exact definition, pronunciation, part of speech, and origin for English words (e.g. "obfuscate", "serendipity").
 8. web_search(query: string) - search the web for recent events, specific websites, literary quotations, or classic book chapters (via Wikiquote, Wikisource, Wikipedia).
 9. web_fetch(url: string) - read Wikipedia, Wikiquote, and Wikisource pages. Other URLs only if the site allows browser CORS. EasyLM does not proxy arbitrary websites.
-10. warehouse(query: string) - search local subject textbooks and official source doors (math, physics, civics, etc.). Not a wiki dump. Fetch the named door for a load-bearing number.
+10. stacks(query: string) - search local university library stacks across 28 academic subjects (Dewey 000–900). Sovereign, offline university reference books. (alias: warehouse).
 
 CRITICAL INSTRUCTIONS:
 - For casual conversation, greetings, or questions about yourself (e.g. "hi", "how are you?", "who are you?"), DO NOT call any tools. Answer naturally.
@@ -43,7 +45,7 @@ or
 or
 <tool_call>{"name": "web_fetch", "query": "https://example.com"}</tool_call>
 or
-<tool_call>{"name": "warehouse", "query": "Bayes theorem"}</tool_call>
+<tool_call>{"name": "stacks", "query": "Bayes theorem"}</tool_call>
 `;
 
 export const SYSTEM_TOOLS_PROMPT_KID = `
@@ -51,7 +53,7 @@ You have access to these local tools only:
 1. calc(expression: string) - evaluate math expressions.
 2. units(from: string, to: string, amount: number) - convert physical units.
 3. datetime(timezone?: string) - current local or world time.
-4. warehouse(query: string) - local subject textbooks and official source doors.
+4. stacks(query: string) - local university library stacks across academic subjects.
 
 Do not call dictionary, web_search, web_fetch, weather, exchange, or fact. Those leave the machine (dictionary uses an external API).
 When you need a tool, emit EXACTLY:
@@ -591,8 +593,8 @@ export async function dispatchTool(
     result = await execDictionary(query);
   } else if (normName.includes('clock') || normName.includes('time') || normName.includes('date') || normName.includes('zone')) {
     result = execClock(query);
-  } else if (normName.includes('warehouse') || normName.includes('canon') || normName.includes('dewey')) {
-    result = execWarehouse(query);
+  } else if (normName.includes('stack') || normName.includes('library') || normName.includes('warehouse') || normName.includes('canon') || normName.includes('dewey')) {
+    result = execStacks(query);
   } else if (normName.includes('fetch') || normName.includes('read_url') || normName.includes('scrape') || normName.includes('browse')) {
     result = await execWebFetch(query);
   } else if (normName.includes('web') || normName.includes('search') || normName.includes('searx')) {
@@ -603,7 +605,7 @@ export async function dispatchTool(
       result = await execWebSearch(query, searxngUrl);
     }
   } else {
-    result = `Unknown tool "${normName || name}". Local hands: calc, units, datetime, warehouse. Network hands: weather, exchange, fact, dictionary, web_search, web_fetch.`;
+    result = `Unknown tool "${normName || name}". Local hands: calc, units, datetime, stacks. Network hands: weather, exchange, fact, dictionary, web_search, web_fetch.`;
     isError = true;
   }
 

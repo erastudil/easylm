@@ -8,6 +8,9 @@ describe('execUnits', () => {
     expect(execUnits('32 F to C').ok).toBe(true);
     expect(execUnits('10 lbs to kg').ok).toBe(true);
     expect(execUnits('10 kg to lbs').ok).toBe(true);
+    const speed = execUnits('100 km/h to mph');
+    expect(speed.ok).toBe(true);
+    expect(speed.result || '').toMatch(/mph/);
   });
 
   it('refuses unknown pairs instead of inventing 1:1', () => {

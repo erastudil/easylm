@@ -16,10 +16,10 @@ EasyLM is an open, private learning environment and research assistant. It runs 
 
 Unlike cloud services (such as ChatGPT, Claude, or Gemini), EasyLM does not transmit your prompts, documents, or conversation history to external company inference servers.
 
-- **Private & Sovereign**: All chat tokens and text generations are computed locally on your GPU. Your chat history, sovereign memories, and uploaded documents remain strictly on this device.
-- **Library of Human Knowledge**: EasyLM is designed as a digital library, an encyclopedia, a university seminar, and a laboratory for learning.
-- **Offline Capable**: Once model weights are downloaded to your browser cache, EasyLM can operate completely offline without an internet connection when network tools are disabled.
-- **Zero Account & Free Forever**: EasyLM is free and open source software licensed under the **GNU GPL-3.0**. No logins, subscriptions, paywalls, or tracking cookies.`
+- **Private & Sovereign**: Chat tokens are computed locally on your GPU. History stays in this browser unless you export it.
+- **Hands**: Local math, units, clock, warehouse. Optional network Hands send that lookup when you use them. Turn Hands off to skip those lookups.
+- **Weights**: Stream once from Hugging Face into browser cache. Cached weights can be reused; this page still needs a network fetch unless the browser already has it.
+- **Zero Account & Free Forever**: Official app is free. GNU GPLv3 copyleft. No logins, subscriptions, or analytics cookies.`
   },
   {
     id: 'topbar',
@@ -66,10 +66,9 @@ The sidebar allows you to organize your studies, manage conversation threads, an
    - **Rename**: Click the pencil icon to assign a descriptive title to any chat.
    - **Delete**: Click the trash icon to permanently remove a session.
 3. **💾 Backup to Disk**:
-   - Exports all conversations, system prompts, and settings into a clean JSON file directly to your local downloads folder.
-   - Completely offline and private; no intermediate servers or cloud accounts required.
+   - Exports conversations as a local JSON file. No intermediate servers.
 4. **📥 Restore from Disk**:
-   - Imports a previously saved EasyLM JSON backup file, restoring your conversation archive and sovereign memories into this browser.
+   - Imports an EasyLM JSON backup. Sessions merge by id. Memories live in a separate local vault and are not in that JSON.
 5. **🎭 Voices Gallery**:
    - Direct shortcut to open the Perspectives Gallery modal.
 6. **🔒 Parental Controls**:
@@ -86,10 +85,9 @@ The sidebar allows you to organize your studies, manage conversation threads, an
 The Settings dialog allows you to calibrate inference parameters, tool availability, and interface behavior:
 
 1. **Local Model Selection**:
-   - **Qwen 2.5 3B (Recommended)**: Best balance of deep reasoning, literary eloquence, and factual comprehension for desktop and laptop GPUs (~2.2 GB download).
-   - **Qwen 2.5 1.5B (Fast & Mobile)**: High-speed, lightweight model optimized for mobile devices, older laptops, and integrated graphics (~1.1 GB download).
-   - **Qwen 2.5 0.5B (Ultra-Light)**: Minimal memory footprint (~400 MB download) for resource-constrained hardware.
-   - **DeepSeek R1 Distill Qwen 1.5B**: Specialized reasoning model trained for mathematical deduction, formal logic, and step-by-step problem decomposition.
+   - **Qwen 2.5 3B (Recommended)**: Default for desktop GPUs (~2.2 GB VRAM).
+   - **Qwen 2.5 1.5B (Ultralight)**: Phones, iGPU, low RAM (~1.4 GB VRAM).
+   - **DeepSeek R1 Distill Qwen 1.5B**: Reasoning model. Temperature floor 0.6.
 2. **Creativity & Temperature**:
    - Sliders range from **0.0 to 1.0** (Default: \`0.3\`).
    - **Low Temperature (0.0 - 0.2)**: Highly deterministic, focused, and precise. Ideal for mathematics, formal logic, coding, and factual analysis.
@@ -160,7 +158,8 @@ EasyLM includes a suite of deterministic local tools and transparent network loo
 | **Encyclopedic Facts** (\`fact\`) | Network / API | Verified historical, biographical, and scientific summaries | \`fact("Galileo Galilei")\` |
 | **Weather** (\`weather\`) | Network / API | Real-time meteorological conditions and forecasts | \`weather("Paris")\` |
 | **Currency Exchange** (\`exchange\`) | Network / API | Live foreign exchange rates based on European Central Bank data | \`exchange("100 USD to EUR")\` |
-| **Web Search & Reader** | Network / API | Live search queries and readable webpage extraction | \`web_search("James Webb findings")\` |`
+| **Web Search** | Network / API | Search via this origin, then Wikipedia if needed | \`web_search("James Webb findings")\` |
+| **Page reader** | Network / API | Wikipedia, Wikiquote, Wikisource. Other sites only if they allow CORS. No generic proxy. | \`web_fetch("https://en.wikipedia.org/wiki/Ada_Lovelace")\` |`
   },
   {
     id: 'local-vs-cloud',
@@ -171,10 +170,10 @@ EasyLM includes a suite of deterministic local tools and transparent network loo
 | Property | Rented Cloud Services (ChatGPT / Claude / Gemini) | EasyLM (Local WebGPU) |
 | :--- | :--- | :--- |
 | **Execution Location** | Remote proprietary server clusters | Your personal graphics card (GPU) |
-| **Data Privacy** | Prompts, attachments, and chats sent over network | Stays strictly inside your local browser sandbox |
-| **Access Cost** | $20+/month subscription paywalls | Free forever under the GNU GPL-3.0 |
-| **Account Requirement** | Mandatory accounts, phone numbers, tracking cookies | Zero accounts, zero tracking, zero personal data collection |
-| **Offline Operation** | Impossible; ceases when internet is disconnected | Fully functional offline once model weights are cached |
+| **Data Privacy** | Prompts, attachments, and chats sent over network | Tokens stay in this browser. Optional Hands send the lookup you asked for. |
+| **Access Cost** | $20+/month subscription paywalls | Official app free forever. GPLv3 copyleft. |
+| **Account Requirement** | Mandatory accounts, phone numbers, tracking cookies | No accounts. No analytics cookies. |
+| **Install** | App store or always-online | Add to home screen. Not a full offline PWA yet (no service worker). |
 | **Software Rights** | Closed proprietary black box | 100% Free & Open Source (copyleft protection) |`
   },
   {
@@ -210,7 +209,7 @@ EasyLM can be installed directly onto your phone, tablet, or desktop without pro
 EasyLM is developed by **humans&ai** with a clear principle: advanced computational learning and tools must belong to everyone, not just those who can pay ongoing monthly subscriptions.
 
 - **GNU General Public License v3.0 (GPLv3)**:
-  EasyLM is guaranteed free software. Anyone may inspect, run, modify, and redistribute the source code. Any derivative work must remain equally free and open source under the GPLv3.
+  Copyleft. Inspect, run, modify, redistribute. Derivative software stays GPLv3. The official app staying $0 is a project covenant, not a GPL term.
 - **Contribute & Fork**:
   The official source code repository is available on GitHub. Contributions, bug reports, and pull requests from the community are warmly welcomed.
 - **Voluntary Donations**:
@@ -223,19 +222,19 @@ export const EASYLM_GUIDE_PROMPT_CONTEXT = `
 Identity:
 You are EasyLM, a sovereign, local learning assistant developed by humans&ai.
 You run directly inside the user's browser using WebGPU hardware acceleration.
-You never transmit prompts, conversations, or uploaded documents to cloud inference APIs.
+You never transmit prompts, conversations, or uploaded documents to cloud inference APIs. Optional Hands send only the lookup the user asked for.
 
 Architecture & Capabilities:
 1. Local Computing:
-   - Inference runs on the user's graphics processor (WebGPU) with models like Qwen 2.5 3B, 1.5B, or 0.5B.
-   - Once model weights stream into the browser cache, EasyLM can operate completely offline without internet when network tools are disabled.
+   - Inference runs on the user's graphics processor (WebGPU) with Qwen 2.5 3B, Qwen 2.5 1.5B, or DeepSeek-R1 Distill 1.5B.
+   - Model weights stream from Hugging Face into browser cache. There is no 0.5B SKU.
 2. In-App Hands (Tools):
    - Deterministic Local Tools: calc (arithmetic/formulas), units (physical unit conversion), datetime (system clock and global timezones), knowledge warehouse.
    - Transparent Network Tools: dictionary, fact summaries, live weather, currency exchange, web_search, and web_fetch.
    - Kid Safe Mode: Permanently enforces local-only tools (calc, units, clock, warehouse). Network tools including dictionary stay disabled.
 3. Top Bar (Header HUD) Controls:
    - EasyLM Title & Public Beta Badge: Current release status.
-   - Model Pill Badge: Shows active model (Qwen 2.5 3B / 1.5B / 0.5B).
+   - Model Pill Badge: Shows active model (Qwen 2.5 3B / 1.5B, or DeepSeek-R1 1.5B).
    - 🧠 Think (Extended Thinking): Toggles chain-of-thought reasoning. When ON, the model deliberates and produces an expandable thought drawer before answering.
    - ⚡ Hands Badge: Displays whether in-app tool execution is active.
    - 👤 Profile Button: Switches between user profiles (Parent, Kid, Student), accesses 4-digit Parental PIN lock, and manages sovereign memories.

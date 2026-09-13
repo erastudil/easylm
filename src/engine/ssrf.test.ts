@@ -20,6 +20,7 @@ describe('isPrivateIP', () => {
     expect(isPrivateIP('::ffff:127.0.0.1')).toBe(true);
     expect(isPrivateIP('fc00::1')).toBe(true);
     expect(isPrivateIP('fe80::1')).toBe(true);
+    expect(isPrivateIP('fec0::1')).toBe(true);
   });
 
   it('allows public v4', () => {

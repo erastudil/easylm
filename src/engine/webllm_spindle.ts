@@ -22,14 +22,6 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
   }
 ];
 
-export const EASYLM_APP_CONFIG: AppConfig = {
-  ...prebuiltAppConfig,
-  model_list: [
-    ...prebuiltAppConfig.model_list,
-    ...CUSTOM_MODEL_RECORDS
-  ]
-};
-
 export const AVAILABLE_MODELS: ModelOption[] = [
   {
     id: 'Qwen2.5-3B-Instruct-q4f16_1-MLC',
@@ -45,19 +37,22 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     isReasoning: true
   },
   {
-    id: 'DeepSeek-R1-Distill-Qwen-7B-q4f16_1-MLC',
-    label: 'DeepSeek-R1 7B (Extended Thinking - Flagship)',
-    sizeMB: 4500,
-    vramEst: '~5.1 GB',
-    isReasoning: true
-  },
-  {
     id: 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',
     label: 'Qwen 2.5 1.5B Instruct (Ultralight / Mobile)',
     sizeMB: 1100,
     vramEst: '~1.4 GB'
   }
 ];
+
+const ALLOWED_MODEL_IDS = new Set(AVAILABLE_MODELS.map(m => m.id));
+
+export const EASYLM_APP_CONFIG: AppConfig = {
+  ...prebuiltAppConfig,
+  model_list: [
+    ...prebuiltAppConfig.model_list.filter(m => ALLOWED_MODEL_IDS.has(m.model_id)),
+    ...CUSTOM_MODEL_RECORDS.filter(m => ALLOWED_MODEL_IDS.has(m.model_id))
+  ]
+};
 
 export const DEFAULT_MODEL_ID = 'Qwen2.5-3B-Instruct-q4f16_1-MLC';
 
@@ -84,6 +79,9 @@ export async function getOrInitEngine(
 ): Promise<MLCEngine> {
   if (!isWebGPUSupported()) {
     throw new Error('WebGPU is not supported or not enabled in this browser. Please use Chrome, Edge, or enable WebGPU.');
+  }
+  if (!ALLOWED_MODEL_IDS.has(modelId)) {
+    throw new Error('That model is not offered in this EasyLM build.');
   }
 
   if (activeEngine && currentLoadedModel === modelId) {
@@ -181,7 +179,7 @@ export async function streamChatCompletion(
     presence_penalty: 0.0
   });
 
-  const antiLoop = new AntiLoopDetector(3000);
+  const antiLoop = new AntiLoopDetector(16000);
   let fullRaw = '';
   let loopDetected = false;
   let loopReason: string | undefined = undefined;

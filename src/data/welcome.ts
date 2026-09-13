@@ -2,7 +2,7 @@ import { Message } from '../types';
 
 export const WELCOME_TOOLBOX_CONTENT = `Welcome to **EasyLM (Public Beta)** by **humans&ai**.
 
-All tokens and model generations run directly on **your GPU** via WebGPU. No accounts, no subscriptions, and zero server logging. The official app is free forever under the GNU GPL-3.0.
+All tokens and model generations run directly on **your GPU** via WebGPU. No accounts. No subscriptions. Optional Hands send the lookup you asked for. The official app is free forever. GNU GPLv3.
 
 ### Built-In Tools & Mathematical Capabilities
 

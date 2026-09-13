@@ -3,6 +3,7 @@ import { Session, Message, ToolExecution } from './types';
 import {
   createNewSession,
   loadAllSessions,
+  loadAllSessionsAsync,
   saveAllSessions,
   getActiveSessionId,
   setActiveSessionId
@@ -16,6 +17,7 @@ import {
   AVAILABLE_MODELS
 } from './engine/webllm_spindle';
 import { dispatchTool, SYSTEM_TOOLS_PROMPT, SYSTEM_TOOLS_PROMPT_KID } from './engine/tools';
+import { clockQueryOf, mathExpressionOf, unitConversionOf, warehouseQueryOf } from './engine/preflight';
 import { Sidebar } from './components/Sidebar';
 import { MessageItem } from './components/MessageItem';
 import { SettingsModal } from './components/SettingsModal';
@@ -27,7 +29,7 @@ import { FeedbackModal } from './components/FeedbackModal';
 import { EASYLM_GUIDE_PROMPT_CONTEXT } from './data/help_guide';
 import { detectDevice, DeviceInfo } from './engine/device';
 import { createWelcomeMessage, WELCOME_TOOLBOX_CONTENT } from './data/welcome';
-import { CORE_INTERACTION_PROTOCOLS } from './data/protocols';
+import { CORE_INTERACTION_PROTOCOLS, CORE_INTERACTION_PROTOCOLS_KID } from './data/protocols';
 import {
   UserProfile,
   AttachedDoc,
@@ -59,16 +61,27 @@ export const App: React.FC = () => {
   const [parentalModalMode, setParentalModalMode] = useState<'verify' | 'setup'>('verify');
   const [pendingPinAction, setPendingPinAction] = useState<(() => void) | null>(null);
   const [piiAlert, setPiiAlert] = useState<string | null>(null);
+  const [storageAlert, setStorageAlert] = useState<string | null>(null);
   const [attachedDoc, setAttachedDoc] = useState<AttachedDoc | null>(null);
 
   // Model & Personality Configuration
   const [selectedModel, setSelectedModel] = useState<string>(() => {
-    return localStorage.getItem('easylm_selected_model') || DEFAULT_MODEL_ID;
+    const saved = localStorage.getItem('easylm_selected_model');
+    if (saved && AVAILABLE_MODELS.some(m => m.id === saved)) return saved;
+    return DEFAULT_MODEL_ID;
   });
 
   const handleSelectModel = (id: string) => {
+    if (!AVAILABLE_MODELS.some(m => m.id === id)) return;
     setSelectedModel(id);
     localStorage.setItem('easylm_selected_model', id);
+  };
+
+  const persistSessions = (next: Session[]) => {
+    const saved = saveAllSessions(next);
+    if (saved.quota) {
+      setStorageAlert(saved.error || 'Browser storage is full. Export a backup or delete old chats.');
+    }
   };
   const [selectedPersonality, setSelectedPersonality] = useState<string>(() => {
     const prof = getActiveProfile();
@@ -157,7 +170,10 @@ export const App: React.FC = () => {
       setDeviceInfo(dev);
       setWebGpuAvailable(dev.hasWebGPU);
       const savedModel = localStorage.getItem('easylm_selected_model');
-      if (!savedModel && dev.recommendedModel) {
+      if (savedModel && !AVAILABLE_MODELS.some(m => m.id === savedModel)) {
+        localStorage.removeItem('easylm_selected_model');
+        setSelectedModel(dev.recommendedModel || DEFAULT_MODEL_ID);
+      } else if (!savedModel && dev.recommendedModel) {
         setSelectedModel(dev.recommendedModel);
       }
     });
@@ -167,27 +183,27 @@ export const App: React.FC = () => {
       setWelcomeModalOpen(true);
     }
 
-    const loaded = loadAllSessions();
-    if (loaded.length > 0) {
-      // Clean up legacy welcome message blobs to keep chat clean and prevent viewport shift
-      const cleaned = loaded.map(sess => ({
-        ...sess,
-        messages: sess.messages.filter(m => !m.id.startsWith('msg-welcome-') && !(m.role === 'assistant' && m.content.startsWith('Welcome to **EasyLM**')))
-      }));
-      setSessions(cleaned);
-      saveAllSessions(cleaned);
-      const savedActive = getActiveSessionId();
-      if (savedActive && cleaned.some(s => s.id === savedActive)) {
-        setActiveSessionIdState(savedActive);
+    loadAllSessionsAsync().then(loaded => {
+      if (loaded.length > 0) {
+        const cleaned = loaded.map(sess => ({
+          ...sess,
+          messages: sess.messages.filter(m => !m.id.startsWith('msg-welcome-') && !(m.role === 'assistant' && m.content.startsWith('Welcome to **EasyLM**')))
+        }));
+        setSessions(cleaned);
+        persistSessions(cleaned);
+        const savedActive = getActiveSessionId();
+        if (savedActive && cleaned.some(s => s.id === savedActive)) {
+          setActiveSessionIdState(savedActive);
+        } else {
+          setActiveSessionIdState(cleaned[0].id);
+        }
       } else {
-        setActiveSessionIdState(cleaned[0].id);
+        const initial = createNewSession('New Conversation');
+        setSessions([initial]);
+        setActiveSessionIdState(initial.id);
+        persistSessions([initial]);
       }
-    } else {
-      const initial = createNewSession('New Conversation');
-      setSessions([initial]);
-      setActiveSessionIdState(initial.id);
-      saveAllSessions([initial]);
-    }
+    });
   }, []);
 
   // Sync active session ID
@@ -208,7 +224,7 @@ export const App: React.FC = () => {
     const updated = [newSess, ...sessions];
     setSessions(updated);
     setActiveSessionIdState(newSess.id);
-    saveAllSessions(updated);
+    persistSessions(updated);
   };
 
   // Stop active inference
@@ -246,7 +262,7 @@ export const App: React.FC = () => {
   const handleDeleteSession = (id: string) => {
     const updated = sessions.filter(s => s.id !== id);
     setSessions(updated);
-    saveAllSessions(updated);
+    persistSessions(updated);
     if (activeSessionId === id) {
       if (updated.length > 0) {
         setActiveSessionIdState(updated[0].id);
@@ -352,7 +368,7 @@ export const App: React.FC = () => {
 
     const newSessionsList = sessions.map(s => s.id === activeSession.id ? updatedSession : s);
     setSessions(newSessionsList);
-    saveAllSessions(newSessionsList);
+    persistSessions(newSessionsList);
 
     setIsGenerating(true);
 
@@ -364,8 +380,7 @@ export const App: React.FC = () => {
       systemInstruction = customPrompt;
     }
 
-    // Always inject core interaction protocols (Professional triage, Depression/Kaizen, Acute Crisis, Kids & Family)
-    systemInstruction += '\n\n' + CORE_INTERACTION_PROTOCOLS;
+    systemInstruction += '\n\n' + (kidSafe ? CORE_INTERACTION_PROTOCOLS_KID : CORE_INTERACTION_PROTOCOLS);
 
     // Sovereign Memory Vault injection
     const profileMemories = getProfileMemories(currentProfile.id);
@@ -395,9 +410,10 @@ export const App: React.FC = () => {
 
     const executedTools: ToolExecution[] = [];
 
-    // Pre-flight heuristic: Detect direct math, unit, URL fetch, search, repository queries, quotes, or chapters
-    const mathMatch = trimmed.match(/^(?:what is|calculate|compute|eval)\s+([0-9+\-*/().\s^sqrtpowpi]+)$/i);
-    const unitMatch = trimmed.match(/^(?:convert\s+)?([\d.]+\s*[a-zA-Z]+\s*(?:to|in)\s*[a-zA-Z]+)$/i);
+    const mathExpr = mathExpressionOf(trimmed);
+    const unitExpr = unitConversionOf(trimmed);
+    const clockQuery = clockQueryOf(trimmed);
+    const warehouseQuery = warehouseQueryOf(trimmed);
     const directSearchMatch = trimmed.match(/^(?:search|search for|google|web search)\s*:\s*(.+)$/i);
     const urlMatch = trimmed.match(/(https?:\/\/[^\s]+)/i);
     const directFetchMatch = trimmed.match(/^(?:fetch|read|browse|summarize|inspect)\s+(https?:\/\/[^\s]+)$/i);
@@ -415,11 +431,17 @@ export const App: React.FC = () => {
     );
 
     const toolOpts = { kidSafe };
-    if (toolsEnabled && mathMatch) {
-      const toolRes = await dispatchTool('calc', mathMatch[1], searxngUrl, toolOpts);
+    if (toolsEnabled && mathExpr) {
+      const toolRes = await dispatchTool('calc', mathExpr, searxngUrl, toolOpts);
       executedTools.push(toolRes);
-    } else if (toolsEnabled && unitMatch) {
-      const toolRes = await dispatchTool('units', unitMatch[1], searxngUrl, toolOpts);
+    } else if (toolsEnabled && unitExpr) {
+      const toolRes = await dispatchTool('units', unitExpr, searxngUrl, toolOpts);
+      executedTools.push(toolRes);
+    } else if (toolsEnabled && clockQuery !== null) {
+      const toolRes = await dispatchTool('datetime', clockQuery, searxngUrl, toolOpts);
+      executedTools.push(toolRes);
+    } else if (toolsEnabled && warehouseQuery) {
+      const toolRes = await dispatchTool('warehouse', warehouseQuery, searxngUrl, toolOpts);
       executedTools.push(toolRes);
     } else if (toolsEnabled && !kidSafe && directFetchMatch) {
       const toolRes = await dispatchTool('web_fetch', directFetchMatch[1], searxngUrl, toolOpts);
@@ -473,7 +495,7 @@ export const App: React.FC = () => {
       };
       const finalSessionsList = sessions.map(s => s.id === activeSession.id ? finalSess : s);
       setSessions(finalSessionsList);
-      saveAllSessions(finalSessionsList);
+      persistSessions(finalSessionsList);
       setIsGenerating(false);
       return;
     }
@@ -657,8 +679,11 @@ export const App: React.FC = () => {
             messages: [...updatedMessages, finalAssistantMsg]
           };
 
-          setSessions(prev => prev.map(s => s.id === activeSession.id ? finalSessionObj : s));
-          saveAllSessions(sessions.map(s => s.id === activeSession.id ? finalSessionObj : s));
+          setSessions(prev => {
+            const next = prev.map(s => s.id === activeSession.id ? finalSessionObj : s);
+            persistSessions(next);
+            return next;
+          });
           return;
         }
       }
@@ -680,8 +705,11 @@ export const App: React.FC = () => {
         messages: [...updatedMessages, finalAssistantMsg]
       };
 
-      setSessions(prev => prev.map(s => s.id === activeSession.id ? finalSessionObj : s));
-      saveAllSessions(sessions.map(s => s.id === activeSession.id ? finalSessionObj : s));
+      setSessions(prev => {
+        const next = prev.map(s => s.id === activeSession.id ? finalSessionObj : s);
+        persistSessions(next);
+        return next;
+      });
     } catch (err: any) {
       console.error('Inference error:', err);
       const errStr = String(err?.message || err).toLowerCase();
@@ -714,6 +742,18 @@ export const App: React.FC = () => {
   };
 
   const handleFileIngest = (file: File) => {
+    const ext = '.' + (file.name.split('.').pop() || '').toLowerCase();
+    const allowed = ['.txt', '.md', '.csv', '.json', '.py', '.ts', '.js', '.rs', '.css'];
+    if (!allowed.includes(ext)) {
+      setPiiAlert('Attach text files only (.txt, .md, .csv, .json, .py, .ts, .js, .rs, .css), max 1 MB.');
+      setTimeout(() => setPiiAlert(null), 8000);
+      return;
+    }
+    if (file.size > 1_000_000) {
+      setPiiAlert('Attachment too large. Max 1 MB.');
+      setTimeout(() => setPiiAlert(null), 8000);
+      return;
+    }
     const reader = new FileReader();
     reader.onload = (e) => {
       const text = e.target?.result as string;
@@ -721,7 +761,7 @@ export const App: React.FC = () => {
         setAttachedDoc({
           name: file.name,
           size: file.size,
-          content: text,
+          content: text.slice(0, 14000),
           type: file.type || 'text/plain'
         });
       }
@@ -1156,6 +1196,31 @@ export const App: React.FC = () => {
             </div>
           )}
 
+          {storageAlert && (
+            <div style={{
+              maxWidth: '1080px',
+              width: '100%',
+              margin: '0 auto 0.45rem auto',
+              padding: '0.5rem 0.85rem',
+              backgroundColor: 'rgba(239, 68, 68, 0.12)',
+              border: '1px solid rgba(239, 68, 68, 0.4)',
+              borderRadius: '10px',
+              color: '#fca5a5',
+              fontSize: '0.78rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+              <span>{storageAlert}</span>
+              <button
+                onClick={() => setStorageAlert(null)}
+                style={{ background: 'transparent', border: 'none', color: '#fca5a5', cursor: 'pointer', fontSize: '1rem', padding: '0 0.3rem' }}
+              >
+                ×
+              </button>
+            </div>
+          )}
+
           {/* Attached Document Bar with Quick Study Actions */}
           <AttachmentBar
             doc={attachedDoc}
@@ -1183,7 +1248,7 @@ export const App: React.FC = () => {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".txt,.md,.json,.csv,.py,.ts,.js,.rs,.html,.xml,.css"
+                accept=".txt,.md,.json,.csv,.py,.ts,.js,.rs,.css"
                 style={{ display: 'none' }}
                 onChange={(e) => {
                   if (e.target.files && e.target.files[0]) {

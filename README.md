@@ -16,7 +16,7 @@ EasyLM is a consumer alternative to hosted chat that **runs on your GPU** via We
 - **Zero install / zero account.** Open the URL.
 - **Chat tokens stay here.** Prompts and generation run in this browser. History is stored in this browser unless you export it.
 - **Weights come from Hugging Face** into browser cache on first load.
-- **Hands.** Local math, units, and clock. Optional search, page reader, weather, FX, dictionary, and facts send that lookup when you use them. Turn Hands off to skip those lookups.
+- **Hands.** Local math, units, and clock. Optional search, weather, FX, dictionary, and facts send that lookup when you use them. Page reader covers Wikipedia / Wikiquote / Wikisource through this origin; other pages only if the site allows CORS. Turn Hands off to skip those lookups.
 - **Kid Safe.** Local tools only. A household PIN, hashed in this browser, is a speed-bump, not a school filter.
 - **Backup to disk.** JSON file on your machine.
 

@@ -127,20 +127,24 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({
               </h3>
             </div>
             <p style={{ margin: 0, fontSize: '0.8rem', color: '#a1a1aa', lineHeight: 1.55 }}>
-              Inference runs <strong style={{ color: '#ffffff' }}>100% on your device's GPU</strong> via WebGPU. All prompts, documents, and chat histories stay in this browser's local sandbox.
+              Inference runs <strong style={{ color: '#ffffff' }}>on your GPU</strong> via WebGPU. Prompts and chat history stay in this browser unless you export them.
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.76rem', color: '#d4d4d8' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 <span style={{ color: '#34d399' }}>✓</span>
-                <span>Zero accounts, logins, or tracking</span>
+                <span>No accounts. No analytics cookies.</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 <span style={{ color: '#34d399' }}>✓</span>
-                <span>Weights stream once into browser cache</span>
+                <span>Weights stream once from Hugging Face into cache</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 <span style={{ color: '#34d399' }}>✓</span>
-                <span>Guaranteed free software under GNU GPLv3</span>
+                <span>Hands off: no lookup. Hands on: that lookup leaves the machine.</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <span style={{ color: '#34d399' }}>✓</span>
+                <span>Official app free forever. GPLv3 copyleft.</span>
               </div>
             </div>
           </div>
@@ -222,7 +226,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 <span>🔒</span>
-                <span><strong>Kid Safe PIN</strong>: Locks tools to offline local hands</span>
+                <span><strong>Kid Safe PIN</strong>: Household speed-bump. Local hands only. Not a school filter.</span>
               </div>
             </div>
           </div>

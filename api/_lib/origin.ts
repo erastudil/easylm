@@ -1,7 +1,6 @@
 /**
  * CORS allowlist for EasyLM serverless routes.
- * Exact origins only. Preview deployments call /api same-origin, so they
- * do not need a wildcard. Prefix matching (easylm-*.vercel.app) is a proxy hole.
+ * Keep in sync with src/engine/origin.ts
  */
 
 const STATIC_ALLOWED = new Set([
@@ -48,7 +47,6 @@ function requestReferer(req: any): string {
   return String(req?.headers?.referer || req?.headers?.Referer || '');
 }
 
-/** Apply CORS. Returns true if the handler should return immediately (OPTIONS). */
 export function applyCors(req: any, res: any): boolean {
   const origin = requestOrigin(req);
   const allow = allowedOrigin(origin);
@@ -67,10 +65,6 @@ export function applyCors(req: any, res: any): boolean {
   return false;
 }
 
-/**
- * Browser-only gate. Rejects anonymous curl/open-proxy clients.
- * Same-origin SPA sends Origin. Referer is a fallback for odd browsers.
- */
 export function requireBrowserOrigin(req: any, res: any): boolean {
   const origin = requestOrigin(req);
   if (allowedOrigin(origin)) return true;

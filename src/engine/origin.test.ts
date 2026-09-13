@@ -8,4 +8,10 @@ describe('allowedOrigin', () => {
     expect(allowedOrigin('https://evil.example')).toBe(null);
     expect(allowedOrigin('*')).toBe(null);
   });
+
+  it('rejects easylm-prefixed vercel apps that are not this project', () => {
+    expect(allowedOrigin('https://easylm-attacker.vercel.app')).toBe(null);
+    expect(allowedOrigin('https://easylm-git-main-evil.vercel.app')).toBe(null);
+    expect(allowedOrigin('https://not-easylm.vercel.app')).toBe(null);
+  });
 });

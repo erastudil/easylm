@@ -1,50 +1,10 @@
-const STATIC_ALLOWED = new Set([
-  'https://easylm.vercel.app',
-  'http://localhost:5175',
-  'http://127.0.0.1:5175',
-  'http://localhost:4173',
-  'http://127.0.0.1:4173'
-]);
-
-function allowedOrigin(origin: string | undefined | null): string | null {
-  if (!origin) return null;
-  const o = String(origin).trim();
-  if (STATIC_ALLOWED.has(o)) return o;
-
-  try {
-    const u = new URL(o);
-    if (u.protocol !== 'https:') return null;
-    const h = u.hostname.toLowerCase();
-    if (h === 'easylm.vercel.app') return o;
-    if (/^easylm[-a-z0-9]*\.vercel\.app$/.test(h)) return o;
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-function applyCors(req: any, res: any): boolean {
-  const origin = req?.headers?.origin || req?.headers?.Origin || '';
-  const allow = allowedOrigin(String(origin));
-  if (allow) {
-    res.setHeader('Access-Control-Allow-Origin', allow);
-    res.setHeader('Vary', 'Origin');
-  }
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  res.setHeader('Access-Control-Max-Age', '600');
-
-  if (req?.method === 'OPTIONS') {
-    res.status(allow ? 204 : 403).end();
-    return true;
-  }
-  return false;
-}
+import { applyCors, clipQuery, requireBrowserOrigin } from './_lib/origin';
 
 export default async function handler(req: any, res: any) {
   if (applyCors(req, res)) return;
+  if (!requireBrowserOrigin(req, res)) return;
 
-  const queryRaw = req.query?.q || (req.url ? new URL(req.url, 'http://localhost').searchParams.get('q') : '');
+  const queryRaw = clipQuery(req.query?.q || (req.url ? new URL(req.url, 'http://localhost').searchParams.get('q') : ''));
   let amountStr = req.query?.amount || '';
   let from = (req.query?.from || '').toUpperCase().trim();
   let to = (req.query?.to || '').toUpperCase().trim();

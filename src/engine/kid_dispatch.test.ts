@@ -20,3 +20,11 @@ describe('dispatchTool kidSafe', () => {
     expect(res.result).toMatch(/lbs/);
   });
 });
+
+describe('dispatchTool unknown name', () => {
+  it('does not fall through to web search', async () => {
+    const res = await dispatchTool('not_a_real_tool', 'https://example.com');
+    expect(res.isError).toBe(true);
+    expect(res.result).toMatch(/Unknown tool/i);
+  });
+});

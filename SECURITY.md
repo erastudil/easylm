@@ -11,7 +11,7 @@ Do not file public GitHub issues for SSRF, XSS, or auth bypasses until we have a
 
 ## Known residual
 
-Generic `web_fetch` pins DNS before the request and re-validates redirects. A DNS-rebinding host with a 0-TTL swap between lookup and connect is still a theoretical race. Do not point Hands at untrusted short-TTL names.
+`/api/fetch` is wiki-hosts only (Wikipedia, Wikiquote, Wikisource) and requires a browser Origin on the allowlist. A DNS-rebinding host with a 0-TTL swap between lookup and connect is still a theoretical race on those wiki names. Do not point Hands at untrusted short-TTL names.
 
 ## Scope
 

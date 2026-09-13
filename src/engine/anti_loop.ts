@@ -21,7 +21,7 @@ export class AntiLoopDetector {
   private buffer: string = '';
   private maxThoughtLength: number;
 
-  constructor(maxThoughtLength = 3200) {
+  constructor(maxThoughtLength = 16000) {
     this.maxThoughtLength = maxThoughtLength;
   }
 
@@ -54,8 +54,10 @@ export class AntiLoopDetector {
 
     if (len < 10) return { isLoop: false };
 
+    const inspect = text.replace(/```[\s\S]*?```/g, ' ');
+
     // 2. Trailing Word/Token Repetition (e.g. " wait wait wait wait")
-    const words = text.trim().split(/\s+/).slice(-8);
+    const words = inspect.trim().split(/\s+/).slice(-8);
     if (words.length >= 4) {
       const last = words[words.length - 1].toLowerCase();
       if (last.length >= 2 && words.slice(-4).every(w => w.toLowerCase() === last)) {
@@ -71,10 +73,11 @@ export class AntiLoopDetector {
 
     // 3. Consecutive Suffix Cycle Detection
     // Checks candidate period lengths L from 6 to 250 characters
-    const maxPeriod = Math.min(250, Math.floor(len / 2));
+    const inspectLen = inspect.length;
+    const maxPeriod = Math.min(250, Math.floor(inspectLen / 2));
     for (let L = 6; L <= maxPeriod; L++) {
-      const chunk1 = text.slice(len - L);
-      const chunk2 = text.slice(len - 2 * L, len - L);
+      const chunk1 = inspect.slice(inspectLen - L);
+      const chunk2 = inspect.slice(inspectLen - 2 * L, inspectLen - L);
 
       if (chunk1 === chunk2) {
         // High confidence: 45+ chars identical twice is an unnatural loop
@@ -89,8 +92,8 @@ export class AntiLoopDetector {
         }
 
         // Medium confidence: 14 to 44 chars repeated 3 times
-        if (len >= 3 * L) {
-          const chunk3 = text.slice(len - 3 * L, len - 2 * L);
+        if (inspectLen >= 3 * L) {
+          const chunk3 = inspect.slice(inspectLen - 3 * L, inspectLen - 2 * L);
           if (chunk1 === chunk3) {
             if (L >= 14) {
               return {
@@ -103,8 +106,8 @@ export class AntiLoopDetector {
             }
 
             // Short phrases: 6 to 13 chars repeated 4 times
-            if (len >= 4 * L) {
-              const chunk4 = text.slice(len - 4 * L, len - 3 * L);
+            if (inspectLen >= 4 * L) {
+              const chunk4 = inspect.slice(inspectLen - 4 * L, inspectLen - 3 * L);
               if (chunk1 === chunk4) {
                 return {
                   isLoop: true,
@@ -121,12 +124,12 @@ export class AntiLoopDetector {
     }
 
     // 4. Alternating Ping-Pong Cycle: A B A B (2 alternating distinct chunks)
-    const maxHalfPeriod = Math.min(120, Math.floor(len / 4));
+    const maxHalfPeriod = Math.min(120, Math.floor(inspectLen / 4));
     for (let L = 12; L <= maxHalfPeriod; L++) {
-      const a1 = text.slice(len - L);
-      const b1 = text.slice(len - 2 * L, len - L);
-      const a2 = text.slice(len - 3 * L, len - 2 * L);
-      const b2 = text.slice(len - 4 * L, len - 3 * L);
+      const a1 = inspect.slice(inspectLen - L);
+      const b1 = inspect.slice(inspectLen - 2 * L, inspectLen - L);
+      const a2 = inspect.slice(inspectLen - 3 * L, inspectLen - 2 * L);
+      const b2 = inspect.slice(inspectLen - 4 * L, inspectLen - 3 * L);
 
       if (a1 === a2 && b1 === b2 && a1.trim() !== b1.trim()) {
         return {

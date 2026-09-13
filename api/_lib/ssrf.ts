@@ -1,6 +1,5 @@
 /**
- * SSRF guards for EasyLM web_fetch.
- * Pure functions. No DNS here — the serverless caller resolves and re-checks.
+ * SSRF guards. Keep in sync with src/engine/ssrf.ts
  */
 
 const BLOCKED_HOSTS = new Set([
@@ -38,7 +37,6 @@ export function hostnameIsBlocked(hostname: string): boolean {
   return BLOCKED_SUFFIXES.some(sfx => h.endsWith(sfx));
 }
 
-/** Exact public wiki hosts. Never substring-match. */
 export function isWikiHost(hostname: string): boolean {
   const h = normalizeHostname(hostname);
   const roots = ['wikipedia.org', 'wikisource.org', 'wikiquote.org', 'wikimedia.org', 'mediawiki.org'];
@@ -61,7 +59,6 @@ export function isPrivateIP(ip: string): boolean {
   if (s === '::1' || s === '::' || s === '0:0:0:0:0:0:0:1') return true;
 
   if (s.includes(':')) {
-    // fc00::/7 unique local, fe80::/10 link-local, fec0::/10 site-local, 2001:db8::/32 docs
     if (s.startsWith('fc') || s.startsWith('fd')) return true;
     if (s.startsWith('fe80') || s.startsWith('fec0') || /^fe[89ab]/.test(s)) return true;
     if (s.startsWith('2001:db8:')) return true;
@@ -91,7 +88,6 @@ export function isPrivateIP(ip: string): boolean {
   return false;
 }
 
-/** Decimal / hex IPv4 literals: 2130706433, 0x7f000001 */
 export function ipv4FromWeirdLiteral(host: string): string | null {
   const h = normalizeHostname(host);
   if (/^\d+$/.test(h)) {
@@ -122,9 +118,6 @@ export type PublicUrlResult =
   | { ok: true; url: URL }
   | { ok: false; error: string };
 
-/**
- * Parse a user URL. Force https. Reject credentials, odd ports, private hosts.
- */
 export function parsePublicHttpsUrl(raw: string): PublicUrlResult {
   let s = String(raw || '').trim();
   if (!s) return { ok: false, error: 'URL is required' };

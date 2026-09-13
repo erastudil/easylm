@@ -287,7 +287,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
         {activeTab === 'memory' && (
           <div>
             <div style={{ fontSize: '0.8rem', color: '#a1a1aa', marginBottom: '0.85rem', lineHeight: 1.5 }}>
-              Standing facts, learning preferences, and goals saved for <strong style={{ color: '#ffffff' }}>{activeProfile.name}</strong>. Stored in this browser. Optional Drive backup, if enabled, leaves the machine.
+              Standing facts, learning preferences, and goals saved for <strong style={{ color: '#ffffff' }}>{activeProfile.name}</strong>. Stored in this browser. Export a JSON backup from the sidebar to take them with you.
             </div>
 
             {/* Add Memory Input */}

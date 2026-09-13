@@ -1,7 +1,10 @@
 import { WAREHOUSE_DOCS } from '../data/warehouse_catalog';
 import { ToolExecution } from '../types';
 import { isKidAllowedTool, KID_TOOL_REFUSAL, normalizeToolName } from './kid_tools';
-import { parsePublicHttpsUrl } from './ssrf';
+import { execMath } from './math';
+import { isWikiHost, parsePublicHttpsUrl } from './ssrf';
+
+export { execMath } from './math';
 
 export const SYSTEM_TOOLS_PROMPT = `
 You have access to the following built-in tools:
@@ -13,7 +16,7 @@ You have access to the following built-in tools:
 6. fact(topic: string) - verified encyclopedic summary for notable people, concepts, history, or science (e.g. "Alan Turing", "photosynthesis", "James Webb Space Telescope").
 7. dictionary(word: string) - exact definition, pronunciation, part of speech, and origin for English words (e.g. "obfuscate", "serendipity").
 8. web_search(query: string) - search the web for recent events, specific websites, literary quotations, or classic book chapters (via Wikiquote, Wikisource, Wikipedia).
-9. web_fetch(url: string) - read and extract clean text from any webpage URL, including Wikipedia, Wikiquote, and Wikisource chapters.
+9. web_fetch(url: string) - read Wikipedia, Wikiquote, and Wikisource pages. Other URLs only if the site allows browser CORS. EasyLM does not proxy arbitrary websites.
 10. warehouse(query: string) - search the local reference knowledge base.
 
 CRITICAL INSTRUCTIONS:
@@ -52,91 +55,101 @@ When you need a tool, emit EXACTLY:
 <tool_call>{"name": "calc", "query": "sqrt(144) * 5200"}</tool_call>
 `;
 
-/**
- * Safe deterministic math evaluator
- */
-export function execMath(expr: string): { ok: boolean; result?: string; error?: string } {
-  try {
-    const sanitized = expr
-      .replace(/sqrt\(([^)]+)\)/g, 'Math.sqrt($1)')
-      .replace(/pow\(([^,]+),([^)]+)\)/g, 'Math.pow($1,$2)')
-      .replace(/sin\(([^)]+)\)/g, 'Math.sin($1)')
-      .replace(/cos\(([^)]+)\)/g, 'Math.cos($1)')
-      .replace(/pi/gi, 'Math.PI')
-      .replace(/e/gi, 'Math.E');
-
-    // Reject non-math characters
-    if (/[^0-9+\-*/()., MathPIEsqrtpowsinco\s]/.test(sanitized)) {
-      return { ok: false, error: 'Prohibited characters in math expression' };
-    }
-
-    const fn = new Function(`"use strict"; return (${sanitized});`);
-    const val = fn();
-    if (typeof val === 'number' && !isNaN(val)) {
-      return { ok: true, result: String(val) };
-    }
-    return { ok: false, error: 'Expression did not evaluate to a valid number' };
-  } catch (err: any) {
-    return { ok: false, error: err.message || 'Math evaluation error' };
-  }
+function canonUnit(raw: string): string {
+  const x = raw.toLowerCase().replace(/°/g, '').trim();
+  const aliases: Record<string, string> = {
+    gal: 'gal',
+    gallon: 'gal',
+    gallons: 'gal',
+    oz: 'floz',
+    floz: 'floz',
+    ounces: 'floz',
+    mi: 'mi',
+    mile: 'mi',
+    miles: 'mi',
+    km: 'km',
+    kilometer: 'km',
+    kilometers: 'km',
+    c: 'c',
+    celsius: 'c',
+    f: 'f',
+    fahrenheit: 'f',
+    lb: 'lb',
+    lbs: 'lb',
+    pound: 'lb',
+    pounds: 'lb',
+    kg: 'kg',
+    kilogram: 'kg',
+    kilograms: 'kg',
+    'km/h': 'kmh',
+    kph: 'kmh',
+    kmh: 'kmh',
+    mph: 'mph',
+    'mi/h': 'mph',
+    'm/s': 'ms',
+    mps: 'ms'
+  };
+  return aliases[x] || x;
 }
 
 /**
- * Deterministic unit converter
+ * Deterministic unit converter. Unknown pairs error. No invented 1:1 ratio.
  */
 export function execUnits(input: string): { ok: boolean; result?: string; error?: string } {
   const norm = input.toLowerCase().trim();
-  const match = norm.match(/([\d.]+)\s*([a-zA-Z]+)\s*(?:to|in)\s*([a-zA-Z]+)/);
+  const match = norm.match(/^([\d.]+)\s*([a-zA-Z/°]+)\s*(?:to|in)\s*([a-zA-Z/°]+)$/);
   if (!match) {
     return { ok: false, error: 'Could not parse unit format. Use: "<amount> <from_unit> to <to_unit>"' };
   }
 
   const amount = parseFloat(match[1]);
-  const from = match[2];
-  const to = match[3];
+  if (!Number.isFinite(amount)) {
+    return { ok: false, error: 'Could not parse amount' };
+  }
+  const from = canonUnit(match[2]);
+  const to = canonUnit(match[3]);
 
-  // Gallons to Ounces
-  if ((from === 'gal' || from === 'gallon' || from === 'gallons') && (to === 'oz' || to === 'floz' || to === 'ounces')) {
-    const res = amount * 128;
-    return { ok: true, result: `${amount} US gallons = ${res} fluid ounces (fl oz)` };
+  if (from === 'gal' && to === 'floz') {
+    return { ok: true, result: `${amount} US gallons = ${amount * 128} fluid ounces (fl oz)` };
   }
-  // Ounces to Gallons
-  if ((from === 'oz' || from === 'floz' || from === 'ounces') && (to === 'gal' || to === 'gallon' || to === 'gallons')) {
-    const res = amount / 128;
-    return { ok: true, result: `${amount} fl oz = ${res.toFixed(4)} US gallons` };
+  if (from === 'floz' && to === 'gal') {
+    return { ok: true, result: `${amount} fl oz = ${(amount / 128).toFixed(4)} US gallons` };
   }
-  // Miles to Kilometers
-  if ((from === 'mi' || from === 'mile' || from === 'miles') && (to === 'km' || to === 'kilometer' || to === 'kilometers')) {
-    const res = amount * 1.60934;
-    return { ok: true, result: `${amount} miles = ${res.toFixed(2)} kilometers` };
+  if (from === 'mi' && to === 'km') {
+    return { ok: true, result: `${amount} miles = ${(amount * 1.60934).toFixed(2)} kilometers` };
   }
-  // Kilometers to Miles
-  if ((from === 'km' || from === 'kilometer' || from === 'kilometers') && (to === 'mi' || to === 'mile' || to === 'miles')) {
-    const res = amount / 1.60934;
-    return { ok: true, result: `${amount} kilometers = ${res.toFixed(2)} miles` };
+  if (from === 'km' && to === 'mi') {
+    return { ok: true, result: `${amount} kilometers = ${(amount / 1.60934).toFixed(2)} miles` };
   }
-  // Celsius to Fahrenheit
-  if ((from === 'c' || from === 'celsius') && (to === 'f' || to === 'fahrenheit')) {
-    const res = (amount * 9) / 5 + 32;
-    return { ok: true, result: `${amount}°C = ${res.toFixed(1)}°F` };
+  if (from === 'c' && to === 'f') {
+    return { ok: true, result: `${amount}°C = ${((amount * 9) / 5 + 32).toFixed(1)}°F` };
   }
-  // Fahrenheit to Celsius
-  if ((from === 'f' || from === 'fahrenheit') && (to === 'c' || to === 'celsius')) {
-    const res = ((amount - 32) * 5) / 9;
-    return { ok: true, result: `${amount}°F = ${res.toFixed(1)}°C` };
+  if (from === 'f' && to === 'c') {
+    return { ok: true, result: `${amount}°F = ${(((amount - 32) * 5) / 9).toFixed(1)}°C` };
   }
-  // Pounds to Kilograms
-  if ((from === 'lb' || from === 'lbs' || from === 'pound' || from === 'pounds') && (to === 'kg' || to === 'kilogram' || to === 'kilograms')) {
-    const res = amount * 0.453592;
-    return { ok: true, result: `${amount} lbs = ${res.toFixed(2)} kg` };
+  if (from === 'lb' && to === 'kg') {
+    return { ok: true, result: `${amount} lbs = ${(amount * 0.453592).toFixed(2)} kg` };
   }
-  // Kilograms to Pounds
-  if ((from === 'kg' || from === 'kilogram' || from === 'kilograms') && (to === 'lb' || to === 'lbs' || to === 'pound' || to === 'pounds')) {
-    const res = amount / 0.453592;
-    return { ok: true, result: `${amount} kg = ${res.toFixed(2)} lbs` };
+  if (from === 'kg' && to === 'lb') {
+    return { ok: true, result: `${amount} kg = ${(amount / 0.453592).toFixed(2)} lbs` };
+  }
+  if (from === 'kmh' && to === 'mph') {
+    return { ok: true, result: `${amount} km/h = ${(amount / 1.60934).toFixed(2)} mph` };
+  }
+  if (from === 'mph' && to === 'kmh') {
+    return { ok: true, result: `${amount} mph = ${(amount * 1.60934).toFixed(2)} km/h` };
+  }
+  if (from === 'kmh' && to === 'ms') {
+    return { ok: true, result: `${amount} km/h = ${(amount / 3.6).toFixed(3)} m/s` };
+  }
+  if (from === 'ms' && to === 'kmh') {
+    return { ok: true, result: `${amount} m/s = ${(amount * 3.6).toFixed(2)} km/h` };
   }
 
-  return { ok: false, error: `No conversion table for ${from} to ${to}. Supported: gal↔fl oz, mi↔km, C↔F, lb↔kg.` };
+  return {
+    ok: false,
+    error: `No conversion table for ${match[2]} to ${match[3]}. Supported: gal↔fl oz, mi↔km, km/h↔mph, C↔F, lb↔kg.`
+  };
 }
 
 /**
@@ -497,7 +510,7 @@ export async function execWebSearch(query: string, searxngUrl?: string): Promise
   }
 
   if (results.length === 0) {
-    return `[Web Search]: Indexed results for "${cleanQ}". Status active as of ${new Date().toLocaleDateString()}.`;
+    return `No search results for "${cleanQ}". I will not invent hits.`;
   }
 
   return results.map(r => `• ${r.title} (${r.url}):\n  ${r.snippet}`).join('\n\n');
@@ -513,28 +526,54 @@ export async function execWebFetch(targetUrl: string): Promise<string> {
   if (parsed.ok === false) {
     return `Blocked URL: ${parsed.error}`;
   }
-  cleanUrl = parsed.url.toString();
+  const target = parsed.url;
+  cleanUrl = target.toString();
+
+  if (isWikiHost(target.hostname)) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 9000);
+      const resp = await fetch(`/api/fetch?url=${encodeURIComponent(cleanUrl)}`, {
+        signal: controller.signal
+      });
+      clearTimeout(timeout);
+
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data.ok && data.text) {
+          return `[Fetched: ${data.title || cleanUrl}] (${data.url}):\n\n${data.text}${data.truncated ? '\n\n[Content truncated at 12,000 chars]' : ''}`;
+        }
+        if (data.error) {
+          return `Failed to fetch URL: ${data.error}`;
+        }
+      }
+      return `HTTP error ${resp.status} fetching ${cleanUrl}`;
+    } catch (err: any) {
+      return `Error fetching webpage: ${err?.message || 'Network timeout'}`;
+    }
+  }
 
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 9000);
-    const resp = await fetch(`/api/fetch?url=${encodeURIComponent(cleanUrl)}`, {
-      signal: controller.signal
-    });
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    const resp = await fetch(cleanUrl, { signal: controller.signal });
     clearTimeout(timeout);
-
-    if (resp.ok) {
-      const data = await resp.json();
-      if (data.ok && data.text) {
-        return `[Fetched: ${data.title || cleanUrl}] (${data.url}):\n\n${data.text}${data.truncated ? '\n\n[Content truncated at 12,000 chars]' : ''}`;
-      }
-      if (data.error) {
-        return `Failed to fetch URL: ${data.error}`;
-      }
+    if (!resp.ok) {
+      return `HTTP error ${resp.status} fetching ${cleanUrl}`;
     }
-    return `HTTP error ${resp.status} fetching ${cleanUrl}`;
-  } catch (err: any) {
-    return `Error fetching webpage: ${err?.message || 'Network timeout'}`;
+    const raw = (await resp.text()).slice(0, 400000);
+    const titleMatch = raw.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+    const title = titleMatch ? titleMatch[1].replace(/\s+/g, ' ').trim() : cleanUrl;
+    const text = raw
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, ' ')
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, ' ')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .slice(0, 14000);
+    return `[Fetched: ${title}] (${cleanUrl}):\n\n${text}`;
+  } catch {
+    return 'This page does not allow in-browser reads (CORS). EasyLM does not proxy arbitrary URLs. Use a Wikipedia, Wikiquote, or Wikisource link.';
   }
 }
 
@@ -586,7 +625,6 @@ export async function dispatchTool(
   } else if (normName.includes('fetch') || normName.includes('read_url') || normName.includes('scrape') || normName.includes('browse')) {
     result = await execWebFetch(query);
   } else if (normName.includes('web') || normName.includes('search') || normName.includes('searx')) {
-    // If the query is an actual URL, route to execWebFetch instead!
     const trimmedQ = query.trim();
     if (trimmedQ.startsWith('http://') || trimmedQ.startsWith('https://') || /^www\./i.test(trimmedQ)) {
       result = await execWebFetch(trimmedQ);
@@ -594,13 +632,8 @@ export async function dispatchTool(
       result = await execWebSearch(query, searxngUrl);
     }
   } else {
-    // Default fallback: detect if query looks like URL, math, weather, or search
-    const trimmedQ = query.trim();
-    if (trimmedQ.startsWith('http://') || trimmedQ.startsWith('https://')) {
-      result = await execWebFetch(trimmedQ);
-    } else {
-      result = await execWebSearch(query, searxngUrl);
-    }
+    result = `Unknown tool "${normName || name}". Local hands: calc, units, datetime, warehouse. Network hands: weather, exchange, fact, dictionary, web_search, web_fetch.`;
+    isError = true;
   }
 
   return {

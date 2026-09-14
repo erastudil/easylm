@@ -54,7 +54,7 @@ Geography is the spatial science of the Earth and the distribution of life, reso
 3. [Chapter 3: Planetary Mechanics: Axial Tilt, Insolation, and Seasons](#3-planetary-mechanics-axial-tilt-insolation-and-seasons)
 4. [Chapter 4: Cartographic Theory: Projections, Scale, and Distortion](#4-cartographic-theory-projections-scale-and-distortion)
 5. [Chapter 5: Lithospheric Dynamics: Plate Tectonics and Geomorphology](#5-lithospheric-dynamics-plate-tectonics-and-geomorphology)
-6. [Chapter 6: Climatological Belts and the Köppen-Geiger Biome System](#6-climatological-belts-and-the-k%C3%B6ppen-geiger-biome-system)
+6. [Chapter 6: Climatological Belts and the Koppen-Geiger Biome System](#6-climatological-belts-and-the-koppen-geiger-biome-system)
 7. [Chapter 7: Spatial Scale, Regional Analysis, and the MAUP](#7-spatial-scale-regional-analysis-and-the-maup)
 8. [Chapter 8: Human Demography: Growth Models, Census Data, and Pyramids](#8-human-demography-growth-models-census-data-and-pyramids)
 9. [Chapter 9: Urban Geography: Agglomeration, Spatial Form, and Central Place Theory](#9-urban-geography-agglomeration-spatial-form-and-central-place-theory)
@@ -179,7 +179,7 @@ The Earth's rigid lithosphere is fractured into tectonic plates floating upon th
 
 ---
 
-## 6. Climatological Belts and the Köppen-Geiger Biome System
+## 6. Climatological Belts and the Koppen-Geiger Biome System
 
 Global biomes are driven by atmospheric circulation cells (Hadley, Ferrel, Polar) interacting with oceanic currents and continental topography.
 

@@ -47,20 +47,18 @@ Chemistry is the science of that interaction. It is the physics of the electron 
 
 ### Table of Contents
 
-1. [Chapter 1: The Atomic Hypothesis and the First Principles of Chemistry](#1-what-chemistry-is)
-2. [Chapter 2: Atomic Architecture, Orbitals, and the Periodic Table](#2-atoms-isotopes-the-table)
-3. [Chapter 3: The Mole Bridge, Molar Mass, and Concentration](#3-mole-molar-mass-concentration)
-4. [Chapter 4: Chemical Bonding, Electronegativity, and Molecular Geometry](#4-bonds-and-shape)
-5. [Chapter 5: Stoichiometry: Conservation of Mass and Limiting Reactants](#5-balance-limiting-reagent-yield)
-6. [Chapter 6: States of Matter: Gases, Solutions, and Phase Transitions](#6-gas-solution-phase)
-7. [Chapter 7: Thermochemistry: Enthalpy, Entropy, and Gibbs Free Energy](#7-heat-of-reaction-how-fast)
-8. [Chapter 8: Chemical Equilibrium: The Dynamic Tug-of-War](#8-k-le-chatelier)
-9. [Chapter 9: Aqueous Equilibria: Acids, Bases, and Buffer Systems](#9-acids-bases-ph)
-10. [Chapter 10: Electrochemistry: Redox Reactions and Electrochemical Cells](#10-redox-cells)
-11. [Chapter 11: Organic Chemistry: The Endless Architecture of Carbon](#11-carbon-skeletons-polymers)
-12. [Chapter 12: Laboratory Safety, Chemical Hazards, and Epistemic Limits](#12-is-this-safe)
-13. [Chapter 13: Computational Chemistry and Authoritative Standards (NIST, IUPAC)](#13-compute--tables)
-14. [Chapter 14: Systematic Problem-Solving in Chemical Systems](#14-stuck-on-a-problem)
+1. [Chapter 1: The Atomic Hypothesis and the First Principles of Chemistry](#1-the-atomic-hypothesis-and-the-first-principles-of-chemistry)
+2. [Chapter 2: Atomic Architecture, Orbitals & The Periodic Table](#2-atomic-architecture-orbitals--the-periodic-table)
+3. [Chapter 3: The Mole Bridge, Molar Mass & Solution Concentration](#3-the-mole-bridge-molar-mass--solution-concentration)
+4. [Chapter 4: Chemical Bonding, Electronegativity & Molecular Geometry](#4-chemical-bonding-electronegativity--molecular-geometry)
+5. [Chapter 5: Stoichiometry: Conservation of Mass & Limiting Reactants](#5-stoichiometry-conservation-of-mass--limiting-reactants)
+6. [Chapter 6: States of Matter: Ideal & Real Gases, Solutions & Phase Transitions](#6-states-of-matter-ideal--real-gases-solutions--phase-transitions)
+7. [Chapter 7: Chemical Thermodynamics & Reaction Kinetics](#7-chemical-thermodynamics--reaction-kinetics)
+8. [Chapter 8: Dynamic Chemical Equilibrium](#8-dynamic-chemical-equilibrium)
+9. [Chapter 9: Aqueous Equilibria: Acids, Bases, pH & Buffers](#9-aqueous-equilibria-acids-bases-ph--buffers)
+10. [Chapter 10: Electrochemistry: Redox Systems & Galvanic Cells](#10-electrochemistry-redox-systems--galvanic-cells)
+11. [Chapter 11: Organic Chemistry: Functional Groups & Reaction Mechanisms](#11-organic-chemistry-functional-groups--reaction-mechanisms)
+12. [Chapter 12: Chemical Safety, Hazards & Authoritative Standards](#12-chemical-safety-hazards--authoritative-standards)
 
 ---
 

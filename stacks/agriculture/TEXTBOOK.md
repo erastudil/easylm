@@ -44,19 +44,13 @@ At its physical first principles, agriculture is humanity's primary solar harves
 
 ### Table of Contents
 
-1. [Chapter 1: The First Principles of Agriculture and Agronomy](#1-what-agriculture-is)
-2. [Chapter 2: Soil as a Living Organism: Pedology, Texture, and the Microbiome](#2-soil-as-a-living-body)
-3. [Chapter 3: Agricultural Hydrology: Precipitation, Soil Moisture, and Irrigation](#3-irrigation-rain-drainage)
-4. [Chapter 4: Mineral Nutrition and Soil Chemistry: The N-P-K Cycle](#4-nutrients-fertilizer-compost)
-5. [Chapter 5: Crop Physiology, Photosynthesis, and Growing Degree Days (GDD)](#5-crop-photosynthesis-phenology)
-6. [Chapter 6: Plant Breeding, Seed Systems, and Germplasm Preservation](#6-seed-variety-germplasm)
-7. [Chapter 7: Integrated Pest Management: Ecological Defense and Economic Thresholds](#7-pest-pathogen-ipm)
-8. [Chapter 8: Animal Husbandry, Ruminant Nutrition, and Silvopasture](#8-livestock)
-9. [Chapter 9: Agro-Meteorology: Microclimates, Frost Clocks, and Climate Adaptation](#9-frost-season-climate)
-10. [Chapter 10: The Global Food System: Supply Chains and Food Security](#10-food-system-security)
-11. [Chapter 11: Agricultural Economics, Farm Management, and Public Policy](#11-farm-as-a-firm-policy)
-12. [Chapter 12: Authoritative Agronomic Doors: USDA, FAO, NRCS, and NASS](#12-usda-fao-nrcs-nass)
-13. [Chapter 13: Systematic Troubleshooting of Agronomic Failures](#13-stuck-on-a-problem)
+1. [Chapter 1: The First Principles of Agronomy & Agroecosystems](#1-the-first-principles-of-agronomy--agroecosystems)
+2. [Chapter 2: Pedology & Soil Physics](#2-pedology--soil-physics)
+3. [Chapter 3: Mineral Nutrition & The Biogeochemical N-P-K Cycles](#3-mineral-nutrition--the-biogeochemical-n-p-k-cycles)
+4. [Chapter 4: Crop Physiology, Photosynthetic Pathways & Phenology](#4-crop-physiology-photosynthetic-pathways--phenology)
+5. [Chapter 5: Integrated Pest Management (IPM) & Agroecology](#5-integrated-pest-management-ipm--agroecology)
+6. [Chapter 6: Animal Science & Ruminant Digestion](#6-animal-science--ruminant-digestion)
+7. [Chapter 7: Authoritative Agronomic Doors & Primary Repositories](#7-authoritative-agronomic-doors--primary-repositories)
 
 ---
 

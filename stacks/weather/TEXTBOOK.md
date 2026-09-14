@@ -48,20 +48,14 @@ The Earth's atmosphere is a giant thermodynamic heat engine driven by differenti
 
 ### Table of Contents
 
-1. [Chapter 1: The First Principles of Atmospheric Science and Meteorology](#1-what-weather-is)
-2. [Chapter 2: Atmospheric Composition and Vertical Layering](#2-layers-air-as-a-mixture)
-3. [Chapter 3: State Variables: Temperature, Barometric Pressure, Humidity, and Wind](#3-t-p-humidity-wind-as-state)
-4. [Chapter 4: Planetary Energy Balance: Solar Insolation and Terrestrial Radiation](#4-radiation-energy-budget-as-structure)
-5. [Chapter 5: Cloud Microphysics, Condensation, and Precipitation Mechanics](#5-clouds-rain-snow)
-6. [Chapter 6: Atmospheric Stability, Convection, and Buoyancy](#6-stability-convection)
-7. [Chapter 7: Dynamic Meteorology: Wind Forces, Planetary Cells, and Jet Streams](#7-wind-cells-jet)
-8. [Chapter 8: Synoptic Meteorology: Air Masses, Fronts, and Cyclogenesis](#8-fronts-midlatitude-cyclone)
-9. [Chapter 9: Severe Convective Weather: Thunderstorms, Supercells, and Tornadoes](#9-thunderstorm-tornado)
-10. [Chapter 10: Tropical Cyclones: Genesis, Thermodynamic Engines, and Hazards](#10-tropical-cyclone)
-11. [Chapter 11: Numerical Weather Prediction and Computational Modeling](#11-forecast-as-a-model)
-12. [Chapter 12: Climatology: Historical Baselines, Statistical Normals, and Climate Dynamics](#12-climate-as-statistics)
-13. [Chapter 13: Authoritative Meteorological Doors: NWS, NOAA, ECMWF, and WMO](#13-nws-nhc-spc-ipcc)
-14. [Chapter 14: Systematic Diagnostic Inquest in Atmospheric Systems](#14-stuck-on-a-problem)
+1. [Chapter 1: The First Principles of Atmospheric Science & Meteorology](#1-the-first-principles-of-atmospheric-science--meteorology)
+2. [Chapter 2: Atmospheric Vertical Structure & The Hydrostatic Equation](#2-atmospheric-vertical-structure--the-hydrostatic-equation)
+3. [Chapter 3: Atmospheric Moisture, Condensation & Cloud Microphysics](#3-atmospheric-moisture-condensation--cloud-microphysics)
+4. [Chapter 4: Atmospheric Stability & Parcel Thermodynamics](#4-atmospheric-stability--parcel-thermodynamics)
+5. [Chapter 5: Dynamic Meteorology: Forces & The Geostrophic Balance](#5-dynamic-meteorology-forces--the-geostrophic-balance)
+6. [Chapter 6: Synoptic Meteorology: Air Masses, Fronts & Extratropical Cyclones](#6-synoptic-meteorology-air-masses-fronts--extratropical-cyclones)
+7. [Chapter 7: Tropical Cyclones: Genesis, Thermodynamic Engines & Saffir-Simpson Scale](#7-tropical-cyclones-genesis-thermodynamic-engines--saffir-simpson-scale)
+8. [Chapter 8: Authoritative Meteorological Doors & Observational Repositories](#8-authoritative-meteorological-doors--observational-repositories)
 
 ---
 

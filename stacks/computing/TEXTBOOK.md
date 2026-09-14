@@ -56,7 +56,7 @@ This textbook provides the theoretical bedrock and practical mechanics required 
 11. [Chapter 11: Data Persistence, Relational Theory & SQL Engines](#11-data-persistence-relational-theory--sql-engines)
 12. [Chapter 12: Regular Expressions, Automata & Formal Grammars](#12-regular-expressions-automata--formal-grammars)
 13. [Chapter 13: Language Families & Engineering Idioms](#13-language-families--engineering-idioms)
-14. [Chapter 14: Specification, Testing & Problem Decomposition](#14-specification-testing--problem-decomposition)
+14. [Chapter 14: Software Engineering Foundations: Specification, Testing & Verification](#14-software-engineering-foundations-specification-testing--verification)
 
 ---
 

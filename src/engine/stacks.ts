@@ -1,8 +1,6 @@
 import { STACKS_PACKS, StackPack } from '../data/stacks_compiled';
 
 export type { StackPack };
-export type WarehousePack = StackPack;
-export const WAREHOUSE_PACKS = STACKS_PACKS;
 
 export interface StackChapter {
   heading: string;
@@ -66,9 +64,15 @@ const SUBJECT_ALIASES: Record<string, string[]> = {
   author: ['literature'],
   fiction: ['literature'],
   drama: ['literature'],
-  climate: ['weather', 'geography'],
-  meteorology: ['weather'],
-  atmosphere: ['weather'],
+  weather: ['earth_sciences'],
+  climate: ['earth_sciences', 'geography'],
+  meteorology: ['earth_sciences'],
+  atmosphere: ['earth_sciences'],
+  geology: ['earth_sciences'],
+  earth: ['earth_sciences'],
+  oceanography: ['earth_sciences', 'geography'],
+  oceans: ['earth_sciences', 'geography'],
+  hydrology: ['earth_sciences'],
   biology: ['biology'],
   genetics: ['biology'],
   dna: ['biology'],
@@ -102,7 +106,26 @@ const SUBJECT_ALIASES: Record<string, string[]> = {
   cartography: ['geography'],
   gis: ['geography'],
   maps: ['geography'],
-  oceans: ['geography']
+  security: ['security'],
+  infosec: ['security'],
+  cybersecurity: ['security', 'computing'],
+  cryptography: ['security', 'math'],
+  crypto: ['security'],
+  cryptocurrency: ['security', 'finance'],
+  bitcoin: ['security', 'finance'],
+  blockchain: ['security'],
+  privacy: ['security'],
+  encryption: ['security'],
+  lockpicking: ['security'],
+  trades: ['trades'],
+  machining: ['trades', 'engineering'],
+  cnc: ['trades', 'engineering'],
+  mill: ['trades'],
+  lathe: ['trades'],
+  plumbing: ['trades'],
+  electrician: ['trades', 'engineering'],
+  carpentry: ['trades'],
+  welding: ['trades', 'engineering']
 };
 
 export function tokenize(query: string): string[] {
@@ -240,7 +263,7 @@ function excerptChapter(body: string, terms: string[], rawPhrase: string, max = 
 }
 
 function listCatalog(): string {
-  const rows = WAREHOUSE_PACKS.map(
+  const rows = STACKS_PACKS.map(
     p => `• Dewey ${p.dewey} · ${p.slug} · ${p.title} (${p.category})`
   );
   return [
@@ -264,8 +287,7 @@ export function execStacks(query: string): string {
     lower === 'catalog' ||
     lower === 'packs' ||
     lower === 'stacks' ||
-    lower === 'what is in the stacks' ||
-    lower === 'what is in the warehouse'
+    lower === 'what is in the stacks'
   ) {
     return listCatalog();
   }
@@ -284,7 +306,7 @@ export function execStacks(query: string): string {
   ranked.sort((a, b) => b.score - a.score);
 
   if (ranked.length === 0) {
-    return `No warehouse hits or Stacks matches for "${query}". The Library covers all major undergraduate fields (Dewey 000–900). Try a subject title (e.g. math, psychology, astronomy, physics, civics) or call \`stacks("list")\` for the full catalog.`;
+    return `No Stacks matches for "${query}". The Library covers sovereign undergraduate fields across the Dewey Decimal Classification (000–900). Try a subject title (e.g. math, security, trades, earth_sciences, physics) or call \`stacks("list")\` for the full catalog.`;
   }
 
   const chosen = ranked.slice(0, HIT_MAX);

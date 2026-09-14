@@ -1,6 +1,6 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ModelOption } from '../types';
-import { AVAILABLE_MODELS, registerCustomHFModel, ProgressStatus } from '../engine/webllm_spindle';
+import { AVAILABLE_MODELS, registerCustomHFModel, ProgressStatus } from '../engine/webllm';
 import { DeviceInfo } from '../engine/device';
 
 interface ModelModalProps {

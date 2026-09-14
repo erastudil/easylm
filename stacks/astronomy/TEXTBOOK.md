@@ -7,7 +7,7 @@ related:
   - "../physics/"
   - "../math/"
   - "../chemistry/"
-  - "../weather/"
+  - "../earth_sciences/"
 ---
 
 # Astronomy & Astrophysics — Celestial Mechanics, Stellar Evolution & Modern Cosmology

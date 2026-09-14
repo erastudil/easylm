@@ -3,13 +3,11 @@ import { isKidAllowedTool, KID_TOOL_REFUSAL, normalizeToolName } from './kid_too
 import { execMath } from './math';
 import { isWhitelistedHost, isWikiHost, parsePublicHttpsUrl } from './ssrf';
 import { execStacks } from './stacks';
-import { execWarehouse } from './warehouse';
 import { execZcabsCanary } from './zcabs';
 import { execStudio } from './studio_tool';
 
 export { execMath } from './math';
 export { execStacks } from './stacks';
-export { execWarehouse } from './warehouse';
 export { execZcabsCanary } from './zcabs';
 
 export const SYSTEM_TOOLS_PROMPT = `
@@ -23,7 +21,7 @@ You have access to the following built-in tools:
 7. dictionary(word: string) - exact definition, pronunciation, part of speech, and origin for English words (e.g. "obfuscate", "serendipity").
 8. web_search(query: string) - search the web for real-time sports scores (ESPN), live stock & crypto prices (Yahoo Finance), breaking news & world pulse (Google News RSS), literary citations, and open data.
 9. web_fetch(url: string) - fetch verified content from safe whitelist sources (Wikipedia, Google News, Yahoo Finance, ESPN, NIST, Census, PubChem, ArXiv, World Bank, etc.). Arbitrary proxying is blocked.
-10. stacks(query: string) - search local university library stacks across 28 academic subjects (Dewey 000–900). Sovereign, offline university reference books. (alias: warehouse).
+10. stacks(query: string) - search local university library stacks across sovereign undergraduate subjects (Dewey 000–900). Sovereign, offline university reference books.
 11. zcabs(key: string) - inspect system invariant canary register for execution verification (e.g. "zcabs <register>").
 12. studio(query: string) - local Studio status: current course and lesson, or "list" for the catalog. Never returns answer keys.
 
@@ -604,7 +602,7 @@ export async function dispatchTool(
     result = await execDictionary(query);
   } else if (normName.includes('clock') || normName.includes('time') || normName.includes('date') || normName.includes('zone')) {
     result = execClock(query);
-  } else if (normName.includes('stack') || normName.includes('library') || normName.includes('warehouse') || normName.includes('canon') || normName.includes('dewey')) {
+  } else if (normName.includes('stack') || normName.includes('library') || normName.includes('canon') || normName.includes('dewey')) {
     result = execStacks(query);
   } else if (normName.includes('fetch') || normName.includes('read_url') || normName.includes('scrape') || normName.includes('browse')) {
     result = await execWebFetch(query);

@@ -4,7 +4,7 @@ date: "2026-09-13"
 status: living · undergrad · the-stacks
 home: "stacks/geography/"
 related:
-  - "../weather/"
+  - "../earth_sciences/"
   - "../agriculture/"
   - "../civics/"
   - "../history/"

@@ -550,6 +550,33 @@ export const CONTRIBUTORS_CREDITS: ContributorCredit[] = [
       }
     ],
     license: "SIL Open Font License 1.1"
+  },
+  {
+    id: "easylm-jax",
+    name: "EasyLM (JAX/Flax) & OpenLLaMA",
+    handle: "young-geng",
+    role: "Pioneering Open-Weights TPU Training Infrastructure",
+    github: "https://github.com/young-geng/EasyLM",
+    approxLinesOfCode: "~25,000 LOC",
+    locRank: 14,
+    summary: "Pioneering 2023 JAX/Flax distributed pre-training framework that trained OpenLLaMA on Google Cloud TPUs, demonstrating scalable open-source foundation model reproduction.",
+    adoptedInnovations: [
+      "Ecosystem attribution for the 'EasyLM' name lineage and early open-weights training democratization",
+      "Disambiguation: Distinct from this browser-side WebGPU client, young-geng/EasyLM is a server-side JAX/Flax training framework"
+    ],
+    humanContributors: [
+      { name: "Xinyang (Young) Geng", handle: "young-geng", role: "Creator & Lead Researcher (UC Berkeley BAIR)" },
+      { name: "Hao Liu", handle: "haoliu", role: "Co-Creator & Researcher" }
+    ],
+    projects: [
+      {
+        name: "EasyLM",
+        repo: "young-geng/EasyLM",
+        url: "https://github.com/young-geng/EasyLM",
+        description: "Large language models made easy: pre-training, fine-tuning, and serving LLMs in JAX/Flax on TPUs/GPUs."
+      }
+    ],
+    license: "Apache-2.0"
   }
 ];
 

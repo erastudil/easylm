@@ -49,7 +49,7 @@ remembered bushels, a “typical” N-P-K, calendar spray rates, wiki tonnes as 
 |---|---|
 | this book | `stacks/agriculture/TEXTBOOK.md` |
 | biology pack | `stacks/biology/` |
-| weather pack | `stacks/weather/` |
+| earth sciences pack | `stacks/earth_sciences/` |
 | geography pack | `stacks/geography/` |
 | health pack | `stacks/health/` |
 | calc / units | the EasyLM calc hand · the EasyLM units hand |

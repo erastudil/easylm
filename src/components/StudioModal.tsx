@@ -1013,6 +1013,10 @@ console.log("Error vs Math.PI:", Math.abs(estimate - Math.PI));
   const [consoleOutput, setConsoleOutput] = useState<string[]>([]);
   const [isRunning, setIsRunning] = useState(false);
 
+  const activeWorkerRef = useRef<Worker | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const blobUrlRef = useRef<string | null>(null);
+
   const presets = [
     {
       label: 'Monte Carlo Pi',
@@ -1070,8 +1074,45 @@ console.log("Primes up to 100:", sieve(100));`
     }
   ];
 
-  const handleRun = () => {
-    setIsRunning(true);
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+      if (activeWorkerRef.current) {
+        activeWorkerRef.current.terminate();
+        activeWorkerRef.current = null;
+      }
+      if (blobUrlRef.current) {
+        try {
+          URL.revokeObjectURL(blobUrlRef.current);
+        } catch {}
+        blobUrlRef.current = null;
+      }
+    };
+  }, []);
+
+  const handleStop = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    if (activeWorkerRef.current) {
+      activeWorkerRef.current.terminate();
+      activeWorkerRef.current = null;
+    }
+    if (blobUrlRef.current) {
+      try {
+        URL.revokeObjectURL(blobUrlRef.current);
+      } catch {}
+      blobUrlRef.current = null;
+    }
+    setIsRunning(false);
+    setConsoleOutput((prev) => [...prev, '[STOPPED] Execution halted by user']);
+  };
+
+  const handleInThreadFallback = (codeToRun: string) => {
     const logs: string[] = [];
     const origLog = console.log;
     const origWarn = console.warn;
@@ -1079,21 +1120,20 @@ console.log("Primes up to 100:", sieve(100));`
 
     try {
       console.log = (...args: any[]) => {
-        logs.push('[LOG] ' + args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '));
+        logs.push('[LOG] ' + args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' '));
         origLog(...args);
       };
       console.warn = (...args: any[]) => {
-        logs.push('[WARN] ' + args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '));
+        logs.push('[WARN] ' + args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' '));
         origWarn(...args);
       };
       console.error = (...args: any[]) => {
-        logs.push('[ERROR] ' + args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '));
+        logs.push('[ERROR] ' + args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' '));
         origError(...args);
       };
 
       const start = performance.now();
-      // Safe execution in isolated Function constructor
-      const runner = new Function(code);
+      const runner = new Function(codeToRun);
       const result = runner();
       const elapsed = (performance.now() - start).toFixed(2);
 
@@ -1107,8 +1147,166 @@ console.log("Primes up to 100:", sieve(100));`
       console.log = origLog;
       console.warn = origWarn;
       console.error = origError;
-      setConsoleOutput(logs);
+      setConsoleOutput((prev) => [...prev, ...logs]);
       setIsRunning(false);
+    }
+  };
+
+  const handleRun = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    if (activeWorkerRef.current) {
+      activeWorkerRef.current.terminate();
+      activeWorkerRef.current = null;
+    }
+    if (blobUrlRef.current) {
+      try {
+        URL.revokeObjectURL(blobUrlRef.current);
+      } catch {}
+      blobUrlRef.current = null;
+    }
+
+    setIsRunning(true);
+    setConsoleOutput([]);
+
+    let workerStarted = false;
+    try {
+      if (typeof Worker !== 'undefined' && typeof Blob !== 'undefined' && typeof URL !== 'undefined' && URL.createObjectURL) {
+        const runnerScript = `
+self.onmessage = null;
+
+function safeFormat(arg) {
+  if (arg === null) return 'null';
+  if (arg === undefined) return 'undefined';
+  if (typeof arg === 'symbol') return arg.toString();
+  if (typeof arg === 'bigint') return arg.toString() + 'n';
+  if (typeof arg === 'function') return arg.toString();
+  if (typeof arg === 'object') {
+    try {
+      return JSON.stringify(arg, null, 2);
+    } catch {
+      try {
+        return String(arg);
+      } catch {
+        return '[Unserializable Object]';
+      }
+    }
+  }
+  return String(arg);
+}
+
+const origLog = console.log;
+const origWarn = console.warn;
+const origError = console.error;
+const origInfo = console.info;
+
+console.log = function(...args) {
+  self.postMessage({ type: 'log', level: 'LOG', text: args.map(safeFormat).join(' ') });
+  if (origLog) origLog.apply(console, args);
+};
+console.warn = function(...args) {
+  self.postMessage({ type: 'log', level: 'WARN', text: args.map(safeFormat).join(' ') });
+  if (origWarn) origWarn.apply(console, args);
+};
+console.error = function(...args) {
+  self.postMessage({ type: 'log', level: 'ERROR', text: args.map(safeFormat).join(' ') });
+  if (origError) origError.apply(console, args);
+};
+console.info = function(...args) {
+  self.postMessage({ type: 'log', level: 'INFO', text: args.map(safeFormat).join(' ') });
+  if (origInfo) origInfo.apply(console, args);
+};
+
+self.onerror = function(message, source, lineno, colno, error) {
+  self.postMessage({ type: 'error', error: (error && error.message) || String(message) || 'Script error' });
+  return true;
+};
+
+self.onunhandledrejection = function(e) {
+  self.postMessage({ type: 'error', error: (e.reason && e.reason.message) || String(e.reason || 'Unhandled Promise Rejection') });
+};
+
+(async () => {
+  const start = performance.now();
+  try {
+    const __fn = async () => {
+` + code + `
+    };
+    const __res = await __fn();
+    const elapsed = (performance.now() - start).toFixed(2);
+    if (__res !== undefined) {
+      self.postMessage({ type: 'return', text: safeFormat(__res) });
+    }
+    self.postMessage({ type: 'done', elapsed });
+  } catch (err) {
+    self.postMessage({ type: 'error', error: (err && err.message) || String(err) });
+  }
+})();
+`;
+
+        const blob = new Blob([runnerScript], { type: 'application/javascript' });
+        const blobUrl = URL.createObjectURL(blob);
+        blobUrlRef.current = blobUrl;
+
+        const worker = new Worker(blobUrl);
+        activeWorkerRef.current = worker;
+
+        const cleanup = () => {
+          if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
+          }
+          if (activeWorkerRef.current === worker) {
+            worker.terminate();
+            activeWorkerRef.current = null;
+          }
+          if (blobUrlRef.current === blobUrl) {
+            try {
+              URL.revokeObjectURL(blobUrl);
+            } catch {}
+            blobUrlRef.current = null;
+          }
+          setIsRunning(false);
+        };
+
+        // 10-second timeout to prevent infinite loops from hanging indefinitely
+        timeoutRef.current = setTimeout(() => {
+          setConsoleOutput((prev) => [...prev, '[TIMEOUT] Execution exceeded 10-second limit and was terminated']);
+          cleanup();
+        }, 10000);
+
+        worker.onmessage = (e: MessageEvent) => {
+          const msg = e.data;
+          if (!msg || typeof msg !== 'object') return;
+
+          if (msg.type === 'log') {
+            setConsoleOutput((prev) => [...prev, `[${msg.level}] ${msg.text}`]);
+          } else if (msg.type === 'return') {
+            setConsoleOutput((prev) => [...prev, `[RETURN] ${msg.text}`]);
+          } else if (msg.type === 'done') {
+            setConsoleOutput((prev) => [...prev, `--- Execution completed in ${msg.elapsed} ms ---`]);
+            cleanup();
+          } else if (msg.type === 'error') {
+            setConsoleOutput((prev) => [...prev, `[EXCEPTION] ${msg.error}`]);
+            cleanup();
+          }
+        };
+
+        worker.onerror = (e: ErrorEvent) => {
+          setConsoleOutput((prev) => [...prev, `[EXCEPTION] ${e.message || 'Worker runtime error'}`]);
+          cleanup();
+        };
+
+        workerStarted = true;
+      }
+    } catch {
+      workerStarted = false;
+    }
+
+    if (!workerStarted) {
+      handleInThreadFallback(code);
     }
   };
 
@@ -1117,15 +1315,25 @@ console.log("Primes up to 100:", sieve(100));`
       {/* Toolbar & Presets */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
         <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center', flexWrap: 'wrap' }}>
-          <button
-            type="button"
-            onClick={handleRun}
-            disabled={isRunning}
-            className="btn-pill btn-pill-primary"
-            style={{ fontSize: '0.76rem', padding: '0.35rem 0.85rem', gap: '0.35rem' }}
-          >
-            <span>▶</span> Run Code
-          </button>
+          {isRunning ? (
+            <button
+              type="button"
+              onClick={handleStop}
+              className="btn-pill"
+              style={{ fontSize: '0.76rem', padding: '0.35rem 0.85rem', gap: '0.35rem', borderColor: '#ef4444', color: '#ef4444' }}
+            >
+              <span>⏹</span> Stop
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleRun}
+              className="btn-pill btn-pill-primary"
+              style={{ fontSize: '0.76rem', padding: '0.35rem 0.85rem', gap: '0.35rem' }}
+            >
+              <span>▶</span> Run Code
+            </button>
+          )}
           <button
             type="button"
             onClick={() => setConsoleOutput([])}
@@ -1230,13 +1438,14 @@ console.log("Primes up to 100:", sieve(100));`
               </div>
             ) : (
               consoleOutput.map((line, idx) => {
-                const isError = line.startsWith('[ERROR]') || line.startsWith('[EXCEPTION]');
+                const isError = line.startsWith('[ERROR]') || line.startsWith('[EXCEPTION]') || line.startsWith('[TIMEOUT]');
+                const isWarn = line.startsWith('[WARN]') || line.startsWith('[STOPPED]');
                 const isReturn = line.startsWith('[RETURN]');
                 return (
                   <div
                     key={idx}
                     style={{
-                      color: isError ? '#f87171' : isReturn ? '#fbbf24' : '#e4e4e7',
+                      color: isError ? '#f87171' : isWarn ? '#fbbf24' : isReturn ? '#a78bfa' : '#e4e4e7',
                       whiteSpace: 'pre-wrap',
                       marginBottom: '0.2rem'
                     }}

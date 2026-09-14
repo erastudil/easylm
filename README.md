@@ -19,7 +19,7 @@ EasyLM is an open-source, consumer alternative to hosted AI platforms that **exe
 - **AtMem (Atomic & Attentive Memory):** Discrete, typed memory atoms with dynamic BM25 relevance scoring, strict token budgeting, profile isolation, and parental governance.
 - **Client-Side Vault Encryption:** Optional AES-GCM-256 encryption with 600,000-round PBKDF2 key derivation protects conversations, profiles, and memory banks at rest in IndexedDB.
 - **LaTeX Math Support:** High-performance KaTeX math rendering for LaTeX expressions in both interactive chat and Studio reading modes.
-- **Studio & Learn Integration:** An integrated suite featuring 28 undergraduate textbooks, interactive learning courses, math graphing, code sandboxes, and drawing canvases.
+- **Studio & Learn Integration:** An integrated suite featuring 30 undergraduate textbooks, interactive learning courses, math graphing, code sandboxes, and drawing canvases.
 - **Strict UI Canon:** Zero horizontal scrollbars on desktop or mobile devices, responsive layout wrapping, and clean interface naming.
 
 ---
@@ -62,9 +62,9 @@ The Learn system provides structured, self-paced academic courses with comprehen
 
 Each course links directly into Studio, allowing learners to open textbooks, inspect link trees, and navigate between lessons and primary sources without leaving the application.
 
-### 3. The Stacks: 28 Academic Disciplines
+### 3. The Stacks: 30 Academic Disciplines
 
-The Stacks provide comprehensive undergraduate textbooks and curated link trees across 28 academic fields, including mathematics, physics, computing, philosophy, agriculture, language, and poetry.
+The Stacks provide comprehensive undergraduate textbooks and curated link trees across 30 sovereign academic fields, including mathematics, physics, computing, information security & cryptography, skilled trades & machining, earth sciences, philosophy, agriculture, language, and poetry.
 
 Textbooks follow the **Greene / Feynman pedagogical method**:
 - Physical, sensory intuition first: concepts are introduced through everyday observations and first principles.
@@ -146,6 +146,13 @@ EasyLM requires a browser with native WebGPU support:
 - **Microsoft Edge:** Version 113 or newer
 - **Apple Safari:** Version 18 or newer (macOS Sequoia, iOS 18, iPadOS 18)
 - **Mozilla Firefox:** Nightly builds with `dom.webgpu.enabled` set to `true`
+
+---
+
+## Acknowledgments & Name Lineage
+
+- **Ecosystem Lineage:** Our zero-install, in-browser WebGPU application is distinct from [young-geng/EasyLM](https://github.com/young-geng/EasyLM), the 2023 JAX/Flax distributed pre-training framework (Apache-2.0) by Xinyang (Young) Geng and Hao Liu at UC Berkeley that trained OpenLLaMA. We respect and salute their foundational contributions to open-weights training.
+- **Full Attributions:** Full credits for our WebGPU inference stack, open-weights providers (DeepSeek, Meta, Qwen, Google DeepMind, Mistral, Microsoft, Hugging Face), and upstream open-source engines are documented in our interactive Credits modal and [src/data/credits.ts](src/data/credits.ts).
 
 ---
 

@@ -2,7 +2,7 @@
 title: "health — undergrad textbook"
 date: "2026-09-13"
 status: living · undergrad · foundational-textbook
-home: "field/field-kb/warehouse/undergrad/health/"
+home: "stacks/health/"
 related:
   - "../biology/"
   - "../chemistry/"
@@ -772,5 +772,5 @@ When analyzing any health inquiry or clinical scenario, proceed through this alg
 Health is the physical and biochemical mastery of homeostasis against entropic decay. Respect the laws of thermodynamics and fluid mechanics, verify clinical claims against primary evidence hierarchies, honor the licensed boundary of the physician, and protect the homeostatic engine.
 
 ```
-CITE: field-kb/warehouse/undergrad/health/TEXTBOOK.md
+CITE: stacks/health/TEXTBOOK.md
 ```

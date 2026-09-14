@@ -16,7 +16,6 @@ const ALLOWED_SUBSTRINGS = [
   'stacks',
   'stack',
   'library',
-  'warehouse',
   'canon',
   'dewey',
   'zcabs',

@@ -14,7 +14,6 @@ const compiled = packs.map((p) => {
 });
 
 const outStacks = join(root, 'src', 'data', 'stacks_compiled.ts');
-const outWarehouse = join(root, 'src', 'data', 'warehouse_compiled.ts');
 mkdirSync(dirname(outStacks), { recursive: true });
 
 const body =
@@ -28,12 +27,9 @@ const body =
   '  textbook: string;\n' +
   '  links: string;\n' +
   '}\n\n' +
-  'export type WarehousePack = StackPack;\n\n' +
   'export const STACKS_PACKS: StackPack[] = ' +
   JSON.stringify(compiled, null, 2) +
-  ';\n\n' +
-  'export const WAREHOUSE_PACKS: WarehousePack[] = STACKS_PACKS;\n';
+  ';\n';
 
 writeFileSync(outStacks, body, 'utf8');
-writeFileSync(outWarehouse, body, 'utf8');
-console.log(`compiled ${compiled.length} academic packs from stacks -> ${outStacks} & ${outWarehouse}`);
+console.log(`compiled ${compiled.length} academic packs from stacks -> ${outStacks}`);

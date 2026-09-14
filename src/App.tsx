@@ -17,9 +17,9 @@ import {
   AVAILABLE_MODELS,
   getOrInitEngine,
   isEngineReady
-} from './engine/webllm_spindle';
+} from './engine/webllm';
 import { dispatchTool, SYSTEM_TOOLS_PROMPT, SYSTEM_TOOLS_PROMPT_KID } from './engine/tools';
-import { clockQueryOf, mathExpressionOf, stacksQueryOf, unitConversionOf, warehouseQueryOf } from './engine/preflight';
+import { clockQueryOf, mathExpressionOf, stacksQueryOf, unitConversionOf } from './engine/preflight';
 import { Sidebar } from './components/Sidebar';
 import { MessageItem } from './components/MessageItem';
 import { SettingsModal } from './components/SettingsModal';
@@ -661,7 +661,7 @@ export const App: React.FC = () => {
     const mathExpr = mathExpressionOf(trimmed);
     const unitExpr = unitConversionOf(trimmed);
     const clockQuery = clockQueryOf(trimmed);
-    const stacksQuery = stacksQueryOf(trimmed) || warehouseQueryOf(trimmed);
+    const stacksQuery = stacksQueryOf(trimmed);
     const directSearchMatch = trimmed.match(/^(?:search|search for|google|web search)\s*:\s*(.+)$/i);
     const urlMatch = trimmed.match(/(https?:\/\/[^\s]+)/i);
     const directFetchMatch = trimmed.match(/^(?:fetch|read|browse|summarize|inspect)\s+(https?:\/\/[^\s]+)$/i);
@@ -964,16 +964,27 @@ export const App: React.FC = () => {
       });
     } catch (err: any) {
       console.error('Inference error:', err);
+      setIsModelReady(isEngineReady());
       const errStr = String(err?.message || err).toLowerCase();
-      const isOOM = errStr.includes('out of memory') || errStr.includes('buffer') || errStr.includes('device lost') || errStr.includes('allocation');
-      const oomHint = isOOM
+      const isOOM = errStr.includes('out of memory') || errStr.includes('buffer') || errStr.includes('allocation');
+      const isDisposedOrLost = errStr.includes('disposed') || errStr.includes('not loaded') || errStr.includes('device lost') || errStr.includes('devicelost');
+      const isGPUProcessDead = errStr.includes('unable to find a compatible gpu') || errStr.includes('cannot find webgpu') || errStr.includes('failed to requestadapter');
+      const isBrave = typeof navigator !== 'undefined' && (/brave/i.test(navigator.userAgent) || !!(navigator as any).brave);
+      const restartUrl = isBrave ? 'brave://restart' : 'chrome://restart';
+      const gpuUrl = isBrave ? 'brave://gpu' : 'chrome://gpu';
+
+      const errorHint = isOOM
         ? `\n\n💡 **Tip:** Your GPU ran out of memory for this model. Switch to the ultralight **Qwen 2.5 1.5B** in Settings (⚙) for instant, low-memory inference.`
-        : `\n\n*Ensure your browser supports WebGPU (Chrome/Edge 113+) and hardware acceleration is turned on.*`;
+        : isGPUProcessDead
+        ? `\n\n💡 **Tip:** Your physical GPU (NVIDIA / AMD) is active, but the browser's GPU worker process was blocked or crashed after the previous session loss.\n\nEnter \`${restartUrl}\` in your URL bar and press Enter to reboot the browser's GPU worker, or visit \`${gpuUrl}\` to verify WebGPU acceleration.`
+        : isDisposedOrLost
+        ? `\n\n💡 **Tip:** WebGPU was disconnected or put to sleep by the OS. The engine has been purged and reset. Send your prompt again or click **Load Model** to re-engage.`
+        : `\n\n*Ensure your browser supports WebGPU (Chrome/Edge/Brave 113+) and hardware acceleration is turned on.*`;
 
       const errMsg: Message = {
         id: assistantMsgId,
         role: 'assistant',
-        content: `**Notice:** ${err?.message || String(err)}${oomHint}`,
+        content: `**Notice:** ${err?.message || String(err)}${errorHint}`,
         timestamp: Date.now()
       };
       setSessions(prev => prev.map(s => s.id === activeSession.id ? { ...s, messages: [...updatedMessages, errMsg] } : s));

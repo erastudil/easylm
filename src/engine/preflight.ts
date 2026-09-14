@@ -45,5 +45,3 @@ export function stacksQueryOf(text: string): string | null {
   if (dewey) return dewey[1];
   return null;
 }
-
-export const warehouseQueryOf = stacksQueryOf;

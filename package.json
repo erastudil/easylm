@@ -8,7 +8,6 @@
     "dev": "node scripts/compile_stacks.mjs && node scripts/compile_courses.mjs && vite",
     "compile-stacks": "node scripts/compile_stacks.mjs",
     "compile-courses": "node scripts/compile_courses.mjs",
-    "compile-warehouse": "node scripts/compile_stacks.mjs",
     "prebuild": "node scripts/compile_stacks.mjs && node scripts/compile_courses.mjs",
     "pretest": "node scripts/compile_stacks.mjs && node scripts/compile_courses.mjs",
     "build": "tsc && vite build",

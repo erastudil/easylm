@@ -1,6 +1,6 @@
 ---
 title: "The Stacks — pack map"
-date: "2026-09-13"
+date: "2026-09-14"
 status: living · easylm · the-stacks
 ---
 
@@ -15,6 +15,7 @@ each pack: `stacks/<slug>/TEXTBOOK.md` + `LINK_INDEX.md`.
 | 001 | methods | scientific method, evidence, error |
 | 004 | computing | machines, languages, algorithms |
 | 005 | software | how software is specified, built, kept |
+| 005.8 | security | information security, cryptography, blockchains, defense |
 | 006 | ai_ml | models, training, inference, limits |
 | 100 | philosophy | logic, ethics, mind, knowledge |
 | 150 | psychology | neural architecture, cognition, memory, behavior |
@@ -28,12 +29,13 @@ each pack: `stacks/<slug>/TEXTBOOK.md` + `LINK_INDEX.md`.
 | 520 | astronomy | celestial mechanics, stellar physics, cosmology |
 | 530 | physics | models that predict measurements |
 | 540 | chemistry | matter, change, count |
-| 551 | weather | atmosphere, climate, official weather |
+| 550 | earth_sciences | planetary interior, tectonics, meteorology, oceanography, hydrology |
 | 570 | biology | cells, genetics, evolution, ecology |
 | 610 | health | body systems, evidence, official health doors |
 | 620 | engineering | constraints, materials, circuits, structures |
 | 630 | agriculture | plants, soil, food systems |
 | 650 | business | organizational architecture, strategy, marketing |
+| 690 | trades | machining, electrical wiring, plumbing, carpentry, welding |
 | 700 | art | seeing, making, composition |
 | 780 | music | sound, pitch, form |
 | 800 | literature | reading, rhetoric, narrative |

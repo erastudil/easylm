@@ -167,13 +167,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         className="card-panel"
         style={{
           width: '100%',
-          maxWidth: activeTab === 'credits' ? '860px' : activeTab === 'security' ? '640px' : '580px',
-          maxHeight: '92vh',
+          maxWidth: '860px',
+          height: '88vh',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
-          padding: 0,
-          transition: 'max-width 0.2s ease'
+          padding: 0
         }}
       >
         {/* Fixed Header & Tabs HUD (Never scrolls away) */}
@@ -918,12 +917,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
           <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
             {[
-              { val: 8192, label: '8k (Ultralight)' },
-              { val: 16384, label: '16k (Light Laptop)' },
-              { val: 32768, label: '32k (8GB Default)' },
-              { val: 65536, label: '64k (Extended)' },
-              { val: 131072, label: '128k (Deep Context)' },
-              { val: 262144, label: '256k (Workstation Max)' }
+              { val: 8192, label: '8k · Ultralight' },
+              { val: 16384, label: '16k · Light Laptop' },
+              { val: 32768, label: '32k · Standard Default' },
+              { val: 65536, label: '64k · Extended' },
+              { val: 131072, label: '128k · Deep Context' },
+              { val: 262144, label: '256k · Workstation Max' }
             ].map(opt => {
               const isSelected = contextLimit === opt.val;
               const isRec = opt.val === recommendedLimit;

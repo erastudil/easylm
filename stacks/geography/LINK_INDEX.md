@@ -53,7 +53,7 @@ if a population, GDP, capital, coordinate, or border is load-bearing, fetch the 
 | topic | path |
 |---|---|
 | this book | [TEXTBOOK.md](TEXTBOOK.md) |
-| weather / climate process | `../weather/` |
+| earth sciences / climate process | `../earth_sciences/` |
 | agriculture / land use | `../agriculture/` |
 | civics / who rules | `../civics/` |
 | finance / GDP identity | `../finance/` |

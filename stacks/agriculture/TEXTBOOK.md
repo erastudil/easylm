@@ -6,7 +6,7 @@ home: "stacks/agriculture/"
 related:
   - "../biology/"
   - "../chemistry/"
-  - "../weather/"
+  - "../earth_sciences/"
   - "../geography/"
 ---
 

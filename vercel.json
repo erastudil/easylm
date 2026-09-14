@@ -28,7 +28,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://huggingface.co https://*.huggingface.co https://hf.co https://*.hf.co https://*.xethub.hf.co https://raw.githubusercontent.com https://en.wikipedia.org https://*.wikipedia.org https://en.wikiquote.org https://*.wikiquote.org https://en.wikisource.org https://*.wikisource.org https://api.open-meteo.com https://geocoding-api.open-meteo.com https://api.frankfurter.app https://api.dictionaryapi.dev https://api.duckduckgo.com; worker-src 'self' blob:; child-src 'self' blob:; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'"
+          "value": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://huggingface.co https://*.huggingface.co https://hf.co https://*.hf.co https://*.xethub.hf.co https://raw.githubusercontent.com https://en.wikipedia.org https://*.wikipedia.org https://en.wikiquote.org https://*.wikiquote.org https://en.wikisource.org https://*.wikisource.org https://api.open-meteo.com https://geocoding-api.open-meteo.com https://api.frankfurter.app https://api.dictionaryapi.dev https://api.duckduckgo.com; worker-src 'self' blob:; child-src 'self' blob:; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'"
         }
       ]
     }

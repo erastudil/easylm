@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Session, Message, ToolExecution } from './types';
+import { Session, Message, ToolExecution, TriLakeRating } from './types';
 import {
   createNewSession,
   loadAllSessions,
@@ -85,7 +85,7 @@ export const App: React.FC = () => {
     setDocModalOpen(true);
   };
 
-  const handleRateMessage = (messageId: string, rating: 'heaven' | 'hell' | 'neutral') => {
+  const handleRateMessage = (messageId: string, rating: TriLakeRating) => {
     if (!activeSessionId) return;
     setSessions((prev) => {
       const next = prev.map((s) => {

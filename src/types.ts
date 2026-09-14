@@ -1,5 +1,5 @@
-export type TriLakeRating = 'heaven' | 'hell' | 'neutral';
-export type LakeType = 'heaven' | 'purgatory' | 'hell';
+export type TriLakeRating = 'approved' | 'rejected' | 'neutral' | 'heaven' | 'hell';
+export type LakeType = 'approved' | 'candidate' | 'rejected' | 'heaven' | 'purgatory' | 'hell';
 
 export interface Message {
   id: string;

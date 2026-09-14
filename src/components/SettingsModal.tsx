@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DeviceInfo } from '../engine/device';
-import { CONTRIBUTORS_CREDITS, OPEN_SOURCE_COVENANT } from '../data/credits';
+import { CONTRIBUTORS_CREDITS, OPEN_SOURCE_COVENANT, OPEN_WEIGHTS_PROVIDERS } from '../data/credits';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -136,7 +136,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               fontWeight: activeTab === 'credits' ? 600 : 400
             }}
           >
-            📜 Credits &amp; Open Source ({CONTRIBUTORS_CREDITS.length})
+            📜 Credits &amp; Open Source ({CONTRIBUTORS_CREDITS.length + OPEN_WEIGHTS_PROVIDERS.length})
           </button>
         </div>
 
@@ -160,141 +160,305 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 {OPEN_SOURCE_COVENANT.summary}
               </p>
               <div style={{ fontSize: '0.72rem', color: '#8b5cf6', fontFamily: 'var(--font-mono)' }}>
-                Standing on the shoulders of giants · Credit where credit is due.
+                Standing on the shoulders of giants · Credit where credit is due · Ranked by architectural footprint and lines of code.
               </div>
             </div>
 
-            {/* Contributor & Repository Cards */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {CONTRIBUTORS_CREDITS.map(c => (
-                <div
-                  key={c.id}
-                  style={{
-                    backgroundColor: '#111118',
-                    border: '1px solid rgba(139, 92, 246, 0.25)',
-                    borderRadius: '12px',
-                    padding: '1rem',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '0.65rem'
-                  }}
-                >
-                  {/* Contributor Header */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span style={{ fontSize: '0.95rem', fontWeight: 600, color: '#ffffff' }}>
-                          {c.name}
-                        </span>
-                        <a
-                          href={c.github}
-                          target="_blank"
-                          rel="noopener noreferrer"
+            {/* Open Weights Providers */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(139, 92, 246, 0.2)', paddingBottom: '0.4rem' }}>
+                <span style={{ fontSize: '0.84rem', fontWeight: 700, color: '#c4b5fd', fontFamily: 'var(--font-mono)' }}>
+                  🤖 Open Weights Providers ({OPEN_WEIGHTS_PROVIDERS.length})
+                </span>
+                <span style={{ fontSize: '0.7rem', color: '#71717a', fontFamily: 'var(--font-mono)' }}>
+                  Foundational Intelligence Models
+                </span>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '0.75rem' }}>
+                {OPEN_WEIGHTS_PROVIDERS.map(p => (
+                  <div
+                    key={p.id}
+                    style={{
+                      backgroundColor: '#111118',
+                      border: '1px solid rgba(139, 92, 246, 0.22)',
+                      borderRadius: '10px',
+                      padding: '0.85rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.5rem'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.4rem' }}>
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                          <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#ffffff' }}>
+                            {p.provider}
+                          </span>
+                          <a
+                            href={p.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ fontSize: '0.7rem', color: '#8b5cf6', textDecoration: 'none' }}
+                          >
+                            ↗
+                          </a>
+                        </div>
+                        <div style={{ fontSize: '0.7rem', color: '#71717a' }}>{p.organization}</div>
+                      </div>
+                      <span style={{
+                        fontSize: '0.62rem',
+                        fontFamily: 'var(--font-mono)',
+                        color: '#34d399',
+                        backgroundColor: 'rgba(52, 211, 153, 0.1)',
+                        border: '1px solid rgba(52, 211, 153, 0.25)',
+                        borderRadius: '4px',
+                        padding: '0.1rem 0.35rem',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        {p.license.split('(')[0].trim()}
+                      </span>
+                    </div>
+
+                    <div style={{ fontSize: '0.72rem', color: '#c4b5fd', fontFamily: 'var(--font-mono)' }}>
+                      <strong>Lead Humans:</strong> {p.leadHumans}
+                    </div>
+
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.3rem' }}>
+                      {p.models.map((m, idx) => (
+                        <span
+                          key={idx}
                           style={{
-                            fontSize: '0.74rem',
+                            fontSize: '0.65rem',
                             fontFamily: 'var(--font-mono)',
-                            color: '#8b5cf6',
-                            textDecoration: 'none',
-                            backgroundColor: 'rgba(139, 92, 246, 0.15)',
+                            backgroundColor: 'rgba(139, 92, 246, 0.12)',
+                            color: '#a78bfa',
                             padding: '0.1rem 0.4rem',
                             borderRadius: '4px',
-                            border: '1px solid rgba(139, 92, 246, 0.3)'
+                            border: '1px solid rgba(139, 92, 246, 0.25)'
                           }}
                         >
-                          @{c.handle} ↗
-                        </a>
-                        {c.website && (
+                          {m}
+                        </span>
+                      ))}
+                    </div>
+
+                    <p style={{ margin: 0, fontSize: '0.73rem', color: '#a1a1aa', lineHeight: 1.4 }}>
+                      {p.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Contributor & Upstream Repositories */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(139, 92, 246, 0.2)', paddingBottom: '0.4rem' }}>
+                <span style={{ fontSize: '0.84rem', fontWeight: 700, color: '#c4b5fd', fontFamily: 'var(--font-mono)' }}>
+                  🧱 Upstream Repositories &amp; Creators ({CONTRIBUTORS_CREDITS.length})
+                </span>
+                <span style={{ fontSize: '0.7rem', color: '#a78bfa', fontFamily: 'var(--font-mono)' }}>
+                  Ordered by Lines of Code (LOC)
+                </span>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {CONTRIBUTORS_CREDITS.map(c => (
+                  <div
+                    key={c.id}
+                    style={{
+                      backgroundColor: '#111118',
+                      border: '1px solid rgba(139, 92, 246, 0.25)',
+                      borderRadius: '12px',
+                      padding: '1rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.65rem'
+                    }}
+                  >
+                    {/* Header */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                          {c.locRank && (
+                            <span style={{
+                              fontSize: '0.68rem',
+                              fontFamily: 'var(--font-mono)',
+                              fontWeight: 700,
+                              color: '#c4b5fd',
+                              backgroundColor: 'rgba(139, 92, 246, 0.25)',
+                              border: '1px solid rgba(139, 92, 246, 0.4)',
+                              borderRadius: '4px',
+                              padding: '0.1rem 0.4rem'
+                            }}>
+                              #{c.locRank}
+                            </span>
+                          )}
+                          <span style={{ fontSize: '0.95rem', fontWeight: 600, color: '#ffffff' }}>
+                            {c.name}
+                          </span>
                           <a
-                            href={c.website}
+                            href={c.github}
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{
-                              fontSize: '0.72rem',
+                              fontSize: '0.74rem',
                               fontFamily: 'var(--font-mono)',
-                              color: '#a1a1aa',
-                              textDecoration: 'none'
+                              color: '#8b5cf6',
+                              textDecoration: 'none',
+                              backgroundColor: 'rgba(139, 92, 246, 0.15)',
+                              padding: '0.1rem 0.4rem',
+                              borderRadius: '4px',
+                              border: '1px solid rgba(139, 92, 246, 0.3)'
                             }}
                           >
-                            {c.website.replace('https://', '')} ↗
+                            @{c.handle} ↗
                           </a>
-                        )}
+                          {c.website && (
+                            <a
+                              href={c.website}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                fontSize: '0.72rem',
+                                fontFamily: 'var(--font-mono)',
+                                color: '#a1a1aa',
+                                textDecoration: 'none'
+                              }}
+                            >
+                              {c.website.replace('https://', '')} ↗
+                            </a>
+                          )}
+                        </div>
+                        <div style={{ fontSize: '0.72rem', color: '#a1a1aa', marginTop: '0.2rem' }}>
+                          {c.role}
+                        </div>
                       </div>
-                      <div style={{ fontSize: '0.72rem', color: '#a1a1aa', marginTop: '0.15rem' }}>
-                        {c.role}
-                      </div>
-                    </div>
-                    <span style={{
-                      fontSize: '0.68rem',
-                      fontFamily: 'var(--font-mono)',
-                      color: '#34d399',
-                      backgroundColor: 'rgba(52, 211, 153, 0.1)',
-                      border: '1px solid rgba(52, 211, 153, 0.25)',
-                      borderRadius: '6px',
-                      padding: '0.15rem 0.5rem'
-                    }}>
-                      {c.license}
-                    </span>
-                  </div>
 
-                  {/* Summary */}
-                  <p style={{ margin: 0, fontSize: '0.75rem', color: '#d4d4d8', lineHeight: 1.5 }}>
-                    {c.summary}
-                  </p>
-
-                  {/* Adopted Innovations */}
-                  {c.adoptedInnovations.length > 0 && (
-                    <div style={{
-                      backgroundColor: '#07070a',
-                      borderRadius: '8px',
-                      padding: '0.6rem 0.75rem',
-                      border: '1px solid rgba(255, 255, 255, 0.05)'
-                    }}>
-                      <div style={{ fontSize: '0.68rem', fontWeight: 600, color: '#c4b5fd', marginBottom: '0.3rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                        Adopted Innovations &amp; Architectural Influence:
-                      </div>
-                      <ul style={{ margin: 0, paddingLeft: '1.1rem', fontSize: '0.72rem', color: '#a1a1aa', lineHeight: 1.45 }}>
-                        {c.adoptedInnovations.map((inv, idx) => (
-                          <li key={idx} style={{ marginBottom: '0.15rem' }}>{inv}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {/* Repositories */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', marginTop: '0.15rem' }}>
-                    <div style={{ fontSize: '0.68rem', fontWeight: 600, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Repositories &amp; Code:
-                    </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '0.4rem' }}>
-                      {c.projects.map(p => (
-                        <a
-                          key={p.name}
-                          href={p.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{
-                            display: 'block',
-                            backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                            border: '1px solid rgba(139, 92, 246, 0.2)',
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                        {c.approxLinesOfCode && (
+                          <span style={{
+                            fontSize: '0.68rem',
+                            fontFamily: 'var(--font-mono)',
+                            color: '#e0e7ff',
+                            backgroundColor: 'rgba(99, 102, 241, 0.15)',
+                            border: '1px solid rgba(99, 102, 241, 0.3)',
                             borderRadius: '6px',
-                            padding: '0.45rem 0.6rem',
-                            textDecoration: 'none',
-                            transition: 'border-color 0.15s ease'
-                          }}
-                        >
-                          <div style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', fontWeight: 600, color: '#c4b5fd', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <span>{p.repo}</span>
-                            <span style={{ fontSize: '0.68rem' }}>↗</span>
-                          </div>
-                          <div style={{ fontSize: '0.68rem', color: '#71717a', marginTop: '0.2rem', lineHeight: 1.35 }}>
-                            {p.description}
-                          </div>
-                        </a>
-                      ))}
+                            padding: '0.15rem 0.45rem'
+                          }}>
+                            {c.approxLinesOfCode}
+                          </span>
+                        )}
+                        <span style={{
+                          fontSize: '0.68rem',
+                          fontFamily: 'var(--font-mono)',
+                          color: '#34d399',
+                          backgroundColor: 'rgba(52, 211, 153, 0.1)',
+                          border: '1px solid rgba(52, 211, 153, 0.25)',
+                          borderRadius: '6px',
+                          padding: '0.15rem 0.5rem'
+                        }}>
+                          {c.license}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Summary */}
+                    <p style={{ margin: 0, fontSize: '0.75rem', color: '#d4d4d8', lineHeight: 1.5 }}>
+                      {c.summary}
+                    </p>
+
+                    {/* Human Contributors Thanked */}
+                    {c.humanContributors && c.humanContributors.length > 0 && (
+                      <div style={{
+                        backgroundColor: 'rgba(139, 92, 246, 0.05)',
+                        borderRadius: '8px',
+                        padding: '0.5rem 0.75rem',
+                        border: '1px solid rgba(139, 92, 246, 0.18)'
+                      }}>
+                        <div style={{ fontSize: '0.68rem', fontWeight: 600, color: '#c4b5fd', marginBottom: '0.3rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                          🙏 Human Contributors &amp; Engineers Thanked:
+                        </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                          {c.humanContributors.map((h, idx) => (
+                            <span
+                              key={idx}
+                              style={{
+                                fontSize: '0.7rem',
+                                color: '#e4e4e7',
+                                backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                                padding: '0.2rem 0.5rem',
+                                borderRadius: '4px',
+                                border: '1px solid rgba(255, 255, 255, 0.08)',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.3rem'
+                              }}
+                            >
+                              <strong>{h.name}</strong>
+                              {h.handle && <span style={{ color: '#8b5cf6', fontFamily: 'var(--font-mono)', fontSize: '0.65rem' }}>@{h.handle}</span>}
+                              <span style={{ color: '#71717a', fontSize: '0.65rem' }}>· {h.role}</span>
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Adopted Innovations */}
+                    {c.adoptedInnovations.length > 0 && (
+                      <div style={{
+                        backgroundColor: '#07070a',
+                        borderRadius: '8px',
+                        padding: '0.6rem 0.75rem',
+                        border: '1px solid rgba(255, 255, 255, 0.05)'
+                      }}>
+                        <div style={{ fontSize: '0.68rem', fontWeight: 600, color: '#c4b5fd', marginBottom: '0.3rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                          Adopted Innovations &amp; Architectural Influence:
+                        </div>
+                        <ul style={{ margin: 0, paddingLeft: '1.1rem', fontSize: '0.72rem', color: '#a1a1aa', lineHeight: 1.45 }}>
+                          {c.adoptedInnovations.map((inv, idx) => (
+                            <li key={idx} style={{ marginBottom: '0.15rem' }}>{inv}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {/* Repositories */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', marginTop: '0.15rem' }}>
+                      <div style={{ fontSize: '0.68rem', fontWeight: 600, color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        Repositories &amp; Code:
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '0.4rem' }}>
+                        {c.projects.map(p => (
+                          <a
+                            key={p.name}
+                            href={p.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              display: 'block',
+                              backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                              border: '1px solid rgba(139, 92, 246, 0.2)',
+                              borderRadius: '6px',
+                              padding: '0.45rem 0.6rem',
+                              textDecoration: 'none',
+                              transition: 'border-color 0.15s ease'
+                            }}
+                          >
+                            <div style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', fontWeight: 600, color: '#c4b5fd', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                              <span>{p.repo}</span>
+                              <span style={{ fontSize: '0.68rem' }}>↗</span>
+                            </div>
+                            <div style={{ fontSize: '0.68rem', color: '#71717a', marginTop: '0.2rem', lineHeight: 1.35 }}>
+                              {p.description}
+                            </div>
+                          </a>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         ) : (

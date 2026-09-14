@@ -93,8 +93,12 @@ export function sanitizeSession(raw: unknown): Session | null {
       toolsUsed: Array.isArray((m as Message).toolsUsed) ? (m as Message).toolsUsed : undefined,
       thoughtDurationMs: typeof (m as Message).thoughtDurationMs === 'number' ? (m as Message).thoughtDurationMs : undefined,
       loopProtected: Boolean((m as Message).loopProtected),
-      rating: ((m as Message).rating === 'heaven' || (m as Message).rating === 'hell' || (m as Message).rating === 'neutral')
-        ? (m as Message).rating
+      rating: ((m as Message).rating === 'approved' || (m as Message).rating === 'heaven')
+        ? 'approved'
+        : ((m as Message).rating === 'rejected' || (m as Message).rating === 'hell')
+        ? 'rejected'
+        : (m as Message).rating === 'neutral'
+        ? 'neutral'
         : undefined
     });
   }
@@ -233,15 +237,15 @@ export function wipeAllStoredSessions(): void {
 
 export function classifySessionLake(session: Session): LakeType {
   const assistantMsgs = (session.messages || []).filter(m => m.role === 'assistant');
-  if (assistantMsgs.length === 0) return 'purgatory';
+  if (assistantMsgs.length === 0) return 'candidate';
 
-  const hasHell = assistantMsgs.some(m => m.rating === 'hell');
-  if (hasHell) return 'hell';
+  const hasRejected = assistantMsgs.some(m => m.rating === 'rejected' || m.rating === 'hell');
+  if (hasRejected) return 'rejected';
 
-  const hasHeaven = assistantMsgs.some(m => m.rating === 'heaven');
-  if (hasHeaven) return 'heaven';
+  const hasApproved = assistantMsgs.some(m => m.rating === 'approved' || m.rating === 'heaven');
+  if (hasApproved) return 'approved';
 
-  return 'purgatory';
+  return 'candidate';
 }
 
 export interface TriLakeExportDataset {
@@ -250,45 +254,73 @@ export interface TriLakeExportDataset {
   exportedAt: string;
   lakeFilter: 'all' | LakeType;
   counts: {
-    heaven: number;
-    purgatory: number;
-    hell: number;
+    approved: number;
+    candidate: number;
+    rejected: number;
     total: number;
+    // Backward compatibility aliases
+    heaven?: number;
+    purgatory?: number;
+    hell?: number;
   };
   lakes: {
-    heaven: Session[];
-    purgatory: Session[];
-    hell: Session[];
+    approved: Session[];
+    candidate: Session[];
+    rejected: Session[];
+    // Backward compatibility aliases
+    heaven?: Session[];
+    purgatory?: Session[];
+    hell?: Session[];
   };
 }
 
 export function buildTriLakeExport(sessions: Session[], filter: 'all' | LakeType = 'all'): TriLakeExportDataset {
-  const lakes: { heaven: Session[]; purgatory: Session[]; hell: Session[] } = {
-    heaven: [],
-    purgatory: [],
-    hell: []
+  const normFilter = filter === 'heaven' ? 'approved' : filter === 'hell' ? 'rejected' : filter === 'purgatory' ? 'candidate' : filter;
+
+  const lakes: { approved: Session[]; candidate: Session[]; rejected: Session[] } = {
+    approved: [],
+    candidate: [],
+    rejected: []
   };
 
   for (const s of sessions) {
     const lake = classifySessionLake(s);
-    lakes[lake].push(s);
+    if (lake === 'approved' || lake === 'heaven') {
+      lakes.approved.push(s);
+    } else if (lake === 'rejected' || lake === 'hell') {
+      lakes.rejected.push(s);
+    } else {
+      lakes.candidate.push(s);
+    }
   }
+
+  const counts = {
+    approved: lakes.approved.length,
+    candidate: lakes.candidate.length,
+    rejected: lakes.rejected.length,
+    total: sessions.length,
+    heaven: lakes.approved.length,
+    purgatory: lakes.candidate.length,
+    hell: lakes.rejected.length
+  };
+
+  const filteredLakes = {
+    approved: normFilter === 'all' || normFilter === 'approved' ? lakes.approved : [],
+    candidate: normFilter === 'all' || normFilter === 'candidate' ? lakes.candidate : [],
+    rejected: normFilter === 'all' || normFilter === 'rejected' ? lakes.rejected : []
+  };
 
   return {
     app: 'EasyLM',
     version: '0.1.0',
     exportedAt: new Date().toISOString(),
-    lakeFilter: filter,
-    counts: {
-      heaven: lakes.heaven.length,
-      purgatory: lakes.purgatory.length,
-      hell: lakes.hell.length,
-      total: sessions.length
-    },
-    lakes: filter === 'all' ? lakes : {
-      heaven: filter === 'heaven' ? lakes.heaven : [],
-      purgatory: filter === 'purgatory' ? lakes.purgatory : [],
-      hell: filter === 'hell' ? lakes.hell : []
+    lakeFilter: normFilter,
+    counts,
+    lakes: {
+      ...filteredLakes,
+      heaven: filteredLakes.approved,
+      purgatory: filteredLakes.candidate,
+      hell: filteredLakes.rejected
     }
   };
 }
@@ -319,19 +351,19 @@ export interface TriLakeAnalysisResult {
 }
 
 export function analyzeTriLakePatterns(sessions: Session[], profileId: string): TriLakeAnalysisResult {
-  const heavenMsgs: Message[] = [];
-  const hellMsgs: Message[] = [];
+  const approvedMsgs: Message[] = [];
+  const rejectedMsgs: Message[] = [];
 
   for (const s of sessions) {
     for (const m of s.messages || []) {
       if (m.role === 'assistant') {
-        if (m.rating === 'heaven') heavenMsgs.push(m);
-        else if (m.rating === 'hell') hellMsgs.push(m);
+        if (m.rating === 'approved' || m.rating === 'heaven') approvedMsgs.push(m);
+        else if (m.rating === 'rejected' || m.rating === 'hell') rejectedMsgs.push(m);
       }
     }
   }
 
-  const totalRated = heavenMsgs.length + hellMsgs.length;
+  const totalRated = approvedMsgs.length + rejectedMsgs.length;
   if (totalRated === 0) {
     return {
       totalRated: 0,
@@ -345,10 +377,10 @@ export function analyzeTriLakePatterns(sessions: Session[], profileId: string): 
 
   const generatedInsights: string[] = [];
 
-  // 1. Analyze Heaven (Approved) patterns
-  if (heavenMsgs.length > 0) {
-    const totalWords = heavenMsgs.reduce((acc, m) => acc + m.content.trim().split(/\s+/).length, 0);
-    const avgWords = Math.round(totalWords / heavenMsgs.length);
+  // 1. Analyze Approved patterns
+  if (approvedMsgs.length > 0) {
+    const totalWords = approvedMsgs.reduce((acc, m) => acc + m.content.trim().split(/\s+/).length, 0);
+    const avgWords = Math.round(totalWords / approvedMsgs.length);
 
     if (avgWords < 90) {
       generatedInsights.push('Prefers concise, punchy answers under 90 words with zero preamble.');
@@ -356,40 +388,40 @@ export function analyzeTriLakePatterns(sessions: Session[], profileId: string): 
       generatedInsights.push('Prefers thorough, comprehensive explanations with deep step-by-step breakdowns.');
     }
 
-    const withCode = heavenMsgs.filter(m => /```[\s\S]*?```/.test(m.content)).length;
-    if (withCode / heavenMsgs.length >= 0.35) {
+    const withCode = approvedMsgs.filter(m => /```[\s\S]*?```/.test(m.content)).length;
+    if (withCode / approvedMsgs.length >= 0.35) {
       generatedInsights.push('Values runnable code snippets and concrete programming examples.');
     }
 
-    const withMath = heavenMsgs.filter(m => /\$\$[\s\S]*?\$\$|\$[^$\n]+\$|\\\[[\s\S]*?\\\]/.test(m.content)).length;
-    if (withMath / heavenMsgs.length >= 0.25) {
+    const withMath = approvedMsgs.filter(m => /\$\$[\s\S]*?\$\$|\$[^$\n]+\$|\\\[[\s\S]*?\\\]/.test(m.content)).length;
+    if (withMath / approvedMsgs.length >= 0.25) {
       generatedInsights.push('Values formal mathematical equations and explicit formula derivations.');
     }
 
-    const withTables = heavenMsgs.filter(m => /\|[\s-:]+\|/.test(m.content)).length;
-    if (withTables / heavenMsgs.length >= 0.25) {
+    const withTables = approvedMsgs.filter(m => /\|[\s-:]+\|/.test(m.content)).length;
+    if (withTables / approvedMsgs.length >= 0.25) {
       generatedInsights.push('Values structured comparison tables and tabular layouts.');
     }
 
-    const withBullets = heavenMsgs.filter(m => /^[\s]*[-*+]\s+/m.test(m.content)).length;
-    if (withBullets / heavenMsgs.length >= 0.5) {
+    const withBullets = approvedMsgs.filter(m => /^[\s]*[-*+]\s+/m.test(m.content)).length;
+    if (withBullets / approvedMsgs.length >= 0.5) {
       generatedInsights.push('Prefers answers structured with clear bullet-point takeaways.');
     }
   }
 
-  // 2. Analyze Hell (Rejected) patterns
-  if (hellMsgs.length > 0) {
-    const apologetic = hellMsgs.filter(m => /\b(sorry|apologize|apologies|as an ai|as a language model)\b/i.test(m.content)).length;
-    if (apologetic / hellMsgs.length >= 0.25) {
+  // 2. Analyze Rejected patterns
+  if (rejectedMsgs.length > 0) {
+    const apologetic = rejectedMsgs.filter(m => /\b(sorry|apologize|apologies|as an ai|as a language model)\b/i.test(m.content)).length;
+    if (apologetic / rejectedMsgs.length >= 0.25) {
       generatedInsights.push('Dislikes apologetic or sycophantic filler (e.g. "I apologize", "As an AI").');
     }
 
-    const wallsOfText = hellMsgs.filter(m => {
+    const wallsOfText = rejectedMsgs.filter(m => {
       const words = m.content.trim().split(/\s+/).length;
       const hasStructure = /```|\||\n#|\n-|\n\*/.test(m.content);
       return words > 200 && !hasStructure;
     }).length;
-    if (wallsOfText / hellMsgs.length >= 0.3) {
+    if (wallsOfText / rejectedMsgs.length >= 0.3) {
       generatedInsights.push('Dislikes unstructured walls of text; requires headings, lists, or code breaks.');
     }
   }
@@ -404,12 +436,12 @@ export function analyzeTriLakePatterns(sessions: Session[], profileId: string): 
 
   return {
     totalRated,
-    approvedCount: heavenMsgs.length,
-    rejectedCount: hellMsgs.length,
+    approvedCount: approvedMsgs.length,
+    rejectedCount: rejectedMsgs.length,
     insightsAdded: newInsights.length,
     insights: newInsights,
     message: newInsights.length > 0
-      ? `Analyzed ${totalRated} rated responses (${heavenMsgs.length} approved, ${hellMsgs.length} rejected). Added ${newInsights.length} new insight${newInsights.length === 1 ? '' : 's'} to memory bank!`
+      ? `Analyzed ${totalRated} rated responses (${approvedMsgs.length} approved, ${rejectedMsgs.length} rejected). Added ${newInsights.length} new insight${newInsights.length === 1 ? '' : 's'} to memory bank!`
       : `Analyzed ${totalRated} rated responses. All discovered patterns are already recorded in memory.`
   };
 }

@@ -168,8 +168,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', overflow: 'hidden', flex: 1 }}>
-                    {lake === 'heaven' && <span title="Heaven Lake: Approved session" style={{ fontSize: '0.72rem' }}>👍</span>}
-                    {lake === 'hell' && <span title="Hell Lake: Rejected session" style={{ fontSize: '0.72rem' }}>👎</span>}
+                    {(lake === 'approved' || lake === 'heaven') && <span title="Approved Lake: Verified session" style={{ fontSize: '0.72rem' }}>👍</span>}
+                    {(lake === 'rejected' || lake === 'hell') && <span title="Rejected Lake: Flagged session" style={{ fontSize: '0.72rem' }}>👎</span>}
                     <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '0.85rem' }}>
                       {s.title}
                     </span>
@@ -351,7 +351,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 borderColor: 'rgba(167, 139, 250, 0.3)',
                 color: '#c4b5fd'
               }}
-              title="Export Tri-Lake memory logs categorized into Heaven (Approved), Purgatory (Neutral), and Hell (Rejected)"
+              title="Export Tri-Lake memory logs categorized into Approved, Candidate (Neutral), and Rejected"
             >
               <span>🏛️</span> Export Tri-Lake Memory
             </button>

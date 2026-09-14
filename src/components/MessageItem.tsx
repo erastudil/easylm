@@ -1,5 +1,5 @@
 import React from 'react';
-import { Message } from '../types';
+import { Message, TriLakeRating } from '../types';
 import { ThoughtDrawer } from './ThoughtDrawer';
 import { ToolDrawer } from './ToolDrawer';
 import { CopyButton } from './CopyButton';
@@ -8,7 +8,7 @@ import { MarkdownRenderer } from './MarkdownRenderer';
 interface MessageItemProps {
   message: Message;
   onOpenDocument?: (content: string) => void;
-  onRateMessage?: (rating: 'heaven' | 'hell' | 'neutral') => void;
+  onRateMessage?: (rating: TriLakeRating) => void;
 }
 
 export const MessageItem: React.FC<MessageItemProps> = ({ message, onOpenDocument, onRateMessage }) => {
@@ -64,40 +64,40 @@ export const MessageItem: React.FC<MessageItemProps> = ({ message, onOpenDocumen
         {/* Sleek Action bar for assistant message */}
         {!isUser && (
           <div className="mt-3 pt-2.5 border-t border-zinc-800/40 flex items-center justify-between gap-2 flex-wrap">
-            {/* Tri-Lake Rating: Thumbs Up (Heaven) / Thumbs Down (Hell) */}
+            {/* Tri-Lake Rating: Thumbs Up (Approve) / Thumbs Down (Reject) */}
             <div className="flex items-center gap-1.5">
               <button
                 type="button"
-                onClick={() => onRateMessage?.(message.rating === 'heaven' ? 'neutral' : 'heaven')}
+                onClick={() => onRateMessage?.((message.rating === 'approved' || message.rating === 'heaven') ? 'neutral' : 'approved')}
                 className="btn-pill"
                 style={{
                   fontSize: '0.72rem',
                   padding: '0.2rem 0.5rem',
-                  backgroundColor: message.rating === 'heaven' ? 'rgba(74, 222, 128, 0.2)' : 'rgba(39, 39, 42, 0.4)',
-                  borderColor: message.rating === 'heaven' ? 'rgba(74, 222, 128, 0.5)' : 'rgba(63, 63, 70, 0.4)',
-                  color: message.rating === 'heaven' ? '#4ade80' : '#a1a1aa'
+                  backgroundColor: (message.rating === 'approved' || message.rating === 'heaven') ? 'rgba(74, 222, 128, 0.2)' : 'rgba(39, 39, 42, 0.4)',
+                  borderColor: (message.rating === 'approved' || message.rating === 'heaven') ? 'rgba(74, 222, 128, 0.5)' : 'rgba(63, 63, 70, 0.4)',
+                  color: (message.rating === 'approved' || message.rating === 'heaven') ? '#4ade80' : '#a1a1aa'
                 }}
-                title="Approve (Heaven Lake) — truthful, accurate, verified"
+                title="Approve (Approved Lake) — truthful, accurate, verified"
               >
                 <span>👍</span>
-                {message.rating === 'heaven' && <span style={{ marginLeft: '0.3rem', fontSize: '0.68rem', fontWeight: 600 }}>Heaven</span>}
+                {(message.rating === 'approved' || message.rating === 'heaven') && <span style={{ marginLeft: '0.3rem', fontSize: '0.68rem', fontWeight: 600 }}>Approved</span>}
               </button>
 
               <button
                 type="button"
-                onClick={() => onRateMessage?.(message.rating === 'hell' ? 'neutral' : 'hell')}
+                onClick={() => onRateMessage?.((message.rating === 'rejected' || message.rating === 'hell') ? 'neutral' : 'rejected')}
                 className="btn-pill"
                 style={{
                   fontSize: '0.72rem',
                   padding: '0.2rem 0.5rem',
-                  backgroundColor: message.rating === 'hell' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(39, 39, 42, 0.4)',
-                  borderColor: message.rating === 'hell' ? 'rgba(239, 68, 68, 0.5)' : 'rgba(63, 63, 70, 0.4)',
-                  color: message.rating === 'hell' ? '#f87171' : '#a1a1aa'
+                  backgroundColor: (message.rating === 'rejected' || message.rating === 'hell') ? 'rgba(239, 68, 68, 0.2)' : 'rgba(39, 39, 42, 0.4)',
+                  borderColor: (message.rating === 'rejected' || message.rating === 'hell') ? 'rgba(239, 68, 68, 0.5)' : 'rgba(63, 63, 70, 0.4)',
+                  color: (message.rating === 'rejected' || message.rating === 'hell') ? '#f87171' : '#a1a1aa'
                 }}
-                title="Reject (Hell Lake) — hallucination, error, loop"
+                title="Reject (Rejected Lake) — hallucination, error, loop"
               >
                 <span>👎</span>
-                {message.rating === 'hell' && <span style={{ marginLeft: '0.3rem', fontSize: '0.68rem', fontWeight: 600 }}>Hell</span>}
+                {(message.rating === 'rejected' || message.rating === 'hell') && <span style={{ marginLeft: '0.3rem', fontSize: '0.68rem', fontWeight: 600 }}>Rejected</span>}
               </button>
             </div>
 

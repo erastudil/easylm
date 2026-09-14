@@ -155,58 +155,80 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
       zIndex: 150,
       padding: '1rem'
     }}>
-      <div className="card-panel" style={{ width: '100%', maxWidth: '580px', padding: '1.75rem', maxHeight: '90vh', overflowY: 'auto' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
-          <h2 style={{ margin: 0, fontSize: '1.2rem', fontFamily: 'var(--font-mono)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span>👨‍👩‍👧</span> Family & Profiles
-          </h2>
-          <button
-            onClick={onClose}
-            style={{ background: 'transparent', border: 'none', color: '#71717a', fontSize: '1.4rem', cursor: 'pointer' }}
-          >
-            ×
-          </button>
+      <div className="card-panel" style={{ width: '100%', maxWidth: '640px', maxHeight: '92vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: 0 }}>
+        {/* Fixed Header & Tabs HUD (Never scrolls away) */}
+        <div style={{
+          padding: '1.4rem 1.75rem 0.85rem',
+          borderBottom: '1px solid rgba(139, 92, 246, 0.25)',
+          backgroundColor: '#09090e',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.85rem',
+          flexShrink: 0
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <h2 style={{ margin: 0, fontSize: '1.2rem', fontFamily: 'var(--font-mono)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span>👨‍👩‍👧</span> Family &amp; Profiles
+            </h2>
+            <button
+              onClick={onClose}
+              style={{ background: 'transparent', border: 'none', color: '#71717a', fontSize: '1.5rem', cursor: 'pointer', padding: '0 0.25rem', lineHeight: 1 }}
+              title="Close"
+            >
+              ×
+            </button>
+          </div>
+
+          {/* Tab Navigation */}
+          <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+            <button
+              onClick={() => setActiveTab('profiles')}
+              className="btn-pill"
+              style={{
+                fontSize: '0.78rem',
+                backgroundColor: activeTab === 'profiles' ? 'rgba(139, 92, 246, 0.25)' : 'transparent',
+                borderColor: activeTab === 'profiles' ? '#8b5cf6' : 'transparent',
+                color: activeTab === 'profiles' ? '#ffffff' : '#a1a1aa'
+              }}
+            >
+              👥 Profiles
+            </button>
+            <button
+              onClick={() => setActiveTab('memory')}
+              className="btn-pill"
+              style={{
+                fontSize: '0.78rem',
+                backgroundColor: activeTab === 'memory' ? 'rgba(139, 92, 246, 0.25)' : 'transparent',
+                borderColor: activeTab === 'memory' ? '#8b5cf6' : 'transparent',
+                color: activeTab === 'memory' ? '#ffffff' : '#a1a1aa'
+              }}
+            >
+              🧠 Memory Vault
+            </button>
+            <button
+              onClick={() => setActiveTab('parental')}
+              className="btn-pill"
+              style={{
+                fontSize: '0.78rem',
+                backgroundColor: activeTab === 'parental' ? 'rgba(139, 92, 246, 0.25)' : 'transparent',
+                borderColor: activeTab === 'parental' ? '#8b5cf6' : 'transparent',
+                color: activeTab === 'parental' ? '#ffffff' : '#a1a1aa'
+              }}
+            >
+              🔒 Parental Controls
+            </button>
+          </div>
         </div>
 
-        {/* Tab Navigation */}
-        <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '1.25rem', borderBottom: '1px solid rgba(139, 92, 246, 0.2)', paddingBottom: '0.6rem' }}>
-          <button
-            onClick={() => setActiveTab('profiles')}
-            className="btn-pill"
-            style={{
-              fontSize: '0.78rem',
-              backgroundColor: activeTab === 'profiles' ? 'rgba(139, 92, 246, 0.25)' : 'transparent',
-              borderColor: activeTab === 'profiles' ? '#8b5cf6' : 'transparent',
-              color: activeTab === 'profiles' ? '#ffffff' : '#a1a1aa'
-            }}
-          >
-            👥 Profiles
-          </button>
-          <button
-            onClick={() => setActiveTab('memory')}
-            className="btn-pill"
-            style={{
-              fontSize: '0.78rem',
-              backgroundColor: activeTab === 'memory' ? 'rgba(139, 92, 246, 0.25)' : 'transparent',
-              borderColor: activeTab === 'memory' ? '#8b5cf6' : 'transparent',
-              color: activeTab === 'memory' ? '#ffffff' : '#a1a1aa'
-            }}
-          >
-            🧠 Memory Vault
-          </button>
-          <button
-            onClick={() => setActiveTab('parental')}
-            className="btn-pill"
-            style={{
-              fontSize: '0.78rem',
-              backgroundColor: activeTab === 'parental' ? 'rgba(139, 92, 246, 0.25)' : 'transparent',
-              borderColor: activeTab === 'parental' ? '#8b5cf6' : 'transparent',
-              color: activeTab === 'parental' ? '#ffffff' : '#a1a1aa'
-            }}
-          >
-            🔒 Parental Controls
-          </button>
-        </div>
+        {/* Scrollable Content Body */}
+        <div style={{
+          padding: '1.4rem 1.75rem 1.75rem',
+          overflowY: 'auto',
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1.25rem'
+        }}>
 
         {/* Tab 1: Profiles */}
         {activeTab === 'profiles' && (
@@ -619,6 +641,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
           <button onClick={onClose} className="btn-pill btn-pill-primary" style={{ minWidth: '100px', justifyContent: 'center' }}>
             Done
           </button>
+        </div>
         </div>
       </div>
     </div>

@@ -102,9 +102,9 @@ export const StudioModal: React.FC<StudioModalProps> = ({
       <div
         className="card-panel"
         style={{
-          width: '94vw',
-          maxWidth: '1200px',
-          height: '92vh',
+          width: '98vw',
+          maxWidth: '1680px',
+          height: '96vh',
           display: 'flex',
           flexDirection: 'column',
           padding: '1.25rem',

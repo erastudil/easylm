@@ -232,7 +232,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 <span>🔒</span>
-                <span><strong>Kid Safe PIN</strong>: Household speed-bump. Local hands only. Not a school filter.</span>
+                <span><strong>Kid Safe PIN</strong>: Household protection. Local hands only.</span>
               </div>
             </div>
           </div>

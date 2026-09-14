@@ -167,89 +167,108 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         className="card-panel"
         style={{
           width: '100%',
-          maxWidth: activeTab === 'credits' ? '680px' : activeTab === 'security' ? '600px' : '560px',
-          padding: '1.75rem',
-          maxHeight: '90vh',
-          overflowY: 'auto',
+          maxWidth: activeTab === 'credits' ? '860px' : activeTab === 'security' ? '640px' : '580px',
+          maxHeight: '92vh',
           display: 'flex',
           flexDirection: 'column',
-          gap: '1.25rem',
+          overflow: 'hidden',
+          padding: 0,
           transition: 'max-width 0.2s ease'
         }}
       >
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div>
-            <h2 style={{ margin: 0, fontSize: '1.2rem', fontFamily: 'var(--font-mono)', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#ffffff' }}>
-              <span>⚙️</span> EasyLM Settings
-            </h2>
-            <div style={{ fontSize: '0.76rem', color: '#a1a1aa', marginTop: '0.15rem' }}>
-              Inference parameters, context memory, and open-source credits.
+        {/* Fixed Header & Tabs HUD (Never scrolls away) */}
+        <div style={{
+          padding: '1.4rem 1.75rem 0.85rem',
+          borderBottom: '1px solid rgba(139, 92, 246, 0.25)',
+          backgroundColor: '#09090e',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.85rem',
+          flexShrink: 0
+        }}>
+          {/* Header Title Row */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <h2 style={{ margin: 0, fontSize: '1.2rem', fontFamily: 'var(--font-mono)', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#ffffff' }}>
+                <span>⚙️</span> EasyLM Settings
+              </h2>
+              <div style={{ fontSize: '0.76rem', color: '#a1a1aa', marginTop: '0.15rem' }}>
+                Inference parameters, context memory, and open-source credits.
+              </div>
             </div>
+            <button
+              onClick={onClose}
+              style={{ background: 'transparent', border: 'none', color: '#71717a', fontSize: '1.5rem', cursor: 'pointer', padding: '0 0.25rem', lineHeight: 1 }}
+              title="Close"
+            >
+              ×
+            </button>
           </div>
-          <button
-            onClick={onClose}
-            style={{ background: 'transparent', border: 'none', color: '#71717a', fontSize: '1.5rem', cursor: 'pointer', padding: '0 0.25rem' }}
-            title="Close"
-          >
-            ×
-          </button>
+
+          {/* Tab Navigation */}
+          <div style={{
+            display: 'flex',
+            gap: '0.5rem',
+            flexWrap: 'wrap'
+          }}>
+            <button
+              type="button"
+              onClick={() => setActiveTab('engine')}
+              className="btn-pill"
+              style={{
+                fontSize: '0.78rem',
+                padding: '0.4rem 0.85rem',
+                backgroundColor: activeTab === 'engine' ? 'rgba(139, 92, 246, 0.25)' : '#07070a',
+                borderColor: activeTab === 'engine' ? '#8b5cf6' : 'rgba(139, 92, 246, 0.2)',
+                color: activeTab === 'engine' ? '#ffffff' : '#a1a1aa',
+                fontWeight: activeTab === 'engine' ? 600 : 400
+              }}
+            >
+              ⚙️ Inference &amp; Engine
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('security')}
+              className="btn-pill"
+              style={{
+                fontSize: '0.78rem',
+                padding: '0.4rem 0.85rem',
+                backgroundColor: activeTab === 'security' ? 'rgba(139, 92, 246, 0.25)' : '#07070a',
+                borderColor: activeTab === 'security' ? '#8b5cf6' : 'rgba(139, 92, 246, 0.2)',
+                color: activeTab === 'security' ? '#ffffff' : '#a1a1aa',
+                fontWeight: activeTab === 'security' ? 600 : 400
+              }}
+            >
+              🔐 Security &amp; Vault
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('credits')}
+              className="btn-pill"
+              style={{
+                fontSize: '0.78rem',
+                padding: '0.4rem 0.85rem',
+                backgroundColor: activeTab === 'credits' ? 'rgba(139, 92, 246, 0.25)' : '#07070a',
+                borderColor: activeTab === 'credits' ? '#8b5cf6' : 'rgba(139, 92, 246, 0.2)',
+                color: activeTab === 'credits' ? '#ffffff' : '#a1a1aa',
+                fontWeight: activeTab === 'credits' ? 600 : 400
+              }}
+            >
+              📜 Credits &amp; Open Source
+            </button>
+          </div>
         </div>
 
-        {/* Tab Navigation */}
+        {/* Scrollable Content Body */}
         <div style={{
+          padding: '1.4rem 1.75rem 1.75rem',
+          overflowY: 'auto',
+          flex: 1,
           display: 'flex',
-          gap: '0.5rem',
-          borderBottom: '1px solid rgba(139, 92, 246, 0.25)',
-          paddingBottom: '0.6rem',
-          flexWrap: 'wrap'
+          flexDirection: 'column',
+          gap: '1.25rem'
         }}>
-          <button
-            type="button"
-            onClick={() => setActiveTab('engine')}
-            className="btn-pill"
-            style={{
-              fontSize: '0.78rem',
-              padding: '0.4rem 0.85rem',
-              backgroundColor: activeTab === 'engine' ? 'rgba(139, 92, 246, 0.25)' : '#07070a',
-              borderColor: activeTab === 'engine' ? '#8b5cf6' : 'rgba(139, 92, 246, 0.2)',
-              color: activeTab === 'engine' ? '#ffffff' : '#a1a1aa',
-              fontWeight: activeTab === 'engine' ? 600 : 400
-            }}
-          >
-            ⚙️ Inference &amp; Engine
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('security')}
-            className="btn-pill"
-            style={{
-              fontSize: '0.78rem',
-              padding: '0.4rem 0.85rem',
-              backgroundColor: activeTab === 'security' ? 'rgba(139, 92, 246, 0.25)' : '#07070a',
-              borderColor: activeTab === 'security' ? '#8b5cf6' : 'rgba(139, 92, 246, 0.2)',
-              color: activeTab === 'security' ? '#ffffff' : '#a1a1aa',
-              fontWeight: activeTab === 'security' ? 600 : 400
-            }}
-          >
-            🔐 Security &amp; Vault
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('credits')}
-            className="btn-pill"
-            style={{
-              fontSize: '0.78rem',
-              padding: '0.4rem 0.85rem',
-              backgroundColor: activeTab === 'credits' ? 'rgba(139, 92, 246, 0.25)' : '#07070a',
-              borderColor: activeTab === 'credits' ? '#8b5cf6' : 'rgba(139, 92, 246, 0.2)',
-              color: activeTab === 'credits' ? '#ffffff' : '#a1a1aa',
-              fontWeight: activeTab === 'credits' ? 600 : 400
-            }}
-          >
-            📜 Credits &amp; Open Source
-          </button>
-        </div>
+
 
         {activeTab === 'credits' ? (
           /* Credits & Open Source Attributions View */
@@ -368,8 +387,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <span style={{ fontSize: '0.84rem', fontWeight: 700, color: '#c4b5fd', fontFamily: 'var(--font-mono)' }}>
                   🧱 Upstream Repositories &amp; Creators
                 </span>
-                <span style={{ fontSize: '0.7rem', color: '#a78bfa', fontFamily: 'var(--font-mono)' }}>
-                  Ordered by Lines of Code (LOC)
+                <span style={{ fontSize: '0.7rem', color: '#a1a1aa', fontFamily: 'var(--font-mono)' }}>
+                  Open Source Foundations
                 </span>
               </div>
 
@@ -391,20 +410,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                          {c.locRank && (
-                            <span style={{
-                              fontSize: '0.68rem',
-                              fontFamily: 'var(--font-mono)',
-                              fontWeight: 700,
-                              color: '#c4b5fd',
-                              backgroundColor: 'rgba(139, 92, 246, 0.25)',
-                              border: '1px solid rgba(139, 92, 246, 0.4)',
-                              borderRadius: '4px',
-                              padding: '0.1rem 0.4rem'
-                            }}>
-                              #{c.locRank}
-                            </span>
-                          )}
                           <span style={{ fontSize: '0.95rem', fontWeight: 600, color: '#ffffff' }}>
                             {c.name}
                           </span>
@@ -1053,6 +1058,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         >
           Done
         </button>
+        </div>
       </div>
     </div>
   );

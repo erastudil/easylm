@@ -85,21 +85,28 @@ export const GraphModal: React.FC<GraphModalProps> = ({
         className="card-panel"
         style={{
           width: '100%',
-          maxWidth: '740px',
+          maxWidth: '780px',
           maxHeight: '92vh',
-          overflowY: 'auto',
           display: 'flex',
           flexDirection: 'column',
-          padding: '1.5rem',
-          gap: '1rem',
+          overflow: 'hidden',
+          padding: 0,
           backgroundColor: '#09090e',
           border: '1px solid rgba(139, 92, 246, 0.35)',
           borderRadius: '12px',
           boxShadow: '0 0 35px rgba(139, 92, 246, 0.2)'
         }}
       >
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        {/* Fixed Header (Never scrolls away) */}
+        <div style={{
+          padding: '1.25rem 1.5rem 0.85rem',
+          borderBottom: '1px solid rgba(139, 92, 246, 0.2)',
+          backgroundColor: '#09090e',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexShrink: 0
+        }}>
           <div>
             <h2 style={{ margin: 0, fontSize: '1.15rem', color: '#ffffff', fontFamily: 'var(--font-mono)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span>📈</span> Math Grapher &amp; Coordinate Plane
@@ -110,12 +117,22 @@ export const GraphModal: React.FC<GraphModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            style={{ background: 'transparent', border: 'none', color: '#71717a', fontSize: '1.4rem', cursor: 'pointer', padding: '0 0.4rem', lineHeight: 1 }}
+            style={{ background: 'transparent', border: 'none', color: '#71717a', fontSize: '1.5rem', cursor: 'pointer', padding: '0 0.4rem', lineHeight: 1 }}
             title="Close"
           >
             ×
           </button>
         </div>
+
+        {/* Scrollable Content Body */}
+        <div style={{
+          padding: '1.25rem 1.5rem 1.5rem',
+          overflowY: 'auto',
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem'
+        }}>
 
         {/* Function Input & Presets */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -262,6 +279,7 @@ export const GraphModal: React.FC<GraphModalProps> = ({
           >
             Done
           </button>
+        </div>
         </div>
       </div>
     </div>

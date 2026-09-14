@@ -275,21 +275,21 @@ export const CONTRIBUTORS_CREDITS: ContributorCredit[] = [
   },
   {
     id: "pewdiepie-odysseus",
-    name: "Felix Kjellberg (PewDiePie) & Odysseus Community",
+    name: "Felix Kjellberg & Odysseus Community",
     handle: "pewdiepie-archdaemon",
     role: "Originator & Community Contributors of Odysseus AI Workspace",
     github: "https://github.com/pewdiepie-archdaemon/odysseus",
     website: "https://github.com/odysseus-dev/odysseus",
     approxLinesOfCode: "~88,000 LOC",
     locRank: 6,
-    summary: "Created by Felix Kjellberg (PewDiePie, using GitHub handle @pewdiepie-archdaemon, confirming that 'Archdaemon' was his account handle rather than a separate person). Odysseus is a sovereign self-hosted workspace for chat, multi-agent workflows, documents, and local AI execution, built with active support from dedicated open-source community contributors.",
+    summary: "Odysseus is an open-source, self-hosted workspace for chat, multi-agent workflows, documents, and local AI execution, created by Felix Kjellberg with active contributions from dedicated open-source community contributors.",
     adoptedInnovations: [
       "Original Odysseus two-wire agent harness (native API structured calls + fallback markdown fence extraction)",
       "Flat tool execution loop & resilient function calling for local models",
       "SearXNG privacy search integration and agent execution UI"
     ],
     humanContributors: [
-      { name: "Felix Kjellberg (PewDiePie)", handle: "pewdiepie-archdaemon", role: "Project Originator & Creator" },
+      { name: "Felix Kjellberg", handle: "pewdiepie-archdaemon", role: "Project Originator & Creator" },
       { name: "Afonso Campos", handle: "afonsopc", role: "Core Architecture & Full-Stack Execution" },
       { name: "Rareș", handle: "RaresKeY", role: "Core Features & Client Stability" },
       { name: "redpersongpt", handle: "redpersongpt", role: "Agent Prompts & Tool Execution Logic" },

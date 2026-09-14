@@ -114,9 +114,9 @@ export const LearnModal: React.FC<LearnModalProps> = ({
       <div
         className="card-elevated"
         style={{
-          width: '92vw',
-          maxWidth: '960px',
-          height: '86vh',
+          width: '96vw',
+          maxWidth: '1480px',
+          height: '94vh',
           display: 'flex',
           flexDirection: 'column',
           padding: '1.25rem',

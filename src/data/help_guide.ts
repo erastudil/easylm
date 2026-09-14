@@ -79,32 +79,62 @@ Here is the simple, real-world breakdown:
 
 When you ask a typical cloud AI to calculate \`sqrt(144) * (50 + 2)\`, it doesn't open a calculator. It predicts which digits *look* like they belong next. Most of the time it gets close; sometimes it invents numbers out of thin air.
 
-EasyLM solves this by giving the model **Hands**—real, software tools running right alongside it:
+EasyLM solves this by giving the model **Hands**—real, deterministic software tools running right alongside it:
 
 1. **Exact Calculator (\`calc\`)**: Evaluates arithmetic, square roots, powers, and trigonometry using a deterministic mathematical parser. Zero guesswork.
 2. **Physical Unit Converter (\`units\`)**: Converts between metric and imperial units (miles to kilometers, pounds to kilograms, Celsius to Fahrenheit). If you ask for an impossible or unknown conversion, it honestly errors instead of inventing a fake 1:1 ratio.
 3. **World Clock (\`datetime\`)**: Checks your real system clock and computes accurate international timezones.
-4. **The Stacks (Offline Sovereign Library)**: Local undergraduate textbooks by subject, plus official source doors (NIST, OpenStax, MIT OCW, IETF, MDN). Search returns the matching chapter, not a blurb.
-5. **Optional Network Tools**: When Hands are on, EasyLM can also look up live weather forecasts, foreign exchange rates, and Wikipedia/Wikiquote entries. In **Kid Safe** mode, all network tools stay permanently off.`
+4. **The Stacks (Offline Sovereign Library)**: Local undergraduate textbooks across 28 subjects, plus authoritative source doors. Search returns matching textbook chapters with zero hallucination.
+5. **Optional Network Tools**: When Hands are on, EasyLM can optionally look up live weather forecasts, foreign exchange rates, and Wikipedia entries. In **Kid Safe** mode, all network tools stay permanently disabled.
+
+---
+
+### The Sovereign Advantage: Zero Remote MCP Overhead
+
+Most modern agent frameworks rely on external **Model Context Protocol (MCP)** daemons running over local HTTP or RPC sockets. While suitable for complex developer servers, remote MCP creates significant friction for everyday users:
+
+- **Roundtrip Latency**: Every single calculation or memory lookup requires serial network roundtrips and JSON-RPC overhead.
+- **Process Fragility & Port Conflicts**: If an external MCP background process crashes, fails to spawn, or is blocked by system firewalls, all tools instantly break.
+- **Attack Surface**: Opening localhost ports and listening daemons creates potential local socket injection and privilege vulnerabilities.
+- **Data Leakage**: Tool parameters and document inputs leave the browser sandbox to be processed by external machine daemons.
+
+**EasyLM operates with complete in-process sovereignty.**
+All core Hands—exact arithmetic, dimensional unit conversions, system time, AtMem atomic memory indexing, and undergraduate textbooks—are compiled directly into the client web application. They run **in-process within your browser's sandboxed execution environment**:
+
+- **⚡ Microsecond Execution**: Tools evaluate in microseconds with zero network, pipe, or IPC latency.
+- **🛡️ Zero Attack Surface**: No open localhost ports, no daemon management, and zero background services to configure or debug.
+- **✈️ True Offline Immunity**: Your tools never disconnect. You can run complex math, convert units, search 28 textbooks, and query memories while completely disconnected on an airplane.
+- **🔒 Absolute Sandbox Privacy**: Tool inputs and outputs remain locked in client memory, never touching external host daemons or remote servers.`
   },
   {
     id: 'studio',
-    title: '📚 Studio — class walks',
-    summary: 'Courses, homework, quizzes, essays, exams, streaks. Pass/fail. No due dates.',
-    content: `### Studio
+    title: '🎨 Studio & Learn Suites',
+    summary: 'Universal academic curriculum, KaTeX reading, writing, coding, plotting, and drawing.',
+    content: `### Studio & Learn: The Local Intellectual Workshop
 
-Studio is a local university walk. Enroll on this device. No account.
+EasyLM integrates two interconnected environments for exploration and study:
 
-- **Pass / fail.** Completion, not letters.
-- **As many tries as it takes.** Tries are not a mark.
-- **No due dates.** A suggested pace shifts if you fall behind.
-- **Soft timers** on exams show a sitting length. Time running out does not fail you.
-- **Badges** live here. Persistence after a hard exam is the point. First-try speed is not.
-- Footer: study record on this device. Not a diploma.
+#### 1. Learn (The Universal Collegiate Curriculum)
+A self-paced, rigorous academic curriculum designed for lifelong learners and students:
+- **Scientific Inquiry I**: Evidence, Logic & Empirical Proof
+- **Calculus I**: Limits, Derivatives & Rates of Change
+- **Physics I**: Mechanics, Motion & Energy
+- **Chemistry I**: Atoms, Bonding & Chemical Reactions
+- **Biology I**: Cellular Life & Molecular Biology
+- **Civics I**: Constitutional Democracy, Civil Rights & Governance
+- **Health Sciences I**: Human Physiology, Wellness & Disease
 
-AI coach is aimed at 14+. Kid Safe stays local: stacks, calc, Studio — no network Hands.
+Each lesson features clear objectives, interactive checks with authored answer keys, and instant one-click links to jump into Studio textbooks.
 
-Readings are The Stacks. Quizzes use authored keys, never the model's memory.`
+#### 2. Studio (The Local Tool Suite)
+A unified creative workshop running locally on your device:
+- **📖 Read**: High-performance Markdown textbook reader featuring full **KaTeX LaTeX math rendering**, interactive link trees, and authoritative citation doors.
+- **✍️ Write**: Distraction-free Markdown writing environment with live word and character counters.
+- **💻 Code**: Syntax-highlighted scratchpad supporting JavaScript, TypeScript, Python, HTML, and CSS.
+- **📈 Graph**: 2D coordinate plotting engine that renders function curves into clean vector SVG images.
+- **🎨 Draw & Paint**: Vector sketching and digital painting canvases with color palettes and stroke controls.
+
+Internal forward and back navigation allows you to freely explore course lessons and reference textbooks without ever losing your chat context.`
   },
   {
     id: 'hallucination',
@@ -174,5 +204,6 @@ Tone & Demeanor:
 Core Features:
 - WebGPU Local Inference: Running Qwen 2.5 3B (default), DeepSeek-R1 (reasoning), or lightweight models.
 - Deterministic Hands: Calculator (calc), unit converter (units), world clock (datetime), local academic library (stacks), and Studio status (studio).
+- Zero Remote MCP Overhead: Core tools run in-process within the browser sandbox with microsecond execution, zero listening ports, zero daemon crashes, and complete offline immunity.
 - Honest Boundaries: Optional network tools (weather, search, exchange, dictionary) only send lookups when Hands are enabled.
 `;

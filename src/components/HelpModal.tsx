@@ -34,11 +34,11 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose, onOpenWel
       <div
         className="card-panel"
         style={{
-          width: '94vw',
-          maxWidth: '1020px',
-          height: '84vh',
-          minHeight: '580px',
-          maxHeight: '90vh',
+          width: '96vw',
+          maxWidth: '1440px',
+          height: '92vh',
+          minHeight: '600px',
+          maxHeight: '95vh',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',

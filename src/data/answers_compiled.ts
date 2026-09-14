@@ -1451,5 +1451,251 @@ export const ANSWER_KEYS: Record<string, AnswerKey> = {
     "qtype": "numeric",
     "answer": 9,
     "tolerance": 0.000001
+  },
+  "h-u1-q1": {
+    "qtype": "mc",
+    "answer": "internal stability against entropic dissipation"
+  },
+  "h-u1-q2": {
+    "qtype": "short",
+    "answer": "set"
+  },
+  "h-u1-q3": {
+    "qtype": "mc",
+    "answer": "educational inquiry and triage literacy, not direct clinical prescription"
+  },
+  "h-u1-q4": {
+    "qtype": "numeric",
+    "answer": 7.4,
+    "tolerance": 0.05
+  },
+  "h-u1-q5": {
+    "qtype": "mc",
+    "answer": "MedlinePlus and PubMed"
+  },
+  "h-u2-q1": {
+    "qtype": "mc",
+    "answer": "bulk convection transport of oxygen, nutrients, hormones, and waste"
+  },
+  "h-u2-q2": {
+    "qtype": "short",
+    "answer": "nephron"
+  },
+  "h-u2-q3": {
+    "qtype": "mc",
+    "answer": "alveoli"
+  },
+  "h-u2-q4": {
+    "qtype": "numeric",
+    "answer": 11,
+    "tolerance": 0.000001
+  },
+  "h-u2-q5": {
+    "qtype": "mc",
+    "answer": "traveling via bloodstream hormones rather than axonal action potentials"
+  },
+  "h-u3-q1": {
+    "qtype": "mc",
+    "answer": "60 to 100 beats per minute"
+  },
+  "h-u3-q2": {
+    "qtype": "short",
+    "answer": "diastolic"
+  },
+  "h-u3-q3": {
+    "qtype": "numeric",
+    "answer": 20,
+    "tolerance": 0.000001
+  },
+  "h-u3-q4": {
+    "qtype": "mc",
+    "answer": "95% to 100%"
+  },
+  "h-u3-q5": {
+    "qtype": "mc",
+    "answer": "hypothalamus"
+  },
+  "h-u4-q1": {
+    "qtype": "mc",
+    "answer": "immediate, non-specific barrier and phagocytic defense"
+  },
+  "h-u4-q2": {
+    "qtype": "short",
+    "answer": "antibodies"
+  },
+  "h-u4-q3": {
+    "qtype": "mc",
+    "answer": "exposing the immune system to an antigen without causing full virulent disease"
+  },
+  "h-u4-q4": {
+    "qtype": "numeric",
+    "answer": 5,
+    "tolerance": 0.000001
+  },
+  "h-u4-q5": {
+    "qtype": "mc",
+    "answer": "CDC and WHO"
+  },
+  "h-mt-q1": {
+    "qtype": "numeric",
+    "answer": 7.4,
+    "tolerance": 0.05
+  },
+  "h-mt-q2": {
+    "qtype": "numeric",
+    "answer": 11,
+    "tolerance": 0.000001
+  },
+  "h-mt-q3": {
+    "qtype": "short",
+    "answer": "nephron"
+  },
+  "h-mt-q4": {
+    "qtype": "mc",
+    "answer": "alveoli"
+  },
+  "h-mt-q5": {
+    "qtype": "short",
+    "answer": "diastolic"
+  },
+  "h-mt-q6": {
+    "qtype": "numeric",
+    "answer": 20,
+    "tolerance": 0.000001
+  },
+  "h-mt-q7": {
+    "qtype": "mc",
+    "answer": "hypothalamus"
+  },
+  "h-mt-q8": {
+    "qtype": "short",
+    "answer": "antibodies"
+  },
+  "h-u5-q1": {
+    "qtype": "mc",
+    "answer": "C-A-B: Compressions, Airway, Breathing"
+  },
+  "h-u5-q2": {
+    "qtype": "numeric",
+    "answer": 100,
+    "tolerance": 20
+  },
+  "h-u5-q3": {
+    "qtype": "short",
+    "answer": "aed"
+  },
+  "h-u5-q4": {
+    "qtype": "mc",
+    "answer": "activate emergency response (911) and begin high-quality chest compressions"
+  },
+  "h-u5-q5": {
+    "qtype": "numeric",
+    "answer": 2,
+    "tolerance": 0.000001
+  },
+  "h-u6-q1": {
+    "qtype": "mc",
+    "answer": "firm, direct pressure and application of an arterial tourniquet proximal to the wound"
+  },
+  "h-u6-q2": {
+    "qtype": "short",
+    "answer": "shock"
+  },
+  "h-u6-q3": {
+    "qtype": "mc",
+    "answer": "note the exact time of application and never loosen it until surgical care"
+  },
+  "h-u6-q4": {
+    "qtype": "mc",
+    "answer": "cool, clean running tap water for 10 to 20 minutes"
+  },
+  "h-u6-q5": {
+    "qtype": "numeric",
+    "answer": 3,
+    "tolerance": 0.000001
+  },
+  "h-u7-q1": {
+    "qtype": "mc",
+    "answer": "intestinal sodium-glucose co-transport (SGLT1) driving passive water absorption"
+  },
+  "h-u7-q2": {
+    "qtype": "short",
+    "answer": "potassium"
+  },
+  "h-u7-q3": {
+    "qtype": "numeric",
+    "answer": 245,
+    "tolerance": 10
+  },
+  "h-u7-q4": {
+    "qtype": "mc",
+    "answer": "sunken fontanelle, lack of tears, lethargy, and delayed capillary refill"
+  },
+  "h-u7-q5": {
+    "qtype": "mc",
+    "answer": "hypertonic relative to human plasma"
+  },
+  "h-u8-q1": {
+    "qtype": "mc",
+    "answer": "systematic reviews and meta-analyses of randomized controlled trials (RCTs)"
+  },
+  "h-u8-q2": {
+    "qtype": "short",
+    "answer": "sensitivity"
+  },
+  "h-u8-q3": {
+    "qtype": "mc",
+    "answer": "immediate emergency activation (911 / emergency department)"
+  },
+  "h-u8-q4": {
+    "qtype": "numeric",
+    "answer": 10,
+    "tolerance": 0.000001
+  },
+  "h-u8-q5": {
+    "qtype": "mc",
+    "answer": "false: confounding variables and reverse causality must be rigorously ruled out"
+  },
+  "h-fn-q1": {
+    "qtype": "short",
+    "answer": "set"
+  },
+  "h-fn-q2": {
+    "qtype": "numeric",
+    "answer": 7.4,
+    "tolerance": 0.05
+  },
+  "h-fn-q3": {
+    "qtype": "short",
+    "answer": "nephron"
+  },
+  "h-fn-q4": {
+    "qtype": "mc",
+    "answer": "60 to 100 beats per minute"
+  },
+  "h-fn-q5": {
+    "qtype": "short",
+    "answer": "diastolic"
+  },
+  "h-fn-q6": {
+    "qtype": "mc",
+    "answer": "C-A-B: Compressions, Airway, Breathing"
+  },
+  "h-fn-q7": {
+    "qtype": "short",
+    "answer": "shock"
+  },
+  "h-fn-q8": {
+    "qtype": "short",
+    "answer": "1"
+  },
+  "h-fn-q9": {
+    "qtype": "numeric",
+    "answer": 2,
+    "tolerance": 0.000001
+  },
+  "h-fn-q10": {
+    "qtype": "mc",
+    "answer": "systematic reviews and meta-analyses of RCTs"
   }
 };

@@ -1172,6 +1172,194 @@ export const COURSE_PACKS: CoursePack[] = [
         ]
       }
     ]
+  },
+  {
+    "id": "health-physio-1",
+    "stack": "health",
+    "dewey": "610",
+    "title": "Physiology I — The Living Engine",
+    "level": "undergrad",
+    "hours": 45,
+    "license": {
+      "spdx": "AGPL-3.0-or-later",
+      "attribution": "EasyLM The Stacks · health textbook. Doors: OpenStax A&P 2e, MedlinePlus, CDC, WHO, AHA, PubMed.",
+      "sourceUrl": "https://openstax.org/details/books/anatomy-and-physiology-2e"
+    },
+    "units": [
+      {
+        "id": "u1",
+        "title": "Homeostasis & Boundaries",
+        "lessons": [
+          {
+            "id": "health-physio-1-u1-l",
+            "title": "Homeostasis & Boundaries",
+            "reading": {
+              "stack": "health",
+              "chapter": "1. The First Principles of Physiology and the Clinical Boundary"
+            },
+            "doors": [
+              "https://openstax.org/details/books/anatomy-and-physiology-2e"
+            ],
+            "items": [
+              "health-physio-1-u1-read",
+              "health-physio-1-u1-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u2",
+        "title": "Organ Systems as Engines",
+        "lessons": [
+          {
+            "id": "health-physio-1-u2-l",
+            "title": "Organ Systems as Engines",
+            "reading": {
+              "stack": "health",
+              "chapter": "2. The Organ Systems as Interconnected Functional Engines"
+            },
+            "doors": [
+              "https://openstax.org/details/books/anatomy-and-physiology-2e"
+            ],
+            "items": [
+              "health-physio-1-u2-read",
+              "health-physio-1-u2-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u3",
+        "title": "Vital Signs & Equilibrium",
+        "lessons": [
+          {
+            "id": "health-physio-1-u3-l",
+            "title": "Vital Signs & Equilibrium",
+            "reading": {
+              "stack": "health",
+              "chapter": "3. Homeostasis, Dynamic Equilibrium & Vital Signs"
+            },
+            "doors": [
+              "https://medlineplus.gov/"
+            ],
+            "items": [
+              "health-physio-1-u3-read",
+              "health-physio-1-u3-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u4",
+        "title": "Immunology & Pathogens",
+        "lessons": [
+          {
+            "id": "health-physio-1-u4-l",
+            "title": "Immunology & Pathogens",
+            "reading": {
+              "stack": "health",
+              "chapter": "4. Immunology, Infectious Pathogens & Vaccines"
+            },
+            "doors": [
+              "https://www.cdc.gov/"
+            ],
+            "items": [
+              "health-physio-1-u4-read",
+              "health-physio-1-u4-quiz",
+              "health-physio-1-midterm"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u5",
+        "title": "Life Support Hierarchy",
+        "lessons": [
+          {
+            "id": "health-physio-1-u5-l",
+            "title": "Life Support Hierarchy",
+            "reading": {
+              "stack": "health",
+              "chapter": "5. Emergency First Aid: The Life Support Hierarchy (C-A-B)"
+            },
+            "doors": [
+              "https://cpr.heart.org/"
+            ],
+            "items": [
+              "health-physio-1-u5-read",
+              "health-physio-1-u5-quiz",
+              "health-physio-1-essay-1"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u6",
+        "title": "Trauma & Hemorrhage Control",
+        "lessons": [
+          {
+            "id": "health-physio-1-u6-l",
+            "title": "Trauma & Hemorrhage Control",
+            "reading": {
+              "stack": "health",
+              "chapter": "6. Trauma Mechanics: Hemorrhage, Shock, Burns & Fractures"
+            },
+            "doors": [
+              "https://www.redcross.org/take-a-class/first-aid"
+            ],
+            "items": [
+              "health-physio-1-u6-read",
+              "health-physio-1-u6-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u7",
+        "title": "Fluid Balance & ORT",
+        "lessons": [
+          {
+            "id": "health-physio-1-u7-l",
+            "title": "Fluid Balance & ORT",
+            "reading": {
+              "stack": "health",
+              "chapter": "7. Fluid Balance, Dehydration & Oral Rehydration Therapy (ORT)"
+            },
+            "doors": [
+              "https://www.who.int/"
+            ],
+            "items": [
+              "health-physio-1-u7-read",
+              "health-physio-1-u7-quiz",
+              "health-physio-1-project"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u8",
+        "title": "Clinical Reasoning & Triage",
+        "lessons": [
+          {
+            "id": "health-physio-1-u8-l",
+            "title": "Clinical Reasoning & Triage",
+            "reading": {
+              "stack": "health",
+              "chapter": "13. Systematic Differential Problem-Solving in Health Inquiries"
+            },
+            "doors": [
+              "https://pubmed.ncbi.nlm.nih.gov/"
+            ],
+            "items": [
+              "health-physio-1-u8-read",
+              "health-physio-1-u8-quiz",
+              "health-physio-1-essay-2",
+              "health-physio-1-final"
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];
 
@@ -5952,6 +6140,813 @@ export const PUBLIC_ITEMS: Record<string, PublicItem> = {
         "id": "v-fn-q8",
         "prompt": "SCOTUS size (statute)",
         "qtype": "numeric",
+        "hint": null
+      }
+    ],
+    "suggestedMinutes": 50
+  },
+  "health-physio-1-u1-read": {
+    "id": "health-physio-1-u1-read",
+    "kind": "reading",
+    "lessonId": "health-physio-1-u1-l",
+    "prompt": "Read: 1. The First Principles of Physiology and the Clinical Boundary",
+    "source": {
+      "work": "OpenStax A&P 2e · The Stacks",
+      "loc": "homeostasis"
+    },
+    "questions": []
+  },
+  "health-physio-1-u1-quiz": {
+    "id": "health-physio-1-u1-quiz",
+    "kind": "quiz",
+    "lessonId": "health-physio-1-u1-l",
+    "prompt": "Practice until every item is right. Tries are not a mark.",
+    "source": {
+      "work": "OpenStax A&P 2e · The Stacks",
+      "loc": "homeostasis"
+    },
+    "questions": [
+      {
+        "id": "h-u1-q1",
+        "prompt": "Homeostasis is the active maintenance of:",
+        "qtype": "mc",
+        "choices": [
+          "internal stability against entropic dissipation",
+          "rigid stasis with zero molecular motion",
+          "constant body weight only",
+          "external atmospheric pressure"
+        ],
+        "hint": "Dynamic equilibrium preserving low internal entropy."
+      },
+      {
+        "id": "h-u1-q2",
+        "prompt": "Negative feedback loops return a regulated physiological variable toward its ____ point.",
+        "qtype": "short",
+        "hint": "Set point. Type set"
+      },
+      {
+        "id": "h-u1-q3",
+        "prompt": "EasyLM and digital health systems operate under the hard boundary:",
+        "qtype": "mc",
+        "choices": [
+          "educational inquiry and triage literacy, not direct clinical prescription",
+          "replacing emergency medical services",
+          "prescribing prescription drugs",
+          "dispensing medicine"
+        ],
+        "hint": "Sovereign educational boundary."
+      },
+      {
+        "id": "h-u1-q4",
+        "prompt": "Canonical baseline arterial blood pH is tightly regulated around:",
+        "qtype": "numeric",
+        "hint": "Standard human arterial pH ~7.35–7.45."
+      },
+      {
+        "id": "h-u1-q5",
+        "prompt": "Look up peer-reviewed medical consensus at:",
+        "qtype": "mc",
+        "choices": [
+          "MedlinePlus and PubMed",
+          "social media reels",
+          "unverified health blogs",
+          "rumors"
+        ],
+        "hint": "Authoritative door."
+      }
+    ]
+  },
+  "health-physio-1-u2-read": {
+    "id": "health-physio-1-u2-read",
+    "kind": "reading",
+    "lessonId": "health-physio-1-u2-l",
+    "prompt": "Read: 2. The Organ Systems as Interconnected Functional Engines",
+    "source": {
+      "work": "OpenStax A&P 2e",
+      "loc": "systems"
+    },
+    "questions": []
+  },
+  "health-physio-1-u2-quiz": {
+    "id": "health-physio-1-u2-quiz",
+    "kind": "quiz",
+    "lessonId": "health-physio-1-u2-l",
+    "prompt": "Practice until every item is right. Tries are not a mark.",
+    "source": {
+      "work": "OpenStax A&P 2e",
+      "loc": "systems"
+    },
+    "questions": [
+      {
+        "id": "h-u2-q1",
+        "prompt": "The primary function of the circulatory system is:",
+        "qtype": "mc",
+        "choices": [
+          "bulk convection transport of oxygen, nutrients, hormones, and waste",
+          "direct synthesis of all amino acids",
+          "generating electrical power for the grid",
+          "filtering air before entering the nose"
+        ],
+        "hint": "Hemodynamic convective engine."
+      },
+      {
+        "id": "h-u2-q2",
+        "prompt": "The structural and functional filtration unit of the human kidney is the ____.",
+        "qtype": "short",
+        "hint": "Nephron. Type nephron"
+      },
+      {
+        "id": "h-u2-q3",
+        "prompt": "Gas exchange in the human lungs occurs across the thin respiratory membrane of the:",
+        "qtype": "mc",
+        "choices": [
+          "alveoli",
+          "bronchi",
+          "trachea",
+          "larynx"
+        ],
+        "hint": "Pulmonary alveoli."
+      },
+      {
+        "id": "h-u2-q4",
+        "prompt": "How many major anatomical organ systems coordinate human physiology?",
+        "qtype": "numeric",
+        "hint": "Circulatory, respiratory, digestive, renal, nervous, endocrine, musculoskeletal, integumentary, lymphatic, reproductive, immune."
+      },
+      {
+        "id": "h-u2-q5",
+        "prompt": "Endocrine signaling differs from neural signaling primarily in:",
+        "qtype": "mc",
+        "choices": [
+          "traveling via bloodstream hormones rather than axonal action potentials",
+          "being instantaneous across microseconds",
+          "using light pulses",
+          "acting only on skin"
+        ],
+        "hint": "Hormonal chemical signaling."
+      }
+    ]
+  },
+  "health-physio-1-u3-read": {
+    "id": "health-physio-1-u3-read",
+    "kind": "reading",
+    "lessonId": "health-physio-1-u3-l",
+    "prompt": "Read: 3. Homeostasis, Dynamic Equilibrium & Vital Signs",
+    "source": {
+      "work": "MedlinePlus · NIH",
+      "loc": "vitals"
+    },
+    "questions": []
+  },
+  "health-physio-1-u3-quiz": {
+    "id": "health-physio-1-u3-quiz",
+    "kind": "quiz",
+    "lessonId": "health-physio-1-u3-l",
+    "prompt": "Practice until every item is right. Tries are not a mark.",
+    "source": {
+      "work": "MedlinePlus · NIH",
+      "loc": "vitals"
+    },
+    "questions": [
+      {
+        "id": "h-u3-q1",
+        "prompt": "Normal resting adult heart rate typically falls within the physiological range of:",
+        "qtype": "mc",
+        "choices": [
+          "60 to 100 beats per minute",
+          "20 to 40 beats per minute",
+          "140 to 180 beats per minute",
+          "200 to 250 beats per minute"
+        ],
+        "hint": "AHA standard resting adult range."
+      },
+      {
+        "id": "h-u3-q2",
+        "prompt": "Blood pressure is recorded as systolic over ____ pressure.",
+        "qtype": "short",
+        "hint": "Diastolic. Type diastolic"
+      },
+      {
+        "id": "h-u3-q3",
+        "prompt": "Normal resting adult respiratory rate in breaths per minute is typically between 12 and:",
+        "qtype": "numeric",
+        "hint": "12 to 20 breaths per minute."
+      },
+      {
+        "id": "h-u3-q4",
+        "prompt": "Arterial oxygen saturation (SpO2) in healthy individuals breathing room air at sea level is:",
+        "qtype": "mc",
+        "choices": [
+          "95% to 100%",
+          "70% to 80%",
+          "50% to 60%",
+          "below 50%"
+        ],
+        "hint": "Normal pulse oximetry."
+      },
+      {
+        "id": "h-u3-q5",
+        "prompt": "Core body temperature is homeostatically regulated primarily by the:",
+        "qtype": "mc",
+        "choices": [
+          "hypothalamus",
+          "cerebellum",
+          "pancreas",
+          "spleen"
+        ],
+        "hint": "Thermoregulatory control center."
+      }
+    ]
+  },
+  "health-physio-1-u4-read": {
+    "id": "health-physio-1-u4-read",
+    "kind": "reading",
+    "lessonId": "health-physio-1-u4-l",
+    "prompt": "Read: 4. Immunology, Infectious Pathogens & Vaccines",
+    "source": {
+      "work": "CDC · OpenStax Microbiology",
+      "loc": "immunology"
+    },
+    "questions": []
+  },
+  "health-physio-1-u4-quiz": {
+    "id": "health-physio-1-u4-quiz",
+    "kind": "quiz",
+    "lessonId": "health-physio-1-u4-l",
+    "prompt": "Practice until every item is right. Tries are not a mark.",
+    "source": {
+      "work": "CDC · OpenStax Microbiology",
+      "loc": "immunology"
+    },
+    "questions": [
+      {
+        "id": "h-u4-q1",
+        "prompt": "The innate immune system provides:",
+        "qtype": "mc",
+        "choices": [
+          "immediate, non-specific barrier and phagocytic defense",
+          "highly specific cloned antibody affinity maturation",
+          "instant memory B cell recall only",
+          "sterile eradication of all flora"
+        ],
+        "hint": "First-line evolutionary defense."
+      },
+      {
+        "id": "h-u4-q2",
+        "prompt": "Adaptive immune humoral immunity relies on B lymphocytes producing ____.",
+        "qtype": "short",
+        "hint": "Antibodies. Type antibodies"
+      },
+      {
+        "id": "h-u4-q3",
+        "prompt": "Vaccination stimulates active immunity by:",
+        "qtype": "mc",
+        "choices": [
+          "exposing the immune system to an antigen without causing full virulent disease",
+          "permanently altering somatic human DNA",
+          "sterilizing the entire microbiome",
+          "providing lifelong antibiotics"
+        ],
+        "hint": "Immunological memory."
+      },
+      {
+        "id": "h-u4-q4",
+        "prompt": "How many primary classes of human immunoglobulins exist (IgG, IgM, IgA, IgE, IgD)?",
+        "qtype": "numeric",
+        "hint": "Five isotope classes."
+      },
+      {
+        "id": "h-u4-q5",
+        "prompt": "Official immunization schedules must be fetched from primary authoritative doors like:",
+        "qtype": "mc",
+        "choices": [
+          "CDC and WHO",
+          "unreferenced social media memes",
+          "random internet forums",
+          "outdated marketing pamphlets"
+        ],
+        "hint": "CDC Vaccines and Immunization Schedules."
+      }
+    ]
+  },
+  "health-physio-1-midterm": {
+    "id": "health-physio-1-midterm",
+    "kind": "exam",
+    "lessonId": "health-physio-1-u4-l",
+    "prompt": "Midterm Exam: Foundations of Human Physiology. Soft timer only — a suggested sitting, not a cutoff. As many sittings as it takes.",
+    "source": {
+      "work": "OpenStax A&P 2e · CDC",
+      "loc": "midterm"
+    },
+    "questions": [
+      {
+        "id": "h-mt-q1",
+        "prompt": "Canonical arterial blood pH",
+        "qtype": "numeric",
+        "hint": null
+      },
+      {
+        "id": "h-mt-q2",
+        "prompt": "Organ systems count",
+        "qtype": "numeric",
+        "hint": null
+      },
+      {
+        "id": "h-mt-q3",
+        "prompt": "Kidney filtration unit",
+        "qtype": "short",
+        "hint": null
+      },
+      {
+        "id": "h-mt-q4",
+        "prompt": "Gas exchange site",
+        "qtype": "mc",
+        "choices": [
+          "alveoli",
+          "larynx"
+        ],
+        "hint": null
+      },
+      {
+        "id": "h-mt-q5",
+        "prompt": "Blood pressure denominator",
+        "qtype": "short",
+        "hint": null
+      },
+      {
+        "id": "h-mt-q6",
+        "prompt": "Resting respiratory rate upper bound",
+        "qtype": "numeric",
+        "hint": null
+      },
+      {
+        "id": "h-mt-q7",
+        "prompt": "Thermoregulation center",
+        "qtype": "mc",
+        "choices": [
+          "hypothalamus",
+          "spleen"
+        ],
+        "hint": null
+      },
+      {
+        "id": "h-mt-q8",
+        "prompt": "B cells produce",
+        "qtype": "short",
+        "hint": null
+      }
+    ],
+    "suggestedMinutes": 45
+  },
+  "health-physio-1-u5-read": {
+    "id": "health-physio-1-u5-read",
+    "kind": "reading",
+    "lessonId": "health-physio-1-u5-l",
+    "prompt": "Read: 5. Emergency First Aid: The Life Support Hierarchy (C-A-B)",
+    "source": {
+      "work": "American Heart Association (AHA)",
+      "loc": "life-support"
+    },
+    "questions": []
+  },
+  "health-physio-1-u5-quiz": {
+    "id": "health-physio-1-u5-quiz",
+    "kind": "quiz",
+    "lessonId": "health-physio-1-u5-l",
+    "prompt": "Practice until every item is right. Tries are not a mark.",
+    "source": {
+      "work": "American Heart Association (AHA)",
+      "loc": "life-support"
+    },
+    "questions": [
+      {
+        "id": "h-u5-q1",
+        "prompt": "AHA CPR protocol prioritizes the sequence:",
+        "qtype": "mc",
+        "choices": [
+          "C-A-B: Compressions, Airway, Breathing",
+          "A-B-C: Airway, Breathing, Compressions",
+          "B-A-C: Breathing, Airway, Compressions",
+          "Diagnostics before action"
+        ],
+        "hint": "Circulation first."
+      },
+      {
+        "id": "h-u5-q2",
+        "prompt": "Target chest compression rate for adult CPR in compressions per minute:",
+        "qtype": "numeric",
+        "hint": "100 to 120 compressions per minute."
+      },
+      {
+        "id": "h-u5-q3",
+        "prompt": "An automated electronic device that analyzes heart rhythm and delivers a shock is an ____.",
+        "qtype": "short",
+        "hint": "Type aed"
+      },
+      {
+        "id": "h-u5-q4",
+        "prompt": "For an unresponsive adult with no breathing and no pulse, the immediate step is:",
+        "qtype": "mc",
+        "choices": [
+          "activate emergency response (911) and begin high-quality chest compressions",
+          "wait 15 minutes to see if they wake up",
+          "administer oral water",
+          "search their pockets for ID"
+        ],
+        "hint": "Rapid activation and compressions."
+      },
+      {
+        "id": "h-u5-q5",
+        "prompt": "Standard adult CPR compression depth is at least how many inches?",
+        "qtype": "numeric",
+        "hint": "At least 2 inches (5 cm)."
+      }
+    ]
+  },
+  "health-physio-1-essay-1": {
+    "id": "health-physio-1-essay-1",
+    "kind": "essay",
+    "lessonId": "health-physio-1-u5-l",
+    "prompt": "Explain the physiological rationale behind switching the CPR sequence from A-B-C to C-A-B. Cite AHA guidelines.",
+    "source": {
+      "work": "AHA CPR Guidelines",
+      "loc": "essay-1"
+    },
+    "questions": [],
+    "rubric": [
+      {
+        "id": "claim",
+        "criterion": "States a clear claim",
+        "max": 1
+      },
+      {
+        "id": "door",
+        "criterion": "Cites a stack chapter or official door",
+        "max": 1
+      },
+      {
+        "id": "check",
+        "criterion": "Shows a check, worked example, or honest limit",
+        "max": 1
+      }
+    ]
+  },
+  "health-physio-1-u6-read": {
+    "id": "health-physio-1-u6-read",
+    "kind": "reading",
+    "lessonId": "health-physio-1-u6-l",
+    "prompt": "Read: 6. Trauma Mechanics: Hemorrhage, Shock, Burns & Fractures",
+    "source": {
+      "work": "American Red Cross · Stop the Bleed",
+      "loc": "trauma"
+    },
+    "questions": []
+  },
+  "health-physio-1-u6-quiz": {
+    "id": "health-physio-1-u6-quiz",
+    "kind": "quiz",
+    "lessonId": "health-physio-1-u6-l",
+    "prompt": "Practice until every item is right. Tries are not a mark.",
+    "source": {
+      "work": "American Red Cross · Stop the Bleed",
+      "loc": "trauma"
+    },
+    "questions": [
+      {
+        "id": "h-u6-q1",
+        "prompt": "The most immediate life-saving intervention for severe, life-threatening arterial limb bleeding is:",
+        "qtype": "mc",
+        "choices": [
+          "firm, direct pressure and application of an arterial tourniquet proximal to the wound",
+          "washing the wound with soap and water",
+          "applying butter or grease",
+          "elevating the feet only"
+        ],
+        "hint": "Stop the bleed."
+      },
+      {
+        "id": "h-u6-q2",
+        "prompt": "Inadequate cellular perfusion and tissue oxygenation throughout the body is termed ____.",
+        "qtype": "short",
+        "hint": "Shock. Type shock"
+      },
+      {
+        "id": "h-u6-q3",
+        "prompt": "When an arterial tourniquet is applied, you must:",
+        "qtype": "mc",
+        "choices": [
+          "note the exact time of application and never loosen it until surgical care",
+          "loosen it every 5 minutes to test",
+          "hide it under clothing",
+          "remove it as soon as bleeding slows slightly"
+        ],
+        "hint": "Continuous occlusion and timestamp."
+      },
+      {
+        "id": "h-u6-q4",
+        "prompt": "First-line immediate field cooling for a thermal burn is:",
+        "qtype": "mc",
+        "choices": [
+          "cool, clean running tap water for 10 to 20 minutes",
+          "ice directly on the open blister",
+          "butter or flour",
+          "rubbing alcohol"
+        ],
+        "hint": "Clean cool running water."
+      },
+      {
+        "id": "h-u6-q5",
+        "prompt": "In triage, severe arterial hemorrhage can cause exsanguination within how many minutes if uncontrolled?",
+        "qtype": "numeric",
+        "hint": "Critical minutes (typically 3–5 min)."
+      }
+    ]
+  },
+  "health-physio-1-u7-read": {
+    "id": "health-physio-1-u7-read",
+    "kind": "reading",
+    "lessonId": "health-physio-1-u7-l",
+    "prompt": "Read: 7. Fluid Balance, Dehydration & Oral Rehydration Therapy (ORT)",
+    "source": {
+      "work": "World Health Organization (WHO)",
+      "loc": "ort"
+    },
+    "questions": []
+  },
+  "health-physio-1-u7-quiz": {
+    "id": "health-physio-1-u7-quiz",
+    "kind": "quiz",
+    "lessonId": "health-physio-1-u7-l",
+    "prompt": "Practice until every item is right. Tries are not a mark.",
+    "source": {
+      "work": "World Health Organization (WHO)",
+      "loc": "ort"
+    },
+    "questions": [
+      {
+        "id": "h-u7-q1",
+        "prompt": "Oral Rehydration Salts (ORS) work on the biological principle of:",
+        "qtype": "mc",
+        "choices": [
+          "intestinal sodium-glucose co-transport (SGLT1) driving passive water absorption",
+          "chemical sterilization of gut bacteria",
+          "inducing immediate vomiting",
+          "acidifying the colon"
+        ],
+        "hint": "SGLT1 co-transport."
+      },
+      {
+        "id": "h-u7-q2",
+        "prompt": "The primary intracellular cation that maintains resting membrane potential is ____.",
+        "qtype": "short",
+        "hint": "Potassium. Type potassium"
+      },
+      {
+        "id": "h-u7-q3",
+        "prompt": "WHO reduced osmolarity ORS target total osmolarity is approximately how many mOsm/L?",
+        "qtype": "numeric",
+        "hint": "WHO formula: ~245 mOsm/L."
+      },
+      {
+        "id": "h-u7-q4",
+        "prompt": "Severe dehydration in infants manifests as:",
+        "qtype": "mc",
+        "choices": [
+          "sunken fontanelle, lack of tears, lethargy, and delayed capillary refill",
+          "hyperactivity and excessive urination",
+          "immediate fever with no fluid loss",
+          "normal skin turgor"
+        ],
+        "hint": "Signs of hypovolemia."
+      },
+      {
+        "id": "h-u7-q5",
+        "prompt": "Drinking pure sea water causes cellular dehydration because sea water is:",
+        "qtype": "mc",
+        "choices": [
+          "hypertonic relative to human plasma",
+          "hypotonic relative to human plasma",
+          "isotonic",
+          "sterile"
+        ],
+        "hint": "Hypertonic fluid shifts."
+      }
+    ]
+  },
+  "health-physio-1-project": {
+    "id": "health-physio-1-project",
+    "kind": "project",
+    "lessonId": "health-physio-1-u7-l",
+    "prompt": "Analyze the WHO Oral Rehydration Salts (ORS) formula. Fetch the WHO door, explain the stoichiometric ratio of anhydrous glucose to sodium chloride, and document how SGLT1 co-transport prevents mortality from cholera and diarrheal dehydration.",
+    "source": {
+      "work": "WHO ORS Technical Document",
+      "loc": "project"
+    },
+    "questions": [],
+    "rubric": [
+      {
+        "id": "claim",
+        "criterion": "States a clear claim",
+        "max": 1
+      },
+      {
+        "id": "door",
+        "criterion": "Cites a stack chapter or official door",
+        "max": 1
+      },
+      {
+        "id": "check",
+        "criterion": "Shows a check, worked example, or honest limit",
+        "max": 1
+      }
+    ],
+    "steps": [
+      "Fetch WHO ORS specifications",
+      "Record chemical stoichiometry",
+      "Diagram SGLT1 co-transport mechanism",
+      "Document historical impact on global child mortality",
+      "Export study artifact"
+    ]
+  },
+  "health-physio-1-u8-read": {
+    "id": "health-physio-1-u8-read",
+    "kind": "reading",
+    "lessonId": "health-physio-1-u8-l",
+    "prompt": "Read: 13. Systematic Differential Problem-Solving in Health Inquiries",
+    "source": {
+      "work": "PubMed · MedlinePlus",
+      "loc": "differential"
+    },
+    "questions": []
+  },
+  "health-physio-1-u8-quiz": {
+    "id": "health-physio-1-u8-quiz",
+    "kind": "quiz",
+    "lessonId": "health-physio-1-u8-l",
+    "prompt": "Practice until every item is right. Tries are not a mark.",
+    "source": {
+      "work": "PubMed · MedlinePlus",
+      "loc": "differential"
+    },
+    "questions": [
+      {
+        "id": "h-u8-q1",
+        "prompt": "The highest grade in the hierarchy of clinical evidence is generally:",
+        "qtype": "mc",
+        "choices": [
+          "systematic reviews and meta-analyses of randomized controlled trials (RCTs)",
+          "expert opinion and personal anecdote",
+          "single case reports",
+          "animal in vitro assays"
+        ],
+        "hint": "Level 1 evidence."
+      },
+      {
+        "id": "h-u8-q2",
+        "prompt": "The proportion of actual positives correctly identified by a diagnostic test is its ____.",
+        "qtype": "short",
+        "hint": "Sensitivity. Type sensitivity"
+      },
+      {
+        "id": "h-u8-q3",
+        "prompt": "Red flag triage symptoms (crushing chest pain, sudden unilateral weakness, severe stridor) require:",
+        "qtype": "mc",
+        "choices": [
+          "immediate emergency activation (911 / emergency department)",
+          "scheduling a routine clinic visit in three weeks",
+          "drinking herbal tea and waiting",
+          "running an internet search poll"
+        ],
+        "hint": "Emergency triage."
+      },
+      {
+        "id": "h-u8-q4",
+        "prompt": "If a diagnostic test has 90% sensitivity, what percentage of true positive cases are missed (false negatives)?",
+        "qtype": "numeric",
+        "hint": "100% - 90% = 10%."
+      },
+      {
+        "id": "h-u8-q5",
+        "prompt": "In health reasoning, correlation between a lifestyle factor and disease outcome proves causation:",
+        "qtype": "mc",
+        "choices": [
+          "false: confounding variables and reverse causality must be rigorously ruled out",
+          "true: any statistical correlation is definitive proof of direct cause",
+          "true only if p < 0.05",
+          "true if published on a blog"
+        ],
+        "hint": "Epistemic caution."
+      }
+    ]
+  },
+  "health-physio-1-essay-2": {
+    "id": "health-physio-1-essay-2",
+    "kind": "essay",
+    "lessonId": "health-physio-1-u8-l",
+    "prompt": "Compare diagnostic sensitivity and specificity. Explain why a screening test requires high sensitivity while a confirmatory test requires high specificity.",
+    "source": {
+      "work": "PubMed / MedlinePlus",
+      "loc": "essay-2"
+    },
+    "questions": [],
+    "rubric": [
+      {
+        "id": "claim",
+        "criterion": "States a clear claim",
+        "max": 1
+      },
+      {
+        "id": "door",
+        "criterion": "Cites a stack chapter or official door",
+        "max": 1
+      },
+      {
+        "id": "check",
+        "criterion": "Shows a check, worked example, or honest limit",
+        "max": 1
+      }
+    ]
+  },
+  "health-physio-1-final": {
+    "id": "health-physio-1-final",
+    "kind": "exam",
+    "lessonId": "health-physio-1-u8-l",
+    "prompt": "Final Comprehensive Exam: Human Physiology & Health Science. Soft timer only — a suggested sitting, not a cutoff. As many sittings as it takes.",
+    "source": {
+      "work": "OpenStax A&P 2e · WHO · AHA",
+      "loc": "final"
+    },
+    "questions": [
+      {
+        "id": "h-fn-q1",
+        "prompt": "Negative feedback returns to ____ point",
+        "qtype": "short",
+        "hint": null
+      },
+      {
+        "id": "h-fn-q2",
+        "prompt": "Baseline arterial blood pH",
+        "qtype": "numeric",
+        "hint": null
+      },
+      {
+        "id": "h-fn-q3",
+        "prompt": "Kidney functional unit",
+        "qtype": "short",
+        "hint": null
+      },
+      {
+        "id": "h-fn-q4",
+        "prompt": "Normal adult resting heart rate range",
+        "qtype": "mc",
+        "choices": [
+          "60 to 100 beats per minute",
+          "140 to 180 beats per minute"
+        ],
+        "hint": null
+      },
+      {
+        "id": "h-fn-q5",
+        "prompt": "Blood pressure denominator",
+        "qtype": "short",
+        "hint": null
+      },
+      {
+        "id": "h-fn-q6",
+        "prompt": "CPR sequence priority",
+        "qtype": "mc",
+        "choices": [
+          "C-A-B: Compressions, Airway, Breathing",
+          "A-B-C: Airway, Breathing, Compressions"
+        ],
+        "hint": null
+      },
+      {
+        "id": "h-fn-q7",
+        "prompt": "Hypoperfusion of tissues is",
+        "qtype": "short",
+        "hint": null
+      },
+      {
+        "id": "h-fn-q8",
+        "prompt": "Intestinal co-transport carrier for ORS: SGLT____",
+        "qtype": "short",
+        "hint": "Type 1"
+      },
+      {
+        "id": "h-fn-q9",
+        "prompt": "Adult CPR compression depth in inches at least",
+        "qtype": "numeric",
+        "hint": null
+      },
+      {
+        "id": "h-fn-q10",
+        "prompt": "Highest grade clinical evidence",
+        "qtype": "mc",
+        "choices": [
+          "systematic reviews and meta-analyses of RCTs",
+          "personal anecdotes"
+        ],
         "hint": null
       }
     ],

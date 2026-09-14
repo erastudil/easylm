@@ -230,12 +230,14 @@ export function enroll(p: Progress, courseId: string, today: string): Progress {
   if (p.enrolled.includes(courseId)) {
     return { ...p, activeCourseId: courseId };
   }
-  const next: Progress = {
+  const nextEnrolled = [...p.enrolled, courseId];
+  let next: Progress = {
     ...p,
-    enrolled: [...p.enrolled, courseId],
+    enrolled: nextEnrolled,
     enrolledAt: { ...p.enrolledAt, [courseId]: Date.now() },
     activeCourseId: courseId
   };
+  if (nextEnrolled.length >= 3) next = award(next, 'curiosity-unbound');
   return adjustSchedule(next, today);
 }
 
@@ -280,6 +282,7 @@ export function completeItem(
   if (next.streak.count >= 7) next = award(next, 'streak-7');
   if (next.streak.count >= 30) next = award(next, 'streak-30');
   if (next.numericPasses >= 10) next = award(next, 'calc-hand');
+  if (Object.keys(next.completed).length >= 25) next = award(next, 'patient-mind');
 
   next = maybeUnitAndCourse(next, itemId);
   return next;
@@ -298,7 +301,10 @@ function maybeUnitAndCourse(p: Progress, itemId: string): Progress {
       if (unitItems.every(id => next.completed[id])) next = award(next, 'first-unit');
     }
     const ids = allItemIds(course);
-    if (ids.length && ids.every(id => next.completed[id])) next = award(next, 'first-course');
+    if (ids.length && ids.every(id => next.completed[id])) {
+      next = award(next, 'first-course');
+      next = award(next, 'sovereign-scholar');
+    }
   }
   return next;
 }

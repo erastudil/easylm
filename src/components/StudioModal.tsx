@@ -117,7 +117,7 @@ export const StudioModal: React.FC<StudioModalProps> = ({
           <div>
             <h2 style={{ margin: 0, fontSize: '1.15rem', fontFamily: 'var(--font-mono)' }}>📚 Studio</h2>
             <div style={{ fontSize: '0.74rem', color: '#a1a1aa' }}>
-              Walk a class. Pass / fail. As many tries as it takes. study record on this device
+              Universal public good · Patient teacher · Pass / fail · As many tries as it takes · Study record on this device — free forever
             </div>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>

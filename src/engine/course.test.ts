@@ -4,17 +4,18 @@ import { ANSWER_KEYS } from '../data/answers_compiled';
 import { chapterExists, listCourses, studioStatusLine } from './course';
 
 describe('wave 1 courses', () => {
-  it('ships six complete walks', () => {
+  it('ships seven complete walks', () => {
     const ids = COURSE_PACKS.map(c => c.id).sort();
     expect(ids).toEqual([
       'biology-2e-1',
       'chemistry-2e-1',
       'civics-us-1',
+      'health-physio-1',
       'math-calc-1',
       'methods-inquiry-1',
       'physics-college-1'
     ].sort());
-    expect(listCourses().length).toBe(6);
+    expect(listCourses().length).toBe(7);
   });
 
   it('each course has ≥8 units, a quiz per unit, midterm, final, 2 essays, 1 project', () => {

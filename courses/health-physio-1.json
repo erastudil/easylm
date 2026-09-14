@@ -1,0 +1,191 @@
+{
+  "course": {
+    "id": "health-physio-1",
+    "stack": "health",
+    "dewey": "610",
+    "title": "Physiology I — The Living Engine",
+    "level": "undergrad",
+    "hours": 45,
+    "license": {
+      "spdx": "AGPL-3.0-or-later",
+      "attribution": "EasyLM The Stacks · health textbook. Doors: OpenStax A&P 2e, MedlinePlus, CDC, WHO, AHA, PubMed.",
+      "sourceUrl": "https://openstax.org/details/books/anatomy-and-physiology-2e"
+    },
+    "units": [
+      {
+        "id": "u1",
+        "title": "Homeostasis & Boundaries",
+        "lessons": [
+          {
+            "id": "health-physio-1-u1-l",
+            "title": "Homeostasis & Boundaries",
+            "reading": {
+              "stack": "health",
+              "chapter": "1. The First Principles of Physiology and the Clinical Boundary"
+            },
+            "doors": [
+              "https://openstax.org/details/books/anatomy-and-physiology-2e"
+            ],
+            "items": [
+              "health-physio-1-u1-read",
+              "health-physio-1-u1-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u2",
+        "title": "Organ Systems as Engines",
+        "lessons": [
+          {
+            "id": "health-physio-1-u2-l",
+            "title": "Organ Systems as Engines",
+            "reading": {
+              "stack": "health",
+              "chapter": "2. The Organ Systems as Interconnected Functional Engines"
+            },
+            "doors": [
+              "https://openstax.org/details/books/anatomy-and-physiology-2e"
+            ],
+            "items": [
+              "health-physio-1-u2-read",
+              "health-physio-1-u2-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u3",
+        "title": "Vital Signs & Equilibrium",
+        "lessons": [
+          {
+            "id": "health-physio-1-u3-l",
+            "title": "Vital Signs & Equilibrium",
+            "reading": {
+              "stack": "health",
+              "chapter": "3. Homeostasis, Dynamic Equilibrium & Vital Signs"
+            },
+            "doors": [
+              "https://medlineplus.gov/"
+            ],
+            "items": [
+              "health-physio-1-u3-read",
+              "health-physio-1-u3-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u4",
+        "title": "Immunology & Pathogens",
+        "lessons": [
+          {
+            "id": "health-physio-1-u4-l",
+            "title": "Immunology & Pathogens",
+            "reading": {
+              "stack": "health",
+              "chapter": "4. Immunology, Infectious Pathogens & Vaccines"
+            },
+            "doors": [
+              "https://www.cdc.gov/"
+            ],
+            "items": [
+              "health-physio-1-u4-read",
+              "health-physio-1-u4-quiz",
+              "health-physio-1-midterm"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u5",
+        "title": "Life Support Hierarchy",
+        "lessons": [
+          {
+            "id": "health-physio-1-u5-l",
+            "title": "Life Support Hierarchy",
+            "reading": {
+              "stack": "health",
+              "chapter": "5. Emergency First Aid: The Life Support Hierarchy (C-A-B)"
+            },
+            "doors": [
+              "https://cpr.heart.org/"
+            ],
+            "items": [
+              "health-physio-1-u5-read",
+              "health-physio-1-u5-quiz",
+              "health-physio-1-essay-1"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u6",
+        "title": "Trauma & Hemorrhage Control",
+        "lessons": [
+          {
+            "id": "health-physio-1-u6-l",
+            "title": "Trauma & Hemorrhage Control",
+            "reading": {
+              "stack": "health",
+              "chapter": "6. Trauma Mechanics: Hemorrhage, Shock, Burns & Fractures"
+            },
+            "doors": [
+              "https://www.redcross.org/take-a-class/first-aid"
+            ],
+            "items": [
+              "health-physio-1-u6-read",
+              "health-physio-1-u6-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u7",
+        "title": "Fluid Balance & ORT",
+        "lessons": [
+          {
+            "id": "health-physio-1-u7-l",
+            "title": "Fluid Balance & ORT",
+            "reading": {
+              "stack": "health",
+              "chapter": "7. Fluid Balance, Dehydration & Oral Rehydration Therapy (ORT)"
+            },
+            "doors": [
+              "https://www.who.int/"
+            ],
+            "items": [
+              "health-physio-1-u7-read",
+              "health-physio-1-u7-quiz",
+              "health-physio-1-project"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u8",
+        "title": "Clinical Reasoning & Triage",
+        "lessons": [
+          {
+            "id": "health-physio-1-u8-l",
+            "title": "Clinical Reasoning & Triage",
+            "reading": {
+              "stack": "health",
+              "chapter": "13. Systematic Differential Problem-Solving in Health Inquiries"
+            },
+            "doors": [
+              "https://pubmed.ncbi.nlm.nih.gov/"
+            ],
+            "items": [
+              "health-physio-1-u8-read",
+              "health-physio-1-u8-quiz",
+              "health-physio-1-essay-2",
+              "health-physio-1-final"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "itemCount": 21
+}

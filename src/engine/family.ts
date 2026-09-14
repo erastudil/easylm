@@ -243,23 +243,67 @@ export function isParentalLocked(): boolean {
   return active.role === 'kid' && active.parentalLockEnabled && hasParentalPin();
 }
 
+import { isVaultEncrypted, isVaultUnlocked, encryptPayload, decryptPayload } from './crypto_vault';
+
+let cachedMemories: MemoryEntry[] | null = null;
+
+export function resetMemoriesCache(): void {
+  cachedMemories = null;
+}
+
 /**
  * Sovereign Memory Vault operations (stored locally per profile)
  */
 export function loadMemories(): MemoryEntry[] {
+  if (cachedMemories !== null) return cachedMemories;
   if (typeof window === 'undefined') return [];
   try {
     const raw = localStorage.getItem(MEMORY_KEY);
-    return raw ? JSON.parse(raw) : [];
+    if (!raw) return [];
+    if (raw.startsWith('{"v":1,"iv":')) {
+      return [];
+    }
+    cachedMemories = JSON.parse(raw);
+    return cachedMemories || [];
+  } catch {
+    return [];
+  }
+}
+
+export async function loadMemoriesAsync(): Promise<MemoryEntry[]> {
+  if (typeof window === 'undefined') return [];
+  try {
+    let raw = localStorage.getItem(MEMORY_KEY);
+    if (!raw) return [];
+    if (raw.startsWith('{"v":1,"iv":')) {
+      if (!isVaultUnlocked()) return [];
+      const decrypted = await decryptPayload(raw);
+      if (!decrypted) return [];
+      raw = decrypted;
+    }
+    cachedMemories = JSON.parse(raw);
+    return cachedMemories || [];
   } catch {
     return [];
   }
 }
 
 export function saveMemories(entries: MemoryEntry[]): void {
+  cachedMemories = entries;
   if (typeof window === 'undefined') return;
+  const json = JSON.stringify(entries);
+  if (isVaultEncrypted() && isVaultUnlocked()) {
+    void encryptPayload(json).then(encrypted => {
+      try {
+        localStorage.setItem(MEMORY_KEY, encrypted);
+      } catch (e) {
+        console.warn('Failed to save encrypted memories:', e);
+      }
+    });
+    return;
+  }
   try {
-    localStorage.setItem(MEMORY_KEY, JSON.stringify(entries));
+    localStorage.setItem(MEMORY_KEY, json);
   } catch (e) {
     console.warn('Failed to save memories:', e);
   }

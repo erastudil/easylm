@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { DeviceInfo } from '../engine/device';
 import { CONTRIBUTORS_CREDITS, OPEN_SOURCE_COVENANT, OPEN_WEIGHTS_PROVIDERS } from '../data/credits';
+import {
+  isVaultEncrypted,
+  isVaultUnlocked,
+  getVaultMeta,
+  enableVaultWithDataMigration,
+  disableVaultWithDataMigration,
+  lockVault
+} from '../engine/crypto_vault';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -14,10 +22,12 @@ interface SettingsModalProps {
   showWelcomeMessage: boolean;
   onToggleWelcomeMessage: () => void;
   deviceInfo?: DeviceInfo | null;
-  initialTab?: 'engine' | 'credits';
+  initialTab?: 'engine' | 'security' | 'credits';
   onOpenModelModal?: () => void;
   onOpenProfiles?: () => void;
   onOpenWelcomeGuide?: () => void;
+  onVaultStateChange?: () => void;
+  onLockVault?: () => void;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -35,13 +45,29 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   initialTab,
   onOpenModelModal,
   onOpenProfiles,
-  onOpenWelcomeGuide
+  onOpenWelcomeGuide,
+  onVaultStateChange,
+  onLockVault
 }) => {
-  const [activeTab, setActiveTab] = useState<'engine' | 'credits'>(initialTab || 'engine');
+  const [activeTab, setActiveTab] = useState<'engine' | 'security' | 'credits'>(initialTab || 'engine');
+  const [vaultEncrypted, setVaultEncrypted] = useState(isVaultEncrypted);
+  const [vaultUnlocked, setVaultUnlocked] = useState(isVaultUnlocked);
+  const [secType, setSecType] = useState<'pin' | 'password'>('pin');
+  const [passphraseInput, setPassphraseInput] = useState('');
+  const [secStatusMsg, setSecStatusMsg] = useState<string | null>(null);
+  const [secErrorMsg, setSecErrorMsg] = useState<string | null>(null);
+  const [isProcessingSec, setIsProcessingSec] = useState(false);
 
   useEffect(() => {
-    if (isOpen && initialTab) {
-      setActiveTab(initialTab);
+    if (isOpen) {
+      setVaultEncrypted(isVaultEncrypted());
+      setVaultUnlocked(isVaultUnlocked());
+      setSecStatusMsg(null);
+      setSecErrorMsg(null);
+      setPassphraseInput('');
+      if (initialTab) {
+        setActiveTab(initialTab);
+      }
     }
   }, [isOpen, initialTab]);
 
@@ -55,6 +81,75 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   };
 
   const recommendedLimit = deviceInfo?.recommendedContextLimit || 4096;
+
+  const handleEnableEncryption = async () => {
+    const trimmed = passphraseInput.trim();
+    if (!trimmed) {
+      setSecErrorMsg('Please enter a PIN or password.');
+      return;
+    }
+    if (secType === 'pin' && !/^\d{4,8}$/.test(trimmed)) {
+      setSecErrorMsg('PIN must be 4 to 8 digits.');
+      return;
+    }
+    if (secType === 'password' && trimmed.length < 6) {
+      setSecErrorMsg('Password must be at least 6 characters.');
+      return;
+    }
+
+    setIsProcessingSec(true);
+    setSecErrorMsg(null);
+    setSecStatusMsg(null);
+    try {
+      await enableVaultWithDataMigration(trimmed, secType);
+      setVaultEncrypted(true);
+      setVaultUnlocked(true);
+      setPassphraseInput('');
+      setSecStatusMsg('Vault encryption enabled! Local database is encrypted with AES-256.');
+      onVaultStateChange?.();
+    } catch (err: any) {
+      setSecErrorMsg(`Failed to enable encryption: ${err?.message || err}`);
+    } finally {
+      setIsProcessingSec(false);
+    }
+  };
+
+  const handleDisableEncryption = async () => {
+    const trimmed = passphraseInput.trim();
+    if (!trimmed) {
+      setSecErrorMsg('Please enter your current PIN or password.');
+      return;
+    }
+
+    setIsProcessingSec(true);
+    setSecErrorMsg(null);
+    setSecStatusMsg(null);
+    try {
+      const ok = await disableVaultWithDataMigration(trimmed);
+      if (ok) {
+        setVaultEncrypted(false);
+        setVaultUnlocked(true);
+        setPassphraseInput('');
+        setSecStatusMsg('Vault encryption disabled. Database returned to plaintext local storage.');
+        onVaultStateChange?.();
+      } else {
+        setSecErrorMsg('Incorrect PIN or password. Could not decrypt database.');
+      }
+    } catch (err: any) {
+      setSecErrorMsg(`Failed to disable encryption: ${err?.message || err}`);
+    } finally {
+      setIsProcessingSec(false);
+    }
+  };
+
+  const handleLockNow = () => {
+    lockVault();
+    setVaultUnlocked(false);
+    onClose();
+    if (onLockVault) {
+      onLockVault();
+    }
+  };
 
   return (
     <div style={{
@@ -72,7 +167,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         className="card-panel"
         style={{
           width: '100%',
-          maxWidth: activeTab === 'credits' ? '680px' : '560px',
+          maxWidth: activeTab === 'credits' ? '680px' : activeTab === 'security' ? '600px' : '560px',
           padding: '1.75rem',
           maxHeight: '90vh',
           overflowY: 'auto',
@@ -106,7 +201,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           display: 'flex',
           gap: '0.5rem',
           borderBottom: '1px solid rgba(139, 92, 246, 0.25)',
-          paddingBottom: '0.6rem'
+          paddingBottom: '0.6rem',
+          flexWrap: 'wrap'
         }}>
           <button
             type="button"
@@ -122,6 +218,21 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             }}
           >
             ⚙️ Inference &amp; Engine
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('security')}
+            className="btn-pill"
+            style={{
+              fontSize: '0.78rem',
+              padding: '0.4rem 0.85rem',
+              backgroundColor: activeTab === 'security' ? 'rgba(139, 92, 246, 0.25)' : '#07070a',
+              borderColor: activeTab === 'security' ? '#8b5cf6' : 'rgba(139, 92, 246, 0.2)',
+              color: activeTab === 'security' ? '#ffffff' : '#a1a1aa',
+              fontWeight: activeTab === 'security' ? 600 : 400
+            }}
+          >
+            🔐 Security &amp; Vault
           </button>
           <button
             type="button"
@@ -460,6 +571,267 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 ))}
               </div>
             </div>
+          </div>
+        ) : activeTab === 'security' ? (
+          /* Security & Vault View */
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            {/* Status Messages */}
+            {secStatusMsg && (
+              <div style={{
+                backgroundColor: 'rgba(34, 197, 94, 0.12)',
+                border: '1px solid rgba(34, 197, 94, 0.35)',
+                borderRadius: '8px',
+                padding: '0.65rem 0.85rem',
+                fontSize: '0.78rem',
+                color: '#86efac',
+                lineHeight: 1.45
+              }}>
+                ✓ {secStatusMsg}
+              </div>
+            )}
+
+            {secErrorMsg && (
+              <div style={{
+                backgroundColor: 'rgba(239, 68, 68, 0.12)',
+                border: '1px solid rgba(239, 68, 68, 0.35)',
+                borderRadius: '8px',
+                padding: '0.65rem 0.85rem',
+                fontSize: '0.78rem',
+                color: '#fca5a5',
+                lineHeight: 1.45
+              }}>
+                ⚠ {secErrorMsg}
+              </div>
+            )}
+
+            {/* Vault Status Card */}
+            <div style={{
+              backgroundColor: '#111118',
+              border: vaultEncrypted ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid rgba(139, 92, 246, 0.25)',
+              borderRadius: '12px',
+              padding: '1.1rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.75rem'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '1.1rem' }}>{vaultEncrypted ? '🛡️' : '🔓'}</span>
+                    <span style={{ fontSize: '0.9rem', fontWeight: 700, color: vaultEncrypted ? '#86efac' : '#ffffff', fontFamily: 'var(--font-mono)' }}>
+                      {vaultEncrypted ? 'Client-Side Vault Encrypted' : 'Plaintext Local Storage'}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '0.74rem', color: '#a1a1aa', marginTop: '0.25rem', lineHeight: 1.45 }}>
+                    {vaultEncrypted
+                      ? 'Local chat sessions and sovereign memories are encrypted using AES-256-GCM with PBKDF2 key derivation. Data cannot be read by other accounts or extensions without your master key.'
+                      : 'Conversations and sovereign memory are stored in standard browser localStorage. If you share this computer, consider enabling AES-256 vault encryption to protect your privacy.'}
+                  </div>
+                </div>
+
+                <span style={{
+                  fontSize: '0.7rem',
+                  fontFamily: 'var(--font-mono)',
+                  fontWeight: 700,
+                  padding: '0.2rem 0.55rem',
+                  borderRadius: '6px',
+                  backgroundColor: vaultEncrypted ? 'rgba(34, 197, 94, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                  color: vaultEncrypted ? '#86efac' : '#fcd34d',
+                  border: vaultEncrypted ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid rgba(245, 158, 11, 0.3)'
+                }}>
+                  {vaultEncrypted ? 'AES-GCM-256' : 'OPTIONAL'}
+                </span>
+              </div>
+
+              {vaultEncrypted && (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  paddingTop: '0.5rem',
+                  borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                  flexWrap: 'wrap',
+                  gap: '0.5rem'
+                }}>
+                  <div style={{ fontSize: '0.72rem', color: '#a1a1aa', fontFamily: 'var(--font-mono)' }}>
+                    Protection Mode: <span style={{ color: '#c4b5fd', fontWeight: 600 }}>{getVaultMeta()?.type?.toUpperCase() || 'PIN'}</span> · PBKDF2 100k rounds
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleLockNow}
+                    className="btn-pill"
+                    style={{
+                      fontSize: '0.72rem',
+                      padding: '0.35rem 0.75rem',
+                      backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                      borderColor: 'rgba(239, 68, 68, 0.35)',
+                      color: '#fca5a5'
+                    }}
+                  >
+                    Lock Vault Now
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Setup or Teardown Section */}
+            {!vaultEncrypted ? (
+              /* Setup Vault Encryption */
+              <div style={{
+                backgroundColor: '#0c0c12',
+                border: '1px solid rgba(139, 92, 246, 0.22)',
+                borderRadius: '12px',
+                padding: '1.1rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.85rem'
+              }}>
+                <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#c4b5fd', fontFamily: 'var(--font-mono)' }}>
+                  Enable Vault Encryption
+                </div>
+
+                {/* Key Type Selector */}
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button
+                    type="button"
+                    onClick={() => { setSecType('pin'); setPassphraseInput(''); }}
+                    className="btn-pill"
+                    style={{
+                      flex: 1,
+                      justifyContent: 'center',
+                      fontSize: '0.74rem',
+                      padding: '0.4rem',
+                      backgroundColor: secType === 'pin' ? 'rgba(139, 92, 246, 0.25)' : '#111118',
+                      borderColor: secType === 'pin' ? '#8b5cf6' : 'rgba(255, 255, 255, 0.1)',
+                      color: secType === 'pin' ? '#ffffff' : '#a1a1aa'
+                    }}
+                  >
+                    Quick PIN
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setSecType('password'); setPassphraseInput(''); }}
+                    className="btn-pill"
+                    style={{
+                      flex: 1,
+                      justifyContent: 'center',
+                      fontSize: '0.74rem',
+                      padding: '0.4rem',
+                      backgroundColor: secType === 'password' ? 'rgba(139, 92, 246, 0.25)' : '#111118',
+                      borderColor: secType === 'password' ? '#8b5cf6' : 'rgba(255, 255, 255, 0.1)',
+                      color: secType === 'password' ? '#ffffff' : '#a1a1aa'
+                    }}
+                  >
+                    Password or Passphrase
+                  </button>
+                </div>
+
+                <div style={{ fontSize: '0.72rem', color: '#71717a' }}>
+                  {secType === 'pin'
+                    ? '4 to 8 digits. Fast to enter upon reopening EasyLM; protects against casual shoulder surfing.'
+                    : '6+ alphanumeric characters. High cryptographic entropy against offline brute force.'}
+                </div>
+
+                {/* Input Field */}
+                <div>
+                  <input
+                    type="password"
+                    inputMode={secType === 'pin' ? 'numeric' : 'text'}
+                    pattern={secType === 'pin' ? '[0-9]*' : undefined}
+                    maxLength={secType === 'pin' ? 8 : 128}
+                    placeholder={secType === 'pin' ? 'Enter 4 to 8 digit PIN' : 'Enter master password or passphrase'}
+                    value={passphraseInput}
+                    onChange={(e) => setPassphraseInput(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.6rem 0.85rem',
+                      borderRadius: '8px',
+                      backgroundColor: '#161622',
+                      border: '1px solid rgba(139, 92, 246, 0.35)',
+                      color: '#ffffff',
+                      fontSize: '0.85rem',
+                      fontFamily: 'var(--font-mono)',
+                      outline: 'none',
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleEnableEncryption}
+                  disabled={isProcessingSec}
+                  className="btn-pill btn-pill-primary"
+                  style={{
+                    width: '100%',
+                    justifyContent: 'center',
+                    padding: '0.55rem',
+                    fontSize: '0.8rem',
+                    opacity: isProcessingSec ? 0.6 : 1
+                  }}
+                >
+                  {isProcessingSec ? 'Encrypting Database...' : 'Enable Vault Encryption'}
+                </button>
+              </div>
+            ) : (
+              /* Remove Encryption Form */
+              <div style={{
+                backgroundColor: '#0c0c12',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: '12px',
+                padding: '1.1rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.75rem'
+              }}>
+                <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#e4e4e7', fontFamily: 'var(--font-mono)' }}>
+                  Disable Vault Encryption
+                </div>
+                <div style={{ fontSize: '0.72rem', color: '#a1a1aa', lineHeight: 1.45 }}>
+                  This decrypts your local database and returns all sessions and memories to unencrypted plaintext browser storage. Enter your current key to confirm.
+                </div>
+
+                <div>
+                  <input
+                    type="password"
+                    placeholder="Enter current PIN or password to unlock and decrypt"
+                    value={passphraseInput}
+                    onChange={(e) => setPassphraseInput(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.55rem 0.8rem',
+                      borderRadius: '8px',
+                      backgroundColor: '#161622',
+                      border: '1px solid rgba(255, 255, 255, 0.15)',
+                      color: '#ffffff',
+                      fontSize: '0.82rem',
+                      fontFamily: 'var(--font-mono)',
+                      outline: 'none',
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleDisableEncryption}
+                  disabled={isProcessingSec}
+                  className="btn-pill"
+                  style={{
+                    width: '100%',
+                    justifyContent: 'center',
+                    padding: '0.5rem',
+                    fontSize: '0.78rem',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    borderColor: 'rgba(239, 68, 68, 0.3)',
+                    color: '#fca5a5',
+                    opacity: isProcessingSec ? 0.6 : 1
+                  }}
+                >
+                  {isProcessingSec ? 'Decrypting Database...' : 'Remove Encryption'}
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           /* Inference & Engine Settings View */

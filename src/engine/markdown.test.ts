@@ -39,4 +39,20 @@ describe('renderMarkdownSafe', () => {
     expect(html).toContain('DETERMINISTIC MATH');
     expect(html).toContain('sqrt(144) * 5200 = 62400');
   });
+
+  it('renders LaTeX display formulas and fractions with KaTeX', () => {
+    const raw = 'Bayes Rule:\n\n$$P(H \\mid E) = \\frac{P(E \\mid H) P(H)}{P(E)}$$';
+    const html = renderMarkdownSafe(raw);
+    expect(html).toContain('class="math-box"');
+    expect(html).toContain('class="katex"');
+    expect(html).toContain('mfrac');
+  });
+
+  it('renders inline math and preserves currency dollar signs', () => {
+    const raw = 'The threshold is $p < 0.05$ and the fee was $100 for $200 items.';
+    const html = renderMarkdownSafe(raw);
+    expect(html).toContain('class="katex"');
+    expect(html).toContain('$100');
+    expect(html).toContain('$200');
+  });
 });

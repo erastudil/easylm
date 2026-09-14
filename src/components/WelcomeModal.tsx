@@ -146,6 +146,12 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({
                 <span style={{ color: '#34d399' }}>✓</span>
                 <span>Official app free forever. AGPL-3.0 copyleft.</span>
               </div>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.4rem', marginTop: '0.35rem', paddingTop: '0.45rem', borderTop: '1px solid rgba(255, 255, 255, 0.07)' }}>
+                <span style={{ color: '#c4b5fd' }}>🔐</span>
+                <span style={{ fontSize: '0.73rem', color: '#c4b5fd', lineHeight: 1.45 }}>
+                  <strong>Optional Vault Encryption:</strong> Shared computer? You can set a 4-digit PIN or custom password in Settings to encrypt your local database with AES-256.
+                </span>
+              </div>
             </div>
           </div>
 

@@ -113,10 +113,16 @@ export function sanitizeSession(raw: unknown): Session | null {
   };
 }
 
+import { isVaultEncrypted, isVaultUnlocked, encryptPayload, decryptPayload } from './crypto_vault';
+
 export function loadAllSessions(): Session[] {
   try {
     const raw = localStorage.getItem(SESSIONS_STORAGE_KEY);
     if (!raw) return [];
+    if (raw.startsWith('{"v":1,"iv":')) {
+      // Encrypted payload cannot be decrypted synchronously. Handled by loadAllSessionsAsync.
+      return [];
+    }
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
     return parsed.map(sanitizeSession).filter((s): s is Session => !!s);
@@ -127,11 +133,22 @@ export function loadAllSessions(): Session[] {
 }
 
 export async function loadAllSessionsAsync(): Promise<Session[]> {
-  const fromLs = loadAllSessions();
-  if (fromLs.length > 0) return fromLs;
+  let raw = localStorage.getItem(SESSIONS_STORAGE_KEY);
+  if (!raw) {
+    raw = await idbGet(SESSIONS_STORAGE_KEY);
+  }
+  if (!raw) return [];
+
+  if (raw.startsWith('{"v":1,"iv":')) {
+    if (!isVaultUnlocked()) {
+      return [];
+    }
+    const decrypted = await decryptPayload(raw);
+    if (!decrypted) return [];
+    raw = decrypted;
+  }
+
   try {
-    const raw = await idbGet(SESSIONS_STORAGE_KEY);
-    if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
     return parsed.map(sanitizeSession).filter((s): s is Session => !!s);
@@ -142,6 +159,20 @@ export async function loadAllSessionsAsync(): Promise<Session[]> {
 
 export function saveAllSessions(sessions: Session[]): SaveResult {
   const json = JSON.stringify(sessions);
+  if (isVaultEncrypted() && isVaultUnlocked()) {
+    void encryptPayload(json).then(encrypted => {
+      try {
+        localStorage.setItem(SESSIONS_STORAGE_KEY, encrypted);
+        void idbSet(SESSIONS_STORAGE_KEY, encrypted);
+      } catch (err) {
+        if (isQuotaError(err)) {
+          void idbSet(SESSIONS_STORAGE_KEY, encrypted);
+        }
+      }
+    });
+    return { ok: true };
+  }
+
   try {
     localStorage.setItem(SESSIONS_STORAGE_KEY, json);
     void idbSet(SESSIONS_STORAGE_KEY, json);

@@ -40,12 +40,15 @@ import {
   getActiveProfile,
   getProfileMemories,
   detectPII,
-  hasParentalPin
+  hasParentalPin,
+  loadMemoriesAsync
 } from './engine/family';
 import { ParentalModal } from './components/ParentalModal';
 import { ProfileModal } from './components/ProfileModal';
 import { AttachmentBar } from './components/AttachmentBar';
 import { WelcomeModal } from './components/WelcomeModal';
+import { VaultUnlockModal } from './components/VaultUnlockModal';
+import { isVaultEncrypted, isVaultUnlocked, lockVault } from './engine/crypto_vault';
 import { HnaiLogo } from './components/HnaiLogo';
 
 import { HistoryModal } from './components/HistoryModal';
@@ -84,8 +87,24 @@ const STARTER_PROMPTS_CATALOG: StarterChip[] = [
   { label: '📚 Dictionary', prompt: 'Define serendipity and its historical origin.' }
 ];
 
+const VAULT_SECURITY_CHIP: StarterChip = {
+  label: '🛡️ Vault Security',
+  prompt: 'How does client-side AES encryption protect my private conversations and notes on a shared device?'
+};
+
 function pickRandomStarterChips(count: number = 6): StarterChip[] {
-  const shuffled = [...STARTER_PROMPTS_CATALOG].sort(() => 0.5 - Math.random());
+  const isEncrypted = typeof window !== 'undefined' && isVaultEncrypted();
+  let pool = [...STARTER_PROMPTS_CATALOG];
+  if (!isEncrypted) {
+    pool.push(VAULT_SECURITY_CHIP);
+  }
+  const shuffled = pool.sort(() => 0.5 - Math.random());
+  if (!isEncrypted && !shuffled.slice(0, count).some(c => c.label === VAULT_SECURITY_CHIP.label)) {
+    const picked = shuffled.slice(0, count - 1);
+    const insertIdx = Math.floor(Math.random() * count);
+    picked.splice(insertIdx, 0, VAULT_SECURITY_CHIP);
+    return picked;
+  }
   return shuffled.slice(0, count);
 }
 
@@ -93,8 +112,11 @@ export const App: React.FC = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [activeSessionId, setActiveSessionIdState] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(() => typeof window !== 'undefined' ? window.innerWidth > 768 : false);
+  const [vaultLocked, setVaultLocked] = useState<boolean>(() => {
+    return typeof window !== 'undefined' && isVaultEncrypted() && !isVaultUnlocked();
+  });
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [settingsTab, setSettingsTab] = useState<'engine' | 'credits'>('engine');
+  const [settingsTab, setSettingsTab] = useState<'engine' | 'security' | 'credits'>('engine');
   const [helpOpen, setHelpOpen] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
@@ -104,9 +126,34 @@ export const App: React.FC = () => {
     setSettingsOpen(true);
   };
 
+  const handleOpenSecurity = () => {
+    setSettingsTab('security');
+    setSettingsOpen(true);
+  };
+
   const handleOpenSettings = () => {
     setSettingsTab('engine');
     setSettingsOpen(true);
+  };
+
+  const handleVaultUnlocked = async () => {
+    setVaultLocked(false);
+    const loaded = await loadAllSessionsAsync();
+    if (loaded.length > 0) {
+      const cleaned = loaded.map(sess => ({
+        ...sess,
+        messages: sess.messages.filter(m => !m.id.startsWith('msg-welcome-') && !(m.role === 'assistant' && m.content.startsWith('Welcome to **EasyLM**')))
+      }));
+      setSessions(cleaned);
+      const savedActive = getActiveSessionId();
+      if (savedActive && cleaned.some(s => s.id === savedActive)) {
+        setActiveSessionIdState(savedActive);
+      } else {
+        setActiveSessionIdState(cleaned[0].id);
+      }
+    }
+    await loadMemoriesAsync();
+    setStarterChips(pickRandomStarterChips(6));
   };
   const [historyOpen, setHistoryOpen] = useState(false);
   const [learnOpen, setLearnOpen] = useState(false);
@@ -1280,6 +1327,28 @@ export const App: React.FC = () => {
               <span className="hide-on-mobile"> Credits</span>
             </button>
 
+            {/* Lock Vault button if encryption is active and unlocked */}
+            {isVaultEncrypted() && !vaultLocked && (
+              <button
+                onClick={() => {
+                  lockVault();
+                  setVaultLocked(true);
+                }}
+                className="btn-pill"
+                style={{
+                  fontSize: '0.75rem',
+                  padding: '0.25rem 0.6rem',
+                  gap: '0.3rem',
+                  borderColor: 'rgba(34, 197, 94, 0.4)',
+                  color: '#86efac'
+                }}
+                title="Lock Sovereign Vault"
+              >
+                <span>🔒</span>
+                <span className="hide-on-mobile">Lock Vault</span>
+              </button>
+            )}
+
             {/* Settings Button */}
             <button
               onClick={handleOpenSettings}
@@ -1702,6 +1771,23 @@ export const App: React.FC = () => {
         onOpenModelModal={() => setModelModalOpen(true)}
         onOpenProfiles={() => setProfileModalOpen(true)}
         onOpenWelcomeGuide={() => setWelcomeModalOpen(true)}
+        onVaultStateChange={() => {
+          setStarterChips(pickRandomStarterChips(6));
+        }}
+        onLockVault={() => {
+          setVaultLocked(true);
+        }}
+      />
+
+      {/* Sovereign Vault Unlock Modal */}
+      <VaultUnlockModal
+        isOpen={vaultLocked}
+        onUnlocked={handleVaultUnlocked}
+        onResetVault={() => {
+          setVaultLocked(false);
+          setSessions([]);
+          handleNewSession();
+        }}
       />
 
       {/* Model Selector & HF Streaming Modal */}

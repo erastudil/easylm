@@ -10,7 +10,9 @@ import {
   getProfileMemories,
   addProfileMemory,
   deleteProfileMemory,
-  clearProfileMemories
+  clearProfileMemories,
+  AtMemCategory,
+  AtMemAtom
 } from '../engine/family';
 import { analyzeTriLakePatterns } from '../engine/storage';
 
@@ -34,6 +36,10 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
   const [profiles, setProfiles] = useState<UserProfile[]>(() => loadProfiles());
   const [activeProfile, setActiveProfile] = useState<UserProfile>(() => getActiveProfile());
   const [newMemoryText, setNewMemoryText] = useState('');
+  const [newMemoryCategory, setNewMemoryCategory] = useState<AtMemCategory>('fact');
+  const [newMemoryGoverned, setNewMemoryGoverned] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState<'all' | AtMemCategory>('all');
+  const [memoryError, setMemoryError] = useState<string | null>(null);
   const [newProfileName, setNewProfileName] = useState('');
   const [newProfileRole, setNewProfileRole] = useState<'parent' | 'kid'>('kid');
   const [isAddingProfile, setIsAddingProfile] = useState(false);
@@ -64,18 +70,40 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
 
   const handleAddMemory = () => {
     if (!newMemoryText.trim()) return;
-    addProfileMemory(activeProfile.id, newMemoryText.trim());
-    setNewMemoryText('');
+    setMemoryError(null);
+    try {
+      addProfileMemory(
+        activeProfile.id,
+        newMemoryText.trim(),
+        newMemoryCategory,
+        activeProfile.role === 'kid' && newMemoryGoverned,
+        activeProfile.role === 'kid' && newMemoryGoverned ? 'parent' : 'user'
+      );
+      setNewMemoryText('');
+      setNewMemoryGoverned(false);
+      setActiveProfile({ ...activeProfile });
+    } catch (err: any) {
+      setMemoryError(err?.message || 'Failed to add memory');
+    }
   };
 
-  const handleDeleteMemory = (id: string) => {
-    deleteProfileMemory(id);
-    setActiveProfile({ ...activeProfile }); // Trigger re-render
+  const handleDeleteMemory = (m: AtMemAtom) => {
+    setMemoryError(null);
+    if (m.governed && pinConfigured) {
+      onRequestPinVerify(() => {
+        deleteProfileMemory(m.id, true);
+        setActiveProfile({ ...activeProfile });
+      });
+    } else {
+      deleteProfileMemory(m.id, false);
+      setActiveProfile({ ...activeProfile });
+    }
   };
 
   const handleClearMemories = () => {
-    if (confirm(`Clear all saved memories for ${activeProfile.name}?`)) {
-      clearProfileMemories(activeProfile.id);
+    setMemoryError(null);
+    if (confirm(`Clear elective memories for ${activeProfile.name}? Standing governed mandates will be preserved.`)) {
+      clearProfileMemories(activeProfile.id, false);
       setActiveProfile({ ...activeProfile });
     }
   };
@@ -294,12 +322,26 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
           </div>
         )}
 
-        {/* Tab 2: Sovereign Memory Vault */}
+        {/* Tab 2: Sovereign Memory Vault (AtMem & Governance) */}
         {activeTab === 'memory' && (
-          <div>
-            <div style={{ fontSize: '0.8rem', color: '#a1a1aa', marginBottom: '0.85rem', lineHeight: 1.5 }}>
-              Standing facts, learning preferences, and goals saved for <strong style={{ color: '#ffffff' }}>{activeProfile.name}</strong>. Stored in this browser. Export a JSON backup from the sidebar to take them with you.
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+            <div style={{ fontSize: '0.78rem', color: '#a1a1aa', lineHeight: 1.5 }}>
+              AtMem sovereign memory for <strong style={{ color: '#ffffff' }}>{activeProfile.name}</strong>. Discrete rules, goals, preferences, and facts filtered attentively at runtime under a 256-token budget.
             </div>
+
+            {/* Error Message */}
+            {memoryError && (
+              <div style={{
+                backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                border: '1px solid rgba(239, 68, 68, 0.4)',
+                borderRadius: '8px',
+                padding: '0.55rem 0.75rem',
+                fontSize: '0.75rem',
+                color: '#fca5a5'
+              }}>
+                ⚠ {memoryError}
+              </div>
+            )}
 
             {/* Tri-Lake Analysis Notification Banner */}
             {analysisBanner && (
@@ -308,7 +350,6 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
                 border: analysisBanner.ok ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid rgba(239, 68, 68, 0.4)',
                 borderRadius: '8px',
                 padding: '0.65rem 0.85rem',
-                marginBottom: '0.85rem',
                 fontSize: '0.78rem',
                 color: analysisBanner.ok ? '#34d399' : '#fca5a5',
                 display: 'flex',
@@ -326,66 +367,185 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
               </div>
             )}
 
-            {/* Add Memory Input */}
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-              <input
-                type="text"
-                placeholder="e.g. Loves astronomy analogies; learning fractions in 5th grade..."
-                value={newMemoryText}
-                onChange={(e) => setNewMemoryText(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleAddMemory()}
-                style={{
-                  flex: 1,
-                  background: '#07070a',
-                  border: '1px solid rgba(139, 92, 246, 0.3)',
-                  borderRadius: '8px',
-                  color: '#ffffff',
-                  padding: '0.5rem 0.75rem',
-                  fontSize: '0.82rem'
-                }}
-              />
-              <button onClick={handleAddMemory} className="btn-pill btn-pill-primary" style={{ fontSize: '0.78rem' }}>
-                Add
-              </button>
+            {/* Add Memory Form */}
+            <div style={{
+              backgroundColor: '#111118',
+              border: '1px solid rgba(139, 92, 246, 0.25)',
+              borderRadius: '10px',
+              padding: '0.85rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.6rem'
+            }}>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                <input
+                  type="text"
+                  placeholder="e.g. Preparing for biology exam on Friday; loves astronomy analogies..."
+                  value={newMemoryText}
+                  onChange={(e) => setNewMemoryText(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleAddMemory()}
+                  style={{
+                    flex: 1,
+                    minWidth: '220px',
+                    background: '#07070a',
+                    border: '1px solid rgba(139, 92, 246, 0.3)',
+                    borderRadius: '8px',
+                    color: '#ffffff',
+                    padding: '0.5rem 0.75rem',
+                    fontSize: '0.82rem'
+                  }}
+                />
+
+                <select
+                  value={newMemoryCategory}
+                  onChange={(e) => setNewMemoryCategory(e.target.value as AtMemCategory)}
+                  style={{
+                    backgroundColor: '#07070a',
+                    border: '1px solid rgba(139, 92, 246, 0.3)',
+                    borderRadius: '8px',
+                    color: '#c4b5fd',
+                    padding: '0.45rem 0.6rem',
+                    fontSize: '0.75rem',
+                    fontFamily: 'var(--font-mono)',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value="fact">Fact</option>
+                  <option value="goal">Goal</option>
+                  <option value="preference">Preference</option>
+                  <option value="rule">Rule</option>
+                </select>
+
+                <button
+                  onClick={handleAddMemory}
+                  className="btn-pill btn-pill-primary"
+                  style={{ fontSize: '0.78rem', padding: '0.45rem 0.85rem' }}
+                >
+                  Add Memory
+                </button>
+              </div>
+
+              {activeProfile.role === 'kid' && (
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.74rem', color: '#c4b5fd', cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={newMemoryGoverned}
+                    onChange={(e) => setNewMemoryGoverned(e.target.checked)}
+                    style={{ accentColor: '#8b5cf6' }}
+                  />
+                  <span>🛡️ Set as Governed Mandate (Protected by Parental PIN)</span>
+                </label>
+              )}
+            </div>
+
+            {/* Category Filter Pills */}
+            <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+              {(['all', 'rule', 'goal', 'preference', 'fact', 'insight'] as const).map((cat) => {
+                const isSel = categoryFilter === cat;
+                const label = cat === 'all' ? 'All' : cat === 'rule' ? 'Rules' : cat === 'goal' ? 'Goals' : cat === 'preference' ? 'Preferences' : cat === 'fact' ? 'Facts' : 'Insights';
+                return (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setCategoryFilter(cat)}
+                    className="btn-pill"
+                    style={{
+                      fontSize: '0.68rem',
+                      padding: '0.2rem 0.55rem',
+                      backgroundColor: isSel ? 'rgba(139, 92, 246, 0.25)' : '#07070a',
+                      borderColor: isSel ? '#8b5cf6' : 'rgba(255, 255, 255, 0.1)',
+                      color: isSel ? '#ffffff' : '#a1a1aa',
+                      fontWeight: isSel ? 600 : 400
+                    }}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
             </div>
 
             {/* Memories List */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', maxHeight: '250px', overflowY: 'auto', marginBottom: '1rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', maxHeight: '240px', overflowY: 'auto' }}>
               {memories.length === 0 ? (
-                <div style={{ padding: '1.25rem', textAlign: 'center', color: '#71717a', fontSize: '0.8rem', fontStyle: 'italic' }}>
+                <div style={{ padding: '1.25rem', textAlign: 'center', color: '#71717a', fontSize: '0.78rem', fontStyle: 'italic' }}>
                   No saved memories yet for this profile. Add a preference above or type "Remember that I like X" in chat!
                 </div>
               ) : (
-                memories.map(m => (
-                  <div
-                    key={m.id}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '0.55rem 0.75rem',
-                      background: '#111118',
-                      borderRadius: '8px',
-                      border: '1px solid rgba(139, 92, 246, 0.2)',
-                      fontSize: '0.82rem',
-                      color: '#ffffff'
-                    }}
-                  >
-                    <span>📌 {m.text}</span>
-                    <button
-                      onClick={() => handleDeleteMemory(m.id)}
-                      style={{ background: 'transparent', border: 'none', color: '#71717a', cursor: 'pointer', fontSize: '1rem' }}
-                      title="Delete memory"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))
+                memories
+                  .filter(m => categoryFilter === 'all' || m.category === categoryFilter)
+                  .map(m => {
+                    const badgeColor = m.governed
+                      ? { bg: 'rgba(139, 92, 246, 0.25)', border: '#8b5cf6', text: '#c4b5fd' }
+                      : m.category === 'rule'
+                      ? { bg: 'rgba(239, 68, 68, 0.15)', border: 'rgba(239, 68, 68, 0.35)', text: '#fca5a5' }
+                      : m.category === 'goal'
+                      ? { bg: 'rgba(14, 165, 233, 0.15)', border: 'rgba(14, 165, 233, 0.35)', text: '#7dd3fc' }
+                      : m.category === 'preference'
+                      ? { bg: 'rgba(34, 197, 94, 0.15)', border: 'rgba(34, 197, 94, 0.35)', text: '#86efac' }
+                      : m.category === 'insight'
+                      ? { bg: 'rgba(245, 158, 11, 0.15)', border: 'rgba(245, 158, 11, 0.35)', text: '#fcd34d' }
+                      : { bg: 'rgba(255, 255, 255, 0.08)', border: 'rgba(255, 255, 255, 0.15)', text: '#d4d4d8' };
+
+                    const badgeLabel = m.governed
+                      ? '🛡️ Mandate'
+                      : m.category.charAt(0).toUpperCase() + m.category.slice(1);
+
+                    return (
+                      <div
+                        key={m.id}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '0.5rem 0.75rem',
+                          background: '#111118',
+                          borderRadius: '8px',
+                          border: m.governed ? '1px solid rgba(139, 92, 246, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
+                          fontSize: '0.8rem',
+                          color: '#ffffff',
+                          gap: '0.5rem'
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1, minWidth: 0 }}>
+                          <span style={{
+                            fontSize: '0.65rem',
+                            fontFamily: 'var(--font-mono)',
+                            fontWeight: 600,
+                            padding: '0.1rem 0.4rem',
+                            borderRadius: '4px',
+                            backgroundColor: badgeColor.bg,
+                            border: `1px solid ${badgeColor.border}`,
+                            color: badgeColor.text,
+                            flexShrink: 0
+                          }}>
+                            {badgeLabel}
+                          </span>
+                          <span style={{ wordBreak: 'break-word' }}>{m.text}</span>
+                        </div>
+
+                        <button
+                          onClick={() => handleDeleteMemory(m)}
+                          style={{
+                            background: 'transparent',
+                            border: 'none',
+                            color: '#71717a',
+                            cursor: 'pointer',
+                            fontSize: '1.1rem',
+                            padding: '0 0.25rem',
+                            flexShrink: 0
+                          }}
+                          title={m.governed ? 'Requires Parental PIN to delete' : 'Delete memory'}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    );
+                  })
               )}
             </div>
 
             {/* Analysis & Actions */}
-            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', marginTop: '0.5rem' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', marginTop: '0.35rem' }}>
               <button
                 onClick={handleAnalyzeLakes}
                 className="btn-pill"
@@ -400,19 +560,19 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
                   alignItems: 'center',
                   gap: '0.35rem'
                 }}
-                title="Scan approved (👍) and rejected (👎) responses across all chats, extract style & domain patterns, and store them in this profile's memory bank"
+                title="Scan approved and rejected responses across all chats, extract style & domain patterns, and store them in this profile's memory bank"
               >
-                <span>⚡</span> Analyze Lakes for Patterns
+                <span>⚡</span> Analyze Lake Patterns
               </button>
 
               <div style={{ display: 'flex', gap: '0.45rem' }}>
                 {memories.length > 0 && (
                   <>
                     <button onClick={handleExportMemories} className="btn-pill" style={{ fontSize: '0.72rem' }}>
-                      📥 Export (.json)
+                      📥 Export JSON
                     </button>
                     <button onClick={handleClearMemories} className="btn-pill" style={{ fontSize: '0.72rem', color: '#f87171' }}>
-                      🗑 Clear All
+                      🗑 Clear Elective
                     </button>
                   </>
                 )}

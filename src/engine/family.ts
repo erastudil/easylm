@@ -18,12 +18,8 @@ export interface UserProfile {
   readingLevel: 'elementary' | 'middle' | 'high' | 'general';
 }
 
-export interface MemoryEntry {
-  id: string;
-  profileId: string;
-  text: string;
-  createdAt: number;
-}
+export type { AtMemCategory, AtMemSource, AtMemAtom } from './atmem';
+export type { AtMemAtom as MemoryEntry } from './atmem';
 
 export interface AttachedDoc {
   name: string;
@@ -243,96 +239,67 @@ export function isParentalLocked(): boolean {
   return active.role === 'kid' && active.parentalLockEnabled && hasParentalPin();
 }
 
-import { isVaultEncrypted, isVaultUnlocked, encryptPayload, decryptPayload } from './crypto_vault';
+import {
+  loadAllAtoms,
+  loadAllAtomsAsync,
+  saveAllAtoms,
+  getProfileAtoms,
+  addProfileAtom,
+  deleteProfileAtom,
+  clearProfileAtoms,
+  resetAtMemCache,
+  AtMemAtom,
+  AtMemCategory,
+  AtMemSource,
+  getAttentivePromptEnvelope
+} from './atmem';
 
-let cachedMemories: MemoryEntry[] | null = null;
+export { getAttentivePromptEnvelope };
 
 export function resetMemoriesCache(): void {
-  cachedMemories = null;
+  resetAtMemCache();
 }
 
 /**
- * Sovereign Memory Vault operations (stored locally per profile)
+ * Sovereign Memory Vault operations (powered by AtMem)
  */
-export function loadMemories(): MemoryEntry[] {
-  if (cachedMemories !== null) return cachedMemories;
-  if (typeof window === 'undefined') return [];
-  try {
-    const raw = localStorage.getItem(MEMORY_KEY);
-    if (!raw) return [];
-    if (raw.startsWith('{"v":1,"iv":')) {
-      return [];
-    }
-    cachedMemories = JSON.parse(raw);
-    return cachedMemories || [];
-  } catch {
-    return [];
+export function loadMemories(): AtMemAtom[] {
+  return loadAllAtoms();
+}
+
+export async function loadMemoriesAsync(): Promise<AtMemAtom[]> {
+  return loadAllAtomsAsync();
+}
+
+export function saveMemories(entries: AtMemAtom[]): void {
+  saveAllAtoms(entries);
+}
+
+export function getProfileMemories(profileId: string): AtMemAtom[] {
+  return getProfileAtoms(profileId);
+}
+
+export function addProfileMemory(
+  profileId: string,
+  text: string,
+  category?: AtMemCategory,
+  governed: boolean = false,
+  source: AtMemSource = 'user'
+): AtMemAtom {
+  const res = addProfileAtom(profileId, text, category, governed, source);
+  if (!res.ok || !res.atom) {
+    throw new Error(res.error || 'Failed to add memory');
   }
+  return res.atom;
 }
 
-export async function loadMemoriesAsync(): Promise<MemoryEntry[]> {
-  if (typeof window === 'undefined') return [];
-  try {
-    let raw = localStorage.getItem(MEMORY_KEY);
-    if (!raw) return [];
-    if (raw.startsWith('{"v":1,"iv":')) {
-      if (!isVaultUnlocked()) return [];
-      const decrypted = await decryptPayload(raw);
-      if (!decrypted) return [];
-      raw = decrypted;
-    }
-    cachedMemories = JSON.parse(raw);
-    return cachedMemories || [];
-  } catch {
-    return [];
-  }
+export function deleteProfileMemory(id: string, isParentAuthorized: boolean = false): boolean {
+  const res = deleteProfileAtom(id, isParentAuthorized);
+  return res.ok;
 }
 
-export function saveMemories(entries: MemoryEntry[]): void {
-  cachedMemories = entries;
-  if (typeof window === 'undefined') return;
-  const json = JSON.stringify(entries);
-  if (isVaultEncrypted() && isVaultUnlocked()) {
-    void encryptPayload(json).then(encrypted => {
-      try {
-        localStorage.setItem(MEMORY_KEY, encrypted);
-      } catch (e) {
-        console.warn('Failed to save encrypted memories:', e);
-      }
-    });
-    return;
-  }
-  try {
-    localStorage.setItem(MEMORY_KEY, json);
-  } catch (e) {
-    console.warn('Failed to save memories:', e);
-  }
-}
-
-export function getProfileMemories(profileId: string): MemoryEntry[] {
-  return loadMemories().filter(m => m.profileId === profileId);
-}
-
-export function addProfileMemory(profileId: string, text: string): MemoryEntry {
-  const entry: MemoryEntry = {
-    id: 'mem-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6),
-    profileId,
-    text: text.trim(),
-    createdAt: Date.now()
-  };
-  const current = loadMemories();
-  saveMemories([...current, entry]);
-  return entry;
-}
-
-export function deleteProfileMemory(id: string): void {
-  const current = loadMemories();
-  saveMemories(current.filter(m => m.id !== id));
-}
-
-export function clearProfileMemories(profileId: string): void {
-  const current = loadMemories();
-  saveMemories(current.filter(m => m.profileId !== profileId));
+export function clearProfileMemories(profileId: string, isParentAuthorized: boolean = false): void {
+  clearProfileAtoms(profileId, isParentAuthorized);
 }
 
 /**

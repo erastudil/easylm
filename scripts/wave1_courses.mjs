@@ -84,7 +84,7 @@ const methods = build(
     id: 'methods-inquiry-1',
     stack: 'methods',
     dewey: '001',
-    title: 'Inquiry I — How we know',
+    title: 'Scientific Inquiry I: Evidence, Logic & Empirical Proof',
     level: 'undergrad',
     hours: 40,
     license: {
@@ -251,7 +251,7 @@ const math = build(
     id: 'math-calc-1',
     stack: 'math',
     dewey: '510',
-    title: 'Calculus I walk',
+    title: 'Calculus I: Limits, Derivatives & Rates of Change',
     level: 'undergrad',
     hours: 48,
     license: {
@@ -418,7 +418,7 @@ const physics = build(
     id: 'physics-college-1',
     stack: 'physics',
     dewey: '530',
-    title: 'College physics I walk',
+    title: 'Physics I: Mechanics, Motion & Energy',
     level: 'undergrad',
     hours: 48,
     license: {
@@ -585,7 +585,7 @@ const chemistry = build(
     id: 'chemistry-2e-1',
     stack: 'chemistry',
     dewey: '540',
-    title: 'Chemistry 2e walk',
+    title: 'Chemistry I: Atoms, Bonding & Chemical Reactions',
     level: 'undergrad',
     hours: 48,
     license: {
@@ -752,7 +752,7 @@ const biology = build(
     id: 'biology-2e-1',
     stack: 'biology',
     dewey: '570',
-    title: 'Biology 2e walk',
+    title: 'Biology I: Cellular Life & Molecular Biology',
     level: 'undergrad',
     hours: 48,
     license: {
@@ -919,7 +919,7 @@ const civics = build(
     id: 'civics-us-1',
     stack: 'civics',
     dewey: '320',
-    title: 'Civics I — constitutions and power',
+    title: 'Civics I: Constitutional Democracy, Civil Rights & Governance',
     level: 'high',
     hours: 40,
     license: {
@@ -1086,7 +1086,7 @@ const health = build(
     id: 'health-physio-1',
     stack: 'health',
     dewey: '610',
-    title: 'Physiology I — The Living Engine',
+    title: 'Health Sciences I: Human Physiology, Wellness & Disease',
     level: 'undergrad',
     hours: 45,
     license: {

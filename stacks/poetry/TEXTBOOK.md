@@ -67,20 +67,18 @@ Poetry is human language organized under conscious metric, acoustic, and spatial
 
 ## 1. The First Principles of Poetic Form and Measure
 
-**Poetry** is language arranged so that **line, sound, and image** do work a paragraph does not. A song lyric is a cousin (`../music/`). A novel in verse still answers to the line.
+Why does a song lyric or a child's counting rhyme stay in your memory for decades, while a paragraph of legal text or a textbook page evaporates the moment you finish reading it?
 
-Four questions, every time:
+Language was spoken and heard long before it was ever written down. Your heart beats in a steady rhythm; your lungs breathe in a cadence; your feet fall in a meter as you walk down a street. Ordinary prose lets words flow continuously until they hit the arbitrary right margin of a page or screen and wrap around. But in poetry, the writer decides deliberately where to pause, where to hold their breath, and where to turn.
 
-1. **line or sentence** — which is the working unit?
-2. Is there **meter**, **rhyme**, **free**, or another grammar?
-3. What **form** (sonnet, haiku, lyric, epic, occasional)?
-4. The line you would quote — did you **fetch** it?
+The word *verse* itself comes from the Latin *versus*—the turning of a plow at the end of a furrow in a field. When language turns by conscious design, sound and silence begin doing work that an ordinary paragraph never can.
 
-**Poem** vs **text** vs **performance** vs **translation**. They are four objects. A remembered stanza is not a source.
+Every poem lives at the intersection of three physical elements:
+- **The Beat (Rhythm & Stress):** In spoken English, some syllables are loud and long while others are soft and quick. When those pulses arrange into predictable patterns, your ear catches the beat naturally, like tapping your foot to music.
+- **The Turn (Lineation):** Where a line breaks creates a micro-pause. That pause gives extra weight to the last word on the line and the first word of the next. If the sentence continues across the break without pausing, that tension is called *enjambment*.
+- **The Image (Sensory Compression):** Instead of explaining an emotion with abstract labels ("I was sad"), poetry anchors feeling in concrete sensory objects you can see, hear, or touch—a cold radiator, a rusted nail, the smell of wet pavement after rain.
 
-**Verse** is the lined stuff. **prose poetry** keeps prose’s sentence and steals poetry’s pressure — name which contract you are in.
-
-**Check:** if you cannot point to the line break, you are doing theme-talk, not poetry.
+A song lyric is a close cousin (`../music/`), but while a lyric leans on guitars and drums for its rhythm, a poem carries its own acoustic orchestra entirely inside its syllables. Verse is the lined art; prose poetry keeps prose's sentence while stealing poetry's rhythmic pressure. If you cannot point to where and why the line turns, you are discussing theme, not the living craft of poetry.
 
 ---
 

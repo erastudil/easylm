@@ -41,7 +41,8 @@ import {
   getProfileMemories,
   detectPII,
   hasParentalPin,
-  loadMemoriesAsync
+  loadMemoriesAsync,
+  getAttentivePromptEnvelope
 } from './engine/family';
 import { ParentalModal } from './components/ParentalModal';
 import { ProfileModal } from './components/ProfileModal';
@@ -629,10 +630,10 @@ export const App: React.FC = () => {
 
     systemInstruction += '\n\n' + (kidSafe ? CORE_INTERACTION_PROTOCOLS_KID : CORE_INTERACTION_PROTOCOLS);
 
-    // Sovereign Memory Vault injection
-    const profileMemories = getProfileMemories(currentProfile.id);
-    if (profileMemories.length > 0) {
-      systemInstruction += '\n\n[USER SOVEREIGN MEMORY & NOTEBOOK]:\n' + profileMemories.map(m => '- ' + m.text).join('\n');
+    // Sovereign Memory Vault injection (AtMem attentive retrieval under 256 token budget)
+    const memoryEnvelope = getAttentivePromptEnvelope(currentProfile.id, trimmed, 256);
+    if (memoryEnvelope) {
+      systemInstruction += '\n\n' + memoryEnvelope;
     }
 
     // Kid Safe / Socratic tutor mandate (+ hard refuse sexual/romantic/CSAM-adjacent involving minors)

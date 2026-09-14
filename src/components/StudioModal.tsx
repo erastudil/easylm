@@ -425,7 +425,7 @@ function ReadTool({
               fontWeight: activeTab === 'stacks' ? 600 : 400
             }}
           >
-            📚 Dewey Stacks ({STACKS_PACKS.length})
+            📚 Dewey Stacks
           </button>
           <button
             type="button"
@@ -442,7 +442,7 @@ function ReadTool({
               fontWeight: activeTab === 'memories' ? 600 : 400
             }}
           >
-            🧠 Notes &amp; Memory ({memories.length})
+            🧠 Notes &amp; Memory
           </button>
         </div>
 
@@ -649,8 +649,9 @@ function ReadTool({
             padding: '0.45rem 0.85rem',
             borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
             display: 'flex',
+            flexWrap: 'wrap',
             gap: '0.35rem',
-            overflowX: 'auto',
+            overflowX: 'hidden',
             backgroundColor: '#07070a'
           }}
         >
@@ -666,17 +667,16 @@ function ReadTool({
                 borderRadius: '4px',
                 backgroundColor: selectedChapterIdx === idx ? 'rgba(139, 92, 246, 0.25)' : 'transparent',
                 color: selectedChapterIdx === idx ? '#ffffff' : '#a1a1aa',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap'
+                cursor: 'pointer'
               }}
             >
-              {ch.heading.length > 28 ? ch.heading.slice(0, 26) + '…' : ch.heading}
+              {ch.heading.length > 36 ? ch.heading.slice(0, 34) + '…' : ch.heading}
             </button>
           ))}
         </div>
 
         {/* Chapter Body & External Doors */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '1.25rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', wordBreak: 'break-word', overflowWrap: 'break-word', padding: '1.25rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           {currentChapter ? (
             <div>
               <h2 style={{ color: '#ffffff', fontSize: '1.25rem', marginTop: 0, marginBottom: '0.85rem', borderBottom: '1px solid rgba(139, 92, 246, 0.3)', paddingBottom: '0.5rem' }}>
@@ -854,7 +854,7 @@ function WriteTool({
             <span>📄</span> PDF
           </button>
           <button onClick={handleExportWord} className="btn-pill" style={{ fontSize: '0.72rem', padding: '0.3rem 0.65rem' }} title="Export Word doc">
-            <span>📝</span> Word (.doc)
+            <span>📝</span> Word
           </button>
           <button onClick={handleExportLatex} className="btn-pill" style={{ fontSize: '0.72rem', padding: '0.3rem 0.65rem' }} title="Export LaTeX source">
             <span>📐</span> LaTeX

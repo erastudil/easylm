@@ -52,6 +52,43 @@ import { HistoryModal } from './components/HistoryModal';
 import { LearnModal } from './components/LearnModal';
 import { StudioModal, StudioTarget } from './components/StudioModal';
 
+export interface StarterChip {
+  label: string;
+  prompt: string;
+}
+
+const STARTER_PROMPTS_CATALOG: StarterChip[] = [
+  { label: '🧮 Math Evaluator', prompt: 'sqrt(144) * (50 + 2)' },
+  { label: '📏 Unit Converter', prompt: '100 km/h to mph' },
+  { label: '🕒 World Clock', prompt: 'What time is it in Tokyo right now?' },
+  { label: '⛅ Weather', prompt: 'What is the weather forecast for Dallas, TX?' },
+  { label: '💱 Currency', prompt: '100 USD to EUR' },
+  { label: '🔬 Inquiry 001', prompt: 'Explain Feynman cargo cult science and the importance of scientific integrity.' },
+  { label: '💻 Computing 004', prompt: 'How does virtual memory translation work with page tables and TLBs?' },
+  { label: '🤖 Intelligence 006', prompt: 'How does multi-head self-attention allow transformers to capture context?' },
+  { label: '🏛️ Philosophy 100', prompt: 'How does Karl Popper falsification criterion solve Hume induction problem?' },
+  { label: '🧠 Psychology 150', prompt: 'How does spaced repetition exploit the Ebbinghaus forgetting curve?' },
+  { label: '📈 Economics 330', prompt: 'How does the Federal Reserve use open market operations to influence interest rates?' },
+  { label: '⚖️ Jurisprudence 340', prompt: 'What is the distinction between procedural and substantive due process?' },
+  { label: '📐 Mathematics 510', prompt: 'Explain the fundamental theorem of calculus with intuitive geometry.' },
+  { label: '🔭 Astronomy 520', prompt: 'What did the James Webb Space Telescope reveal about early galaxies?' },
+  { label: '🌌 Physics 530', prompt: 'Why is the speed of light constant in all frames of reference?' },
+  { label: '⚗️ Chemistry 540', prompt: 'Why does ice float on water from a molecular geometry perspective?' },
+  { label: '🌦️ Climate 551', prompt: 'What causes the Coriolis effect and how does it steer global storm systems?' },
+  { label: '🧬 Biology 570', prompt: 'How do CRISPR enzymes locate and cleave target DNA sequences?' },
+  { label: '🩺 Health 610', prompt: 'How does the cardiovascular system regulate blood pressure during exercise?' },
+  { label: '⚙️ Engineering 620', prompt: 'What are the key differences between stress and strain in material mechanics?' },
+  { label: '🎵 Music 780', prompt: 'Why do musical octaves have a 2:1 frequency ratio across human cultures?' },
+  { label: '📖 Literature 800', prompt: 'What makes the narrative structure of Frankenstein unique and enduring?' },
+  { label: '📜 History 900', prompt: 'What led to the agricultural revolution during the Neolithic transition?' },
+  { label: '📚 Dictionary', prompt: 'Define serendipity and its historical origin.' }
+];
+
+function pickRandomStarterChips(count: number = 6): StarterChip[] {
+  const shuffled = [...STARTER_PROMPTS_CATALOG].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
+}
+
 export const App: React.FC = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [activeSessionId, setActiveSessionIdState] = useState<string | null>(null);
@@ -248,6 +285,10 @@ export const App: React.FC = () => {
   const [temperature, setTemperature] = useState<number>(0.3);
   const [searxngUrl, setSearxngUrl] = useState<string>(() => localStorage.getItem('easylm_searxng_url') || '');
   const [welcomeModalOpen, setWelcomeModalOpen] = useState(false);
+  const [starterChips, setStarterChips] = useState<StarterChip[]>(() => pickRandomStarterChips(6));
+  const handleShuffleChips = () => {
+    setStarterChips(pickRandomStarterChips(6));
+  };
   const [showWelcomeMessage, setShowWelcomeMessage] = useState<boolean>(() => {
     const saved = localStorage.getItem('easylm_show_welcome');
     return saved === null ? true : saved === 'true';
@@ -383,6 +424,7 @@ export const App: React.FC = () => {
     setSessions(updated);
     setActiveSessionIdState(newSess.id);
     persistSessions(updated);
+    setStarterChips(pickRandomStarterChips(6));
   };
 
   // Stop active inference
@@ -1331,40 +1373,57 @@ export const App: React.FC = () => {
                 {/* Prompt Starter Chips */}
                 <div style={{
                   display: 'flex',
-                  flexWrap: 'wrap',
+                  flexDirection: 'column',
+                  alignItems: 'center',
                   gap: '0.65rem',
-                  justifyContent: 'center',
                   maxWidth: '740px',
                   marginBottom: '1.75rem'
                 }}>
-                  {[
-                    { label: '🧮 Math Evaluator', prompt: 'sqrt(144) * (50 + 2)' },
-                    { label: '📏 Unit Converter', prompt: '100 km/h to mph' },
-                    { label: '📚 Dewey Stacks 510', prompt: 'What does Dewey 510 cover in mathematics?' },
-                    { label: '🕒 World Clock', prompt: 'What time is it in Tokyo right now?' },
-                    { label: '💡 Occam\'s Razor', prompt: 'Explain Occam\'s razor with an intuitive example.' },
-                    { label: '🎭 Perspectives', prompt: 'Summarize the core principles of Computational Taoism.' }
-                  ].map((chip) => (
-                    <button
-                      key={chip.prompt}
-                      onClick={() => handleSendMessage(chip.prompt)}
-                      className="btn-pill"
-                      style={{
-                        fontSize: '0.78rem',
-                        padding: '0.45rem 0.85rem',
-                        backgroundColor: '#111118',
-                        borderColor: 'rgba(139, 92, 246, 0.25)',
-                        color: '#d4d4d8',
-                        cursor: 'pointer',
-                        transition: 'all 0.15s ease',
-                        gap: '0.35rem'
-                      }}
-                      title={`Send: "${chip.prompt}"`}
-                    >
-                      <span style={{ fontWeight: 600, color: '#c4b5fd' }}>{chip.label}:</span>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.74rem' }}>{chip.prompt}</span>
-                    </button>
-                  ))}
+                  <div style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '0.65rem',
+                    justifyContent: 'center'
+                  }}>
+                    {starterChips.map((chip) => (
+                      <button
+                        key={chip.prompt}
+                        onClick={() => handleSendMessage(chip.prompt)}
+                        className="btn-pill"
+                        style={{
+                          fontSize: '0.78rem',
+                          padding: '0.45rem 0.85rem',
+                          backgroundColor: '#111118',
+                          borderColor: 'rgba(139, 92, 246, 0.25)',
+                          color: '#d4d4d8',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease',
+                          gap: '0.35rem'
+                        }}
+                        title={`Send: "${chip.prompt}"`}
+                      >
+                        <span style={{ fontWeight: 600, color: '#c4b5fd' }}>{chip.label}:</span>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.74rem' }}>{chip.prompt}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={handleShuffleChips}
+                    className="btn-pill"
+                    style={{
+                      fontSize: '0.72rem',
+                      padding: '0.3rem 0.75rem',
+                      backgroundColor: 'rgba(139, 92, 246, 0.12)',
+                      borderColor: 'rgba(139, 92, 246, 0.35)',
+                      color: '#c4b5fd',
+                      cursor: 'pointer',
+                      gap: '0.35rem'
+                    }}
+                    title="Shuffle for new starter questions from The Stacks and tools"
+                  >
+                    <span>🎲</span> Shuffle
+                  </button>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.78rem', color: '#71717a' }}>

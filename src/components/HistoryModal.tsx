@@ -190,7 +190,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
                 color: filterLake === 'all' ? '#ffffff' : '#a1a1aa'
               }}
             >
-              All ({sessions.length})
+              All
             </button>
             <button
               onClick={() => setFilterLake('approved')}

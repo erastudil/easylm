@@ -243,22 +243,22 @@ export const DocumentModal: React.FC<DocumentModalProps> = ({
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
           <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
             <button onClick={handleExportPdf} className="btn-pill" style={{ fontSize: '0.74rem', padding: '0.35rem 0.75rem', backgroundColor: 'rgba(139, 92, 246, 0.2)', borderColor: '#8b5cf6', color: '#ffffff' }} title="Save or print as high-res vector PDF">
-              <span>📄</span> PDF / Print
+              <span>📄</span> PDF
             </button>
             <button onClick={handleExportWord} className="btn-pill" style={{ fontSize: '0.74rem', padding: '0.35rem 0.75rem' }} title="Export Microsoft Word & Google Docs compatible document">
-              <span>📝</span> Word (.doc)
+              <span>📝</span> Word
             </button>
             <button onClick={handleExportLatex} className="btn-pill" style={{ fontSize: '0.74rem', padding: '0.35rem 0.75rem' }} title="Export LaTeX publication source">
-              <span>📐</span> LaTeX (.tex)
+              <span>📐</span> LaTeX
             </button>
             <button onClick={handleExportCsv} className="btn-pill" style={{ fontSize: '0.74rem', padding: '0.35rem 0.75rem' }} title="Extract and export table as CSV spreadsheet">
-              <span>📊</span> CSV Table
+              <span>📊</span> CSV
             </button>
             <button onClick={handleExportMd} className="btn-pill" style={{ fontSize: '0.74rem', padding: '0.35rem 0.75rem' }} title="Export raw Markdown">
               <span>📜</span> Markdown
             </button>
             <button onClick={handleExportTxt} className="btn-pill" style={{ fontSize: '0.74rem', padding: '0.35rem 0.75rem' }} title="Export Plain Text">
-              <span>📃</span> Text (.txt)
+              <span>📃</span> Text
             </button>
             <button onClick={handleExportJson} className="btn-pill" style={{ fontSize: '0.74rem', padding: '0.35rem 0.75rem' }} title="Export JSON package">
               <span>📦</span> JSON

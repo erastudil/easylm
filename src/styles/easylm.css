@@ -37,10 +37,14 @@ html, body {
   overflow-x: hidden;
 }
 
-/* Scrollbar styling - slim and unobtrusive to minimize vertical visual clutter */
+/* Scrollbar styling - slim vertical only, kill horizontal entirely */
 ::-webkit-scrollbar {
   width: 5px;
-  height: 5px;
+  height: 0px;
+}
+::-webkit-scrollbar:horizontal {
+  display: none !important;
+  height: 0px !important;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
@@ -308,7 +312,9 @@ html, body {
   border: 1px solid #272733;
   border-radius: 12px;
   padding: 0.85rem 1.1rem;
-  overflow-x: auto;
+  overflow-x: hidden;
+  white-space: pre-wrap;
+  word-break: break-word;
   font-family: var(--font-mono);
   font-size: 0.85rem;
   margin: 0.85rem 0;
@@ -394,23 +400,30 @@ html, body {
   animation: pulseGlow 2.5s infinite ease-in-out;
 }
 
-/* Content Wrapping & Overflow Guards */
+/* Content Wrapping & Overflow Guards — Absolute Law: NEVER HORIZONTAL SCROLL BARS */
 .prose-content {
   overflow-wrap: break-word;
-  word-break: normal;
+  word-break: break-word;
+  overflow-x: hidden;
 }
 
 .prose-content pre {
   max-width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-x: hidden;
+}
+
+.prose-content code {
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .prose-content table {
-  display: block;
+  width: 100%;
   max-width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow-x: hidden;
+  word-break: break-word;
 }
 
 /* Rectangular Objective Math Box */
@@ -443,8 +456,8 @@ html, body {
   font-size: 0.92rem;
   color: #ffffff;
   white-space: pre-wrap;
-  word-break: normal;
-  overflow-x: auto;
+  word-break: break-word;
+  overflow-x: hidden;
 }
 
 

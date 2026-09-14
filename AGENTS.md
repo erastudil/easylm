@@ -22,8 +22,10 @@ GitHub `erastudil/easylm` is SoT. this tree is the working copy.
 - Hands stay deterministic. keys for quizzes live in `answers_compiled.ts`. they never enter a model prompt.
 - Kid Safe: local tools only. Studio is local. network doors are parent + Hands.
 - new pane: hnai colors. tooltips, not essays. no GPA letters.
+- UI canon: NEVER horizontal scroll bars. wrap into multiple rows. zero parentheticals on buttons (crisp human labels: Studio, Learn, History). no prompt regurgitation.
+- pedagogy: Greene / Feynman concept order — plain English intuition first, formal technical term only after the concept is understood.
 - directory you touch keeps this file.
 
 ## refuse
 
-homework mills as sources. vendoring NC bodies (MIT OCW) into git. cloud gradebooks. deadline shame.
+homework mills as sources. vendoring NC bodies (MIT OCW) into git. cloud gradebooks. deadline shame. horizontal scroll bars. button parentheticals.

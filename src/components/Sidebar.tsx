@@ -144,7 +144,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }}
               title="Search, filter, and manage full conversation history"
             >
-              <span>📜</span> Full History ({sessions.length})
+              <span>📜</span> Full History
             </button>
           )}
         </div>
@@ -236,7 +236,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 }}
                 title="Studio: Read textbooks, Write documents, Code sandbox, Graph functions, Draw canvas"
               >
-                <span>🎨</span> Studio (Read, Write, Code, Graph)
+                <span>🎨</span> Studio
               </button>
             )}
 
@@ -257,7 +257,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 }}
                 title="Learn: Undergraduate curriculum, syllabus walks, quizzes, daily flashcards"
               >
-                <span>🎓</span> Learn (Curriculum &amp; Walks)
+                <span>🎓</span> Learn
               </button>
             )}
 

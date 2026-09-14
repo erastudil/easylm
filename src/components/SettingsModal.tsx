@@ -136,7 +136,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               fontWeight: activeTab === 'credits' ? 600 : 400
             }}
           >
-            📜 Credits &amp; Open Source ({CONTRIBUTORS_CREDITS.length + OPEN_WEIGHTS_PROVIDERS.length})
+            📜 Credits &amp; Open Source
           </button>
         </div>
 
@@ -168,7 +168,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(139, 92, 246, 0.2)', paddingBottom: '0.4rem' }}>
                 <span style={{ fontSize: '0.84rem', fontWeight: 700, color: '#c4b5fd', fontFamily: 'var(--font-mono)' }}>
-                  🤖 Open Weights Providers ({OPEN_WEIGHTS_PROVIDERS.length})
+                  🤖 Open Weights Providers
                 </span>
                 <span style={{ fontSize: '0.7rem', color: '#71717a', fontFamily: 'var(--font-mono)' }}>
                   Foundational Intelligence Models
@@ -255,7 +255,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(139, 92, 246, 0.2)', paddingBottom: '0.4rem' }}>
                 <span style={{ fontSize: '0.84rem', fontWeight: 700, color: '#c4b5fd', fontFamily: 'var(--font-mono)' }}>
-                  🧱 Upstream Repositories &amp; Creators ({CONTRIBUTORS_CREDITS.length})
+                  🧱 Upstream Repositories &amp; Creators
                 </span>
                 <span style={{ fontSize: '0.7rem', color: '#a78bfa', fontFamily: 'var(--font-mono)' }}>
                   Ordered by Lines of Code (LOC)

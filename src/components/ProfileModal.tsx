@@ -152,7 +152,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
               color: activeTab === 'profiles' ? '#ffffff' : '#a1a1aa'
             }}
           >
-            👥 Profiles ({profiles.length})
+            👥 Profiles
           </button>
           <button
             onClick={() => setActiveTab('memory')}
@@ -164,7 +164,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
               color: activeTab === 'memory' ? '#ffffff' : '#a1a1aa'
             }}
           >
-            🧠 Memory Vault ({memories.length})
+            🧠 Memory Vault
           </button>
           <button
             onClick={() => setActiveTab('parental')}

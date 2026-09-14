@@ -198,7 +198,7 @@ export const LearnModal: React.FC<LearnModalProps> = ({
         {/* Navigation Tabs */}
         <div style={{ display: 'flex', gap: '0.4rem', borderBottom: '1px solid rgba(139, 92, 246, 0.2)', paddingBottom: '0.4rem', marginBottom: '0.8rem' }}>
           <button type="button" style={tabBtn(tab === 'catalog')} onClick={() => { setTab('catalog'); setActiveItemId(null); }}>
-            Courses Catalog ({allCourses.length})
+            Courses Catalog
           </button>
           <button type="button" style={tabBtn(tab === 'walk')} onClick={() => { setTab('walk'); setActiveItemId(null); }}>
             Syllabus Walk
@@ -586,7 +586,7 @@ function Cards({
             setCardIdx(i => (cards.length <= 1 ? 0 : (i + 1) % cards.length));
           }}
         >
-          Again (Missed)
+          Again
         </button>
         <button
           type="button"
@@ -599,7 +599,7 @@ function Cards({
             setCardIdx(0);
           }}
         >
-          Good (Remembered)
+          Good
         </button>
       </div>
     </div>

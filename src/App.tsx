@@ -23,8 +23,7 @@ import { clockQueryOf, mathExpressionOf, stacksQueryOf, unitConversionOf, wareho
 import { Sidebar } from './components/Sidebar';
 import { MessageItem } from './components/MessageItem';
 import { SettingsModal } from './components/SettingsModal';
-import { DocumentModal } from './components/DocumentModal';
-import { GraphModal } from './components/GraphModal';
+
 import { ModelModal } from './components/ModelModal';
 import { PersonalityModal } from './components/PersonalityModal';
 import { PERSONALITIES, clampPersonalityIdForRole } from './data/personalities';
@@ -49,9 +48,9 @@ import { AttachmentBar } from './components/AttachmentBar';
 import { WelcomeModal } from './components/WelcomeModal';
 import { HnaiLogo } from './components/HnaiLogo';
 
-const StudioModal = React.lazy(() =>
-  import('./components/StudioModal').then(m => ({ default: m.StudioModal }))
-);
+import { HistoryModal } from './components/HistoryModal';
+import { LearnModal } from './components/LearnModal';
+import { StudioModal, StudioTarget } from './components/StudioModal';
 
 export const App: React.FC = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -72,17 +71,89 @@ export const App: React.FC = () => {
     setSettingsTab('engine');
     setSettingsOpen(true);
   };
-  const [docModalOpen, setDocModalOpen] = useState(false);
-  const [docContent, setDocContent] = useState('');
-  const [docTitle, setDocTitle] = useState('Academic Assignment');
-  const [graphModalOpen, setGraphModalOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [learnOpen, setLearnOpen] = useState(false);
   const [studioOpen, setStudioOpen] = useState(false);
+  const [studioTarget, setStudioTarget] = useState<StudioTarget | null>(null);
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
 
+  // In-app navigation stack for back/forward traversal across Learn, Studio & History
+  interface NavState {
+    view: 'learn' | 'studio' | 'history';
+    studioTarget?: StudioTarget | null;
+  }
+  const [navHistory, setNavHistory] = useState<NavState[]>([]);
+  const [navIndex, setNavIndex] = useState<number>(-1);
+
+  const pushNav = (entry: NavState) => {
+    setNavHistory(prev => {
+      const next = [...prev.slice(0, navIndex + 1), entry];
+      setNavIndex(next.length - 1);
+      return next;
+    });
+  };
+
+  const applyNav = (entry: NavState) => {
+    if (entry.view === 'learn') {
+      setHistoryOpen(false);
+      setStudioOpen(false);
+      setLearnOpen(true);
+    } else if (entry.view === 'studio') {
+      setHistoryOpen(false);
+      setLearnOpen(false);
+      setStudioTarget(entry.studioTarget || null);
+      setStudioOpen(true);
+    } else if (entry.view === 'history') {
+      setLearnOpen(false);
+      setStudioOpen(false);
+      setHistoryOpen(true);
+    }
+  };
+
+  const handleNavBack = () => {
+    if (navIndex > 0) {
+      const nextIdx = navIndex - 1;
+      setNavIndex(nextIdx);
+      applyNav(navHistory[nextIdx]);
+    }
+  };
+
+  const handleNavForward = () => {
+    if (navIndex < navHistory.length - 1) {
+      const nextIdx = navIndex + 1;
+      setNavIndex(nextIdx);
+      applyNav(navHistory[nextIdx]);
+    }
+  };
+
+  const handleOpenLearn = () => {
+    setHistoryOpen(false);
+    setStudioOpen(false);
+    setLearnOpen(true);
+    pushNav({ view: 'learn' });
+  };
+
+  const handleOpenStudio = (target?: StudioTarget) => {
+    setHistoryOpen(false);
+    setLearnOpen(false);
+    setStudioTarget(target || null);
+    setStudioOpen(true);
+    pushNav({ view: 'studio', studioTarget: target });
+  };
+
+  const handleOpenHistory = () => {
+    setLearnOpen(false);
+    setStudioOpen(false);
+    setHistoryOpen(true);
+    pushNav({ view: 'history' });
+  };
+
   const handleOpenDocument = (content: string, title?: string) => {
-    setDocContent(content);
-    if (title) setDocTitle(title);
-    setDocModalOpen(true);
+    handleOpenStudio({
+      tool: 'write',
+      title: title || 'Academic Assignment',
+      initialContent: content
+    });
   };
 
   const handleRateMessage = (messageId: string, rating: TriLakeRating) => {
@@ -901,12 +972,9 @@ export const App: React.FC = () => {
         isOpen={sidebarOpen}
         onToggleOpen={() => setSidebarOpen(!sidebarOpen)}
         onOpenSupport={() => setSupportOpen(true)}
-        onOpenCredits={handleOpenCredits}
-        onOpenPersonalityModal={() => setPersonalityModalOpen(true)}
-        onOpenFeedback={() => setFeedbackModalOpen(true)}
-        onOpenDocument={() => handleOpenDocument('', 'New Document')}
-        onOpenGrapher={() => setGraphModalOpen(true)}
-        onOpenStudio={() => setStudioOpen(true)}
+        onOpenHistory={handleOpenHistory}
+        onOpenStudio={() => handleOpenStudio()}
+        onOpenLearn={handleOpenLearn}
       />
 
       {/* Main Chat Area */}
@@ -1627,33 +1695,47 @@ export const App: React.FC = () => {
         onSuccess={handlePinSuccess}
       />
 
-      {/* Document Studio & Human Touch-Up Modal */}
-      <DocumentModal
-        isOpen={docModalOpen}
-        onClose={() => setDocModalOpen(false)}
-        initialContent={docContent}
-        initialTitle={docTitle}
-        initialSubject="Academic Studies"
+      {/* Conversation History Modal */}
+      <HistoryModal
+        isOpen={historyOpen}
+        onClose={() => setHistoryOpen(false)}
+        sessions={sessions}
+        activeSessionId={activeSessionId}
+        onSelectSession={(id) => {
+          setActiveSessionIdState(id);
+          setHistoryOpen(false);
+        }}
+        onDeleteSession={handleDeleteSession}
+        onNewSession={handleNewSession}
       />
 
-      {/* Math Grapher Modal */}
-      <GraphModal
-        isOpen={graphModalOpen}
-        onClose={() => setGraphModalOpen(false)}
-        onInsertGraph={handleInsertGraph}
+      {/* EasyLM Learn Modal (Curriculum, Walk, Today, Cards, Record) */}
+      <LearnModal
+        isOpen={learnOpen}
+        onClose={() => setLearnOpen(false)}
+        profileId={currentProfile.id}
+        kidSafe={currentProfile.role === 'kid'}
+        onOpenStudio={handleOpenStudio}
+        canNavigateBack={navIndex > 0}
+        canNavigateForward={navIndex < navHistory.length - 1}
+        onNavigateBack={handleNavBack}
+        onNavigateForward={handleNavForward}
       />
 
-      {studioOpen && (
-        <React.Suspense fallback={null}>
-          <StudioModal
-            isOpen={studioOpen}
-            onClose={() => setStudioOpen(false)}
-            profileId={currentProfile.id}
-            kidSafe={currentProfile.role === 'kid'}
-            onOpenDocument={(text, title) => handleOpenDocument(text, title)}
-          />
-        </React.Suspense>
-      )}
+      {/* EasyLM Studio Modal (Read, Write, Code, Graph, Draw) */}
+      <StudioModal
+        isOpen={studioOpen}
+        onClose={() => setStudioOpen(false)}
+        profileId={currentProfile.id}
+        kidSafe={currentProfile.role === 'kid'}
+        initialTarget={studioTarget}
+        onSwitchToLearn={handleOpenLearn}
+        onInsertIntoChat={(text) => setInputPrompt(prev => prev ? `${prev}\n\n${text}` : text)}
+        canNavigateBack={navIndex > 0}
+        canNavigateForward={navIndex < navHistory.length - 1}
+        onNavigateBack={handleNavBack}
+        onNavigateForward={handleNavForward}
+      />
     </div>
   );
 };

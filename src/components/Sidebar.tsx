@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { Session } from '../types';
-import { exportBackupToDisk, restoreBackupFromDisk, wipeAllStoredSessions, classifySessionLake, exportTriLakeLogsToDisk } from '../engine/storage';
+import { exportBackupToDisk, restoreBackupFromDisk, wipeAllStoredSessions, classifySessionLake } from '../engine/storage';
 import { HnaiLogo } from './HnaiLogo';
 
 interface SidebarProps {
@@ -13,12 +13,9 @@ interface SidebarProps {
   isOpen: boolean;
   onToggleOpen: () => void;
   onOpenSupport: () => void;
-  onOpenCredits?: () => void;
-  onOpenPersonalityModal?: () => void;
-  onOpenFeedback?: () => void;
-  onOpenDocument?: () => void;
-  onOpenGrapher?: () => void;
+  onOpenHistory?: () => void;
   onOpenStudio?: () => void;
+  onOpenLearn?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -31,12 +28,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isOpen,
   onToggleOpen,
   onOpenSupport,
-  onOpenCredits,
-  onOpenPersonalityModal,
-  onOpenFeedback,
-  onOpenDocument,
-  onOpenGrapher,
-  onOpenStudio
+  onOpenHistory,
+  onOpenStudio,
+  onOpenLearn
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -69,7 +63,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const handleWipe = () => {
-    if (confirm('Delete all local chat sessions from this browser? Studio progress stays. Backup first if you want the chats.')) {
+    if (confirm('Delete all local chat sessions from this browser? Studio and Learn progress stays. Backup first if you want the chats.')) {
       wipeAllStoredSessions();
       onSessionsReload();
     }
@@ -100,11 +94,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
           zIndex: 50
         }}
       >
-        {/* Top Header - Deduplicated Title, showing HNAI Logo + Conversations */}
-        <div style={{ padding: '1.2rem 1rem 0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        {/* Top Header - HNAI Logo + Chats Title */}
+        <div style={{ padding: '1.1rem 1rem 0.6rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
             <HnaiLogo size="sm" />
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: '#c4b5fd', fontWeight: 600 }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.82rem', color: '#c4b5fd', fontWeight: 600 }}>
               Chats
             </span>
           </div>
@@ -117,29 +111,52 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </button>
         </div>
 
-        {/* New Session Button */}
-        <div style={{ padding: '0.5rem 1rem' }}>
+        {/* Top Action Buttons: New Session & Full History */}
+        <div style={{ padding: '0.4rem 0.85rem 0.6rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
           <button 
             onClick={() => {
               onNewSession();
               if (window.innerWidth < 768) onToggleOpen();
             }}
             className="btn-pill btn-pill-primary"
-            style={{ width: '100%', justifyContent: 'center', gap: '0.5rem' }}
+            style={{ width: '100%', justifyContent: 'center', gap: '0.45rem', fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}
             title="Start fresh conversation"
           >
-            <span>+</span> New Session
+            <span>+</span> New Chat
           </button>
+
+          {onOpenHistory && (
+            <button
+              onClick={() => {
+                onOpenHistory();
+                if (window.innerWidth < 768) onToggleOpen();
+              }}
+              className="btn-pill"
+              style={{
+                width: '100%',
+                justifyContent: 'center',
+                gap: '0.4rem',
+                fontSize: '0.76rem',
+                padding: '0.35rem 0.75rem',
+                backgroundColor: 'rgba(139, 92, 246, 0.12)',
+                borderColor: 'rgba(139, 92, 246, 0.35)',
+                color: '#c4b5fd'
+              }}
+              title="Search, filter, and manage full conversation history"
+            >
+              <span>📜</span> Full History ({sessions.length})
+            </button>
+          )}
         </div>
 
-        {/* Session List */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '0.5rem 0.75rem' }}>
-          <div style={{ fontSize: '0.7rem', color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.08em', padding: '0.5rem 0.5rem 0.3rem', fontFamily: 'var(--font-mono)' }}>
-            Recent History ({sessions.length})
+        {/* Spacious Session History List */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '0.4rem 0.75rem' }}>
+          <div style={{ fontSize: '0.68rem', color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.08em', padding: '0.3rem 0.4rem 0.4rem', fontFamily: 'var(--font-mono)' }}>
+            Recent Conversations
           </div>
           
           {sessions.length === 0 ? (
-            <div style={{ padding: '1.5rem 0.5rem', textAlign: 'center', color: '#52525b', fontSize: '0.85rem' }}>
+            <div style={{ padding: '2.5rem 0.5rem', textAlign: 'center', color: '#52525b', fontSize: '0.82rem' }}>
               No chats yet. Start typing to begin.
             </div>
           ) : (
@@ -154,23 +171,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     if (window.innerWidth < 768) onToggleOpen();
                   }}
                   style={{
-                    padding: '0.6rem 0.75rem',
-                    borderRadius: '12px',
+                    padding: '0.55rem 0.7rem',
+                    borderRadius: '10px',
                     marginBottom: '0.3rem',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    backgroundColor: isActive ? 'rgba(139, 92, 246, 0.15)' : 'transparent',
-                    border: isActive ? '1px solid rgba(139, 92, 246, 0.4)' : '1px solid transparent',
+                    backgroundColor: isActive ? 'rgba(139, 92, 246, 0.18)' : 'transparent',
+                    border: isActive ? '1px solid rgba(139, 92, 246, 0.45)' : '1px solid transparent',
                     color: isActive ? '#ffffff' : '#a1a1aa',
                     transition: 'all 0.15s ease'
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', overflow: 'hidden', flex: 1 }}>
-                    {(lake === 'approved' || lake === 'heaven') && <span title="Approved Lake: Verified session" style={{ fontSize: '0.72rem' }}>👍</span>}
-                    {(lake === 'rejected' || lake === 'hell') && <span title="Rejected Lake: Flagged session" style={{ fontSize: '0.72rem' }}>👎</span>}
-                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '0.85rem' }}>
+                    {(lake === 'approved' || lake === 'heaven') && <span title="Approved Lake" style={{ fontSize: '0.72rem' }}>👍</span>}
+                    {(lake === 'rejected' || lake === 'hell') && <span title="Rejected Lake" style={{ fontSize: '0.72rem' }}>👎</span>}
+                    {lake === 'candidate' && <span title="Candidate Lake" style={{ fontSize: '0.65rem', opacity: 0.4 }}>⚪</span>}
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '0.82rem' }}>
                       {s.title}
                     </span>
                   </div>
@@ -185,7 +203,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       color: '#52525b',
                       cursor: 'pointer',
                       fontSize: '0.9rem',
-                      padding: '0.2rem'
+                      padding: '0.2rem',
+                      lineHeight: 1
                     }}
                     title="Delete chat"
                   >
@@ -197,172 +216,70 @@ export const Sidebar: React.FC<SidebarProps> = ({
           )}
         </div>
 
-        {/* Bottom Local Storage & Backup Actions */}
-        <div style={{ padding: '0.8rem 1rem', borderTop: '1px solid rgba(139, 92, 246, 0.2)', backgroundColor: '#07070a' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
-            {onOpenPersonalityModal && (
-              <button
-                onClick={onOpenPersonalityModal}
-                className="btn-pill"
-                style={{
-                  width: '100%',
-                  fontSize: '0.78rem',
-                  justifyContent: 'center',
-                  gap: '0.4rem',
-                  backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                  borderColor: 'rgba(139, 92, 246, 0.35)',
-                  color: '#e4e4e7',
-                  fontWeight: 500
-                }}
-                title="Browse Thinkers, Authors & Characters (Gallery)"
-              >
-                <span>🎭</span> Voices Gallery
-              </button>
-            )}
-            {onOpenDocument && (
-              <button
-                onClick={onOpenDocument}
-                className="btn-pill"
-                style={{
-                  width: '100%',
-                  fontSize: '0.78rem',
-                  justifyContent: 'center',
-                  gap: '0.4rem',
-                  backgroundColor: 'rgba(139, 92, 246, 0.15)',
-                  borderColor: 'rgba(139, 92, 246, 0.4)',
-                  color: '#c4b5fd',
-                  fontWeight: 500
-                }}
-                title="Open Document Studio for writing, editing, and exports"
-              >
-                <span>📝</span> Document Studio
-              </button>
-            )}
-            {onOpenGrapher && (
-              <button
-                onClick={onOpenGrapher}
-                className="btn-pill"
-                style={{
-                  width: '100%',
-                  fontSize: '0.78rem',
-                  justifyContent: 'center',
-                  gap: '0.4rem',
-                  backgroundColor: 'rgba(52, 211, 153, 0.1)',
-                  borderColor: 'rgba(52, 211, 153, 0.35)',
-                  color: '#34d399',
-                  fontWeight: 500
-                }}
-                title="Plot mathematical functions and export SVG graphs"
-              >
-                <span>📈</span> Math Grapher
-              </button>
-            )}
+        {/* Consolidated Bottom Toolbar (Studio, Learn, Backup, Restore, Support) */}
+        <div style={{ padding: '0.75rem 0.85rem', borderTop: '1px solid rgba(139, 92, 246, 0.2)', backgroundColor: '#07070a' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.38rem' }}>
             {onOpenStudio && (
               <button
                 onClick={onOpenStudio}
                 className="btn-pill"
                 style={{
                   width: '100%',
-                  fontSize: '0.78rem',
+                  fontSize: '0.76rem',
+                  padding: '0.35rem 0.6rem',
                   justifyContent: 'center',
                   gap: '0.4rem',
                   backgroundColor: 'rgba(139, 92, 246, 0.18)',
                   borderColor: 'rgba(139, 92, 246, 0.45)',
                   color: '#c4b5fd',
-                  fontWeight: 500
+                  fontWeight: 600
                 }}
-                title="Courses, homework, quizzes, streaks. Pass/fail. No due dates."
+                title="Studio: Read textbooks, Write documents, Code sandbox, Graph functions, Draw canvas"
               >
-                <span>📚</span> Studio
+                <span>🎨</span> Studio (Read, Write, Code, Graph)
               </button>
             )}
-            <button
-              onClick={onOpenSupport}
-              className="btn-pill"
-              style={{
-                width: '100%',
-                fontSize: '0.78rem',
-                justifyContent: 'center',
-                gap: '0.4rem',
-                backgroundColor: 'rgba(139, 92, 246, 0.14)',
-                borderColor: 'rgba(139, 92, 246, 0.45)',
-                color: '#c4b5fd',
-                fontWeight: 600
-              }}
-              title="Support EasyLM with Bitcoin, Solana, or Cash App"
-            >
-              <span>💜</span> Support EasyLM
-            </button>
-            {onOpenCredits && (
+
+            {onOpenLearn && (
               <button
-                onClick={onOpenCredits}
+                onClick={onOpenLearn}
                 className="btn-pill"
                 style={{
                   width: '100%',
-                  fontSize: '0.78rem',
+                  fontSize: '0.76rem',
+                  padding: '0.35rem 0.6rem',
                   justifyContent: 'center',
                   gap: '0.4rem',
-                  backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                  borderColor: 'rgba(139, 92, 246, 0.35)',
-                  color: '#c4b5fd',
-                  fontWeight: 500
+                  backgroundColor: 'rgba(52, 211, 153, 0.12)',
+                  borderColor: 'rgba(52, 211, 153, 0.35)',
+                  color: '#34d399',
+                  fontWeight: 600
                 }}
-                title="View Open Source Credits, AGPL Covenant, and upstream projects"
+                title="Learn: Undergraduate curriculum, syllabus walks, quizzes, daily flashcards"
               >
-                <span>📜</span> Credits &amp; Attributions
+                <span>🎓</span> Learn (Curriculum &amp; Walks)
               </button>
             )}
-            {onOpenFeedback && (
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.35rem' }}>
               <button
-                onClick={onOpenFeedback}
+                onClick={handleBackup}
                 className="btn-pill"
-                style={{
-                  width: '100%',
-                  fontSize: '0.78rem',
-                  justifyContent: 'center',
-                  gap: '0.4rem',
-                  backgroundColor: 'rgba(234, 179, 8, 0.1)',
-                  borderColor: 'rgba(234, 179, 8, 0.35)',
-                  color: '#fef08a',
-                  fontWeight: 500
-                }}
-                title="Send beta feedback, bugs, or writeups to humansandai@atomicmail.io"
+                style={{ fontSize: '0.72rem', padding: '0.3rem 0.45rem', justifyContent: 'center', gap: '0.3rem' }}
+                title="Download all chats, Tri-Lake memory, and study progress as a single JSON backup"
               >
-                <span>💬</span> Send Beta Feedback
+                <span>💾</span> Backup
               </button>
-            )}
-            <button
-              onClick={handleBackup}
-              className="btn-pill"
-              style={{ width: '100%', fontSize: '0.78rem', justifyContent: 'center', gap: '0.4rem' }}
-              title="Download all chats as a local JSON file"
-            >
-              <span>💾</span> Backup to Disk
-            </button>
-            <button
-              onClick={() => exportTriLakeLogsToDisk(sessions, 'all')}
-              className="btn-pill"
-              style={{
-                width: '100%',
-                fontSize: '0.78rem',
-                justifyContent: 'center',
-                gap: '0.4rem',
-                backgroundColor: 'rgba(167, 139, 250, 0.12)',
-                borderColor: 'rgba(167, 139, 250, 0.3)',
-                color: '#c4b5fd'
-              }}
-              title="Export Tri-Lake memory logs categorized into Approved, Candidate (Neutral), and Rejected"
-            >
-              <span>🏛️</span> Export Tri-Lake Memory
-            </button>
-            <button
-              onClick={handleRestoreClick}
-              className="btn-pill"
-              style={{ width: '100%', fontSize: '0.78rem', justifyContent: 'center', gap: '0.4rem' }}
-              title="Restore chats from local JSON file"
-            >
-              <span>📥</span> Restore Backup
-            </button>
+              <button
+                onClick={handleRestoreClick}
+                className="btn-pill"
+                style={{ fontSize: '0.72rem', padding: '0.3rem 0.45rem', justifyContent: 'center', gap: '0.3rem' }}
+                title="Restore chats and progress from local JSON backup"
+              >
+                <span>📥</span> Restore
+              </button>
+            </div>
+
             <input 
               ref={fileInputRef} 
               type="file" 
@@ -370,26 +287,47 @@ export const Sidebar: React.FC<SidebarProps> = ({
               style={{ display: 'none' }} 
               onChange={handleFileChange} 
             />
+
+            {/* Support EasyLM at the bottom */}
+            <button
+              onClick={onOpenSupport}
+              className="btn-pill"
+              style={{
+                width: '100%',
+                fontSize: '0.76rem',
+                padding: '0.35rem 0.6rem',
+                justifyContent: 'center',
+                gap: '0.4rem',
+                backgroundColor: 'rgba(139, 92, 246, 0.14)',
+                borderColor: 'rgba(139, 92, 246, 0.45)',
+                color: '#c4b5fd',
+                fontWeight: 600
+              }}
+              title="Support EasyLM: 100% public good, open source, patient sovereign education"
+            >
+              <span>💜</span> Support EasyLM
+            </button>
+
             <button
               onClick={handleWipe}
               style={{
                 background: 'transparent',
                 border: 'none',
                 color: '#ef4444',
-                fontSize: '0.75rem',
+                fontSize: '0.68rem',
                 fontFamily: 'var(--font-mono)',
                 cursor: 'pointer',
-                marginTop: '0.3rem',
+                marginTop: '0.15rem',
                 textAlign: 'center'
               }}
-              title="Wipe all local storage"
+              title="Wipe all local chat storage"
             >
               Clear Stored Data
             </button>
           </div>
           
-          <div style={{ marginTop: '0.8rem', textAlign: 'center', fontSize: '0.7rem', color: '#52525b', fontFamily: 'var(--font-mono)' }}>
-            100% Private · WebGPU In-Browser
+          <div style={{ marginTop: '0.5rem', textAlign: 'center', fontSize: '0.68rem', color: '#52525b', fontFamily: 'var(--font-mono)' }}>
+            100% Sovereign · WebGPU In-Browser
           </div>
         </div>
       </aside>

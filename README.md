@@ -104,6 +104,8 @@ Studio unites creative and technical tools in a single interface:
 
 ## Development
 
+Patches: [CONTRIBUTING.md](CONTRIBUTING.md). `npm test` is the gate.
+
 ### Prerequisites
 
 - Node.js 18+

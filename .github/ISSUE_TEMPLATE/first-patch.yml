@@ -1,0 +1,20 @@
+name: First patch
+description: A small, bounded change a new contributor can land
+title: "[good first issue] "
+labels: ["good first issue"]
+body:
+  - type: textarea
+    id: job
+    attributes:
+      label: The job
+      description: One file or one walk. Studio lesson, Hands call, or wrap on a narrow window.
+    validations:
+      required: true
+  - type: textarea
+    id: prove
+    attributes:
+      label: How to prove it
+      description: The command or the click path.
+      value: npm test
+    validations:
+      required: true

@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security report
+    url: mailto:humansandai@atomicmail.io
+    about: XSS, SSRF, or PIN bypass. Do not file those as public issues until a fix is out.

@@ -50,7 +50,8 @@ import { allowedOrigin } from '../src/engine/origin';
 import {
   clampPersonalityIdForRole,
   getPersonalitiesForRole,
-  isKidSafePersonality
+  isKidSafePersonality,
+  PERSONALITIES
 } from '../src/data/personalities';
 import { evalFx, sampleFunction, generatePlotSvg } from '../src/engine/plot';
 import { clockQueryOf, mathExpressionOf, unitConversionOf, stacksQueryOf } from '../src/engine/preflight';
@@ -750,6 +751,86 @@ describe('kid-safe personality gallery fence', () => {
     expect(clampPersonalityIdForRole('ahab', 'kid')).toBe('socratic_kid');
     expect(clampPersonalityIdForRole('socratic_kid', 'kid')).toBe('socratic_kid');
     expect(clampPersonalityIdForRole('ahab', 'parent')).toBe('ahab');
+    expect(clampPersonalityIdForRole('hypatia', 'kid')).toBe('socratic_kid');
+    expect(clampPersonalityIdForRole('curie', 'kid')).toBe('socratic_kid');
+  });
+
+  it('contains valid and unique IDs across all gallery personalities', () => {
+    const ids = PERSONALITIES.map(p => p.id);
+    const uniqueIds = new Set(ids);
+    expect(uniqueIds.size).toBe(ids.length);
+
+    for (const p of PERSONALITIES) {
+      expect(p.id).toBeTruthy();
+      expect(p.name).toBeTruthy();
+      expect(p.avatar).toBeTruthy();
+      expect(p.badge).toBeTruthy();
+      expect(p.category).toBeTruthy();
+      expect(p.description).toBeTruthy();
+      if (p.id !== 'custom') {
+        expect(p.systemPrompt.length).toBeGreaterThan(100);
+      }
+    }
+  });
+
+  it('includes seated women thinkers from the Council of Kami across categories', () => {
+    const kamiVoices = [
+      'hypatia',
+      'arendt',
+      'jacobs',
+      'bell_hooks',
+      'elizabeth_i',
+      'hatshepsut',
+      'catherine_the_great',
+      'goldman',
+      'curie',
+      'hopper',
+      'meadows',
+      'leguin',
+      'butler',
+      'athena'
+    ];
+
+    for (const id of kamiVoices) {
+      const found = PERSONALITIES.find(p => p.id === id);
+      expect(found, `Expected personality ${id} to exist`).toBeDefined();
+    }
+
+    // Verify category distribution
+    const philosophyVoices = PERSONALITIES.filter(p => p.category === 'philosophy').map(p => p.id);
+    expect(philosophyVoices).toContain('hypatia');
+    expect(philosophyVoices).toContain('arendt');
+    expect(philosophyVoices).toContain('jacobs');
+    expect(philosophyVoices).toContain('bell_hooks');
+    expect(philosophyVoices).toContain('elizabeth_i');
+    expect(philosophyVoices).toContain('hatshepsut');
+    expect(philosophyVoices).toContain('catherine_the_great');
+    expect(philosophyVoices).toContain('goldman');
+
+    const scienceVoices = PERSONALITIES.filter(p => p.category === 'science').map(p => p.id);
+    expect(scienceVoices).toContain('curie');
+    expect(scienceVoices).toContain('hopper');
+    expect(scienceVoices).toContain('meadows');
+    expect(scienceVoices).toContain('lovelace');
+
+    const literatureVoices = PERSONALITIES.filter(p => p.category === 'literature').map(p => p.id);
+    expect(literatureVoices).toContain('leguin');
+    expect(literatureVoices).toContain('butler');
+    expect(literatureVoices).toContain('austen');
+    expect(literatureVoices).toContain('shelley');
+
+    const characterVoices = PERSONALITIES.filter(p => p.category === 'characters').map(p => p.id);
+    expect(characterVoices).toContain('athena');
+  });
+
+  it('includes classical defenses of monarchy and statecraft (Confucius, Han Feizi, Hobbes)', () => {
+    const thinkers = ['confucius', 'han_feizi', 'hobbes'];
+    for (const id of thinkers) {
+      const p = PERSONALITIES.find(item => item.id === id);
+      expect(p, `Expected ${id} to exist`).toBeDefined();
+      expect(p?.category).toBe('philosophy');
+      expect(p?.systemPrompt.length).toBeGreaterThan(100);
+    }
   });
 });
   });

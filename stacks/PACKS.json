@@ -144,6 +144,27 @@
     ]
   },
   {
+    "slug": "tao_te_ching",
+    "dewey": "181",
+    "title": "Tao Te Ching (道德經) — Lao Tzu",
+    "category": "Classical Philosophy & Primary Texts",
+    "keywords": [
+      "laozi",
+      "lao tzu",
+      "tao te ching",
+      "daodejing",
+      "daoism",
+      "wu wei",
+      "pu",
+      "yin yang",
+      "ziran",
+      "uncarved block",
+      "philosophy",
+      "primary text",
+      "classical"
+    ]
+  },
+  {
     "slug": "religion",
     "dewey": "200",
     "title": "Comparative Religion & Mythology",

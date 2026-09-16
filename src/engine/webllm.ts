@@ -4,10 +4,21 @@ import {
   InitProgressReport,
   prebuiltAppConfig,
   AppConfig,
-  ModelRecord
+  ModelRecord,
+  deleteModelAllInfoInCache,
+  hasModelInCache
 } from '@mlc-ai/web-llm';
 import { ModelOption } from '../types';
 import { AntiLoopDetector } from './anti_loop';
+import {
+  budgetTurn,
+  capMaxTokens,
+  classifyWebGpuFailure,
+  estimateMessagesTokens,
+  GpuFence,
+  MIN_COMPLETION,
+  shouldRetryEngineInit
+} from './context_budget';
 
 export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
   {
@@ -212,6 +223,7 @@ export async function unloadActiveEngine(): Promise<void> {
     activeEngine = null;
     currentLoadedModel = '';
   }
+  clearGpuFence();
 }
 
 export const DEFAULT_MODEL_ID = 'Qwen2.5-3B-Instruct-q4f16_1-MLC';
@@ -226,16 +238,73 @@ let currentLoadedModel: string = '';
 let currentContextLimit: number = 4096;
 let isInitializing: boolean = false;
 let initPromise: Promise<MLCEngine> | null = null;
+let gpuFence: GpuFence = null;
+
+export function getGpuFence(): GpuFence {
+  return gpuFence;
+}
+
+export function markGpuFence(kind: GpuFence): void {
+  if (kind) gpuFence = kind;
+}
+
+export function clearGpuFence(): void {
+  gpuFence = null;
+}
+
+function applyFailureFence(err: unknown): ReturnType<typeof classifyWebGpuFailure> {
+  const kind = classifyWebGpuFailure(err);
+  if (kind === 'gpu_process_dead') gpuFence = 'process_dead';
+  else if (kind === 'device_lost' || kind === 'oom') {
+    if (gpuFence !== 'process_dead') gpuFence = 'lost';
+  }
+  return kind;
+}
+
+function armDeviceLostFence(engine: MLCEngine): void {
+  try {
+    const pipelines = (engine as unknown as { loadedModelIdToPipeline?: Map<string, unknown> }).loadedModelIdToPipeline;
+    if (!pipelines) return;
+    for (const pipeline of pipelines.values()) {
+      const device = (pipeline as {
+        tvm?: { webGPUContext?: { device?: { lost?: Promise<{ reason?: string }>; __easylm_lost_armed?: boolean } } }
+      })?.tvm?.webGPUContext?.device;
+      if (device && typeof device.lost?.then === 'function' && !device.__easylm_lost_armed) {
+        device.__easylm_lost_armed = true;
+        device.lost.then((info) => {
+          const reason = String(info?.reason || 'unknown').toLowerCase();
+          if (reason !== 'destroyed') {
+            gpuFence = 'lost';
+          }
+          activeEngine = null;
+          currentLoadedModel = '';
+          isInitializing = false;
+          initPromise = null;
+        }).catch(() => {
+          gpuFence = 'lost';
+          activeEngine = null;
+          currentLoadedModel = '';
+        });
+      }
+    }
+  } catch {
+    // ignore
+  }
+}
 /**
  * Resilient WebGPU adapter request wrapper.
  * If high-performance powerPreference fails (e.g. discrete GPU is sleeping, crashed,
- * or blocked by browser process), falls back gracefully to default or low-power adapter.
+ * or blocked by browser process), falls back gracefully through default, low-power, or retries.
  */
 export function patchWebGPUAdapterFallback(): void {
-  if (typeof navigator !== 'undefined' && 'gpu' in navigator && (navigator as any).gpu && !(navigator as any).gpu.__easylm_fallback_patched) {
+  if (typeof navigator !== 'undefined' && 'gpu' in navigator && (navigator as any).gpu) {
     const gpu = (navigator as any).gpu;
-    const originalRequestAdapter = gpu.requestAdapter.bind(gpu);
+    if (gpu.__easylm_fallback_patched) return;
+    const originalRequestAdapter = gpu.__easylm_orig_requestAdapter || gpu.requestAdapter.bind(gpu);
+    gpu.__easylm_orig_requestAdapter = originalRequestAdapter;
     gpu.requestAdapter = async function (options?: any) {
+      if (gpuFence === 'process_dead') return null;
+
       // 1. Try requested options
       try {
         const adapter = await originalRequestAdapter(options);
@@ -266,6 +335,26 @@ export function patchWebGPUAdapterFallback(): void {
         }
       }
 
+      // 4. Fallback: try high-performance adapter if options was empty/undefined
+      if (!options?.powerPreference) {
+        try {
+          console.warn('[WebGPU] Retrying with high-performance adapter...');
+          const hpAdapter = await originalRequestAdapter({ powerPreference: 'high-performance' });
+          if (hpAdapter) return hpAdapter;
+        } catch {
+          // ignore
+        }
+      }
+
+      // 5. Brief backoff retry (60ms) if GPU process was transitioning
+      try {
+        await new Promise(resolve => setTimeout(resolve, 60));
+        const retryAdapter = await originalRequestAdapter();
+        if (retryAdapter) return retryAdapter;
+      } catch {
+        // ignore
+      }
+
       return null;
     };
     (navigator.gpu as any).__easylm_fallback_patched = true;
@@ -274,6 +363,199 @@ export function patchWebGPUAdapterFallback(): void {
 
 // Automatically apply adapter fallback wrapper in browser environment
 patchWebGPUAdapterFallback();
+
+/**
+ * Resilient WebGPU adapter lookup with automatic cascading fallback:
+ * 1. Requested power preference (e.g. 'high-performance' for discrete GPU)
+ * 2. System default (no preference)
+ * 3. Low-power (integrated GPU / battery)
+ * 4. Microtask retry in case GPU process was briefly locked
+ */
+export async function getWebGPUAdapter(preferredPower: 'low-power' | 'high-performance' = 'high-performance'): Promise<any | null> {
+  if (typeof navigator === 'undefined' || !('gpu' in navigator) || !(navigator as any).gpu) {
+    return null;
+  }
+  const gpu = (navigator as any).gpu;
+
+  const tryRequest = async (opts?: any) => {
+    try {
+      const adapter = await gpu.requestAdapter(opts);
+      if (adapter) return adapter;
+    } catch (e) {
+      console.warn('[WebGPU] Adapter request notice:', e);
+    }
+    return null;
+  };
+
+  // Preference 1: Preferred
+  let adapter = await tryRequest({ powerPreference: preferredPower });
+  if (adapter) return adapter;
+
+  // Preference 2: System Default (no powerPreference)
+  adapter = await tryRequest();
+  if (adapter) return adapter;
+
+  // Preference 3: Low-power (integrated GPU)
+  if (preferredPower !== 'low-power') {
+    adapter = await tryRequest({ powerPreference: 'low-power' });
+    if (adapter) return adapter;
+  }
+
+  // Preference 4: Brief backoff retry (helps if browser GPU process was re-initializing)
+  await new Promise(resolve => setTimeout(resolve, 60));
+  adapter = await tryRequest();
+  if (adapter) return adapter;
+
+  return null;
+}
+
+export interface CacheClearResult {
+  success: boolean;
+  modelId?: string;
+  clearedCaches: string[];
+  message: string;
+  error?: string;
+}
+
+/**
+ * Check if a model is currently cached in the browser's CacheStorage.
+ */
+export async function hasCachedModel(modelId: string): Promise<boolean> {
+  try {
+    if (typeof caches === 'undefined') return false;
+    return await hasModelInCache(modelId, EASYLM_APP_CONFIG);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Clear cached model weights, WASM binaries, and configs from browser CacheStorage and IndexedDB.
+ * If modelId is provided, attempts targeted eviction for that model first, then cleans related entries.
+ * If modelId is omitted, performs a comprehensive purge of all WebLLM / MLC / TVM caches.
+ */
+export async function clearModelCache(modelId?: string): Promise<CacheClearResult> {
+  const clearedCaches: string[] = [];
+  let errorMsg: string | undefined = undefined;
+
+  try {
+    // 1. If modelId provided, use WebLLM's targeted deletion first
+    if (modelId && typeof caches !== 'undefined') {
+      try {
+        await deleteModelAllInfoInCache(modelId, EASYLM_APP_CONFIG);
+        clearedCaches.push(`webllm-model:${modelId}`);
+      } catch (err: any) {
+        console.warn(`[Cache] Targeted deletion for ${modelId} encountered notice:`, err);
+      }
+    }
+
+    // 2. Direct browser CacheStorage cleanup
+    if (typeof caches !== 'undefined') {
+      try {
+        const cacheKeys = await caches.keys();
+        for (const key of cacheKeys) {
+          const lowerKey = key.toLowerCase();
+          const isWebLLMCache = lowerKey.includes('webllm') || lowerKey.includes('mlc') || lowerKey.includes('tvm');
+
+          if (!modelId && isWebLLMCache) {
+            // Full purge: delete all webllm caches
+            const ok = await caches.delete(key);
+            if (ok) clearedCaches.push(key);
+          } else if (modelId && isWebLLMCache) {
+            // Targeted purge inside the cache
+            try {
+              const cache = await caches.open(key);
+              const requests = await cache.keys();
+              for (const req of requests) {
+                if (req.url.includes(modelId) || req.url.toLowerCase().includes(modelId.toLowerCase())) {
+                  await cache.delete(req);
+                  clearedCaches.push(`${key}:${req.url.split('/').pop()}`);
+                }
+              }
+            } catch {
+              // ignore
+            }
+          }
+        }
+      } catch (err: any) {
+        console.warn('[Cache] CacheStorage inspection notice:', err);
+      }
+    }
+
+    // 3. IndexedDB cleanup for WebLLM tensor databases if full purge
+    if (!modelId && typeof indexedDB !== 'undefined') {
+      const knownDbs = ['webllm/model', 'webllm/wasm', 'webllm/config', 'webllm', 'tvmjs'];
+      for (const dbName of knownDbs) {
+        try {
+          indexedDB.deleteDatabase(dbName);
+          clearedCaches.push(`idb:${dbName}`);
+        } catch {
+          // ignore
+        }
+      }
+      if ('databases' in indexedDB && typeof (indexedDB as any).databases === 'function') {
+        try {
+          const dbs = await (indexedDB as any).databases();
+          if (Array.isArray(dbs)) {
+            for (const db of dbs) {
+              if (db.name && (db.name.includes('webllm') || db.name.includes('tvm') || db.name.includes('mlc'))) {
+                indexedDB.deleteDatabase(db.name);
+                clearedCaches.push(`idb:${db.name}`);
+              }
+            }
+          }
+        } catch {
+          // ignore
+        }
+      }
+    }
+
+    return {
+      success: true,
+      modelId,
+      clearedCaches,
+      message: modelId
+        ? `Model cache for ${modelId} cleared successfully.`
+        : `All WebLLM weight caches purged successfully (${clearedCaches.length} targets cleaned).`
+    };
+  } catch (err: any) {
+    errorMsg = err?.message || String(err);
+    return {
+      success: false,
+      modelId,
+      clearedCaches,
+      message: `Failed to clear cache: ${errorMsg}`,
+      error: errorMsg
+    };
+  }
+}
+
+/**
+ * Fully reset WebGPU runtime state, unload engine, clear cache, and re-arm adapter fallback.
+ */
+export async function resetWebGPUAndCaches(modelId?: string): Promise<{ success: boolean; message: string }> {
+  // 1. Unload active engine
+  await unloadActiveEngine();
+  activeEngine = null;
+  currentLoadedModel = '';
+  isInitializing = false;
+  initPromise = null;
+  clearGpuFence();
+
+  // 2. Clear model cache or all caches
+  const cacheResult = await clearModelCache(modelId);
+
+  // 3. Ensure WebGPU fallback patch is fresh
+  if (typeof navigator !== 'undefined' && (navigator as any).gpu) {
+    delete (navigator as any).gpu.__easylm_fallback_patched;
+    patchWebGPUAdapterFallback();
+  }
+
+  return {
+    success: cacheResult.success,
+    message: `WebGPU state reset. ${cacheResult.message}`
+  };
+}
 
 export function isWebGPUSupported(): boolean {
   return typeof navigator !== 'undefined' && 'gpu' in navigator && !!(navigator as any).gpu;
@@ -292,6 +574,9 @@ export async function getOrInitEngine(
   }
   if (!ALLOWED_MODEL_IDS.has(modelId)) {
     throw new Error('That model is not offered in this EasyLM build.');
+  }
+  if (gpuFence === 'process_dead') {
+    throw new Error('Unable to find a compatible GPU. Browser GPU worker is down.');
   }
 
   const targetContext = contextWindowSize || currentContextLimit;
@@ -363,13 +648,25 @@ export async function getOrInitEngine(
       activeEngine = engine;
       currentLoadedModel = modelId;
       isInitializing = false;
+      gpuFence = null;
+      armDeviceLostFence(engine);
       return engine;
     } catch (err: any) {
       activeEngine = null;
       currentLoadedModel = '';
       isInitializing = false;
       initPromise = null;
-      throw new Error(`WebLLM Model Init Error: ${err?.message || String(err)}`);
+      const rawMsg = err?.message || String(err);
+      applyFailureFence(rawMsg);
+      let hint = '';
+      if (rawMsg.includes('Unable to find a compatible GPU') || gpuFence === 'process_dead') {
+        hint = ' [Diagnostic: WebGPU adapter request returned null. GPU worker is down. Do not retry init.]';
+      } else if (rawMsg.includes('maxBufferSize') || rawMsg.includes('allocation')) {
+        hint = ' [Diagnostic: Model memory exceeded GPU limits. Try selecting an ultralight model like Qwen 2.5 1.5B.]';
+      } else if (rawMsg.includes('Integrity') || rawMsg.includes('fetch') || rawMsg.includes('corrupt') || rawMsg.includes('unexpected end') || rawMsg.includes('syntaxerror')) {
+        hint = ' [Diagnostic: Cached model weights or WASM appear corrupted. Use "Clear Model Cache" in Settings or Model Selection to redownload fresh.]';
+      }
+      throw new Error(`WebLLM Model Init Error: ${rawMsg}${hint}`);
     }
   })();
 
@@ -393,8 +690,8 @@ export async function stopGeneration(): Promise<void> {
 }
 
 /**
- * Stream inference with token chunk callbacks, abort support, anti-loop sentinel,
- * and auto-recovery for sleep/device loss/disposed instances.
+ * Stream inference with token chunk callbacks, abort support, anti-loop sentinel.
+ * Device-lost / GPU-process-dead fail closed: no auto-reinit.
  */
 export async function streamChatCompletion(
   messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>,
@@ -407,6 +704,17 @@ export async function streamChatCompletion(
 ): Promise<{ fullText: string; thinking?: string; loopDetected?: boolean; loopReason?: string }> {
   const isReasoning = modelId.includes('DeepSeek-R1') || modelId.includes('Reasoning');
   const effectiveTemperature = isReasoning ? Math.max(0.6, temperature) : temperature;
+  const ctx = contextWindowSize || currentContextLimit || 4096;
+
+  if (gpuFence === 'process_dead') {
+    throw new Error('Unable to find a compatible GPU. Browser GPU worker is down.');
+  }
+
+  const budget = budgetTurn(messages, ctx, { isReasoning });
+  if (budget.maxTokens < MIN_COMPLETION) {
+    throw new Error('CONTEXT_BUDGET: this turn does not fit the context window. Raise context in Settings or shorten the prompt.');
+  }
+  const effectiveMaxTokens = Math.min(maxTokens > 0 ? maxTokens : budget.maxTokens, budget.maxTokens);
 
   let attempt = 0;
   while (attempt < 2) {
@@ -417,6 +725,7 @@ export async function streamChatCompletion(
     } catch (initErr: any) {
       activeEngine = null;
       currentLoadedModel = '';
+      applyFailureFence(initErr);
       throw initErr;
     }
 
@@ -425,34 +734,28 @@ export async function streamChatCompletion(
     let completion: any;
     try {
       completion = await engine.chat.completions.create({
-        messages,
+        messages: budget.messages,
         temperature: effectiveTemperature,
-        max_tokens: maxTokens,
+        max_tokens: effectiveMaxTokens,
         stream: true,
         top_p: 0.95,
         frequency_penalty: 0.0,
         presence_penalty: 0.0
       });
     } catch (createErr: any) {
-      const errStr = String(createErr?.message || createErr).toLowerCase();
-      const isDisposedOrLost = errStr.includes('disposed') ||
-        errStr.includes('not loaded') ||
-        errStr.includes('device lost') ||
-        errStr.includes('devicelost');
+      const kind = applyFailureFence(createErr);
+      activeEngine = null;
+      currentLoadedModel = '';
+      isInitializing = false;
+      initPromise = null;
 
-      if (isDisposedOrLost && attempt === 1) {
-        console.warn(`[WebLLM] Engine was disposed or lost before generation (${createErr?.message}). Re-initializing WebGPU weights and retrying turn...`);
-        activeEngine = null;
-        currentLoadedModel = '';
-        isInitializing = false;
-        initPromise = null;
+      if (shouldRetryEngineInit(kind, attempt, gpuFence)) {
+        console.warn(`[WebLLM] Engine disposed before generation (${createErr?.message}). Retrying once.`);
         if (onProgress) {
-          onProgress({ text: 'WebGPU session awakened from sleep. Re-warming weights...', progress: 0.05 });
+          onProgress({ text: 'Engine was unloaded. Re-warming weights...', progress: 0.05 });
         }
         continue;
       }
-      activeEngine = null;
-      currentLoadedModel = '';
       throw createErr;
     }
 
@@ -488,25 +791,18 @@ export async function streamChatCompletion(
       if (abortCurrentGeneration || loopDetected) {
         // Ignored if manually stopped or anti-loop terminated
       } else {
-        const errStr = String(err?.message || err).toLowerCase();
-        const isDisposedOrLost = errStr.includes('disposed') ||
-          errStr.includes('not loaded') ||
-          errStr.includes('device lost') ||
-          errStr.includes('devicelost');
+        const kind = applyFailureFence(err);
+        activeEngine = null;
+        currentLoadedModel = '';
+        isInitializing = false;
+        initPromise = null;
 
-        if (isDisposedOrLost) {
-          console.warn(`[WebLLM] Stream interrupted by device loss or disposal (${err?.message}). Resetting engine state.`);
-          activeEngine = null;
-          currentLoadedModel = '';
-          isInitializing = false;
-          initPromise = null;
-
-          if (attempt === 1 && (!fullRaw || fullRaw.length < 20)) {
-            if (onProgress) {
-              onProgress({ text: 'WebGPU session lost mid-stream. Re-warming model weights...', progress: 0.05 });
-            }
-            continue;
+        if (shouldRetryEngineInit(kind, attempt, gpuFence) && (!fullRaw || fullRaw.length < 20)) {
+          console.warn(`[WebLLM] Stream interrupted by disposal (${err?.message}). Retrying once.`);
+          if (onProgress) {
+            onProgress({ text: 'Engine was unloaded mid-stream. Re-warming weights...', progress: 0.05 });
           }
+          continue;
         }
         throw err;
       }
@@ -537,14 +833,16 @@ export async function streamChatCompletion(
           onProgress({ text: 'Anti-loop sentinel active: Synthesizing final answer...', progress: 0.95 });
         }
         abortCurrentGeneration = false;
+        const synthMessages = [
+          ...budget.messages,
+          { role: 'assistant' as const, content: `<think>\n${thinking || 'Key considerations reviewed.'}\n</think>\n` },
+          { role: 'user' as const, content: 'Synthesize and state your final direct, complete answer clearly now based on your reasoning above.' }
+        ];
+        const synthMax = capMaxTokens(estimateMessagesTokens(synthMessages), ctx, Math.min(1500, effectiveMaxTokens));
         const synthCompletion = await engine.chat.completions.create({
-          messages: [
-            ...messages,
-            { role: 'assistant', content: `<think>\n${thinking || 'Key considerations reviewed.'}\n</think>\n` },
-            { role: 'user', content: 'Synthesize and state your final direct, complete answer clearly now based on your reasoning above.' }
-          ],
+          messages: synthMessages,
           temperature: 0.5,
-          max_tokens: 1500,
+          max_tokens: Math.max(64, synthMax),
           stream: true
         });
 
@@ -573,6 +871,6 @@ export async function streamChatCompletion(
     };
   }
 
-  throw new Error('WebGPU inference failed after re-initialization attempt.');
+  throw new Error('WebGPU inference failed after a single recovery attempt.');
 }
 

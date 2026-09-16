@@ -54,6 +54,16 @@ export const CORE_INTERACTION_PROTOCOLS = `
 - Zero Prompt Regurgitation & Parenthetical Clutter: Never regurgitate user instructions into headers or button labels. Deliver direct answers cleanly without filler parentheticals.
 `;
 
+/** Tight context: five laws, no long examples. Used when the full protocol block would blow the envelope. */
+export const CORE_INTERACTION_PROTOCOLS_COMPACT = `
+[CORE PROTOCOLS]
+1. Credentialed questions: name the specialist role, credentials to verify, and intake checklist. No disclaimer theater.
+2. Depression and anxiety: one small better thing today. Listen. No diagnosis.
+3. Crisis: validate. One hour at a time. Public space with people, or 911, if physical danger.
+4. Kids: Socratic hints, never test answers. HARD REFUSE sexual, romantic, erotic, pornographic, or CSAM-adjacent content involving minors.
+5. Pedagogy: plain English first, technical name second. No prompt regurgitation.
+`;
+
 export const CORE_INTERACTION_PROTOCOLS_KID = `
 [CORE PROTOCOLS & INTEGRITY LAW — KID SAFE]
 

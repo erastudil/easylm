@@ -18,7 +18,17 @@ import {
   sanitizeFilename,
   stripMarkdown
 } from '../engine/export';
-import { generatePlotSvg, PlotOptions } from '../engine/plot';
+import {
+  generatePlotSvg,
+  PlotOptions,
+  FunctionSpec,
+  evalDerivative,
+  findRoots,
+  findExtrema,
+  integrateSimpson,
+  computeTableOfValues,
+  evalFx
+} from '../engine/plot';
 import { MarkdownRenderer } from './MarkdownRenderer';
 
 export type StudioTool = 'read' | 'write' | 'code' | 'graph' | 'draw';
@@ -1029,11 +1039,11 @@ console.log("Error vs Math.PI:", Math.abs(estimate - Math.PI));
   }
   return (4 * inside) / samples;
 }
-console.log("Pi approx:", monteCarloPi(100000));
-console.log("Real Pi:", Math.PI);`
+console.log("Pi approx (100k):", monteCarloPi(100000));
+console.log("Real Math.PI:", Math.PI);`
     },
     {
-      label: 'Fibonacci Series',
+      label: 'Fibonacci & Phi',
       code: `function fibonacci(n) {
   const seq = [0, 1];
   for (let i = 2; i < n; i++) {
@@ -1041,36 +1051,97 @@ console.log("Real Pi:", Math.PI);`
   }
   return seq;
 }
-console.log("First 15 Fibonacci numbers:", fibonacci(15));
-const goldenRatio = fibonacci(25)[24] / fibonacci(25)[23];
-console.log("Golden ratio approximation:", goldenRatio);`
+const fib = fibonacci(20);
+console.log("First 20 Fibonacci numbers:", fib);
+const phi = fib[19] / fib[18];
+console.log("Golden Ratio (phi) approx:", phi);
+console.log("True Phi:", (1 + Math.sqrt(5)) / 2);`
     },
     {
       label: 'Quadratic Solver',
       code: `function solveQuadratic(a, b, c) {
   const disc = b * b - 4 * a * c;
-  if (disc < 0) return "Complex roots";
+  if (disc < 0) return { roots: "Complex", discriminant: disc };
   const r1 = (-b + Math.sqrt(disc)) / (2 * a);
   const r2 = (-b - Math.sqrt(disc)) / (2 * a);
   return { r1, r2, discriminant: disc };
 }
-console.log("Solving 2x^2 + 5x - 3 = 0:", solveQuadratic(2, 5, -3));`
+console.log("Roots of 2x^2 + 5x - 3 = 0:", solveQuadratic(2, 5, -3));`
     },
     {
-      label: 'Prime Sieve',
-      code: `function sieve(max) {
-  const flags = new Uint8Array(max + 1).fill(1);
-  flags[0] = flags[1] = 0;
-  for (let i = 2; i * i <= max; i++) {
-    if (flags[i]) {
-      for (let j = i * i; j <= max; j += i) flags[j] = 0;
+      label: 'Levenshtein Distance',
+      code: `function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
     }
   }
-  const primes = [];
-  for (let i = 2; i <= max; i++) if (flags[i]) primes.push(i);
-  return primes;
+  return dp[m][n];
 }
-console.log("Primes up to 100:", sieve(100));`
+const s1 = "algorithm", s2 = "altruism";
+console.log(\`Distance between "\${s1}" and "\${s2}":\`, levenshtein(s1, s2));`
+    },
+    {
+      label: '2D Rotation',
+      code: `function rotate2D(points, angleDeg) {
+  const rad = (angleDeg * Math.PI) / 180;
+  const cos = Math.cos(rad);
+  const sin = Math.sin(rad);
+  return points.map(([x, y]) => [
+    Math.round((x * cos - y * sin) * 1000) / 1000,
+    Math.round((x * sin + y * cos) * 1000) / 1000
+  ]);
+}
+const square = [[0,0], [1,0], [1,1], [0,1]];
+console.log("Original square vertices:", square);
+console.log("Rotated 45 degrees:", rotate2D(square, 45));`
+    },
+    {
+      label: 'Mandelbrot ASCII',
+      code: `function renderMandelbrot(width, height) {
+  const chars = " .:-=+*#%@";
+  let output = "";
+  for (let y = 0; y < height; y++) {
+    let line = "";
+    for (let x = 0; x < width; x++) {
+      const c_re = (x - width / 1.4) * 4.0 / width;
+      const c_im = (y - height / 2) * 4.0 / width;
+      let z_re = 0, z_im = 0, n = 0;
+      while (z_re * z_re + z_im * z_im <= 4 && n < chars.length - 1) {
+        const new_re = z_re * z_re - z_im * z_im + c_re;
+        z_im = 2 * z_re * z_im + c_im;
+        z_re = new_re;
+        n++;
+      }
+      line += chars[n];
+    }
+    output += line + "\\n";
+  }
+  return output;
+}
+console.log(renderMandelbrot(48, 22));`
+    },
+    {
+      label: 'Async Pipeline',
+      code: `async function fetchAndProcess() {
+  console.log("Initializing asynchronous task pipeline...");
+  const task = (id, ms) => new Promise(res => {
+    setTimeout(() => {
+      console.log(\`Task \${id} completed after \${ms}ms\`);
+      res({ id, value: id * 10 });
+    }, ms);
+  });
+
+  const results = await Promise.all([task(1, 120), task(2, 60), task(3, 180)]);
+  console.log("All concurrent tasks resolved:", results);
+  return results.reduce((acc, curr) => acc + curr.value, 0);
+}
+return await fetchAndProcess();`
     }
   ];
 
@@ -1112,39 +1183,82 @@ console.log("Primes up to 100:", sieve(100));`
     setConsoleOutput((prev) => [...prev, '[STOPPED] Execution halted by user']);
   };
 
-  const handleInThreadFallback = (codeToRun: string) => {
+  const safeFormat = (arg: any): string => {
+    if (arg === null) return 'null';
+    if (arg === undefined) return 'undefined';
+    if (typeof arg === 'symbol') return arg.toString();
+    if (typeof arg === 'bigint') return arg.toString() + 'n';
+    if (typeof arg === 'function') return arg.toString();
+    if (typeof arg === 'object') {
+      try {
+        return JSON.stringify(arg, null, 2);
+      } catch {
+        try {
+          return String(arg);
+        } catch {
+          return '[Unserializable Object]';
+        }
+      }
+    }
+    return String(arg);
+  };
+
+  const handleInThreadFallback = async (codeToRun: string) => {
+    setIsRunning(true);
     const logs: string[] = [];
     const origLog = console.log;
     const origWarn = console.warn;
     const origError = console.error;
+    const origInfo = console.info;
 
     try {
       console.log = (...args: any[]) => {
-        logs.push('[LOG] ' + args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' '));
+        logs.push('[LOG] ' + args.map(safeFormat).join(' '));
         origLog(...args);
       };
+      console.info = (...args: any[]) => {
+        logs.push('[INFO] ' + args.map(safeFormat).join(' '));
+        origInfo(...args);
+      };
       console.warn = (...args: any[]) => {
-        logs.push('[WARN] ' + args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' '));
+        logs.push('[WARN] ' + args.map(safeFormat).join(' '));
         origWarn(...args);
       };
       console.error = (...args: any[]) => {
-        logs.push('[ERROR] ' + args.map((a) => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' '));
+        logs.push('[ERROR] ' + args.map(safeFormat).join(' '));
         origError(...args);
       };
 
       const start = performance.now();
-      const runner = new Function(codeToRun);
-      const result = runner();
-      const elapsed = (performance.now() - start).toFixed(2);
+      const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
+      const runner = new AsyncFunction(codeToRun);
 
+      const timeoutPromise = new Promise((_, reject) => {
+        timeoutRef.current = setTimeout(() => {
+          reject(new Error('Execution timed out after 10 seconds'));
+        }, 10000);
+      });
+
+      const result = await Promise.race([runner(), timeoutPromise]);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+
+      const elapsed = (performance.now() - start).toFixed(2);
       if (result !== undefined) {
-        logs.push(`[RETURN] ${typeof result === 'object' ? JSON.stringify(result, null, 2) : String(result)}`);
+        logs.push(`[RETURN] ${safeFormat(result)}`);
       }
       logs.push(`--- Execution completed in ${elapsed} ms ---`);
     } catch (err: any) {
-      logs.push(`[EXCEPTION] ${err?.message || err}`);
+      logs.push(`[EXCEPTION] ${err?.message || String(err)}`);
     } finally {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
       console.log = origLog;
+      console.info = origInfo;
       console.warn = origWarn;
       console.error = origError;
       setConsoleOutput((prev) => [...prev, ...logs]);
@@ -1172,6 +1286,8 @@ console.log("Primes up to 100:", sieve(100));`
     setConsoleOutput([]);
 
     let workerStarted = false;
+    let hasReceivedMessage = false;
+
     try {
       if (typeof Worker !== 'undefined' && typeof Blob !== 'undefined' && typeof URL !== 'undefined' && URL.createObjectURL) {
         const runnerScript = `
@@ -1217,6 +1333,22 @@ console.error = function(...args) {
 console.info = function(...args) {
   self.postMessage({ type: 'log', level: 'INFO', text: args.map(safeFormat).join(' ') });
   if (origInfo) origInfo.apply(console, args);
+};
+console.clear = function() {
+  self.postMessage({ type: 'clear' });
+};
+console.table = function(data) {
+  if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'object' && data[0] !== null) {
+    const keys = Object.keys(data[0]);
+    const header = '| (idx) | ' + keys.join(' | ') + ' |';
+    const sep = '|---|' + keys.map(() => '---').join('|') + '|';
+    const rows = data.slice(0, 30).map((row, i) =>
+      '| ' + i + ' | ' + keys.map(k => String(row[k] !== undefined ? row[k] : '')).join(' | ') + ' |'
+    );
+    self.postMessage({ type: 'log', level: 'TABLE', text: '\\n' + [header, sep, ...rows].join('\\n') });
+  } else {
+    self.postMessage({ type: 'log', level: 'TABLE', text: safeFormat(data) });
+  }
 };
 
 self.onerror = function(message, source, lineno, colno, error) {
@@ -1271,17 +1403,20 @@ self.onunhandledrejection = function(e) {
           setIsRunning(false);
         };
 
-        // 10-second timeout to prevent infinite loops from hanging indefinitely
+        // 10-second timeout to prevent infinite loops
         timeoutRef.current = setTimeout(() => {
           setConsoleOutput((prev) => [...prev, '[TIMEOUT] Execution exceeded 10-second limit and was terminated']);
           cleanup();
         }, 10000);
 
         worker.onmessage = (e: MessageEvent) => {
+          hasReceivedMessage = true;
           const msg = e.data;
           if (!msg || typeof msg !== 'object') return;
 
-          if (msg.type === 'log') {
+          if (msg.type === 'clear') {
+            setConsoleOutput([]);
+          } else if (msg.type === 'log') {
             setConsoleOutput((prev) => [...prev, `[${msg.level}] ${msg.text}`]);
           } else if (msg.type === 'return') {
             setConsoleOutput((prev) => [...prev, `[RETURN] ${msg.text}`]);
@@ -1295,6 +1430,12 @@ self.onunhandledrejection = function(e) {
         };
 
         worker.onerror = (e: ErrorEvent) => {
+          // If worker failed before delivering any messages (e.g. CSP or Blob issue), fallback to in-thread runner
+          if (!hasReceivedMessage) {
+            cleanup();
+            handleInThreadFallback(code);
+            return;
+          }
           setConsoleOutput((prev) => [...prev, `[EXCEPTION] ${e.message || 'Worker runtime error'}`]);
           cleanup();
         };
@@ -1463,8 +1604,16 @@ self.onunhandledrejection = function(e) {
 }
 
 /* =========================================================================
-   TOOL 4: GRAPH (2D Coordinate Plane & Function Plotter)
+   TOOL 4: GRAPH (Scientific & Graphing Calculator)
    ========================================================================= */
+
+interface CalculatorFunction {
+  id: string;
+  fn: string;
+  color: string;
+  label: string;
+  visible: boolean;
+}
 
 function GraphTool({
   onInsertIntoChat,
@@ -1473,32 +1622,148 @@ function GraphTool({
   onInsertIntoChat?: (text: string) => void;
   onSendToWrite?: (svg: string, title: string) => void;
 }) {
-  const [fnStr, setFnStr] = useState('x^2 - 4');
-  const [title, setTitle] = useState('Parabola: y = x^2 - 4');
-  const [xMin, setXMin] = useState(-5);
-  const [xMax, setXMax] = useState(5);
+  const [functions, setFunctions] = useState<CalculatorFunction[]>([
+    { id: '1', fn: 'x^2 - 4', color: '#a78bfa', label: 'f₁(x)', visible: true },
+    { id: '2', fn: '2*x + 1', color: '#34d399', label: 'f₂(x)', visible: false },
+    { id: '3', fn: 'sin(x)', color: '#38bdf8', label: 'f₃(x)', visible: false }
+  ]);
+  const [activeFnId, setActiveFnId] = useState<string>('1');
+  const [subTab, setSubTab] = useState<'plot' | 'calc' | 'table'>('plot');
+
+  // Bounds
+  const [xMin, setXMin] = useState<number>(-10);
+  const [xMax, setXMax] = useState<number>(10);
+  const [yMin, setYMin] = useState<number>(-10);
+  const [yMax, setYMax] = useState<number>(10);
+  const [autoY, setAutoY] = useState<boolean>(true);
+
+  // Calculus Tools State
+  const [x0, setX0] = useState<number>(2);
+  const [showTangent, setShowTangent] = useState<boolean>(false);
+  const [roots, setRoots] = useState<number[] | null>(null);
+  const [showRoots, setShowRoots] = useState<boolean>(false);
+  const [extrema, setExtrema] = useState<Array<{ x: number; y: number; type: 'min' | 'max' }> | null>(null);
+  const [showExtrema, setShowExtrema] = useState<boolean>(false);
+  const [intA, setIntA] = useState<number>(0);
+  const [intB, setIntB] = useState<number>(2);
+  const [integralValue, setIntegralValue] = useState<number | null>(null);
+  const [showIntegral, setShowIntegral] = useState<boolean>(false);
+
+  // Table of values state
+  const [tableStart, setTableStart] = useState<number>(-5);
+  const [tableEnd, setTableEnd] = useState<number>(5);
+  const [tableStep, setTableStep] = useState<number>(1);
+
+  // Cursor Hover Coordinates
+  const [hoverCoord, setHoverCoord] = useState<{ x: number; y: number } | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const presets = [
-    { label: 'x^2 - 4', fn: 'x^2 - 4', title: 'Quadratic: y = x^2 - 4', min: -5, max: 5 },
-    { label: 'sin(x)', fn: 'sin(x)', title: 'Sine Wave: y = sin(x)', min: -6.28, max: 6.28 },
-    { label: 'cos(x)', fn: 'cos(x)', title: 'Cosine Wave: y = cos(x)', min: -6.28, max: 6.28 },
-    { label: 'x^3 - 3x', fn: 'x^3 - 3*x', title: 'Cubic: y = x^3 - 3x', min: -3, max: 3 },
-    { label: 'sqrt(x)', fn: 'sqrt(x)', title: 'Square Root: y = sqrt(x)', min: 0, max: 25 },
-    { label: '1 / x', fn: '1 / x', title: 'Hyperbola: y = 1/x', min: -5, max: 5 },
-    { label: 'abs(x)', fn: 'abs(x)', title: 'Absolute Value: y = |x|', min: -6, max: 6 },
-    { label: '2^x', fn: '2^x', title: 'Exponential: y = 2^x', min: -4, max: 6 }
-  ];
+  const activeFn = useMemo(() => {
+    return functions.find((f) => f.id === activeFnId) || functions[0];
+  }, [functions, activeFnId]);
 
-  const plotOptions: PlotOptions = useMemo(() => ({
-    fn: fnStr,
-    title,
-    xMin,
-    xMax,
-    width: 680,
-    height: 380,
-    color: '#a78bfa'
-  }), [fnStr, title, xMin, xMax]);
+  // Calculus derived calculations for active function
+  const evalAtX0 = useMemo(() => {
+    if (!activeFn?.fn) return NaN;
+    return evalFx(activeFn.fn, x0);
+  }, [activeFn, x0]);
+
+  const derivativeAtX0 = useMemo(() => {
+    if (!activeFn?.fn) return NaN;
+    return evalDerivative(activeFn.fn, x0);
+  }, [activeFn, x0]);
+
+  const handleCalculateRoots = () => {
+    if (!activeFn?.fn) return;
+    const found = findRoots(activeFn.fn, xMin, xMax);
+    setRoots(found);
+    setShowRoots(true);
+  };
+
+  const handleCalculateExtrema = () => {
+    if (!activeFn?.fn) return;
+    const found = findExtrema(activeFn.fn, xMin, xMax);
+    setExtrema(found);
+    setShowExtrema(true);
+  };
+
+  const handleCalculateIntegral = () => {
+    if (!activeFn?.fn) return;
+    const val = integrateSimpson(activeFn.fn, intA, intB, 120);
+    setIntegralValue(Math.round(val * 10000) / 10000);
+    setShowIntegral(true);
+  };
+
+  // Compile plot points & decorations
+  const points = useMemo(() => {
+    const pts: Array<{ x: number; y: number; label?: string; color?: string }> = [];
+    if (showRoots && roots) {
+      roots.forEach((r) => {
+        pts.push({ x: r, y: 0, label: `Root: ${r}`, color: '#34d399' });
+      });
+    }
+    if (showExtrema && extrema) {
+      extrema.forEach((e) => {
+        pts.push({
+          x: e.x,
+          y: e.y,
+          label: `${e.type === 'max' ? 'Max' : 'Min'}: (${e.x}, ${e.y})`,
+          color: e.type === 'max' ? '#38bdf8' : '#f43f5e'
+        });
+      });
+    }
+    return pts;
+  }, [showRoots, roots, showExtrema, extrema]);
+
+  const tangentLine = useMemo(() => {
+    if (!showTangent || !activeFn || !Number.isFinite(derivativeAtX0) || !Number.isFinite(evalAtX0)) {
+      return undefined;
+    }
+    return {
+      x0,
+      slope: derivativeAtX0,
+      y0: evalAtX0,
+      color: '#fbbf24'
+    };
+  }, [showTangent, activeFn, x0, derivativeAtX0, evalAtX0]);
+
+  const shadedRegions = useMemo(() => {
+    if (!showIntegral || !activeFn) return undefined;
+    const fnIdx = functions.findIndex((f) => f.id === activeFn.id);
+    return [
+      {
+        from: intA,
+        to: intB,
+        fnIndex: fnIdx >= 0 ? fnIdx : 0,
+        color: 'rgba(139, 92, 246, 0.3)'
+      }
+    ];
+  }, [showIntegral, activeFn, functions, intA, intB]);
+
+  const plotOptions: PlotOptions = useMemo(() => {
+    const activeSpecs: FunctionSpec[] = functions
+      .filter((f) => f.visible && f.fn.trim().length > 0)
+      .map((f) => ({
+        fn: f.fn,
+        color: f.color,
+        label: f.label,
+        visible: true
+      }));
+
+    return {
+      functions: activeSpecs,
+      xMin,
+      xMax,
+      yMin: autoY ? undefined : yMin,
+      yMax: autoY ? undefined : yMax,
+      width: 680,
+      height: 380,
+      points: points.length > 0 ? points : undefined,
+      tangentLine,
+      shadedRegions,
+      title: activeFn ? `Graphing Calculator · ${activeFn.label} = ${activeFn.fn}` : 'Graphing Calculator'
+    };
+  }, [functions, xMin, xMax, yMin, yMax, autoY, points, tangentLine, shadedRegions, activeFn]);
 
   const svgOutput = useMemo(() => {
     try {
@@ -1508,8 +1773,89 @@ function GraphTool({
     }
   }, [plotOptions]);
 
+  // Table of Values computation
+  const tableRows = useMemo(() => {
+    if (subTab !== 'table') return [];
+    const visibleFns = functions.filter((f) => f.visible);
+    return computeTableOfValues(
+      visibleFns.map((f) => f.fn),
+      tableStart,
+      tableEnd,
+      tableStep
+    );
+  }, [subTab, functions, tableStart, tableEnd, tableStep]);
+
+  const handleUpdateFunction = (id: string, updates: Partial<CalculatorFunction>) => {
+    setFunctions((prev) => prev.map((f) => (f.id === id ? { ...f, ...updates } : f)));
+  };
+
+  const handleAddFunction = () => {
+    if (functions.length >= 4) return;
+    const colors = ['#a78bfa', '#34d399', '#38bdf8', '#fbbf24', '#f87171'];
+    const newIdx = functions.length + 1;
+    const newId = String(Date.now());
+    setFunctions((prev) => [
+      ...prev,
+      {
+        id: newId,
+        fn: 'cos(x)',
+        color: colors[(newIdx - 1) % colors.length],
+        label: `f${newIdx}(x)`,
+        visible: true
+      }
+    ]);
+    setActiveFnId(newId);
+  };
+
+  const handleRemoveFunction = (id: string) => {
+    if (functions.length <= 1) return;
+    setFunctions((prev) => prev.filter((f) => f.id !== id));
+    if (activeFnId === id) {
+      const remaining = functions.filter((f) => f.id !== id);
+      setActiveFnId(remaining[0]?.id || '1');
+    }
+  };
+
+  const insertToken = (tok: string) => {
+    if (!activeFn) return;
+    handleUpdateFunction(activeFn.id, { fn: activeFn.fn + tok });
+  };
+
+  const presets = [
+    { label: 'x² - 4', fn: 'x^2 - 4', min: -6, max: 6 },
+    { label: 'sin(x)', fn: 'sin(x)', min: -6.28, max: 6.28 },
+    { label: 'cos(x)', fn: 'cos(x)', min: -6.28, max: 6.28 },
+    { label: 'x³ - 3x', fn: 'x^3 - 3*x', min: -3, max: 3 },
+    { label: 'Gaussian exp(-x²)', fn: 'exp(-x^2)', min: -4, max: 4 },
+    { label: '1 / x', fn: '1 / x', min: -5, max: 5 },
+    { label: 'sqrt(x)', fn: 'sqrt(x)', min: 0, max: 20 },
+    { label: '|x|', fn: 'abs(x)', min: -6, max: 6 },
+    { label: 'Damped Sine', fn: 'exp(-0.2*x) * sin(3*x)', min: 0, max: 12 }
+  ];
+
+  const handleSvgMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const margin = { top: 45, right: 35, bottom: 45, left: 60 };
+    const plotW = rect.width - margin.left - margin.right;
+    const plotH = rect.height - margin.top - margin.bottom;
+
+    const mouseX = e.clientX - rect.left - margin.left;
+    const mouseY = e.clientY - rect.top - margin.top;
+
+    if (mouseX >= 0 && mouseX <= plotW && mouseY >= 0 && mouseY <= plotH) {
+      const mathX = xMin + (mouseX / plotW) * (xMax - xMin);
+      const mathY = yMin + ((plotH - mouseY) / plotH) * (yMax - yMin);
+      setHoverCoord({
+        x: Math.round(mathX * 100) / 100,
+        y: Math.round(mathY * 100) / 100
+      });
+    } else {
+      setHoverCoord(null);
+    }
+  };
+
   const handleDownloadSvg = () => {
-    downloadBlob(svgOutput, `${sanitizeFilename(title || 'graph')}.svg`, 'image/svg+xml');
+    downloadBlob(svgOutput, `${sanitizeFilename(activeFn?.label || 'graphing_calculator')}.svg`, 'image/svg+xml');
   };
 
   const handleCopySvg = async () => {
@@ -1517,137 +1863,496 @@ function GraphTool({
       await navigator.clipboard.writeText(svgOutput);
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
-    } catch {
-      /* ignore */
-    }
+    } catch {}
   };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, gap: '0.65rem' }}>
-      {/* Controls & Presets */}
-      <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center', flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flex: 1, minWidth: '240px' }}>
-          <span style={{ fontSize: '0.85rem', fontFamily: 'var(--font-mono)', color: '#c4b5fd', fontWeight: 600 }}>
-            f(x) =
-          </span>
-          <input
-            type="text"
-            value={fnStr}
-            onChange={(e) => setFnStr(e.target.value)}
-            placeholder="e.g. sin(x), x^2 - 4, sqrt(x)"
-            style={{
-              flex: 1,
-              backgroundColor: '#07070a',
-              border: '1px solid rgba(139, 92, 246, 0.3)',
-              borderRadius: '6px',
-              padding: '0.35rem 0.65rem',
-              color: '#ffffff',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.82rem'
-            }}
-          />
+      {/* Top Header: Function Equations & Mode Switches */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', backgroundColor: '#09090e', padding: '0.65rem', border: '1px solid rgba(139, 92, 246, 0.25)', borderRadius: '8px' }}>
+        {/* Function Entries */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+          {functions.map((f) => (
+            <div key={f.id} style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
+              <input
+                type="checkbox"
+                checked={f.visible}
+                onChange={(e) => handleUpdateFunction(f.id, { visible: e.target.checked })}
+                title="Toggle curve visibility"
+                style={{ cursor: 'pointer', accentColor: f.color }}
+              />
+              <button
+                type="button"
+                onClick={() => setActiveFnId(f.id)}
+                style={{
+                  fontSize: '0.76rem',
+                  fontFamily: 'var(--font-mono)',
+                  color: f.color,
+                  fontWeight: 600,
+                  backgroundColor: activeFnId === f.id ? 'rgba(139, 92, 246, 0.25)' : 'transparent',
+                  border: activeFnId === f.id ? `1px solid ${f.color}` : '1px solid transparent',
+                  borderRadius: '4px',
+                  padding: '0.15rem 0.4rem',
+                  cursor: 'pointer'
+                }}
+              >
+                {f.label} =
+              </button>
+              <input
+                type="text"
+                value={f.fn}
+                onChange={(e) => handleUpdateFunction(f.id, { fn: e.target.value })}
+                onFocus={() => setActiveFnId(f.id)}
+                placeholder="e.g. x^2 - 4, sin(x), sqrt(x)"
+                style={{
+                  flex: 1,
+                  minWidth: '180px',
+                  backgroundColor: '#050508',
+                  border: `1px solid ${activeFnId === f.id ? f.color : 'rgba(255, 255, 255, 0.12)'}`,
+                  borderRadius: '5px',
+                  padding: '0.3rem 0.6rem',
+                  color: '#ffffff',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.8rem'
+                }}
+              />
+              <input
+                type="color"
+                value={f.color}
+                onChange={(e) => handleUpdateFunction(f.id, { color: e.target.value })}
+                style={{ width: '26px', height: '26px', padding: 0, border: 'none', borderRadius: '4px', cursor: 'pointer', backgroundColor: 'transparent' }}
+                title="Change curve color"
+              />
+              {functions.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => handleRemoveFunction(f.id)}
+                  style={{ background: 'transparent', border: 'none', color: '#71717a', cursor: 'pointer', fontSize: '0.9rem' }}
+                  title="Remove function"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+          ))}
         </div>
 
-        <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-          <span style={{ fontSize: '0.7rem', color: '#a1a1aa', fontFamily: 'var(--font-mono)' }}>X Bounds:</span>
-          <input
-            type="number"
-            value={xMin}
-            onChange={(e) => setXMin(parseFloat(e.target.value) || -10)}
-            style={{ width: '65px', backgroundColor: '#07070a', border: '1px solid rgba(139, 92, 246, 0.25)', borderRadius: '4px', color: '#fff', padding: '0.25rem 0.45rem', fontSize: '0.74rem' }}
-          />
-          <span style={{ color: '#71717a' }}>to</span>
-          <input
-            type="number"
-            value={xMax}
-            onChange={(e) => setXMax(parseFloat(e.target.value) || 10)}
-            style={{ width: '65px', backgroundColor: '#07070a', border: '1px solid rgba(139, 92, 246, 0.25)', borderRadius: '4px', color: '#fff', padding: '0.25rem 0.45rem', fontSize: '0.74rem' }}
-          />
-        </div>
-      </div>
+        {/* Function Actions & Sub-Tabs */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.4rem', paddingTop: '0.3rem', borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
+          <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center' }}>
+            {functions.length < 4 && (
+              <button
+                type="button"
+                onClick={handleAddFunction}
+                className="btn-pill"
+                style={{ fontSize: '0.7rem', padding: '0.2rem 0.55rem' }}
+              >
+                + Add Function
+              </button>
+            )}
+            {/* Quick Math Keypad Chips */}
+            <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap', marginLeft: '0.4rem' }}>
+              {['sin(', 'cos(', 'tan(', 'sqrt(', 'exp(', 'abs(', '^2', 'pi', 'tau'].map((tok) => (
+                <button
+                  key={tok}
+                  type="button"
+                  onClick={() => insertToken(tok)}
+                  style={{
+                    fontSize: '0.68rem',
+                    fontFamily: 'var(--font-mono)',
+                    padding: '0.15rem 0.4rem',
+                    backgroundColor: '#111118',
+                    border: '1px solid rgba(139, 92, 246, 0.2)',
+                    borderRadius: '4px',
+                    color: '#c4b5fd',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {tok}
+                </button>
+              ))}
+            </div>
+          </div>
 
-      {/* Presets Row */}
-      <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', alignItems: 'center' }}>
-        <span style={{ fontSize: '0.7rem', color: '#71717a', fontFamily: 'var(--font-mono)' }}>Presets:</span>
-        {presets.map((p) => (
-          <button
-            key={p.label}
-            type="button"
-            onClick={() => {
-              setFnStr(p.fn);
-              setTitle(p.title);
-              setXMin(p.min);
-              setXMax(p.max);
-            }}
-            className="btn-pill"
-            style={{
-              fontSize: '0.7rem',
-              padding: '0.2rem 0.5rem',
-              backgroundColor: fnStr === p.fn ? 'rgba(139, 92, 246, 0.25)' : '#111118',
-              borderColor: fnStr === p.fn ? '#8b5cf6' : 'rgba(139, 92, 246, 0.2)',
-              color: fnStr === p.fn ? '#ffffff' : '#a1a1aa'
-            }}
-          >
-            {p.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Live SVG Graph Canvas */}
-      <div
-        style={{
-          flex: 1,
-          minHeight: 0,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: '#07070a',
-          border: '1px solid rgba(139, 92, 246, 0.25)',
-          borderRadius: '10px',
-          padding: '0.5rem',
-          overflow: 'hidden'
-        }}
-      >
-        <div dangerouslySetInnerHTML={{ __html: svgOutput }} style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }} />
-      </div>
-
-      {/* Action Footer */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
-        <div style={{ display: 'flex', gap: '0.4rem' }}>
-          <button
-            onClick={handleDownloadSvg}
-            className="btn-pill"
-            style={{ fontSize: '0.74rem', padding: '0.3rem 0.75rem', backgroundColor: 'rgba(139, 92, 246, 0.2)', borderColor: '#8b5cf6', color: '#ffffff' }}
-            title="Download vector SVG file"
-          >
-            <span>📥</span> Download SVG
-          </button>
-          <button
-            onClick={handleCopySvg}
-            className="btn-pill"
-            style={{ fontSize: '0.74rem', padding: '0.3rem 0.75rem' }}
-            title="Copy SVG code"
-          >
-            <span>📋</span> {copied ? 'Copied SVG!' : 'Copy SVG'}
-          </button>
-          {onInsertIntoChat && (
+          {/* Subtabs: Plot / Calculus / Table */}
+          <div style={{ display: 'flex', gap: '0.3rem' }}>
             <button
-              onClick={() => onInsertIntoChat(`[Graph: ${title}]\n\`\`\`xml\n${svgOutput}\n\`\`\``)}
+              type="button"
+              onClick={() => setSubTab('plot')}
               className="btn-pill"
-              style={{ fontSize: '0.74rem', padding: '0.3rem 0.75rem', borderColor: '#34d399', color: '#34d399' }}
+              style={{
+                fontSize: '0.72rem',
+                padding: '0.2rem 0.6rem',
+                backgroundColor: subTab === 'plot' ? 'rgba(139, 92, 246, 0.25)' : 'transparent',
+                borderColor: subTab === 'plot' ? '#8b5cf6' : 'rgba(255, 255, 255, 0.1)',
+                color: subTab === 'plot' ? '#ffffff' : '#a1a1aa'
+              }}
             >
-              <span>➕</span> Insert into Chat
+              📈 Plot
             </button>
-          )}
-          {onSendToWrite && (
             <button
-              onClick={() => onSendToWrite(`### ${title}\n\`\`\`xml\n${svgOutput}\n\`\`\``, title)}
+              type="button"
+              onClick={() => setSubTab('calc')}
+              className="btn-pill"
+              style={{
+                fontSize: '0.72rem',
+                padding: '0.2rem 0.6rem',
+                backgroundColor: subTab === 'calc' ? 'rgba(139, 92, 246, 0.25)' : 'transparent',
+                borderColor: subTab === 'calc' ? '#8b5cf6' : 'rgba(255, 255, 255, 0.1)',
+                color: subTab === 'calc' ? '#ffffff' : '#a1a1aa'
+              }}
+            >
+              📐 Calculus
+            </button>
+            <button
+              type="button"
+              onClick={() => setSubTab('table')}
+              className="btn-pill"
+              style={{
+                fontSize: '0.72rem',
+                padding: '0.2rem 0.6rem',
+                backgroundColor: subTab === 'table' ? 'rgba(139, 92, 246, 0.25)' : 'transparent',
+                borderColor: subTab === 'table' ? '#8b5cf6' : 'rgba(255, 255, 255, 0.1)',
+                color: subTab === 'table' ? '#ffffff' : '#a1a1aa'
+              }}
+            >
+              📊 Table
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Body: Plot View vs Table View */}
+      {subTab === 'table' ? (
+        /* Table of Values View */
+        <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', backgroundColor: '#07070a', border: '1px solid rgba(139, 92, 246, 0.25)', borderRadius: '10px', padding: '0.85rem' }}>
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '0.74rem', color: '#a1a1aa', fontFamily: 'var(--font-mono)' }}>Range:</span>
+            <span style={{ fontSize: '0.72rem', color: '#71717a' }}>Start:</span>
+            <input
+              type="number"
+              value={tableStart}
+              onChange={(e) => setTableStart(parseFloat(e.target.value) || 0)}
+              style={{ width: '60px', backgroundColor: '#09090e', border: '1px solid rgba(139, 92, 246, 0.3)', borderRadius: '4px', color: '#fff', padding: '0.2rem 0.4rem', fontSize: '0.74rem' }}
+            />
+            <span style={{ fontSize: '0.72rem', color: '#71717a' }}>End:</span>
+            <input
+              type="number"
+              value={tableEnd}
+              onChange={(e) => setTableEnd(parseFloat(e.target.value) || 10)}
+              style={{ width: '60px', backgroundColor: '#09090e', border: '1px solid rgba(139, 92, 246, 0.3)', borderRadius: '4px', color: '#fff', padding: '0.2rem 0.4rem', fontSize: '0.74rem' }}
+            />
+            <span style={{ fontSize: '0.72rem', color: '#71717a' }}>Step (Δx):</span>
+            <input
+              type="number"
+              step="0.1"
+              value={tableStep}
+              onChange={(e) => setTableStep(parseFloat(e.target.value) || 1)}
+              style={{ width: '60px', backgroundColor: '#09090e', border: '1px solid rgba(139, 92, 246, 0.3)', borderRadius: '4px', color: '#fff', padding: '0.2rem 0.4rem', fontSize: '0.74rem' }}
+            />
+          </div>
+
+          <div style={{ flex: 1, overflowY: 'auto', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '6px' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.76rem', fontFamily: 'var(--font-mono)' }}>
+              <thead>
+                <tr style={{ backgroundColor: '#111118', borderBottom: '1px solid rgba(139, 92, 246, 0.2)' }}>
+                  <th style={{ padding: '0.45rem 0.75rem', textAlign: 'left', color: '#c4b5fd' }}>x</th>
+                  {functions.filter((f) => f.visible).map((f) => (
+                    <th key={f.id} style={{ padding: '0.45rem 0.75rem', textAlign: 'left', color: f.color }}>
+                      {f.label} ({f.fn})
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {tableRows.map((r, i) => (
+                  <tr key={i} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.03)', backgroundColor: i % 2 === 0 ? 'transparent' : '#0a0a0f' }}>
+                    <td style={{ padding: '0.35rem 0.75rem', color: '#ffffff', fontWeight: 600 }}>{r.x}</td>
+                    {r.values.map((v, vIdx) => (
+                      <td key={vIdx} style={{ padding: '0.35rem 0.75rem', color: v == null ? '#71717a' : '#e4e4e7' }}>
+                        {v == null ? 'undefined' : v}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : (
+        /* Live SVG Plot & Calculus Controls View */
+        <div style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: subTab === 'calc' ? '1fr 280px' : '1fr', gap: '0.65rem' }}>
+          {/* Left: SVG Canvas */}
+          <div
+            onMouseMove={handleSvgMouseMove}
+            onMouseLeave={() => setHoverCoord(null)}
+            style={{
+              position: 'relative',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: '#07070a',
+              border: '1px solid rgba(139, 92, 246, 0.25)',
+              borderRadius: '10px',
+              padding: '0.5rem',
+              overflow: 'hidden'
+            }}
+          >
+            <div
+              dangerouslySetInnerHTML={{ __html: svgOutput }}
+              style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+            />
+            {/* Live Hover Coordinate Readout */}
+            {hoverCoord && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '12px',
+                  right: '12px',
+                  backgroundColor: 'rgba(12, 12, 18, 0.85)',
+                  border: '1px solid #8b5cf6',
+                  borderRadius: '6px',
+                  padding: '0.2rem 0.55rem',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.72rem',
+                  color: '#ffffff',
+                  pointerEvents: 'none'
+                }}
+              >
+                x: {hoverCoord.x}, y: {hoverCoord.y}
+              </div>
+            )}
+          </div>
+
+          {/* Right: Calculus Analysis Panel */}
+          {subTab === 'calc' && (
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.65rem',
+                backgroundColor: '#09090e',
+                border: '1px solid rgba(139, 92, 246, 0.25)',
+                borderRadius: '10px',
+                padding: '0.85rem',
+                overflowY: 'auto'
+              }}
+            >
+              <div style={{ fontSize: '0.78rem', fontFamily: 'var(--font-mono)', color: '#c4b5fd', fontWeight: 600 }}>
+                Calculus Tools: {activeFn?.label}
+              </div>
+
+              {/* Value Evaluation & Derivative at x0 */}
+              <div style={{ backgroundColor: '#111118', padding: '0.6rem', borderRadius: '6px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.35rem' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#a1a1aa' }}>Target Point (x₀):</span>
+                  <input
+                    type="number"
+                    value={x0}
+                    onChange={(e) => setX0(parseFloat(e.target.value) || 0)}
+                    style={{ width: '55px', backgroundColor: '#07070a', border: '1px solid rgba(139, 92, 246, 0.3)', borderRadius: '4px', color: '#fff', padding: '0.15rem 0.35rem', fontSize: '0.74rem' }}
+                  />
+                </div>
+                <div style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', color: '#ffffff', marginBottom: '0.25rem' }}>
+                  f({x0}) = <span style={{ color: '#34d399' }}>{Number.isFinite(evalAtX0) ? evalAtX0.toFixed(4) : 'NaN'}</span>
+                </div>
+                <div style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', color: '#ffffff', marginBottom: '0.35rem' }}>
+                  f'({x0}) = <span style={{ color: '#fbbf24' }}>{Number.isFinite(derivativeAtX0) ? derivativeAtX0.toFixed(4) : 'NaN'}</span>
+                </div>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.7rem', color: '#fbbf24', cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={showTangent}
+                    onChange={(e) => setShowTangent(e.target.checked)}
+                    style={{ accentColor: '#fbbf24' }}
+                  />
+                  Render Tangent Line on Plot
+                </label>
+              </div>
+
+              {/* Roots Finder */}
+              <div style={{ backgroundColor: '#111118', padding: '0.6rem', borderRadius: '6px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#a1a1aa' }}>Roots [f(x) = 0]:</span>
+                  <button
+                    type="button"
+                    onClick={handleCalculateRoots}
+                    className="btn-pill"
+                    style={{ fontSize: '0.68rem', padding: '0.15rem 0.45rem' }}
+                  >
+                    Find Roots
+                  </button>
+                </div>
+                {roots && (
+                  <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: '#34d399' }}>
+                    {roots.length === 0 ? 'No roots found in view' : `Roots: ${roots.join(', ')}`}
+                  </div>
+                )}
+              </div>
+
+              {/* Local Extrema Finder */}
+              <div style={{ backgroundColor: '#111118', padding: '0.6rem', borderRadius: '6px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                  <span style={{ fontSize: '0.72rem', color: '#a1a1aa' }}>Local Extrema:</span>
+                  <button
+                    type="button"
+                    onClick={handleCalculateExtrema}
+                    className="btn-pill"
+                    style={{ fontSize: '0.68rem', padding: '0.15rem 0.45rem' }}
+                  >
+                    Find Extrema
+                  </button>
+                </div>
+                {extrema && (
+                  <div style={{ fontSize: '0.7rem', fontFamily: 'var(--font-mono)', color: '#c4b5fd' }}>
+                    {extrema.length === 0 ? (
+                      'No extrema found in view'
+                    ) : (
+                      extrema.map((e, idx) => (
+                        <div key={idx}>
+                          {e.type.toUpperCase()}: ({e.x}, {e.y})
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Numerical Definite Integral */}
+              <div style={{ backgroundColor: '#111118', padding: '0.6rem', borderRadius: '6px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                <div style={{ fontSize: '0.72rem', color: '#a1a1aa', marginBottom: '0.35rem' }}>
+                  Definite Integral (∫ₐᵇ f(x)dx):
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginBottom: '0.35rem' }}>
+                  <span style={{ fontSize: '0.7rem', color: '#71717a' }}>a:</span>
+                  <input
+                    type="number"
+                    value={intA}
+                    onChange={(e) => setIntA(parseFloat(e.target.value) || 0)}
+                    style={{ width: '50px', backgroundColor: '#07070a', border: '1px solid rgba(139, 92, 246, 0.3)', borderRadius: '4px', color: '#fff', padding: '0.15rem 0.35rem', fontSize: '0.74rem' }}
+                  />
+                  <span style={{ fontSize: '0.7rem', color: '#71717a' }}>b:</span>
+                  <input
+                    type="number"
+                    value={intB}
+                    onChange={(e) => setIntB(parseFloat(e.target.value) || 0)}
+                    style={{ width: '50px', backgroundColor: '#07070a', border: '1px solid rgba(139, 92, 246, 0.3)', borderRadius: '4px', color: '#fff', padding: '0.15rem 0.35rem', fontSize: '0.74rem' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleCalculateIntegral}
+                    className="btn-pill"
+                    style={{ fontSize: '0.68rem', padding: '0.15rem 0.45rem' }}
+                  >
+                    Integrate
+                  </button>
+                </div>
+                {integralValue !== null && (
+                  <div style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', color: '#c4b5fd', marginTop: '0.2rem' }}>
+                    Area ≈ <span style={{ color: '#ffffff', fontWeight: 600 }}>{integralValue}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Bottom Controls: Presets, Window Bounds & Actions */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+        {/* Bounds & Presets Row */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.4rem' }}>
+          {/* Window Presets */}
+          <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '0.7rem', color: '#71717a', fontFamily: 'var(--font-mono)' }}>Curves:</span>
+            {presets.map((p) => (
+              <button
+                key={p.label}
+                type="button"
+                onClick={() => {
+                  if (activeFn) {
+                    handleUpdateFunction(activeFn.id, { fn: p.fn });
+                    setXMin(p.min);
+                    setXMax(p.max);
+                  }
+                }}
+                className="btn-pill"
+                style={{ fontSize: '0.68rem', padding: '0.15rem 0.45rem' }}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Bounds Controls */}
+          <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '0.7rem', color: '#a1a1aa', fontFamily: 'var(--font-mono)' }}>X:</span>
+            <input
+              type="number"
+              value={xMin}
+              onChange={(e) => setXMin(parseFloat(e.target.value) || -10)}
+              style={{ width: '50px', backgroundColor: '#07070a', border: '1px solid rgba(139, 92, 246, 0.25)', borderRadius: '4px', color: '#fff', padding: '0.15rem 0.35rem', fontSize: '0.72rem' }}
+            />
+            <span style={{ color: '#71717a', fontSize: '0.7rem' }}>to</span>
+            <input
+              type="number"
+              value={xMax}
+              onChange={(e) => setXMax(parseFloat(e.target.value) || 10)}
+              style={{ width: '50px', backgroundColor: '#07070a', border: '1px solid rgba(139, 92, 246, 0.25)', borderRadius: '4px', color: '#fff', padding: '0.15rem 0.35rem', fontSize: '0.72rem' }}
+            />
+            <button
+              type="button"
+              onClick={() => {
+                setXMin(-10);
+                setXMax(10);
+              }}
+              className="btn-pill"
+              style={{ fontSize: '0.68rem', padding: '0.15rem 0.45rem' }}
+              title="Reset window to standard [-10, 10]"
+            >
+              Standard
+            </button>
+          </div>
+        </div>
+
+        {/* Footer Action Buttons */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', borderTop: '1px solid rgba(255, 255, 255, 0.05)', paddingTop: '0.45rem' }}>
+          <div style={{ display: 'flex', gap: '0.4rem' }}>
+            <button
+              onClick={handleDownloadSvg}
+              className="btn-pill"
+              style={{ fontSize: '0.74rem', padding: '0.3rem 0.75rem', backgroundColor: 'rgba(139, 92, 246, 0.2)', borderColor: '#8b5cf6', color: '#ffffff' }}
+              title="Download vector SVG file"
+            >
+              <span>📥</span> Download SVG
+            </button>
+            <button
+              onClick={handleCopySvg}
               className="btn-pill"
               style={{ fontSize: '0.74rem', padding: '0.3rem 0.75rem' }}
+              title="Copy SVG code"
             >
-              <span>✍️</span> Send to Write
+              <span>📋</span> {copied ? 'Copied SVG!' : 'Copy SVG'}
             </button>
-          )}
+            {onInsertIntoChat && (
+              <button
+                onClick={() => onInsertIntoChat(`[Graph: ${activeFn?.label || 'f(x)'} = ${activeFn?.fn || ''}]\n\`\`\`xml\n${svgOutput}\n\`\`\``)}
+                className="btn-pill"
+                style={{ fontSize: '0.74rem', padding: '0.3rem 0.75rem', borderColor: '#34d399', color: '#34d399' }}
+              >
+                <span>➕</span> Insert into Chat
+              </button>
+            )}
+            {onSendToWrite && (
+              <button
+                onClick={() => onSendToWrite(`### Graphing Calculator: ${activeFn?.label || 'f(x)'} = ${activeFn?.fn || ''}\n\`\`\`xml\n${svgOutput}\n\`\`\``, activeFn?.label || 'Graph')}
+                className="btn-pill"
+                style={{ fontSize: '0.74rem', padding: '0.3rem 0.75rem' }}
+              >
+                <span>✍️</span> Send to Write
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -1655,8 +2360,11 @@ function GraphTool({
 }
 
 /* =========================================================================
-   TOOL 5: DRAW / PAINT (Interactive HTML5 Canvas Sketching)
+   TOOL 5: DRAW / PAINT (Interactive HTML5 Canvas Studio)
    ========================================================================= */
+
+type DrawToolMode = 'pen' | 'brush' | 'highlighter' | 'line' | 'arrow' | 'rect' | 'circle' | 'text' | 'fill' | 'eraser';
+type GridMode = 'none' | 'dots' | 'graph';
 
 function DrawTool({
   onInsertIntoChat,
@@ -1666,23 +2374,72 @@ function DrawTool({
   onSendToWrite?: (dataUrl: string, title: string) => void;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [tool, setTool] = useState<'pen' | 'highlighter' | 'eraser'>('pen');
+  const [tool, setTool] = useState<DrawToolMode>('pen');
   const [color, setColor] = useState('#8b5cf6'); // Ina Violet
   const [size, setSize] = useState(4);
+  const [isFilled, setIsFilled] = useState(false);
+  const [gridMode, setGridMode] = useState<GridMode>('none');
+  const [textInput, setTextInput] = useState('Note');
+
   const [isDrawing, setIsDrawing] = useState(false);
+  const startPosRef = useRef<{ x: number; y: number } | null>(null);
+  const snapshotRef = useRef<ImageData | null>(null);
+
   const [history, setHistory] = useState<ImageData[]>([]);
+  const [redoStack, setRedoStack] = useState<ImageData[]>([]);
 
   const colors = [
     { label: 'Ina Violet', hex: '#8b5cf6' },
-    { label: 'Emerald', hex: '#34d399' },
-    { label: 'Sky', hex: '#38bdf8' },
-    { label: 'Amber', hex: '#fbbf24' },
-    { label: 'Rose', hex: '#f87171' },
+    { label: 'Lavender', hex: '#c4b5fd' },
+    { label: 'Sky Blue', hex: '#38bdf8' },
+    { label: 'Deep Blue', hex: '#3b82f6' },
+    { label: 'Emerald', hex: '#10b981' },
+    { label: 'Mint', hex: '#34d399' },
+    { label: 'Lime', hex: '#84cc16' },
+    { label: 'Yellow', hex: '#eab308' },
+    { label: 'Amber', hex: '#f59e0b' },
+    { label: 'Orange', hex: '#f97316' },
+    { label: 'Red', hex: '#ef4444' },
+    { label: 'Rose', hex: '#f43f5e' },
+    { label: 'Pink', hex: '#ec4899' },
     { label: 'White', hex: '#ffffff' },
+    { label: 'Slate', hex: '#71717a' },
     { label: 'Black', hex: '#000000' }
   ];
 
-  // Set up canvas sizing
+  // Draw background and optional grid
+  const drawBackground = (ctx: CanvasRenderingContext2D, width: number, height: number, mode: GridMode) => {
+    ctx.fillStyle = '#09090e';
+    ctx.fillRect(0, 0, width, height);
+
+    if (mode === 'dots') {
+      ctx.fillStyle = 'rgba(139, 92, 246, 0.25)';
+      const step = 24;
+      for (let x = step / 2; x < width; x += step) {
+        for (let y = step / 2; y < height; y += step) {
+          ctx.beginPath();
+          ctx.arc(x, y, 1.2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    } else if (mode === 'graph') {
+      ctx.strokeStyle = 'rgba(139, 92, 246, 0.12)';
+      ctx.lineWidth = 1;
+      const step = 24;
+      ctx.beginPath();
+      for (let x = 0; x < width; x += step) {
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+      }
+      for (let y = 0; y < height; y += step) {
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+      }
+      ctx.stroke();
+    }
+  };
+
+  // Initialize canvas
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -1696,70 +2453,239 @@ function DrawTool({
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
 
-    // Fill dark background
-    ctx.fillStyle = '#09090e';
-    ctx.fillRect(0, 0, rect.width, rect.height);
-
-    // Save initial state
+    drawBackground(ctx, rect.width, rect.height, gridMode);
     setHistory([ctx.getImageData(0, 0, canvas.width, canvas.height)]);
+    setRedoStack([]);
   }, []);
 
-  const startDraw = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const getCanvasCoords = (clientX: number, clientY: number) => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
+    if (!canvas) return { x: 0, y: 0 };
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    setIsDrawing(true);
+    return {
+      x: clientX - rect.left,
+      y: clientY - rect.top
+    };
   };
 
-  const draw = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isDrawing) return;
+  // Flood fill algorithm
+  const performFloodFill = (startX: number, startY: number, fillHex: string) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    const w = canvas.width;
+    const h = canvas.height;
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const px = Math.floor(startX * (w / rect.width));
+    const py = Math.floor(startY * (h / rect.height));
 
-    if (tool === 'eraser') {
-      ctx.strokeStyle = '#09090e';
-      ctx.lineWidth = size * 3;
-      ctx.globalAlpha = 1.0;
-    } else if (tool === 'highlighter') {
-      ctx.strokeStyle = color;
-      ctx.lineWidth = size * 2.5;
-      ctx.globalAlpha = 0.35;
-    } else {
-      ctx.strokeStyle = color;
-      ctx.lineWidth = size;
-      ctx.globalAlpha = 1.0;
+    if (px < 0 || px >= w || py < 0 || py >= h) return;
+
+    const imgData = ctx.getImageData(0, 0, w, h);
+    const data = imgData.data;
+
+    // Parse target color
+    const temp = document.createElement('canvas');
+    temp.width = temp.height = 1;
+    const tctx = temp.getContext('2d')!;
+    tctx.fillStyle = fillHex;
+    tctx.fillRect(0, 0, 1, 1);
+    const target = tctx.getImageData(0, 0, 1, 1).data;
+    const tr = target[0], tg = target[1], tb = target[2], ta = 255;
+
+    const startIdx = (py * w + px) * 4;
+    const sr = data[startIdx], sg = data[startIdx + 1], sb = data[startIdx + 2], sa = data[startIdx + 3];
+
+    if (Math.abs(sr - tr) < 4 && Math.abs(sg - tg) < 4 && Math.abs(sb - tb) < 4 && Math.abs(sa - ta) < 4) {
+      return;
     }
 
-    ctx.lineTo(x, y);
-    ctx.stroke();
+    const matches = (idx: number) => {
+      return Math.abs(data[idx] - sr) <= 32 &&
+             Math.abs(data[idx + 1] - sg) <= 32 &&
+             Math.abs(data[idx + 2] - sb) <= 32;
+    };
+
+    const queue: number[] = [px, py];
+    const visited = new Uint8Array(w * h);
+    visited[py * w + px] = 1;
+
+    let head = 0;
+    while (head < queue.length && queue.length < w * h * 2) {
+      const cx = queue[head++];
+      const cy = queue[head++];
+      const idx = (cy * w + cx) * 4;
+
+      data[idx] = tr;
+      data[idx + 1] = tg;
+      data[idx + 2] = tb;
+      data[idx + 3] = ta;
+
+      const neighbors = [
+        [cx - 1, cy],
+        [cx + 1, cy],
+        [cx, cy - 1],
+        [cx, cy + 1]
+      ];
+
+      for (const [nx, ny] of neighbors) {
+        if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
+          const npos = ny * w + nx;
+          if (!visited[npos]) {
+            visited[npos] = 1;
+            if (matches(npos * 4)) {
+              queue.push(nx, ny);
+            }
+          }
+        }
+      }
+    }
+
+    ctx.putImageData(imgData, 0, 0);
+    commitSnapshot();
   };
 
-  const endDraw = () => {
-    if (!isDrawing) return;
-    setIsDrawing(false);
+  const drawArrow = (ctx: CanvasRenderingContext2D, fromX: number, fromY: number, toX: number, toY: number) => {
+    const headLength = Math.max(12, size * 2.5);
+    const dx = toX - fromX;
+    const dy = toY - fromY;
+    const angle = Math.atan2(dy, dx);
+    ctx.beginPath();
+    ctx.moveTo(fromX, fromY);
+    ctx.lineTo(toX, toY);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(toX, toY);
+    ctx.lineTo(toX - headLength * Math.cos(angle - Math.PI / 6), toY - headLength * Math.sin(angle - Math.PI / 6));
+    ctx.lineTo(toX - headLength * Math.cos(angle + Math.PI / 6), toY - headLength * Math.sin(angle + Math.PI / 6));
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+  };
+
+  const commitSnapshot = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const snap = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    setHistory((prev) => [...prev.slice(-20), snap]);
+    setRedoStack([]);
+  };
+
+  const onStartAction = (x: number, y: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Save snapshot for undo
-    setHistory((prev) => [...prev.slice(-15), ctx.getImageData(0, 0, canvas.width, canvas.height)]);
+    if (tool === 'fill') {
+      performFloodFill(x, y, color);
+      return;
+    }
+
+    if (tool === 'text') {
+      ctx.font = `${Math.max(12, size * 3.5)}px sans-serif`;
+      ctx.fillStyle = color;
+      ctx.fillText(textInput || 'Note', x, y);
+      commitSnapshot();
+      return;
+    }
+
+    setIsDrawing(true);
+    startPosRef.current = { x, y };
+    snapshotRef.current = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+    if (tool === 'pen' || tool === 'brush' || tool === 'highlighter' || tool === 'eraser') {
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+    }
   };
 
+  const onMoveAction = (x: number, y: number) => {
+    if (!isDrawing || !startPosRef.current) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    if (tool === 'pen' || tool === 'brush' || tool === 'highlighter' || tool === 'eraser') {
+      if (tool === 'eraser') {
+        ctx.strokeStyle = '#09090e';
+        ctx.lineWidth = size * 3.5;
+        ctx.globalAlpha = 1.0;
+      } else if (tool === 'highlighter') {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = size * 3;
+        ctx.globalAlpha = 0.35;
+      } else if (tool === 'brush') {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = size * 2;
+        ctx.globalAlpha = 0.85;
+      } else {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = size;
+        ctx.globalAlpha = 1.0;
+      }
+      ctx.lineTo(x, y);
+      ctx.stroke();
+    } else {
+      // Shape live preview: restore original snapshot first
+      if (snapshotRef.current) {
+        ctx.putImageData(snapshotRef.current, 0, 0);
+      }
+
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = size;
+      ctx.globalAlpha = 1.0;
+
+      const sx = startPosRef.current.x;
+      const sy = startPosRef.current.y;
+
+      if (tool === 'line') {
+        ctx.beginPath();
+        ctx.moveTo(sx, sy);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+      } else if (tool === 'arrow') {
+        drawArrow(ctx, sx, sy, x, y);
+      } else if (tool === 'rect') {
+        const rw = x - sx;
+        const rh = y - sy;
+        if (isFilled) {
+          ctx.fillRect(sx, sy, rw, rh);
+        } else {
+          ctx.strokeRect(sx, sy, rw, rh);
+        }
+      } else if (tool === 'circle') {
+        const rx = Math.abs(x - sx) / 2;
+        const ry = Math.abs(y - sy) / 2;
+        const cx = Math.min(sx, x) + rx;
+        const cy = Math.min(sy, y) + ry;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+        if (isFilled) {
+          ctx.fill();
+        } else {
+          ctx.stroke();
+        }
+      }
+    }
+  };
+
+  const onEndAction = () => {
+    if (!isDrawing) return;
+    setIsDrawing(false);
+    startPosRef.current = null;
+    snapshotRef.current = null;
+    commitSnapshot();
+  };
+
+  // Undo & Redo
   const handleUndo = () => {
     if (history.length <= 1) return;
     const canvas = canvasRef.current;
@@ -1767,11 +2693,31 @@ function DrawTool({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    const current = history[history.length - 1];
     const prevHistory = history.slice(0, -1);
-    const last = prevHistory[prevHistory.length - 1];
-    if (last) {
-      ctx.putImageData(last, 0, 0);
+    const target = prevHistory[prevHistory.length - 1];
+
+    if (target && current) {
+      ctx.putImageData(target, 0, 0);
       setHistory(prevHistory);
+      setRedoStack((prev) => [...prev, current]);
+    }
+  };
+
+  const handleRedo = () => {
+    if (redoStack.length === 0) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const next = redoStack[redoStack.length - 1];
+    const nextRedo = redoStack.slice(0, -1);
+
+    if (next) {
+      ctx.putImageData(next, 0, 0);
+      setRedoStack(nextRedo);
+      setHistory((prev) => [...prev, next]);
     }
   };
 
@@ -1782,9 +2728,20 @@ function DrawTool({
     if (!ctx) return;
 
     const rect = canvas.getBoundingClientRect();
-    ctx.fillStyle = '#09090e';
-    ctx.fillRect(0, 0, rect.width, rect.height);
-    setHistory([ctx.getImageData(0, 0, canvas.width, canvas.height)]);
+    drawBackground(ctx, rect.width, rect.height, gridMode);
+    commitSnapshot();
+  };
+
+  const handleGridChange = (mode: GridMode) => {
+    setGridMode(mode);
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const rect = canvas.getBoundingClientRect();
+    drawBackground(ctx, rect.width, rect.height, mode);
+    commitSnapshot();
   };
 
   const handleDownloadPng = () => {
@@ -1793,7 +2750,7 @@ function DrawTool({
     const dataUrl = canvas.toDataURL('image/png');
     const a = document.createElement('a');
     a.href = dataUrl;
-    a.download = `easylm-drawing-${Date.now()}.png`;
+    a.download = `easylm-canvas-${Date.now()}.png`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -1801,63 +2758,96 @@ function DrawTool({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, gap: '0.65rem' }}>
-      {/* Canvas Tooling Controls */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
-        {/* Tool Modes */}
-        <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center' }}>
-          <button
-            type="button"
-            onClick={() => setTool('pen')}
-            className="btn-pill"
-            style={{
-              fontSize: '0.74rem',
-              padding: '0.25rem 0.65rem',
-              backgroundColor: tool === 'pen' ? 'rgba(139, 92, 246, 0.25)' : 'transparent',
-              borderColor: tool === 'pen' ? '#8b5cf6' : 'rgba(255, 255, 255, 0.1)',
-              color: tool === 'pen' ? '#ffffff' : '#a1a1aa'
-            }}
-          >
-            ✏️ Pen
-          </button>
-          <button
-            type="button"
-            onClick={() => setTool('highlighter')}
-            className="btn-pill"
-            style={{
-              fontSize: '0.74rem',
-              padding: '0.25rem 0.65rem',
-              backgroundColor: tool === 'highlighter' ? 'rgba(139, 92, 246, 0.25)' : 'transparent',
-              borderColor: tool === 'highlighter' ? '#8b5cf6' : 'rgba(255, 255, 255, 0.1)',
-              color: tool === 'highlighter' ? '#ffffff' : '#a1a1aa'
-            }}
-          >
-            🖍️ Highlighter
-          </button>
-          <button
-            type="button"
-            onClick={() => setTool('eraser')}
-            className="btn-pill"
-            style={{
-              fontSize: '0.74rem',
-              padding: '0.25rem 0.65rem',
-              backgroundColor: tool === 'eraser' ? 'rgba(139, 92, 246, 0.25)' : 'transparent',
-              borderColor: tool === 'eraser' ? '#8b5cf6' : 'rgba(255, 255, 255, 0.1)',
-              color: tool === 'eraser' ? '#ffffff' : '#a1a1aa'
-            }}
-          >
-            🧹 Eraser
-          </button>
+      {/* Primary Toolbar */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', backgroundColor: '#09090e', padding: '0.65rem', border: '1px solid rgba(139, 92, 246, 0.25)', borderRadius: '8px' }}>
+        {/* Tool Selector Row */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.45rem' }}>
+          <div style={{ display: 'flex', gap: '0.25rem', alignItems: 'center', flexWrap: 'wrap' }}>
+            {[
+              { id: 'pen', label: '✏️ Pen' },
+              { id: 'brush', label: '🖌️ Brush' },
+              { id: 'highlighter', label: '🖍️ Highlight' },
+              { id: 'line', label: '📏 Line' },
+              { id: 'arrow', label: '↗️ Arrow' },
+              { id: 'rect', label: '🔲 Rect' },
+              { id: 'circle', label: '⭕ Circle' },
+              { id: 'text', label: '🔤 Text' },
+              { id: 'fill', label: '🪣 Fill' },
+              { id: 'eraser', label: '🧹 Eraser' }
+            ].map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setTool(t.id as DrawToolMode)}
+                className="btn-pill"
+                style={{
+                  fontSize: '0.72rem',
+                  padding: '0.2rem 0.55rem',
+                  backgroundColor: tool === t.id ? 'rgba(139, 92, 246, 0.25)' : 'transparent',
+                  borderColor: tool === t.id ? '#8b5cf6' : 'rgba(255, 255, 255, 0.1)',
+                  color: tool === t.id ? '#ffffff' : '#a1a1aa'
+                }}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
 
-          {/* Color Palette */}
-          <div style={{ display: 'flex', gap: '0.3rem', marginLeft: '0.5rem', alignItems: 'center' }}>
+          {/* Undo / Redo / Clear / PNG */}
+          <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center' }}>
+            <button
+              type="button"
+              onClick={handleUndo}
+              disabled={history.length <= 1}
+              className="btn-pill"
+              style={{ fontSize: '0.7rem', padding: '0.2rem 0.5rem', opacity: history.length <= 1 ? 0.35 : 1 }}
+              title="Undo stroke (Ctrl+Z)"
+            >
+              ↩️ Undo
+            </button>
+            <button
+              type="button"
+              onClick={handleRedo}
+              disabled={redoStack.length === 0}
+              className="btn-pill"
+              style={{ fontSize: '0.7rem', padding: '0.2rem 0.5rem', opacity: redoStack.length === 0 ? 0.35 : 1 }}
+              title="Redo stroke"
+            >
+              ↪️ Redo
+            </button>
+            <button
+              type="button"
+              onClick={handleClear}
+              className="btn-pill"
+              style={{ fontSize: '0.7rem', padding: '0.2rem 0.5rem' }}
+              title="Clear canvas"
+            >
+              Clear
+            </button>
+            <button
+              type="button"
+              onClick={handleDownloadPng}
+              className="btn-pill"
+              style={{ fontSize: '0.7rem', padding: '0.2rem 0.55rem', backgroundColor: 'rgba(139, 92, 246, 0.2)', borderColor: '#8b5cf6', color: '#ffffff' }}
+              title="Download canvas as PNG"
+            >
+              💾 PNG
+            </button>
+          </div>
+        </div>
+
+        {/* Second Row: Palette, Size, Shapes Mode, Grid */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', paddingTop: '0.35rem', borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
+          {/* 16 Color Palette Swatches */}
+          <div style={{ display: 'flex', gap: '0.25rem', alignItems: 'center', flexWrap: 'wrap' }}>
             {colors.map((c) => (
               <button
                 key={c.hex}
                 type="button"
                 onClick={() => setColor(c.hex)}
                 style={{
-                  width: '20px',
-                  height: '20px',
+                  width: '18px',
+                  height: '18px',
                   borderRadius: '50%',
                   backgroundColor: c.hex,
                   border: color === c.hex ? '2px solid #ffffff' : '1px solid rgba(255, 255, 255, 0.2)',
@@ -1867,56 +2857,85 @@ function DrawTool({
                 title={c.label}
               />
             ))}
-          </div>
-
-          {/* Stroke Size */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginLeft: '0.6rem' }}>
-            <span style={{ fontSize: '0.7rem', color: '#a1a1aa', fontFamily: 'var(--font-mono)' }}>Size:</span>
             <input
-              type="range"
-              min={2}
-              max={28}
-              value={size}
-              onChange={(e) => setSize(parseInt(e.target.value, 10))}
-              style={{ width: '80px', cursor: 'pointer' }}
+              type="color"
+              value={color}
+              onChange={(e) => setColor(e.target.value)}
+              style={{ width: '22px', height: '22px', padding: 0, border: 'none', borderRadius: '4px', cursor: 'pointer', backgroundColor: 'transparent' }}
+              title="Custom Color Picker"
             />
           </div>
-        </div>
 
-        {/* Actions: Undo, Clear, Export */}
-        <div style={{ display: 'flex', gap: '0.35rem' }}>
-          <button
-            type="button"
-            onClick={handleUndo}
-            disabled={history.length <= 1}
-            className="btn-pill"
-            style={{ fontSize: '0.72rem', padding: '0.25rem 0.6rem', opacity: history.length <= 1 ? 0.4 : 1 }}
-            title="Undo stroke"
-          >
-            ↩️ Undo
-          </button>
-          <button
-            type="button"
-            onClick={handleClear}
-            className="btn-pill"
-            style={{ fontSize: '0.72rem', padding: '0.25rem 0.6rem' }}
-            title="Clear canvas"
-          >
-            Clear
-          </button>
-          <button
-            type="button"
-            onClick={handleDownloadPng}
-            className="btn-pill"
-            style={{ fontSize: '0.72rem', padding: '0.25rem 0.6rem', backgroundColor: 'rgba(139, 92, 246, 0.2)', borderColor: '#8b5cf6', color: '#ffffff' }}
-            title="Download PNG image"
-          >
-            💾 Download PNG
-          </button>
+          {/* Controls: Size, Shape Fill, Grid Mode, Text Field */}
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+            {/* Stroke Size Slider */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+              <span style={{ fontSize: '0.7rem', color: '#a1a1aa', fontFamily: 'var(--font-mono)' }}>Size: {size}px</span>
+              <input
+                type="range"
+                min={1}
+                max={42}
+                value={size}
+                onChange={(e) => setSize(parseInt(e.target.value, 10))}
+                style={{ width: '65px', cursor: 'pointer' }}
+              />
+            </div>
+
+            {/* Shape Fill Toggle (for rect & circle) */}
+            {(tool === 'rect' || tool === 'circle') && (
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.7rem', color: '#c4b5fd', cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={isFilled}
+                  onChange={(e) => setIsFilled(e.target.checked)}
+                  style={{ accentColor: '#8b5cf6' }}
+                />
+                Fill Shape
+              </label>
+            )}
+
+            {/* Text Input for Text Tool */}
+            {tool === 'text' && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                <span style={{ fontSize: '0.7rem', color: '#a1a1aa' }}>Text:</span>
+                <input
+                  type="text"
+                  value={textInput}
+                  onChange={(e) => setTextInput(e.target.value)}
+                  placeholder="Click to place text"
+                  style={{ width: '90px', backgroundColor: '#07070a', border: '1px solid rgba(139, 92, 246, 0.3)', borderRadius: '4px', color: '#fff', padding: '0.15rem 0.35rem', fontSize: '0.72rem' }}
+                />
+              </div>
+            )}
+
+            {/* Grid Backdrop Switcher */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+              <span style={{ fontSize: '0.7rem', color: '#71717a', fontFamily: 'var(--font-mono)' }}>Grid:</span>
+              {(['none', 'dots', 'graph'] as GridMode[]).map((g) => (
+                <button
+                  key={g}
+                  type="button"
+                  onClick={() => handleGridChange(g)}
+                  style={{
+                    fontSize: '0.68rem',
+                    fontFamily: 'var(--font-mono)',
+                    padding: '0.15rem 0.4rem',
+                    backgroundColor: gridMode === g ? 'rgba(139, 92, 246, 0.25)' : 'transparent',
+                    border: gridMode === g ? '1px solid #8b5cf6' : '1px solid rgba(255, 255, 255, 0.08)',
+                    borderRadius: '4px',
+                    color: gridMode === g ? '#ffffff' : '#71717a',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {g}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Canvas Area */}
+      {/* Interactive HTML5 Canvas Area */}
       <div
         style={{
           flex: 1,
@@ -1930,17 +2949,73 @@ function DrawTool({
       >
         <canvas
           ref={canvasRef}
-          onMouseDown={startDraw}
-          onMouseMove={draw}
-          onMouseUp={endDraw}
-          onMouseLeave={endDraw}
+          onMouseDown={(e) => {
+            const { x, y } = getCanvasCoords(e.clientX, e.clientY);
+            onStartAction(x, y);
+          }}
+          onMouseMove={(e) => {
+            const { x, y } = getCanvasCoords(e.clientX, e.clientY);
+            onMoveAction(x, y);
+          }}
+          onMouseUp={onEndAction}
+          onMouseLeave={onEndAction}
+          onTouchStart={(e) => {
+            if (e.touches[0]) {
+              const { x, y } = getCanvasCoords(e.touches[0].clientX, e.touches[0].clientY);
+              onStartAction(x, y);
+            }
+          }}
+          onTouchMove={(e) => {
+            if (e.touches[0]) {
+              const { x, y } = getCanvasCoords(e.touches[0].clientX, e.touches[0].clientY);
+              onMoveAction(x, y);
+            }
+          }}
+          onTouchEnd={onEndAction}
+          onTouchCancel={onEndAction}
           style={{
             width: '100%',
             height: '100%',
             display: 'block',
-            cursor: tool === 'eraser' ? 'cell' : 'crosshair'
+            touchAction: 'none',
+            cursor:
+              tool === 'eraser'
+                ? 'cell'
+                : tool === 'fill'
+                ? 'copy'
+                : tool === 'text'
+                ? 'text'
+                : 'crosshair'
           }}
         />
+      </div>
+
+      {/* Footer Send / Insert Actions */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.4rem', alignItems: 'center' }}>
+        {onSendToWrite && (
+          <button
+            type="button"
+            onClick={() => {
+              const canvas = canvasRef.current;
+              if (!canvas) return;
+              onSendToWrite(canvas.toDataURL('image/png'), 'Canvas Diagram');
+            }}
+            className="btn-pill"
+            style={{ fontSize: '0.72rem', padding: '0.3rem 0.65rem' }}
+          >
+            <span>✍️</span> Send to Write
+          </button>
+        )}
+        {onInsertIntoChat && (
+          <button
+            type="button"
+            onClick={() => onInsertIntoChat('[Drawing: Interactive Canvas Diagram Generated in Studio]')}
+            className="btn-pill"
+            style={{ fontSize: '0.72rem', padding: '0.3rem 0.65rem', borderColor: '#34d399', color: '#34d399' }}
+          >
+            <span>➕</span> Insert into Chat
+          </button>
+        )}
       </div>
     </div>
   );

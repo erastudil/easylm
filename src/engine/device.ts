@@ -1,3 +1,5 @@
+import { patchWebGPUAdapterFallback } from './webllm';
+
 export type HardwareTier = 'ultralight' | 'standard' | 'high_performance' | 'workstation';
 
 export interface DeviceInfo {
@@ -41,23 +43,73 @@ export async function detectDevice(): Promise<DeviceInfo> {
 
   if (hasWebGPU) {
     try {
-      // Request high-performance adapter to prefer discrete GPU over integrated where available
-      const adapter = await (navigator as any).gpu.requestAdapter({ powerPreference: 'high-performance' });
+      patchWebGPUAdapterFallback();
+      // 1. Request high-performance adapter to prefer discrete GPU over integrated where available
+      let adapter = await (navigator as any).gpu.requestAdapter({ powerPreference: 'high-performance' });
+      // 2. Fallback to default adapter
+      if (!adapter) {
+        adapter = await (navigator as any).gpu.requestAdapter();
+      }
+      // 3. Fallback to low-power adapter
+      if (!adapter) {
+        adapter = await (navigator as any).gpu.requestAdapter({ powerPreference: 'low-power' });
+      }
+
       if (adapter) {
-        if (adapter.info) {
-          gpuVendor = (adapter.info.vendor || '').trim();
-          gpuRenderer = `${adapter.info.architecture || ''} ${adapter.info.description || adapter.info.device || ''}`.trim();
+        let info = adapter.info;
+        if (!info && typeof adapter.requestAdapterInfo === 'function') {
+          try {
+            info = await adapter.requestAdapterInfo();
+          } catch {
+            // ignore
+          }
         }
+        info = info || {};
+
+        let vendor = (info.vendor || '').trim();
+        let arch = (info.architecture || '').trim();
+        let desc = (info.description || info.device || '').trim();
+
+        // Extract vendor if generic wrapper or description contains hardware string
+        const combined = `${vendor} ${arch} ${desc}`.trim();
+        const lowerCombined = combined.toLowerCase();
+
+        if (
+          lowerCombined.includes('nvidia') ||
+          lowerCombined.includes('geforce') ||
+          lowerCombined.includes('rtx') ||
+          lowerCombined.includes('gtx')
+        ) {
+          if (!vendor || vendor.toLowerCase() === 'google' || vendor.toLowerCase() === 'microsoft') {
+            vendor = 'NVIDIA';
+          }
+          isDiscreteGPU = true;
+        } else if (lowerCombined.includes('amd') || lowerCombined.includes('radeon')) {
+          if (!vendor || vendor.toLowerCase() === 'google' || vendor.toLowerCase() === 'microsoft') {
+            vendor = 'AMD';
+          }
+          isDiscreteGPU = true;
+        } else if (
+          lowerCombined.includes('apple') ||
+          lowerCombined.includes('m1') ||
+          lowerCombined.includes('m2') ||
+          lowerCombined.includes('m3') ||
+          lowerCombined.includes('m4')
+        ) {
+          vendor = 'Apple';
+          isDiscreteGPU = true;
+        } else if (lowerCombined.includes('intel') || lowerCombined.includes('arc') || lowerCombined.includes('iris') || lowerCombined.includes('uhd')) {
+          if (!vendor) vendor = 'Intel';
+          if (lowerCombined.includes('arc')) {
+            isDiscreteGPU = true;
+          }
+        }
+
+        gpuVendor = vendor || (combined ? 'WebGPU' : undefined);
+        gpuRenderer = (desc || arch) ? `${arch} ${desc}`.trim() : undefined;
+
         if (adapter.limits) {
           maxBufferSizeMB = Math.round((adapter.limits.maxBufferSize || 0) / (1024 * 1024));
-        }
-        const vLower = `${gpuVendor} ${gpuRenderer}`.toLowerCase();
-        if (
-          vLower.includes('nvidia') || vLower.includes('geforce') || vLower.includes('rtx') ||
-          vLower.includes('radeon') || vLower.includes('amd') || vLower.includes('apple') ||
-          vLower.includes('arc')
-        ) {
-          isDiscreteGPU = true;
         }
       }
     } catch {

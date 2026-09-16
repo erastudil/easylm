@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { DeviceInfo } from '../engine/device';
+import { DeviceInfo, detectDevice } from '../engine/device';
 import { CONTRIBUTORS_CREDITS, OPEN_SOURCE_COVENANT, OPEN_WEIGHTS_PROVIDERS } from '../data/credits';
+import { resetWebGPUAndCaches } from '../engine/webllm';
+import { effortCap } from '../engine/context_budget';
 import {
   isVaultEncrypted,
   isVaultUnlocked,
@@ -58,12 +60,46 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [secErrorMsg, setSecErrorMsg] = useState<string | null>(null);
   const [isProcessingSec, setIsProcessingSec] = useState(false);
 
+  const [isClearingCache, setIsClearingCache] = useState(false);
+  const [cacheActionMsg, setCacheActionMsg] = useState<string | null>(null);
+  const [currentDevInfo, setCurrentDevInfo] = useState<DeviceInfo | null | undefined>(deviceInfo);
+
+  useEffect(() => {
+    setCurrentDevInfo(deviceInfo);
+  }, [deviceInfo]);
+
+  const handleClearCache = async () => {
+    setIsClearingCache(true);
+    setCacheActionMsg(null);
+    try {
+      const res = await resetWebGPUAndCaches();
+      setCacheActionMsg(res.message || 'Cache cleared & WebGPU reset.');
+      const freshDev = await detectDevice();
+      setCurrentDevInfo(freshDev);
+    } catch (e: any) {
+      setCacheActionMsg(`Notice: ${e?.message || e}`);
+    } finally {
+      setIsClearingCache(false);
+    }
+  };
+
+  const handleRecheckDevice = async () => {
+    try {
+      const freshDev = await detectDevice();
+      setCurrentDevInfo(freshDev);
+      setCacheActionMsg(`Hardware probed: ${freshDev.gpuVendor || 'WebGPU'} ${freshDev.gpuRenderer || ''}`);
+    } catch (e: any) {
+      setCacheActionMsg(`Notice: ${e?.message || e}`);
+    }
+  };
+
   useEffect(() => {
     if (isOpen) {
       setVaultEncrypted(isVaultEncrypted());
       setVaultUnlocked(isVaultUnlocked());
       setSecStatusMsg(null);
       setSecErrorMsg(null);
+      setCacheActionMsg(null);
       setPassphraseInput('');
       if (initialTab) {
         setActiveTab(initialTab);
@@ -912,7 +948,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           </div>
 
           <p style={{ margin: '0 0 0.75rem 0', fontSize: '0.74rem', color: '#a1a1aa', lineHeight: 1.5 }}>
-            Defines how much conversation history, long-form documents, and academic library context is retained in WebGPU KV-cache memory during inference. 32k is the standard default for 8GB cards; up to 128k–256k on high-VRAM machines.
+            How much history the model can hold. Completion effort is capped at {effortCap(contextLimit, false).toLocaleString()} tokens, and never more than what remains after the prompt. That keeps the GPU worker from being asked for a window it cannot hold.
           </p>
 
           <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
@@ -1006,25 +1042,74 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           />
         </div>
 
-        {/* Quick Links / Hardware Summary */}
-        {deviceInfo && (
-          <div style={{
-            padding: '0.75rem 1rem',
-            backgroundColor: 'rgba(139, 92, 246, 0.08)',
-            border: '1px solid rgba(139, 92, 246, 0.2)',
-            borderRadius: '10px',
-            fontSize: '0.74rem',
-            color: '#a1a1aa',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: '0.5rem'
-          }}>
-            <div>
-              <span style={{ color: '#e4e4e7', fontWeight: 600 }}>Detected GPU: </span>
-              <span>{deviceInfo.gpuVendor || 'WebGPU'} {deviceInfo.gpuRenderer || ''} (~{deviceInfo.estimatedVRAMGB || 8}GB VRAM)</span>
+        {/* WebGPU & Weight Cache Maintenance */}
+        <div style={{
+          backgroundColor: '#111118',
+          border: '1px solid rgba(139, 92, 246, 0.25)',
+          borderRadius: '12px',
+          padding: '1rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.75rem'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <label style={{ fontSize: '0.84rem', fontWeight: 600, color: '#ffffff', fontFamily: 'var(--font-mono)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <span>🧹</span> WebGPU &amp; Weight Cache
+            </label>
+            <span style={{
+              fontSize: '0.68rem',
+              fontFamily: 'var(--font-mono)',
+              padding: '0.15rem 0.5rem',
+              borderRadius: '6px',
+              backgroundColor: currentDevInfo?.hasWebGPU ? 'rgba(52, 211, 153, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+              color: currentDevInfo?.hasWebGPU ? '#34d399' : '#fca5a5',
+              border: currentDevInfo?.hasWebGPU ? '1px solid rgba(52, 211, 153, 0.3)' : '1px solid rgba(239, 68, 68, 0.3)'
+            }}>
+              {currentDevInfo?.hasWebGPU ? 'WebGPU Active' : 'WebGPU Unavailable'}
+            </span>
+          </div>
+
+          <div style={{ fontSize: '0.74rem', color: '#a1a1aa', lineHeight: 1.5 }}>
+            <div style={{ color: '#e4e4e7', marginBottom: '0.25rem' }}>
+              <strong>Detected GPU:</strong> {currentDevInfo?.gpuVendor || 'WebGPU'} {currentDevInfo?.gpuRenderer || ''} (~{currentDevInfo?.estimatedVRAMGB || 8}GB VRAM · {currentDevInfo?.hardwareTier?.toUpperCase() || 'STANDARD'})
             </div>
+            Model weights are stored in browser CacheStorage. If a download was interrupted, or WebGPU failed to find a valid GPU adapter, clearing the weight cache resets the GPU device and downloads fresh shards.
+          </div>
+
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+            <button
+              type="button"
+              onClick={handleClearCache}
+              disabled={isClearingCache}
+              className="btn-pill"
+              style={{
+                fontSize: '0.74rem',
+                padding: '0.35rem 0.75rem',
+                backgroundColor: 'rgba(239, 68, 68, 0.12)',
+                borderColor: 'rgba(239, 68, 68, 0.35)',
+                color: '#fca5a5',
+                cursor: 'pointer'
+              }}
+            >
+              {isClearingCache ? 'Purging Cache...' : '🗑️ Clear Model Cache & Reset WebGPU'}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleRecheckDevice}
+              className="btn-pill"
+              style={{
+                fontSize: '0.74rem',
+                padding: '0.35rem 0.75rem',
+                backgroundColor: 'rgba(139, 92, 246, 0.15)',
+                borderColor: 'rgba(139, 92, 246, 0.35)',
+                color: '#c4b5fd',
+                cursor: 'pointer'
+              }}
+            >
+              🔄 Re-probe Hardware
+            </button>
+
             {onOpenModelModal && (
               <button
                 type="button"
@@ -1034,18 +1119,25 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 }}
                 className="btn-pill"
                 style={{
-                  fontSize: '0.72rem',
-                  padding: '0.2rem 0.6rem',
+                  fontSize: '0.74rem',
+                  padding: '0.35rem 0.75rem',
                   backgroundColor: 'rgba(139, 92, 246, 0.2)',
                   borderColor: '#8b5cf6',
-                  color: '#c4b5fd'
+                  color: '#c4b5fd',
+                  marginLeft: 'auto'
                 }}
               >
-                Browse Models &amp; VRAM Tiers →
+                Model Tiers →
               </button>
             )}
           </div>
-        )}
+
+          {cacheActionMsg && (
+            <div style={{ fontSize: '0.72rem', color: '#34d399', fontFamily: 'var(--font-mono)' }}>
+              ✓ {cacheActionMsg}
+            </div>
+          )}
+        </div>
         </>
       )}
 

@@ -2,4 +2,35 @@
 
 ## Unreleased
 
+- Context / effort fence: completion `max_tokens` is capped to remaining context, never the full window. Voice + protocols + tools share a 40% envelope so switching a gallery voice cannot overflow 4k. Device-lost and GPU-process-dead fail closed with no auto-reinit. Last-resort dialog copies `chrome://restart` / `brave://restart` / `edge://restart` and warns that tabs reload. Clear-cache retry is withheld while the GPU worker is down.
+- WebGPU Adapter Resilience & Model Cache Recovery:
+  - Fixed "unable to find valid gpu" failure mode with multi-tier cascading fallback (`high-performance` -> system default -> `low-power` with backoff retry).
+  - Improved GPU recognition in `detectDevice`: parses vendor (NVIDIA, AMD, Apple, Intel) from adapter description when browser returns generic vendor wrappers.
+  - Implemented full weight cache management (`clearModelCache`, `resetWebGPUAndCaches`, `hasCachedModel`) purging corrupted tensors and WASM binaries from browser `CacheStorage` and `IndexedDB`.
+  - Added 1-click "Clear Cache & Retry" error banner in `App.tsx` and maintenance controls in both `ModelModal` and `SettingsModal`.
+- Documentation & Collaboration Readiness:
+  - Added comprehensive `ROADMAP.md` covering honest development state, model adapter reality (why base 1.5B/3B models need fine-tuned task adapters for reliable tool use), known hardware/WebGPU constraints, and active development tracks.
+  - Updated `README.md` with explicit Development Status, Known Issues, and Priorities & Roadmap sections.
+  - Expanded `CONTRIBUTING.md` with four structured collaboration tracks: Stacks & Curriculum Authoring, Local Tooling & Sandboxes, Model Adapters & Dataset Curation, and UI Canon & Accessibility.
+- Studio JavaScript Sandbox (CodeTool):
+  - Implemented auto-recovering dual-mode execution: Web Worker runner with instantaneous in-thread fallback if CSP, COEP (`require-corp`), or blob security errors occur.
+  - Powered in-thread runner via `AsyncFunction`, natively supporting top-level `await`, asynchronous fetches, and promise pipelines without syntax errors.
+  - Added full console method emulation: `console.log`, `console.info`, `console.warn`, `console.error`, `console.table` (ASCII markdown table formatter), and `console.clear`.
+  - Expanded coding presets: Monte Carlo Pi, Fibonacci & Golden Ratio, Quadratic Solver, Levenshtein String Distance, 2D Matrix Rotation, Mandelbrot ASCII Fractal, Async Pipeline.
+- Studio Graphing Calculator (GraphTool & engine/plot.ts):
+  - Transformed into a full graphing calculator supporting up to 4 simultaneous functions ($f_1(x), f_2(x), f_3(x), f_4(x)$) with individual color selectors and visibility toggles.
+  - Expanded safe recursive-descent math parser with transcendental, trigonometric, hyperbolic, and rounding functions: `exp`, `asin`, `acos`, `atan`, `sinh`, `cosh`, `tanh`, `cbrt`, `floor`, `ceil`, `round`, `sign`, `min`, `max`, and constant $\tau = 2\pi$.
+  - Added calculus analysis tools: value evaluation $f(x_0)$, numerical derivative $f'(x_0)$ with live tangent line rendering, root finder via bisection ($f(x) = 0$), local extrema detection (minima/maxima), and definite integration via Simpson's rule ($\int_a^b f(x)dx$) with shaded curve regions.
+  - Added interactive table of values across $[x_{start}, x_{end}]$ with customizable step $\Delta x$.
+  - Added live coordinate crosshair readout on canvas hover, mathematical function presets, and math token keypad.
+- Studio Canvas Studio (DrawTool):
+  - Overhauled with 10 tools: pen, brush (soft marker), highlighter (semi-transparent), line, arrow (with arrowhead), rectangle (wireframe & filled), circle/ellipse (wireframe & filled), text placement, flood fill bucket (BFS pixel fill), and eraser.
+  - Expanded color palette to 16 curated HNAI tones plus HTML5 custom color picker.
+  - Added full Undo and Redo stacks.
+  - Added grid backdrop overlays: none, dot grid, and graph grid.
+  - Added full touchscreen / mobile touch event support (`onTouchStart`, `onTouchMove`, `onTouchEnd`, `onTouchCancel`).
+- The Stacks Academic Library:
+  - Added *Tao Te Ching* (道德經) by Lao Tzu (Dewey 181, `Classical Philosophy & Primary Texts`) containing Brian Greene/Feynman-style pedagogical intuition (Lagrangian least action water, the empty hub, the uncarved block, and impedance-matched *wu wei*), followed by all 81 complete chapters across 8 navigable parts.
+  - Added verified primary text link index with 10 official academic doors (ctext, SEP, IEP, ISTA, Gutenberg, Library of Congress, British Library, Harvard-Yenching, Perseus).
+  - Recompiled stacks to 31 academic volumes (144 unit tests passing).
 - Collaboration files: CONTRIBUTING, GitHub Actions, issue and pull-request templates.

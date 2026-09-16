@@ -4,33 +4,75 @@
 
 const FUNC_ARITY: Record<string, number> = {
   sqrt: 1,
+  cbrt: 1,
   sin: 1,
   cos: 1,
   tan: 1,
+  asin: 1,
+  acos: 1,
+  atan: 1,
+  sinh: 1,
+  cosh: 1,
+  tanh: 1,
   abs: 1,
+  exp: 1,
   log: 1,
   ln: 1,
-  pow: 2
+  floor: 1,
+  ceil: 1,
+  round: 1,
+  sign: 1,
+  pow: 2,
+  min: 2,
+  max: 2
 };
 
 function applyFunc(name: string, args: number[]): number {
   switch (name) {
     case 'sqrt':
       return Math.sqrt(args[0]);
+    case 'cbrt':
+      return Math.cbrt(args[0]);
     case 'sin':
       return Math.sin(args[0]);
     case 'cos':
       return Math.cos(args[0]);
     case 'tan':
       return Math.tan(args[0]);
+    case 'asin':
+      return Math.asin(args[0]);
+    case 'acos':
+      return Math.acos(args[0]);
+    case 'atan':
+      return Math.atan(args[0]);
+    case 'sinh':
+      return Math.sinh(args[0]);
+    case 'cosh':
+      return Math.cosh(args[0]);
+    case 'tanh':
+      return Math.tanh(args[0]);
     case 'abs':
       return Math.abs(args[0]);
+    case 'exp':
+      return Math.exp(args[0]);
     case 'log':
       return Math.log10(args[0]);
     case 'ln':
       return Math.log(args[0]);
+    case 'floor':
+      return Math.floor(args[0]);
+    case 'ceil':
+      return Math.ceil(args[0]);
+    case 'round':
+      return Math.round(args[0]);
+    case 'sign':
+      return Math.sign(args[0]);
     case 'pow':
       return Math.pow(args[0], args[1]);
+    case 'min':
+      return Math.min(args[0], args[1]);
+    case 'max':
+      return Math.max(args[0], args[1]);
     default:
       throw new Error(`Unknown function ${name}`);
   }
@@ -153,6 +195,7 @@ class Parser {
       const name = tok.v;
       if (name === 'pi') return Math.PI;
       if (name === 'e') return Math.E;
+      if (name === 'tau') return Math.PI * 2;
       if (!(name in FUNC_ARITY)) throw new Error(`Unknown identifier ${name}`);
       if (!(this.peek().t === 'op' && (this.peek() as { v: string }).v === '(')) {
         throw new Error(`Function ${name} requires parentheses`);

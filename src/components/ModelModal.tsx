@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ModelOption } from '../types';
-import { AVAILABLE_MODELS, registerCustomHFModel, ProgressStatus } from '../engine/webllm';
+import { AVAILABLE_MODELS, registerCustomHFModel, ProgressStatus, resetWebGPUAndCaches } from '../engine/webllm';
 import { DeviceInfo } from '../engine/device';
 
 interface ModelModalProps {
@@ -29,6 +29,21 @@ export const ModelModal: React.FC<ModelModalProps> = ({
   const [hfResults, setHfResults] = useState<Array<{ id: string; downloads?: number; likes?: number }>>([]);
   const [hfLoading, setHfLoading] = useState(false);
   const [hfError, setHfError] = useState<string | null>(null);
+  const [cacheNotice, setCacheNotice] = useState<string | null>(null);
+  const [isResetting, setIsResetting] = useState(false);
+
+  const handleResetCache = async () => {
+    setIsResetting(true);
+    setCacheNotice(null);
+    try {
+      const res = await resetWebGPUAndCaches(selectedModel);
+      setCacheNotice(res.message || 'Cache cleared & WebGPU reset.');
+    } catch (e: any) {
+      setCacheNotice(`Notice: ${e?.message || e}`);
+    } finally {
+      setIsResetting(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -138,12 +153,35 @@ export const ModelModal: React.FC<ModelModalProps> = ({
             fontFamily: 'var(--font-mono)',
             flexShrink: 0
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#e4e4e7' }}>
-              <span>🖥️</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#e4e4e7', flexWrap: 'wrap' }}>
+              <span style={{
+                display: 'inline-block',
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                backgroundColor: deviceInfo.hasWebGPU ? '#10b981' : '#ef4444'
+              }} />
               <span><strong>Hardware:</strong> {deviceInfo.osName} · {deviceInfo.gpuVendor || 'WebGPU Adapter'} {deviceInfo.gpuRenderer ? `(${deviceInfo.gpuRenderer})` : ''}</span>
+              <span style={{ color: '#a78bfa' }}>(~{deviceInfo.estimatedVRAMGB || 8} GB VRAM)</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ color: '#a78bfa' }}>Estimated VRAM: ~{deviceInfo.estimatedVRAMGB || 8} GB</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={handleResetCache}
+                disabled={isResetting}
+                className="btn-pill"
+                style={{
+                  fontSize: '0.68rem',
+                  padding: '0.2rem 0.55rem',
+                  backgroundColor: 'rgba(239, 68, 68, 0.12)',
+                  borderColor: 'rgba(239, 68, 68, 0.3)',
+                  color: '#fca5a5',
+                  cursor: 'pointer'
+                }}
+                title="Clear cached model weights from browser storage and reset WebGPU adapter"
+              >
+                {isResetting ? 'Resetting...' : '🧹 Clear Cache & Reset WebGPU'}
+              </button>
               <span style={{
                 padding: '0.1rem 0.4rem',
                 borderRadius: '9999px',
@@ -155,6 +193,11 @@ export const ModelModal: React.FC<ModelModalProps> = ({
                 Recommended: Qwen 2.5 3B
               </span>
             </div>
+            {cacheNotice && (
+              <div style={{ width: '100%', fontSize: '0.7rem', color: '#34d399', marginTop: '0.2rem' }}>
+                ✓ {cacheNotice}
+              </div>
+            )}
           </div>
         )}
 

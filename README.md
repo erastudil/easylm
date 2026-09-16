@@ -102,9 +102,36 @@ Studio unites creative and technical tools in a single interface:
 
 ---
 
+## Current Development Status & Known Issues
+
+EasyLM is in active open public beta. We are radically transparent about what works today and what remains under heavy development:
+
+- **Where We Are:** Instant WebGPU inference in modern browsers, 30 undergraduate textbooks in The Stacks, 7 comprehensive university courses in Learn, and full local Studio tools with zero cloud tracking and zero accounts.
+- **The Adapter Reality:** Base open-weight models in the 1.5B–3B range (Qwen 2.5, DeepSeek-R1 Distill) **need task-specific fine-tuned adapters badly to be reliable**. Currently, EasyLM uses regex pre-flight routing, strict system envelopes, and ZCABS canary checks to mitigate tool-calling drift and maintain Socratic guidance. We are actively training lightweight LoRA adapters in earnest to achieve deterministic tool dispatch and rock-solid reasoning.
+- **Known Limitations:**
+  - *Cold-Start Weight Download:* First load requires downloading 1.0 GB – 1.9 GB of model weights from Hugging Face into browser cache. (Mitigation: non-LLM tools like Stacks, Math, and Graphing work instantly with 0 MB downloaded).
+  - *WebGPU Ecosystem Gaps:* Firefox requires `dom.webgpu.enabled = true` in `about:config`; mobile browsers frequently hit memory limits; integrated GPUs with < 3 GB shared VRAM can hit OOM on 3B models.
+  - *Context Window VRAM Ceilings:* High context allocations (32k–256k) require substantial system memory.
+  - *Stacks Retrieval:* Currently powered by deterministic BM25 keyword matching rather than semantic vector embeddings.
+
+For our full breakdown, mitigation strategies, and architecture details, see [ROADMAP.md](ROADMAP.md).
+
+---
+
+## Development Priorities & Collaboration Roadmap
+
+We are building EasyLM as a permanent, free sovereign alternative to subscription AI platforms:
+
+1. **Dedicated Model Adapters (LoRAs):** Training fine-tuned adapters for 1.5B/3B models to guarantee 99%+ schema reliability on in-browser tool calls and patient Socratic inquiry.
+2. **Improved Local Tooling & Sandboxes:** Connecting our Tier 1 WASI micro-shell and Tier 2 v86 Wasm container for safe on-device Python and JavaScript code execution, paired with client-side drag-and-drop file ingestion (PDF, CSV, MD).
+3. **Expanded Stacks & Learn Coursework:** Developing Wave 2 undergraduate courses (AI/ML 006, Cryptography 005.8, Systems/Wasm 004, Economics 330) alongside 15-minute "Mastery Sprints" for rapid concept acquisition.
+4. **Agentic Sovereign Workspaces:** Multi-step autonomous reasoning loops (Inspect -> Plan -> Tool -> Synthesize) and single-file self-contained HTML artifact exports that rival paid Copilot and ChatGPT Plus workspaces without sending tokens to the cloud.
+
+---
+
 ## Development
 
-Patches: [CONTRIBUTING.md](CONTRIBUTING.md). `npm test` is the gate.
+Patches: [CONTRIBUTING.md](CONTRIBUTING.md) · Detailed Roadmap: [ROADMAP.md](ROADMAP.md). `npm test` is the gate.
 
 ### Prerequisites
 

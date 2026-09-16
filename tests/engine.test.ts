@@ -53,7 +53,16 @@ import {
   isKidSafePersonality,
   PERSONALITIES
 } from '../src/data/personalities';
-import { evalFx, sampleFunction, generatePlotSvg } from '../src/engine/plot';
+import {
+  evalFx,
+  sampleFunction,
+  generatePlotSvg,
+  evalDerivative,
+  findRoots,
+  findExtrema,
+  integrateSimpson,
+  computeTableOfValues
+} from '../src/engine/plot';
 import { clockQueryOf, mathExpressionOf, unitConversionOf, stacksQueryOf } from '../src/engine/preflight';
 import {
   adjustSchedule,
@@ -97,8 +106,16 @@ import {
   isEngineReady,
   unloadActiveEngine,
   getLoadedModelId,
-  patchWebGPUAdapterFallback
+  patchWebGPUAdapterFallback,
+  getWebGPUAdapter,
+  clearModelCache,
+  hasCachedModel,
+  resetWebGPUAndCaches,
+  getGpuFence,
+  markGpuFence,
+  clearGpuFence
 } from '../src/engine/webllm';
+import { detectDevice } from '../src/engine/device';
 
 describe('EasyLM Engine Unified Test Suite', () => {
   describe('atmem', () => {
@@ -880,6 +897,70 @@ describe('plot engine tests', () => {
     expect(svg).toContain('P1');
     expect(svg).toContain('P2');
   });
+
+  it('evaluates numerical derivatives accurately', () => {
+    const d1 = evalDerivative('x^2', 3);
+    expect(Math.abs(d1 - 6)).toBeLessThan(1e-3);
+
+    const d2 = evalDerivative('sin(x)', 0);
+    expect(Math.abs(d2 - 1)).toBeLessThan(1e-3);
+  });
+
+  it('finds roots of polynomial and trigonometric functions', () => {
+    const roots = findRoots('x^2 - 4', -5, 5);
+    expect(roots.length).toBe(2);
+    expect(roots[0]).toBeCloseTo(-2, 1);
+    expect(roots[1]).toBeCloseTo(2, 1);
+
+    const rootsSin = findRoots('sin(x)', -1, 4);
+    expect(rootsSin.some(r => Math.abs(r) < 0.05)).toBe(true);
+    expect(rootsSin.some(r => Math.abs(r - Math.PI) < 0.05)).toBe(true);
+  });
+
+  it('finds local extrema of functions', () => {
+    const extrema = findExtrema('x^3 - 3*x', -2.5, 2.5);
+    expect(extrema.length).toBeGreaterThanOrEqual(2);
+    const maxPt = extrema.find(e => e.type === 'max');
+    const minPt = extrema.find(e => e.type === 'min');
+    expect(maxPt).toBeDefined();
+    expect(minPt).toBeDefined();
+    if (maxPt) expect(maxPt.x).toBeCloseTo(-1, 1);
+    if (minPt) expect(minPt.x).toBeCloseTo(1, 1);
+  });
+
+  it('computes definite integrals via Simpson rule', () => {
+    const int1 = integrateSimpson('x', 0, 2);
+    expect(Math.abs(int1 - 2)).toBeLessThan(1e-3);
+
+    const int2 = integrateSimpson('sin(x)', 0, Math.PI);
+    expect(Math.abs(int2 - 2)).toBeLessThan(1e-3);
+  });
+
+  it('computes table of values across range', () => {
+    const table = computeTableOfValues(['x^2', '2*x'], 0, 4, 1);
+    expect(table.length).toBe(5);
+    expect(table[0]).toEqual({ x: 0, values: [0, 0] });
+    expect(table[2]).toEqual({ x: 2, values: [4, 4] });
+    expect(table[3]).toEqual({ x: 3, values: [9, 6] });
+  });
+
+  it('generates multi-function SVG with legend, tangent line, and shaded region', () => {
+    const svg = generatePlotSvg({
+      functions: [
+        { fn: 'x^2 - 4', color: '#a78bfa', label: 'f1(x)' },
+        { fn: '2*x + 1', color: '#34d399', label: 'f2(x)' }
+      ],
+      tangentLine: { x0: 2, y0: 0, slope: 4, color: '#fbbf24' },
+      shadedRegions: [{ from: 0, to: 2, fnIndex: 0, color: 'rgba(139, 92, 246, 0.3)' }],
+      title: 'Graphing Calculator Test'
+    });
+
+    expect(svg).toContain('Graphing Calculator Test');
+    expect(svg).toContain('f1(x)');
+    expect(svg).toContain('f2(x)');
+    expect(svg).toContain('<polygon points="');
+    expect(svg).toContain('stroke-dasharray="4,4"');
+  });
 });
   });
 
@@ -1121,7 +1202,7 @@ describe('parsePublicHttpsUrl', () => {
 
   describe('stacks', () => {
 const REQUIRED = [
-  'methods', 'computing', 'software', 'ai_ml', 'philosophy', 'psychology',
+  'methods', 'computing', 'software', 'ai_ml', 'philosophy', 'psychology', 'tao_te_ching',
   'religion', 'sociology', 'civics', 'finance', 'law', 'language', 'math',
   'astronomy', 'physics', 'chemistry', 'earth_sciences', 'security', 'trades', 'biology', 'health',
   'engineering', 'agriculture', 'business', 'art', 'music', 'literature',
@@ -1133,8 +1214,8 @@ describe('The Stacks library', () => {
     const slugs = STACKS_PACKS.map(p => p.slug);
     expect(slugs.sort()).toEqual([...REQUIRED].sort());
     const stats = stacksStats();
-    expect(stats.packs).toBe(30);
-    expect(stats.textbooks).toBe(30);
+    expect(stats.packs).toBe(31);
+    expect(stats.textbooks).toBe(31);
     expect(stats.doors).toBeGreaterThan(200);
   });
 
@@ -1187,6 +1268,10 @@ describe('execStacks', () => {
     const attn = execStacks('scaled dot-product attention transformer');
     expect(attn).toMatch(/Dewey 006/);
     expect(attn).toMatch(/Attention/);
+
+    const dao = execStacks('Tao Te Ching Laozi wu wei uncarved block');
+    expect(dao).toMatch(/Dewey 181/);
+    expect(dao).toMatch(/Tao Te Ching/);
   });
 
   it('attaches official doors to hits', () => {
@@ -1645,6 +1730,107 @@ describe('ZCABS Canary Nonce Engine', () => {
         } else {
           g.navigator.gpu = originalGpu;
         }
+      }
+    });
+
+    it('getWebGPUAdapter falls back through default and low-power adapters', async () => {
+      const mockDefaultAdapter = { name: 'Mock Default GPU' };
+      const g = globalThis as any;
+      const hadNavigator = 'navigator' in g && g.navigator !== undefined;
+      const origNav = hadNavigator ? g.navigator : undefined;
+      if (!hadNavigator) g.navigator = {};
+      const origGpu = g.navigator.gpu;
+      try {
+        g.navigator.gpu = {
+          requestAdapter: async (opts?: any) => {
+            if (opts?.powerPreference === 'high-performance') return null;
+            if (!opts?.powerPreference) return mockDefaultAdapter;
+            return null;
+          }
+        };
+        const adapter = await getWebGPUAdapter('high-performance');
+        expect(adapter).toBe(mockDefaultAdapter);
+      } finally {
+        if (!hadNavigator) delete g.navigator;
+        else g.navigator.gpu = origGpu;
+      }
+    });
+
+    it('clearModelCache runs safely when caches is undefined', async () => {
+      const res = await clearModelCache('Qwen2.5-3B-Instruct-q4f16_1-MLC');
+      expect(res.success).toBe(true);
+      expect(res.message).toContain('Qwen2.5-3B');
+    });
+
+    it('clearModelCache purges matching caches when caches API is present', async () => {
+      const deletedKeys: string[] = [];
+      const g = globalThis as any;
+      const origCaches = g.caches;
+      try {
+        g.caches = {
+          keys: async () => ['webllm/model', 'webllm/wasm', 'other-cache'],
+          delete: async (k: string) => {
+            deletedKeys.push(k);
+            return true;
+          }
+        };
+
+        const res = await clearModelCache();
+        expect(res.success).toBe(true);
+        expect(deletedKeys).toContain('webllm/model');
+        expect(deletedKeys).toContain('webllm/wasm');
+        expect(deletedKeys).not.toContain('other-cache');
+      } finally {
+        g.caches = origCaches;
+      }
+    });
+
+    it('hasCachedModel safely returns boolean', async () => {
+      const res = await hasCachedModel('Qwen2.5-3B-Instruct-q4f16_1-MLC');
+      expect(typeof res).toBe('boolean');
+    });
+
+    it('resetWebGPUAndCaches unloads engine and purges cache and clears gpuFence', async () => {
+      markGpuFence('process_dead');
+      expect(getGpuFence()).toBe('process_dead');
+      const res = await resetWebGPUAndCaches('Qwen2.5-1.5B-Instruct-q4f16_1-MLC');
+      expect(res.success).toBe(true);
+      expect(res.message).toContain('WebGPU state reset');
+      expect(isEngineReady()).toBe(false);
+      expect(getGpuFence()).toBeNull();
+    });
+
+    it('unloadActiveEngine clears gpuFence', async () => {
+      markGpuFence('lost');
+      expect(getGpuFence()).toBe('lost');
+      await unloadActiveEngine();
+      expect(getGpuFence()).toBeNull();
+    });
+
+    it('detectDevice recognizes discrete GPU from description when vendor is generic', async () => {
+      const g = globalThis as any;
+      const hadNavigator = 'navigator' in g && g.navigator !== undefined;
+      const origNav = hadNavigator ? g.navigator : undefined;
+      if (!hadNavigator) g.navigator = {};
+      const origGpu = g.navigator.gpu;
+      try {
+        g.navigator.gpu = {
+          requestAdapter: async () => ({
+            info: {
+              vendor: '',
+              architecture: 'Ada',
+              description: 'Direct3D12 (NVIDIA GeForce RTX 4080)'
+            },
+            limits: { maxBufferSize: 2147483648 }
+          })
+        };
+
+        const dev = await detectDevice();
+        expect(dev.gpuVendor).toBe('NVIDIA');
+        expect(dev.gpuRenderer).toContain('RTX 4080');
+      } finally {
+        if (!hadNavigator) delete g.navigator;
+        else g.navigator.gpu = origGpu;
       }
     });
   });

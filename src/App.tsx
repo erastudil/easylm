@@ -16,9 +16,18 @@ import {
   ProgressStatus,
   AVAILABLE_MODELS,
   getOrInitEngine,
-  isEngineReady
+  isEngineReady,
+  resetWebGPUAndCaches,
+  getGpuFence,
+  clearGpuFence
 } from './engine/webllm';
 import { dispatchTool, SYSTEM_TOOLS_PROMPT, SYSTEM_TOOLS_PROMPT_KID } from './engine/tools';
+import {
+  assembleSystemEnvelope,
+  budgetTurn,
+  classifyWebGpuFailure,
+  MIN_COMPLETION
+} from './engine/context_budget';
 import { clockQueryOf, mathExpressionOf, stacksQueryOf, unitConversionOf } from './engine/preflight';
 import { Sidebar } from './components/Sidebar';
 import { MessageItem } from './components/MessageItem';
@@ -33,7 +42,8 @@ import { FeedbackModal } from './components/FeedbackModal';
 import { EASYLM_GUIDE_PROMPT_CONTEXT } from './data/help_guide';
 import { detectDevice, DeviceInfo } from './engine/device';
 import { createWelcomeMessage, WELCOME_TOOLBOX_CONTENT } from './data/welcome';
-import { CORE_INTERACTION_PROTOCOLS, CORE_INTERACTION_PROTOCOLS_KID } from './data/protocols';
+import { CORE_INTERACTION_PROTOCOLS, CORE_INTERACTION_PROTOCOLS_COMPACT, CORE_INTERACTION_PROTOCOLS_KID } from './data/protocols';
+import { GpuRestartModal } from './components/GpuRestartModal';
 import {
   UserProfile,
   AttachedDoc,
@@ -298,9 +308,19 @@ export const App: React.FC = () => {
     localStorage.setItem('easylm_context_limit', String(limit));
   };
 
+  const [loadErrorToast, setLoadErrorToast] = useState<{
+    message: string;
+    modelId: string;
+    isGPUOrCache: boolean;
+    gpuDead?: boolean;
+  } | null>(null);
+  const [gpuRestartOpen, setGpuRestartOpen] = useState(false);
+
   const handleLoadModel = async (targetModel?: string) => {
     const modelToLoad = targetModel || selectedModel;
+    clearGpuFence();
     setIsGenerating(true);
+    setLoadErrorToast(null);
     try {
       await getOrInitEngine(modelToLoad, (prog) => {
         setModelProgress(prog);
@@ -309,7 +329,21 @@ export const App: React.FC = () => {
       setSelectedModel(modelToLoad);
     } catch (err: any) {
       console.error('Failed to load model into WebGPU:', err);
-      alert(`Model load failed: ${err?.message || err}`);
+      const rawMsg = err?.message || String(err);
+      const kind = classifyWebGpuFailure(err);
+      const gpuDead = kind === 'gpu_process_dead' || getGpuFence() === 'process_dead';
+      if (gpuDead) setGpuRestartOpen(true);
+      const lower = rawMsg.toLowerCase();
+      const isGPUOrCache = lower.includes('gpu') || lower.includes('webgpu') || lower.includes('cache') ||
+        lower.includes('buffer') || lower.includes('fetch') || lower.includes('integrity') ||
+        lower.includes('wasm') || lower.includes('pipeline') || lower.includes('device');
+
+      setLoadErrorToast({
+        message: gpuDead ? 'WebGPU cannot see the GPU. The GPU worker is down.' : rawMsg,
+        modelId: modelToLoad,
+        isGPUOrCache: isGPUOrCache && !gpuDead,
+        gpuDead
+      });
     } finally {
       setIsGenerating(false);
       setModelProgress(null);
@@ -623,38 +657,32 @@ export const App: React.FC = () => {
     // Build system mandate based on Personality (kid role: force kid-safe voice only)
     const effectivePersonalityId = clampPersonalityIdForRole(selectedPersonality, currentProfile.role);
     const personality = PERSONALITIES.find(p => p.id === effectivePersonalityId) || PERSONALITIES.find(p => p.id === 'socratic_kid') || PERSONALITIES[0];
-    let systemInstruction = personality.systemPrompt;
+    let voicePrompt = personality.systemPrompt;
     if (effectivePersonalityId === 'custom' && customPrompt && currentProfile.role !== 'kid') {
-      systemInstruction = customPrompt;
+      voicePrompt = customPrompt;
     }
 
-    systemInstruction += '\n\n' + (kidSafe ? CORE_INTERACTION_PROTOCOLS_KID : CORE_INTERACTION_PROTOCOLS);
-
-    // Sovereign Memory Vault injection (AtMem attentive retrieval under 256 token budget)
+    const extraBlocks: string[] = [];
     const memoryEnvelope = getAttentivePromptEnvelope(currentProfile.id, trimmed, 256);
-    if (memoryEnvelope) {
-      systemInstruction += '\n\n' + memoryEnvelope;
-    }
-
-    // Kid Safe / Socratic tutor mandate (+ hard refuse sexual/romantic/CSAM-adjacent involving minors)
+    if (memoryEnvelope) extraBlocks.push(memoryEnvelope);
     if (currentProfile.role === 'kid' || currentProfile.socraticTutorEnabled) {
-      systemInstruction += '\n\n[KID SAFE & SOCRATIC TUTOR MANDATE]:\nGuide the student step-by-step with inquiry, hints, and questions. Never hand over direct solutions to homework or tests. Keep tone warm, patient, and encouraging.\nHARD REFUSE sexual, romantic, erotic, pornographic, or CSAM-adjacent / exploitative content involving minors (17 or under), including roleplay, fiction, "aged-up" framing, or grooming. Do not partially answer. Refuse in one short calm sentence and redirect to age-appropriate learning.';
+      extraBlocks.push('[KID SAFE & SOCRATIC TUTOR MANDATE]:\nGuide the student step-by-step with inquiry, hints, and questions. Never hand over direct solutions to homework or tests. Keep tone warm, patient, and encouraging.\nHARD REFUSE sexual, romantic, erotic, pornographic, or CSAM-adjacent / exploitative content involving minors (17 or under), including roleplay, fiction, "aged-up" framing, or grooming. Do not partially answer. Refuse in one short calm sentence and redirect to age-appropriate learning.');
     }
-
-    // In-chat help detection: if prompt asks about help, features, or how EasyLM works
     const isHelpAsk = /^(?:help|\?|guide|what can you do|how do you work|who are you|explain yourself|about you)/i.test(trimmed) || trimmed.toLowerCase().includes('how do you work');
     if (isHelpAsk) {
-      systemInstruction += '\n\n' + EASYLM_GUIDE_PROMPT_CONTEXT + '\n\nINSTRUCTION: The user is asking about how EasyLM works or asking for help. Explain who you are, how you run locally, your in-app tools, privacy, and prompting advice in a warm, friendly, and accessible manner.';
+      extraBlocks.push(EASYLM_GUIDE_PROMPT_CONTEXT + '\n\nINSTRUCTION: The user is asking about how EasyLM works or asking for help. Explain who you are, how you run locally, your in-app tools, privacy, and prompting advice in a warm, friendly, and accessible manner.');
     }
-
-    // Extended thinking instruction injection if enabled
     if (extendedThinking) {
-      systemInstruction += '\n\n[EXTENDED THINKING PROTOCOL]\nInspect assumptions, evaluate evidence, and explore edge cases step-by-step inside <think>...</think> tags before delivering your final workpiece.';
+      extraBlocks.push('[EXTENDED THINKING PROTOCOL]\nInspect assumptions, evaluate evidence, and explore edge cases step-by-step inside <think>...</think> tags before delivering your final workpiece.');
     }
 
-    if (toolsEnabled) {
-      systemInstruction += '\n' + (kidSafe ? SYSTEM_TOOLS_PROMPT_KID : SYSTEM_TOOLS_PROMPT);
-    }
+    const systemInstruction = assembleSystemEnvelope({
+      voice: voicePrompt,
+      protocols: kidSafe ? CORE_INTERACTION_PROTOCOLS_KID : CORE_INTERACTION_PROTOCOLS,
+      protocolsCompact: CORE_INTERACTION_PROTOCOLS_COMPACT,
+      tools: toolsEnabled ? (kidSafe ? SYSTEM_TOOLS_PROMPT_KID : SYSTEM_TOOLS_PROMPT) : '',
+      extras: extraBlocks.join('\n\n')
+    }, contextLimit).text;
 
     const executedTools: ToolExecution[] = [];
 
@@ -782,13 +810,21 @@ export const App: React.FC = () => {
 
       let currentStreamed = '';
       const startTime = Date.now();
+      const isReasoningModel = selectedModel.includes('DeepSeek-R1') || selectedModel.includes('Reasoning');
+      const turnBudget = budgetTurn(convoMessages, contextLimit, {
+        extendedThinking,
+        isReasoning: isReasoningModel
+      });
+      if (turnBudget.maxTokens < MIN_COMPLETION) {
+        throw new Error('CONTEXT_BUDGET: this turn does not fit the context window. Raise context in Settings or shorten the prompt.');
+      }
 
       // Start initial stream
       const result = await streamChatCompletion(
-        convoMessages,
+        turnBudget.messages,
         selectedModel,
         temperature,
-        contextLimit,
+        turnBudget.maxTokens,
         (delta) => {
           currentStreamed += delta;
           const { displayContent, inFlightThinking } = parseStreamedTokens(currentStreamed);
@@ -890,11 +926,15 @@ export const App: React.FC = () => {
           ];
 
           let followUpStreamed = '';
+          const followBudget = budgetTurn(toolFollowUpMessages, contextLimit, {
+            extendedThinking,
+            isReasoning: isReasoningModel
+          });
           const finalResult = await streamChatCompletion(
-            toolFollowUpMessages,
+            followBudget.messages,
             selectedModel,
             temperature,
-            contextLimit,
+            followBudget.maxTokens,
             (delta) => {
               followUpStreamed += delta;
               const { displayContent, inFlightThinking } = parseStreamedTokens(followUpStreamed);
@@ -965,21 +1005,27 @@ export const App: React.FC = () => {
     } catch (err: any) {
       console.error('Inference error:', err);
       setIsModelReady(isEngineReady());
+      const kind = classifyWebGpuFailure(err);
       const errStr = String(err?.message || err).toLowerCase();
-      const isOOM = errStr.includes('out of memory') || errStr.includes('buffer') || errStr.includes('allocation');
-      const isDisposedOrLost = errStr.includes('disposed') || errStr.includes('not loaded') || errStr.includes('device lost') || errStr.includes('devicelost');
-      const isGPUProcessDead = errStr.includes('unable to find a compatible gpu') || errStr.includes('cannot find webgpu') || errStr.includes('failed to requestadapter');
-      const isBrave = typeof navigator !== 'undefined' && (/brave/i.test(navigator.userAgent) || !!(navigator as any).brave);
-      const restartUrl = isBrave ? 'brave://restart' : 'chrome://restart';
-      const gpuUrl = isBrave ? 'brave://gpu' : 'chrome://gpu';
+      const isOOM = kind === 'oom' || errStr.includes('buffer') || errStr.includes('allocation');
+      const isDisposedOrLost = kind === 'device_lost' || kind === 'disposed';
+      const isGPUProcessDead = kind === 'gpu_process_dead' || getGpuFence() === 'process_dead';
+      const isCorruptCache = errStr.includes('integrity') || errStr.includes('corrupt') || errStr.includes('syntaxerror') || errStr.includes('unexpected end') || errStr.includes('failed to fetch');
+      const isBudget = errStr.includes('context_budget');
 
-      const errorHint = isOOM
-        ? `\n\n💡 **Tip:** Your GPU ran out of memory for this model. Switch to the ultralight **Qwen 2.5 1.5B** in Settings (⚙) for instant, low-memory inference.`
+      if (isGPUProcessDead) setGpuRestartOpen(true);
+
+      const errorHint = isBudget
+        ? `\n\nThis turn does not fit the context window. Raise context in Settings or shorten the prompt.`
+        : isOOM
+        ? `\n\nGPU ran out of memory for this model. Switch to Qwen 2.5 1.5B in Settings.`
         : isGPUProcessDead
-        ? `\n\n💡 **Tip:** Your physical GPU (NVIDIA / AMD) is active, but the browser's GPU worker process was blocked or crashed after the previous session loss.\n\nEnter \`${restartUrl}\` in your URL bar and press Enter to reboot the browser's GPU worker, or visit \`${gpuUrl}\` to verify WebGPU acceleration.`
+        ? `\n\nWebGPU cannot see the GPU. Copy the restart command in the dialog. Save unsaved work first — tabs reload.`
+        : isCorruptCache
+        ? `\n\nModel weights in browser storage may be incomplete. Open Settings and click Clear Model Cache.`
         : isDisposedOrLost
-        ? `\n\n💡 **Tip:** WebGPU was disconnected or put to sleep by the OS. The engine has been purged and reset. Send your prompt again or click **Load Model** to re-engage.`
-        : `\n\n*Ensure your browser supports WebGPU (Chrome/Edge/Brave 113+) and hardware acceleration is turned on.*`;
+        ? `\n\nWebGPU disconnected. Click Load Model. Do not restart the browser unless the GPU-worker dialog appears.`
+        : `\n\nUse Chrome, Edge, or Brave 113+ with hardware acceleration on.`;
 
       const errMsg: Message = {
         id: assistantMsgId,
@@ -1395,6 +1441,87 @@ export const App: React.FC = () => {
           </div>
         )}
 
+        {/* Model Load Error & Cache Reset Toast */}
+        {loadErrorToast && (
+          <div style={{
+            backgroundColor: 'rgba(239, 68, 68, 0.12)',
+            borderBottom: '1px solid rgba(239, 68, 68, 0.35)',
+            color: '#fca5a5',
+            padding: '0.65rem 1.25rem',
+            fontSize: '0.78rem',
+            fontFamily: 'var(--font-mono)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '0.6rem'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1, minWidth: '260px' }}>
+              <span>⚠️</span>
+              <div>
+                <strong>Model Load Notice:</strong> {loadErrorToast.message}
+              </div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+              {loadErrorToast.gpuDead && (
+                <button
+                  type="button"
+                  onClick={() => setGpuRestartOpen(true)}
+                  className="btn-pill"
+                  title="Open the GPU worker restart dialog"
+                  style={{
+                    fontSize: '0.72rem',
+                    padding: '0.25rem 0.65rem',
+                    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                    borderColor: '#ef4444',
+                    color: '#ffffff',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Restart GPU worker
+                </button>
+              )}
+              {loadErrorToast.isGPUOrCache && !loadErrorToast.gpuDead && (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await resetWebGPUAndCaches(loadErrorToast.modelId);
+                    setLoadErrorToast(null);
+                    handleLoadModel(loadErrorToast.modelId);
+                  }}
+                  className="btn-pill"
+                  title="Clear cached weights and try loading again"
+                  style={{
+                    fontSize: '0.72rem',
+                    padding: '0.25rem 0.65rem',
+                    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                    borderColor: '#ef4444',
+                    color: '#ffffff',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Clear Cache &amp; Retry
+                </button>
+              )}
+              <button
+                onClick={() => setLoadErrorToast(null)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#a1a1aa',
+                  fontSize: '1.2rem',
+                  cursor: 'pointer',
+                  padding: '0 0.25rem',
+                  lineHeight: 1
+                }}
+                title="Dismiss"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Progress HUD bar during model download / warmup */}
         {modelProgress && (
           <div style={{
@@ -1764,6 +1891,11 @@ export const App: React.FC = () => {
         isOpen={feedbackModalOpen}
         onClose={() => setFeedbackModalOpen(false)}
         activeModel={currentModelLabel}
+      />
+
+      <GpuRestartModal
+        isOpen={gpuRestartOpen}
+        onClose={() => setGpuRestartOpen(false)}
       />
 
       {/* Settings Modal */}

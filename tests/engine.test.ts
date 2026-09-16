@@ -1620,9 +1620,15 @@ describe('ZCABS Canary Nonce Engine', () => {
 
     it('patchWebGPUAdapterFallback gracefully falls back if high-performance adapter returns null', async () => {
       const mockLowPowerAdapter = { name: 'Mock iGPU' };
-      const originalGpu = (navigator as any).gpu;
+      const g = globalThis as any;
+      const hadNavigator = 'navigator' in g && g.navigator !== undefined;
+      const origNav = hadNavigator ? g.navigator : undefined;
+      if (!hadNavigator) {
+        g.navigator = {};
+      }
+      const originalGpu = g.navigator.gpu;
       try {
-        (navigator as any).gpu = {
+        g.navigator.gpu = {
           requestAdapter: async (opts?: any) => {
             if (opts?.powerPreference === 'high-performance') return null;
             if (opts?.powerPreference === 'low-power') return mockLowPowerAdapter;
@@ -1631,10 +1637,14 @@ describe('ZCABS Canary Nonce Engine', () => {
         };
 
         patchWebGPUAdapterFallback();
-        const res = await (navigator as any).gpu.requestAdapter({ powerPreference: 'high-performance' });
+        const res = await g.navigator.gpu.requestAdapter({ powerPreference: 'high-performance' });
         expect(res).toBe(mockLowPowerAdapter);
       } finally {
-        (navigator as any).gpu = originalGpu;
+        if (!hadNavigator) {
+          delete g.navigator;
+        } else {
+          g.navigator.gpu = originalGpu;
+        }
       }
     });
   });

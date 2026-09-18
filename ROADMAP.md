@@ -1,100 +1,204 @@
-# EasyLM Roadmap, Known Issues & Development Priorities
+# EasyLM Development Roadmap
 
-**Open, honest assessment of current progress, known limitations, and active development tracks.**  
-EasyLM is free software licensed under the **GNU AGPL-3.0 or later**. We believe in radical transparency: no marketing spin, no hidden telemetry, and no overstated capabilities.
-
----
-
-## 1. Where We Are: An Honest Assessment
-
-EasyLM provides zero-install, in-browser local AI running entirely on your GPU via WebGPU. Today, you can run models like Qwen 2.5 (1.5B/3B) and DeepSeek-R1 Distill (1.5B) locally, navigate 30 collegiate textbooks in **The Stacks**, complete structured undergraduate courses in **Learn**, and use local drafting, graphing, and code sandboxes in **Studio**—all with zero tracking and zero cloud lock-in.
-
-### The Model Adapter Reality
-While base open-weight models in the 1.5B–3B parameter class are an incredible triumph of open research, **base models in this weight class need fine-tuned task adapters badly to be reliable.**
-
-- **The Problem:** Without fine-tuned adapters, 1.5B–3B parameter models frequently drift during multi-turn chats, hallucinate unsupported tool calls, output irregular XML/JSON syntax, or struggle to maintain a patient Socratic tutoring posture without leaking direct answers.
-- **Current Scaffolding:** EasyLM currently bridges this gap using strict system envelopes, regex pre-flight routing, deterministic fallback tools, and the [ZCABS](src/engine/zcabs.ts) honesty canary.
-- **The Active Fix:** Prompt scaffolding has inherent ceilings. We are **actively working in earnest on training lightweight, task-specific LoRA adapters** tailored specifically for WebLLM deployment. These adapters focus on deterministic tool dispatch, Socratic academic guidance, and structured document synthesis.
-- **Sovereign Tri-Lake Data:** Through EasyLM's built-in Tri-Lake memory system (thumbs up for Heaven, thumbs down for Hell), users can curate private, high-water-mark training datasets directly from their own chats in IndexedDB, providing sovereign data for local fine-tuning.
+**The North Star: A complete, sovereign educational tool suite and curated library for learning about anything, for anyone.**  
+Licensed under the **GNU AGPL-3.0 or later**. Zero telemetry, zero cloud subscription, zero paywalls, zero accounts. Runs entirely inside the user's browser via WebGPU and local client-side engines.
 
 ---
 
-## 2. Known Issues
+## 1. The Dual Mandate
 
-We track technical limitations and browser constraints openly:
-
-| Category | Known Limitation | Current Workaround / Mitigation | Long-Term Fix |
-|---|---|---|---|
-| **Cold-Start Latency** | Initial model load downloads 1.0 GB – 1.9 GB of quantized weights from Hugging Face into browser CacheStorage. On slow connections, this takes 1–2 minutes. | CacheStorage retains weights offline after first download. All non-LLM tools (Stacks, Math, Units, Graphing) work at 0 MB without downloading weights. | Exploring lighter sub-1B specialized utility models; progressive weight streaming with interactive onboarding. |
-| **Browser Compatibility** | Firefox requires manual configuration (`dom.webgpu.enabled = true`). Safari 18 has occasional WebGPU buffer allocation quirks. Mobile browsers (iOS/Android) frequently hit memory limits. | Hardware detection modal alerts users if WebGPU is unavailable and suggests compatible browsers. | Upstream WebGPU standardization; memory-capped ultralight mobile profiles. |
-| **Tool Calling Drift** | Base models sometimes fabricate tool parameters, emit incomplete JSON tags, or attempt to call network tools when disabled. | Pre-flight regex dispatch catches common math, unit, time, and stack queries deterministically before hitting the LLM; ZCABS flags unverified calls. | Fine-tuned LoRA function-calling adapters trained on structured tool datasets. |
-| **VRAM Pressure & Context Ceilings** | Dynamic KV-cache allocation (8k to 256k) can exhaust system memory on machines with integrated GPUs and < 8 GB unified RAM, causing tab crashes. | Safe 4k/8k defaults for lower memory tiers; user-selectable context tiers in Settings. | Adaptive KV-cache compression and quantization; proactive memory monitoring. |
-| **Stacks Keyword Search** | Stacks and curriculum searches use BM25 keyword matching and regex pre-flight rather than deep semantic embeddings. | Strict Dewey indexing and curated chapter link trees. | In-browser Wasm vector embeddings (e.g. all-MiniLM-L6-v2 via ONNX/Wasm) running locally for semantic search. |
-
----
-
-## 3. Current Development Priorities
-
-Our active roadmap is organized into four core pillars designed to provide a robust, sovereign, and free alternative to paid AI subscription platforms:
+EasyLM serves two distinct user profiles without compromising either:
 
 ```
-┌────────────────────────────────────────────────────────────────────────┐
-│                        EASYLM DEVELOPMENT PILLARS                      │
-├───────────────────┬────────────────────┬───────────────────────────────┤
-│ 1. MODEL ADAPTERS │ 2. LOCAL TOOLING   │ 3. EXPANDED STACKS & COURSES  │
-│ LoRA Tool-Calling │ In-Browser Wasm VM │ Wave 2 Technical Syllabi      │
-│ Socratic Guidance │ Local File Ingest  │ 15-Minute Mastery Sprints     │
-│ Tri-Lake Dataset  │ KaTeX Math Engine  │ Interactive Code Exercises    │
-├───────────────────┴────────────────────┴───────────────────────────────┤
-│                   4. AGENTIC SOVEREIGN WORKSPACES                      │
-│ Multi-step Reasoning Loops · Zero-Cloud Artifacts · Free vs Paid Parity │
-└────────────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                                    EASYLM DUAL MANDATE                                 │
+├───────────────────────────────────────────┬────────────────────────────────────────────┤
+│ 1. THE EVERYDAY APPLIANCE (NON-POWER USER)│ 2. THE MODULAR FOUNDATION (POWER USER)     │
+│ • Zero configuration, zero install        │ • Headless, decoupled AGPL-3.0 components  │
+│ • Instant browser launch on consumer GPUs │ • Reusable WebGPU runner (@easylm/engine)  │
+│ • Patient Socratic tutor (Greene/Feynman) │ • Standalone Stacks reader (@easylm/stacks)│
+│ • Self-contained offline utility suite    │ • In-browser Wasm sandbox (@easylm/wasm)   │
+│ • Zero deadline shame, zero test leak     │ • Open JSON course schemas and quiz banks  │
+└───────────────────────────────────────────┴────────────────────────────────────────────┘
 ```
 
-### Priority 1: Dedicated Model Adapters (LoRAs)
-- **Tool-Call Alignment:** Fine-tune 1.5B and 3B models to emit clean, deterministic tool calls (`<tool_call>{"name": "...", "arguments": {...}}</tool_call>`) with 99%+ schema reliability.
-- **Socratic Pedagogical Alignment:** Train adapters that prioritize inquiry, guided hints, and conceptual understanding over instant solution hand-offs.
-- **WebLLM Multi-LoRA Pipeline:** Implement dynamic in-browser LoRA delta loading so users can switch model specializations without redownloading multi-gigabyte base weights.
+1. **For the Non-Power User (The Universal Learning Appliance):**  
+   The only AI application a student, teacher, or self-directed learner needs. Open the browser tab and it works immediately. Delivers patient, intuitive tutoring, offline textbooks, units conversion, exact math, document reading, and writing assistance without ever asking for an API key, an account, or a monthly fee.
 
-### Priority 2: Improved Local Tooling & Sandboxes
-- **Wasm Virtual Machine Sandboxing:** Connect the Tier 1 WASI micro-shell and Tier 2 v86 Alpine Linux container (`src/engine/zcabs.ts`) to the chat interface, enabling safe on-device Python and JavaScript code execution.
-- **Local File & Document Ingestion:** Drag-and-drop ingestion for PDF, CSV, JSON, Markdown, and TXT files, parsed entirely client-side using Web Workers without sending a byte over the network.
-- **Enhanced Studio Analytical Tools:** Native 2D/3D equation graphing, KaTeX formula authoring, and tabular data inspection tools.
-
-### Priority 3: Expanded Stacks & Learn Coursework
-- **Wave 2 Undergraduate Courses:**
-  - `ai-systems-1`: Artificial Intelligence, Neural Systems & Local Transformers (Dewey 006)
-  - `crypto-systems-1`: Applied Modern Cryptography & Privacy Engineering (Dewey 005.8)
-  - `systems-prog-1`: Systems Programming, Memory Safety & WebAssembly (Dewey 004)
-  - `finance-micro-1`: Financial Engineering & Automated Market Microstructure (Dewey 330)
-- **Mastery Sprints:** 15-minute self-contained modules designed for rapid concept acquisition: 1 intuition walk, 1 interactive diagram, 3 check questions.
-- **Interactive Code Checks:** Hands-on programming assignments evaluated directly inside the browser's local Wasm container.
-
-### Priority 4: Free Sovereign Alternative to Paid Services
-- **Autonomous Reasoning Loops:** Multi-step agentic execution (Inspect -> Formulate Plan -> Call Tool -> Evaluate Output -> Synthesize) running locally on consumer laptops.
-- **Sovereign Artifact Generation:** Export complete conversations, interactive charts, and study progress into self-contained, standalone single-file HTML documents.
-- **Zero Account, Zero Meter:** Maintain the permanent guarantee that core tools, memory banks, textbooks, and inference remain 100% free and client-side under the AGPL-3.0 covenant.
+2. **For the Power User & Developer (The Free Composable Foundation):**  
+   A transparent, cleanly architected open-source baseline. Power users can borrow standalone components // WebGPU inference engine, The Stacks reference viewer, in-browser Wasm execution sandboxes, curriculum validation scripts // or fork and build custom private training/study environments on top of open schemas.
 
 ---
 
-## 4. Contributing & Collaboration Guide
+## 2. Core Strategic Pillars
 
-EasyLM is built as a public good. We welcome contributors who share our commitment to open science, sovereign computing, and accessible education.
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                               EASYLM STRATEGIC PILLARS                                 │
+├───────────────────────┬────────────────────────┬───────────────────────────────────────┤
+│ I. THE STACKS & MAPS  │ II. UNIVERSAL COURSES  │ III. SOVEREIGN STUDIO                 │
+│ Curated Primary Doors │ K-12 to Collegiate     │ In-Browser Wasm Code Sandbox          │
+│ Offline Cartography   │ Feynman Pedagogy       │ KaTeX & 2D/3D Interactive Visualizer  │
+│ Zero-Hallucination    │ 15-Minute Sprints      │ Local Client-Side Document Ingest     │
+├───────────────────────┴────────────────────────┴───────────────────────────────────────┤
+│ IV. IN-BROWSER AGENCY & LOCAL INFERENCE        │ V. GLOBAL LOCALIZATION                │
+│ Dedicated LoRA Adapters · WebGPU Optimizations │ Multi-Lingual Curriculum & Stacks     │
+│ Tri-Lake Sovereign Memory (IndexedDB)          │ Low-Spec Mobile & Offline Deployment  │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
 
-### Immediate Areas Where Contributors Can Help:
-1. **Curriculum & Stacks Authors:**
-   - Author new chapters and reading guides following the **Greene / Feynman method**: intuition first, formal terminology second.
-   - Expand practice quizzes, project rubrics, and exam items in `scripts/wave1_courses.mjs`.
-2. **WebGPU & Engine Hackers:**
-   - Optimize WebLLM shader performance and KV-cache management for low-memory devices.
-   - Refine browser detection and graceful fallbacks in `src/engine/device.ts` and `src/engine/webllm.ts`.
-3. **Adapter & Evaluation Engineers:**
-   - Help build synthetic tool-use datasets for LoRA fine-tuning.
-   - Implement benchmark harnesses to measure local token throughput, accuracy, and tool adherence.
-4. **UI/UX & Accessibility Polishers:**
-   - Ensure strict compliance with UI Canon: **zero horizontal scrollbars**, clean flex wrapping, responsive mobile layouts, and crisp noun labels (Studio, Learn, History).
+---
 
-### Ready to Contribute?
-- Review [CONTRIBUTING.md](CONTRIBUTING.md) for environment setup and patch instructions.
-- Ensure all tests pass with `npm test` before submitting pull requests.
-- Verify our ethical principles in [COVENANT.md](COVENANT.md) and security protocols in [SECURITY.md](SECURITY.md).
+### Pillar I: The Stacks & Knowledge Cartography
+
+The Stacks is the offline, curated collegiate library shipping inside EasyLM. It rejects raw web crawler dumps in favor of primary authoritative sources.
+
+- **Primary Source Expansion:**  
+  Anchor every domain to verified institutional doors // NIST, BIPM, MIT OpenCourseWare, OpenStax, IETF RFCs, W3C, MDN, and primary statutory legal databases.  
+  *Rule:* Zero invented constants. Numeric facts must resolve directly to an official door.
+- **Offline Deterministic Cartography (System One / Jev Indexing):**  
+  Deploy TypeSafe AI's Jev model offline to pre-compute semantic routing maps connecting hundreds of thousands of student query variations to exact sections of `TEXTBOOK.md` and `LINK_INDEX.md`.  
+  - Questions evaluated via `Choice` and `Score` primitives with confidence thresholds (`>= 0.90` automatically committed).  
+  - Compile high-confidence query-to-door edges into an indexed local lookup table // trie or binary index.  
+  - *Result:* Runtime models follow verified cartography rather than guessing search queries, eliminating generative hallucination in fact-seeking turns.
+- **English-Map Grounding:**  
+  Align vocabulary definitions and concept hierarchies with the English-Map Natural Semantic Metalanguage DAG, enforcing acyclic, child-order dependency across definitions.
+
+---
+
+### Pillar II: Universal Curriculum & Socratic Learning
+
+Learning must scale from basic literacy and numeracy to advanced collegiate inquiry.
+
+- **Foundational On-Ramps (Tier 0):**  
+  Bridge the entry gap identified in `drafts/agy-review/`:
+  - `study-skills-0`: How to learn, retain, and interrogate evidence.
+  - `numeracy-0`: Elementary arithmetic, ratios, fractions, and spatial sense.
+  - `algebra-0`: Symbolic variables, equations, and balance.
+  - `computers-0`: Bits, files, logic gates, and the architecture of computation.
+  - `data-0`: Measurements, uncertainty, variance, and tables.
+- **Undergraduate Surveys (Tier 1):**  
+  Complete and polish the 32 living collegiate packs, plus Wave 2 technical syllabi:
+  - `ai-systems-1`: Artificial Intelligence, Neural Systems & Local Transformers (Dewey 006).
+  - `crypto-systems-1`: Applied Modern Cryptography & Privacy Engineering (Dewey 005.8).
+  - `systems-prog-1`: Systems Programming, Memory Safety & WebAssembly (Dewey 004).
+  - `finance-micro-1`: Financial Engineering & Automated Market Microstructure (Dewey 330).
+  - `biomed-physio-1`: Cellular Systems & Human Physiology (Dewey 612).
+- **Mastery Sprints:**  
+  Self-contained 15-minute concept units:
+  1. Plain-English intuitive walk // Greene / Feynman principle: explain intuition before naming the technical jargon.
+  2. One interactive simulation or diagram.
+  3. Three check questions with deterministic grading // answer keys compiled in code, never leaked into model context.
+- **Socratic Tutoring Mode:**  
+  System envelopes and adapters that refuse to provide rote homework solutions; tutors guide through diagnostic questions, progressive hints, and worked checks.
+
+---
+
+### Pillar III: Sovereign Studio Tools & Runtime
+
+The browser must serve as an active analytical workbench, not merely a text box.
+
+- **Client-Side Code Execution (Wasm Sandboxing):**  
+  Integrate Tier 1 WASI micro-shell and Tier 2 v86 Alpine Linux container directly into Studio, allowing students to execute Python, JavaScript, and C code safely in-browser with zero server roundtrips.
+- **Interactive Mathematical Engine:**  
+  KaTeX formula rendering paired with interactive algebraic manipulation, step-by-step calculus expansion, and units verification via deterministic arithmetic engines.
+- **2D/3D Interactive Visualizations:**  
+  Canvas-based interactive graphing, physics phase space visualizers, chemistry molecular orbital viewers, and circuit logic simulators embedded directly within course chapters and tutor responses.
+- **Local Document Ingestion:**  
+  Drag-and-drop ingestion for PDF, CSV, JSON, Markdown, and TXT files parsed locally via client-side Web Workers. Provide in-browser semantic passage retrieval without uploading private user data to third-party servers.
+- **Standalone Sovereign Artifacts:**  
+  One-click export of complete interactive study sessions, laboratory notebooks, and course progress into single-file self-contained HTML documents that run anywhere offline.
+
+---
+
+### Pillar IV: In-Browser Agency & Local Models
+
+Running local 1.5B–3B models in the browser requires specialized engineering to match paid cloud platform reliability.
+
+- **Dedicated LoRA Task Adapters:**  
+  Overcome base model drift by training and hot-swapping lightweight WebLLM LoRA deltas:
+  - `adapter-tool`: Strict `<tool_call>` generation adhering to JSON schemas with 99%+ compliance.
+  - `adapter-tutor`: Socratic guidance posture preventing direct answer dumps.
+  - `adapter-synthesis`: Dense document summary and citation formatting.
+- **Multi-Step Autonomous Loops:**  
+  Deterministic client-side agent loops:  
+  `Inspect State` → `Formulate Plan` → `Dispatch Tool (Calc / Stacks / Wasm)` → `Verify Output` → `Synthesize Answer`.
+- **Tri-Lake Sovereign Memory System:**  
+  On-device memory stored entirely in browser IndexedDB:
+  - *Heaven:* User-approved high-water-mark responses for few-shot prompt adaptation.
+  - *Purgatory:* Scratch reasoning, unverified session artifacts, and pending drafts.
+  - *Hell:* Thumbs-downed hallucinations, banned phrases, and negative reinforcement boundaries.
+- **WebGPU Memory Tiers & Shader Tuning:**  
+  Intelligent hardware profiling (4k, 8k, and 16k context tiers), dynamic KV-cache compression, and fallback handling for low-VRAM integrated GPUs.
+
+---
+
+### Pillar V: Future Horizon — Global Localization & Universal Access
+
+Education is a universal human right; access must not be limited by language or hardware wealth.
+
+- **Curriculum Localization:**  
+  Translate foundational on-ramps and undergraduate surveys into major world languages (Spanish, French, Mandarin, Arabic, Hindi, Portuguese, Japanese).
+- **Localized Fact Indexing:**  
+  Anchor international editions of The Stacks to verified national standardization and legal bodies.
+- **Ultralight Device Profiles:**  
+  Optimized CPU-only and lightweight WebGPU execution paths tailored for low-cost educational hardware // Chromebooks, Raspberry Pi 5, budget mobile devices.
+- **Air-Gapped PWA Packaging:**  
+  Progressive Web App package installable as a native desktop or tablet application, retaining all course texts, calculators, and offline models for deployment in remote schools and disconnected environments.
+
+---
+
+## 3. Implementation Phases
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                              DEVELOPMENT PHASES & TIMELINE                             │
+├───────────────────┬───────────────────┬────────────────────┬───────────────────────────┤
+│ PHASE 1: Q4 2026  │ PHASE 2: Q1 2027  │ PHASE 3: Q2 2027   │ PHASE 4: Q3-Q4 2027       │
+│ Foundations & Map │ Sovereign Studio  │ Wave 2 Stacks      │ Localization & Global     │
+│ • LoRA Adapters   │ • Wasm Execution  │ • Advanced Syllabi │ • Multi-Lingual Packs     │
+│ • Stacks Mapping  │ • KaTeX Graphing  │ • Mastery Sprints  │ • Standalone PWA Bundles  │
+│ • Tier 0 On-Ramps │ • Document Ingest │ • Tri-Lake Memory  │ • Mobile Memory Profiles  │
+└───────────────────┴───────────────────┴────────────────────┴───────────────────────────┘
+```
+
+### Phase 1: Foundations, Adapters & Knowledge Cartography (Current)
+- [x] WebGPU browser engine running 1.5B–3B models (Qwen 2.5, DeepSeek-R1 Distill).
+- [x] Initial 30-course undergraduate Stacks library and Dewey classification index.
+- [ ] Train first WebLLM LoRA adapter for deterministic tool dispatching.
+- [ ] Execute offline Jev cartography pipeline to index high-frequency search queries to Stacks chapters.
+- [ ] Author Tier 0 foundational on-ramps (`study-skills-0`, `numeracy-0`, `algebra-0`, `computers-0`).
+- [ ] Ship strict UI canon audit: verify zero horizontal scrollbars, responsive flex wrapping, and clean noun labels.
+
+### Phase 2: The Sovereign Studio & Wasm Runtime
+- [ ] Connect client-side WASI / v86 Wasm sandbox for safe on-device Python/JS code execution.
+- [ ] Implement KaTeX interactive formula workbench and 2D canvas curve graphing.
+- [ ] Add zero-network client-side document ingestion (PDF, CSV, TXT) with local embedding search.
+- [ ] Implement single-file sovereign HTML export for study sessions and notebooks.
+
+### Phase 3: Wave 2 Coursework, Mastery Sprints & Multi-LoRA
+- [ ] Author Wave 2 technical syllabi (`ai-systems-1`, `crypto-systems-1`, `systems-prog-1`, `finance-micro-1`).
+- [ ] Build 15-minute Mastery Sprint modules with interactive checkpoints.
+- [ ] Implement dynamic WebLLM multi-LoRA switching for on-the-fly tutor vs tool persona swapping.
+- [ ] Full integration of Tri-Lake memory management UI in IndexedDB.
+
+### Phase 4: Localization, Universal Access & Decoupled Packages
+- [ ] Publish decoupled npm packages (`@easylm/engine`, `@easylm/stacks`, `@easylm/studio`).
+- [ ] First localized curriculum packs (Spanish and French core on-ramps).
+- [ ] Low-VRAM memory-capped mobile profile for Android and iOS browsers.
+- [ ] Fully air-gapped, zero-download desktop PWA distribution for schools and humanitarian clinics.
+
+---
+
+## 4. UI & Pedagogical Canon (The Non-Negotiables)
+
+1. **Greene / Feynman Pedagogical Order:**  
+   Plain-English physical intuition first; introduce formal technical terms only after conceptual comprehension is achieved.
+2. **Zero Horizontal Scrollbars:**  
+   Horizontal scroll bars on desktop or mobile are strictly prohibited. All layouts must flex-wrap cleanly (`flex-wrap: wrap; overflow-x: hidden`).
+3. **Crisp Human Interface Labels:**  
+   Single, purposeful nouns (Studio, Learn, History, Stacks). Zero parentheticals on buttons or controls.
+4. **HNAI Color Palette & Density:**  
+   Black, white, ina violet, Cascadia typography. High information density with crisp tooltips, never bloated grey helper prose.
+5. **No Deadline Shame & Zero Answer Leakage:**  
+   Self-paced mastery. Keys live compiled into client code and never enter model generation prompts.

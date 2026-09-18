@@ -115,6 +115,16 @@ export const OPEN_WEIGHTS_PROVIDERS: OpenWeightsCredit[] = [
     description: "The universal commons and distribution backbone for open machine learning, weights hosting, and lightweight on-device models.",
     license: "Apache-2.0",
     url: "https://huggingface.co"
+  },
+  {
+    id: "prismml",
+    provider: "PrismML",
+    organization: "PrismML",
+    leadHumans: "PrismML Research Team",
+    models: ["Bonsai 2 (27B Ternary)", "Ternary Bonsai 2"],
+    description: "Pioneered extreme ternary quantization (1.72-bit weights) and Hadamard-basis low-bit compression, enabling 27B parameter reasoning models to run within 6–8GB consumer VRAM.",
+    license: "Apache-2.0",
+    url: "https://prismml.com"
   }
 ];
 

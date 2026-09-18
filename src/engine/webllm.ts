@@ -30,6 +30,16 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
     overrides: {
       context_window_size: 4096
     }
+  },
+  {
+    model: 'https://huggingface.co/prism-ml/Ternary-Bonsai-2-27B-gguf',
+    model_id: 'Bonsai-2-27B-MLC',
+    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen2-7B-Instruct-q4f16_1_cs1k-webgpu.wasm',
+    low_resource_required: false,
+    vram_required_MB: 6800,
+    overrides: {
+      context_window_size: 32768
+    }
   }
 ];
 
@@ -114,6 +124,16 @@ export const AVAILABLE_MODELS: ModelOption[] = [
   },
 
   // 8GB - 16GB Tier (High Performance / Power Workstations)
+  {
+    id: 'Bonsai-2-27B-MLC',
+    label: 'Bonsai 2 27B',
+    sizeMB: 5950,
+    vramEst: '~6.8 GB VRAM',
+    vramTier: '16gb',
+    isReasoning: true,
+    isRecommended: true,
+    description: 'PrismML ternary 27B intelligence compressed to ~5.9GB. Recommended high performance model for ~12GB VRAM and under.'
+  },
   {
     id: 'gemma-2-9b-it-q4f16_1-MLC',
     label: 'Gemma 2 9B Instruct',

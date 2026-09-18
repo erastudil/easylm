@@ -40,6 +40,7 @@ export interface ModelOption {
   isReasoning?: boolean;
   isCoding?: boolean;
   isDefault?: boolean;
+  isRecommended?: boolean;
   description?: string;
 }
 

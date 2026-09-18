@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- **Bonsai 2 27B Integration & ~12GB VRAM Recommendation:**
+  - Integrated PrismML's breakthrough **Ternary Bonsai 2 27B** into the WebGPU model suite.
+  - Designated as official **Recommended Model for ~12GB VRAM and under**—bringing 27B-parameter chain-of-thought intelligence and 262k context down to consumer GPUs in ~5.95 GB compressed weights and ~6.8 GB VRAM footprint.
+  - Dynamically recommended in `src/engine/device.ts` and badged in `ModelModal.tsx` for discrete and high performance GPUs.
+  - Added custom WebLLM engine record with 32k context override and WebGPU fallback protection.
+  - Attributed PrismML research team in Open Weights Covenant (`src/data/credits.ts`).
+- **Master Development Roadmap & Knowledge Cartography:**
+  - Codified comprehensive 4-phase master development roadmap in `ROADMAP.md` covering Phase 1 through Phase 4 and the AGPL-3.0 public-good covenant.
+  - Architected offline knowledge cartography pipeline using TypeSafe AI / Jev to evaluate student queries against The Stacks textbook chapters and official authority doors (NIST, BIPM, OpenStax, RFC, MDN), eliminating hallucination.
 - Context / effort fence: completion `max_tokens` is capped to remaining context, never the full window. Voice + protocols + tools share a 40% envelope so switching a gallery voice cannot overflow 4k. Device-lost and GPU-process-dead fail closed with no auto-reinit. Last-resort dialog copies `chrome://restart` / `brave://restart` / `edge://restart` and warns that tabs reload. Clear-cache retry is withheld while the GPU worker is down.
 - WebGPU Adapter Resilience & Model Cache Recovery:
   - Fixed "unable to find valid gpu" failure mode with multi-tier cascading fallback (`high-performance` -> system default -> `low-power` with backoff retry).

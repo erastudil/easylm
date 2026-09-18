@@ -190,7 +190,7 @@ export const ModelModal: React.FC<ModelModalProps> = ({
                 border: '1px solid rgba(16, 185, 129, 0.3)',
                 fontWeight: 600
               }}>
-                Recommended: Qwen 2.5 3B
+                Recommended: {deviceInfo?.recommendedModel ? (AVAILABLE_MODELS.find(m => m.id === deviceInfo.recommendedModel)?.label || deviceInfo.recommendedModel) : 'Qwen 2.5 3B'}
               </span>
             </div>
             {cacheNotice && (
@@ -370,6 +370,11 @@ export const ModelModal: React.FC<ModelModalProps> = ({
                               Default
                             </span>
                           )}
+                          {(deviceInfo?.recommendedModel === m.id || (!deviceInfo && m.isRecommended)) && (
+                            <span style={{ fontSize: '0.64rem', padding: '0.1rem 0.35rem', borderRadius: '4px', backgroundColor: 'rgba(16, 185, 129, 0.15)', color: '#34d399', fontWeight: 600 }}>
+                              ★ Recommended
+                            </span>
+                          )}
                           {m.isReasoning && (
                             <span style={{ fontSize: '0.64rem', padding: '0.1rem 0.35rem', borderRadius: '4px', backgroundColor: 'rgba(168, 85, 247, 0.2)', color: '#c084fc', fontWeight: 600 }}>
                               🧠 Think
@@ -450,7 +455,7 @@ export const ModelModal: React.FC<ModelModalProps> = ({
           flexShrink: 0
         }}>
           <div style={{ fontSize: '0.74rem', color: '#71717a', maxWidth: '520px' }}>
-            💡 <strong>Guideline:</strong> Qwen 2.5 3B is the recommended default—light work on 8GB cards. 9B runs great on 8GB–16GB cards. 12B+ is too heavy for everyday browser sessions.
+            💡 <strong>Guideline:</strong> Qwen 2.5 3B is the recommended default for 8GB cards. Bonsai 2 is recommended for high performance cards (~12GB VRAM and under).
           </div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             {onLoadModel && (

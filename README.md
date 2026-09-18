@@ -26,11 +26,17 @@ EasyLM is an open-source, consumer alternative to hosted AI platforms that **exe
 
 ## Supported Models
 
-| Model | Weights Download | VRAM Footprint | Description | Upstream License |
+EasyLM dynamically detects your hardware tier and recommends the optimal model for your GPU's Video RAM:
+
+| Model | Download | VRAM Footprint | Tier & Sweet Spot | Upstream License |
 |---|---|---|---|---|
-| **Qwen 2.5 3B Instruct** | ~1.9 GB | ~2.2 GB | Default recommended model. Balanced reasoning, coding, and academic explanation. | Apache-2.0 |
-| **DeepSeek-R1 Distill Qwen 1.5B** | ~1.0 GB | ~1.3 GB | High-efficiency chain-of-thought reasoning model for structured problem-solving. | MIT |
-| **Qwen 2.5 1.5B Instruct** | ~1.1 GB | ~1.4 GB | Ultralight model optimized for integrated GPUs, older laptops, and lightweight machines. | Apache-2.0 |
+| **Bonsai 2 27B (PrismML)** | ~5.9 GB | ~6.8 GB | **Recommended for ~12GB VRAM & under.** Extreme ternary quantization brings 27B reasoning to consumer GPUs. | Apache-2.0 |
+| **Qwen 2.5 3B Instruct** | ~1.9 GB | ~2.2 GB | **Default for 8GB cards.** Everyday workhorse. Balanced reasoning, coding, and fast throughput. | Apache-2.0 |
+| **Llama 3.2 3B Instruct** | ~2.0 GB | ~2.3 GB | **8GB tier.** Meta's compact 3B model. Sharp reasoning and concise conversational flow. | Llama 3.2 |
+| **DeepSeek-R1 Distill Qwen 7B** | ~4.5 GB | ~5.1 GB | **8GB–16GB tier.** Heavyweight chain-of-thought reasoning for deeper analytical tasks. | MIT |
+| **Gemma 2 9B Instruct** | ~5.8 GB | ~6.4 GB | **16GB tier.** High-caliber intelligence running comfortably without overloading host memory. | Gemma |
+| **DeepSeek-R1 Distill Qwen 1.5B** | ~1.0 GB | ~1.6 GB | **4GB tier.** Extended reasoning and step-by-step thinking for low-memory systems. | MIT |
+| **Qwen 2.5 1.5B Instruct** | ~1.1 GB | ~1.4 GB | **Ultralight (4GB tier).** Instant startup, low memory. Runs smoothly on phones, tablets, and iGPUs. | Apache-2.0 |
 
 *Note: Model weights retain their upstream licenses. The EasyLM application code is licensed under GNU AGPL-3.0 or later.*
 

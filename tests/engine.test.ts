@@ -113,7 +113,10 @@ import {
   resetWebGPUAndCaches,
   getGpuFence,
   markGpuFence,
-  clearGpuFence
+  clearGpuFence,
+  AVAILABLE_MODELS,
+  ALLOWED_MODEL_IDS,
+  CUSTOM_MODEL_RECORDS
 } from '../src/engine/webllm';
 import { detectDevice } from '../src/engine/device';
 
@@ -1828,6 +1831,47 @@ describe('ZCABS Canary Nonce Engine', () => {
         const dev = await detectDevice();
         expect(dev.gpuVendor).toBe('NVIDIA');
         expect(dev.gpuRenderer).toContain('RTX 4080');
+      } finally {
+        if (!hadNavigator) delete g.navigator;
+        else g.navigator.gpu = origGpu;
+      }
+    });
+
+    it('registers Bonsai 2 in AVAILABLE_MODELS and CUSTOM_MODEL_RECORDS', () => {
+      const bonsai = AVAILABLE_MODELS.find(m => m.id === 'Bonsai-2-27B-MLC');
+      expect(bonsai).toBeDefined();
+      expect(bonsai?.label).toBe('Bonsai 2 27B');
+      expect(bonsai?.vramTier).toBe('16gb');
+      expect(bonsai?.isRecommended).toBe(true);
+      expect(bonsai?.isReasoning).toBe(true);
+      expect(ALLOWED_MODEL_IDS.has('Bonsai-2-27B-MLC')).toBe(true);
+
+      const customRec = CUSTOM_MODEL_RECORDS.find(m => m.model_id === 'Bonsai-2-27B-MLC');
+      expect(customRec).toBeDefined();
+    });
+
+    it('detectDevice recommends Bonsai 2 for high performance GPUs (12GB VRAM class)', async () => {
+      const g = globalThis as any;
+      const hadNavigator = 'navigator' in g && g.navigator !== undefined;
+      const origNav = hadNavigator ? g.navigator : undefined;
+      if (!hadNavigator) g.navigator = {};
+      const origGpu = g.navigator.gpu;
+      try {
+        g.navigator.gpu = {
+          requestAdapter: async () => ({
+            info: {
+              vendor: 'nvidia',
+              architecture: 'Ampere',
+              description: 'NVIDIA GeForce RTX 3060 (12GB)'
+            },
+            limits: { maxBufferSize: 2147483648 }
+          })
+        };
+
+        const dev = await detectDevice();
+        expect(dev.hardwareTier).toBe('high_performance');
+        expect(dev.estimatedVRAMGB).toBe(12);
+        expect(dev.recommendedModel).toBe('Bonsai-2-27B-MLC');
       } finally {
         if (!hadNavigator) delete g.navigator;
         else g.navigator.gpu = origGpu;

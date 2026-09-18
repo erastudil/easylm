@@ -166,10 +166,14 @@ export async function detectDevice(): Promise<DeviceInfo> {
 
   // Model recommendation:
   // - Ultralight -> 1.5B (~1.4 GB VRAM)
-  // - Standard & above -> 3B (~2.2 GB VRAM) — light work on 8GB cards!
-  const recommendedModel = hardwareTier === 'ultralight'
-    ? 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC'
-    : 'Qwen2.5-3B-Instruct-q4f16_1-MLC';
+  // - Standard (8GB class) -> 3B (~2.2 GB VRAM) — light work on 8GB cards!
+  // - High Performance (~12GB VRAM & under) -> Bonsai 2 27B (~6.8 GB VRAM)
+  let recommendedModel = 'Qwen2.5-3B-Instruct-q4f16_1-MLC';
+  if (hardwareTier === 'ultralight') {
+    recommendedModel = 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC';
+  } else if (hardwareTier === 'high_performance' || (estimatedVRAMGB >= 10 && estimatedVRAMGB <= 16)) {
+    recommendedModel = 'Bonsai-2-27B-MLC';
+  }
 
   return {
     isMobile,

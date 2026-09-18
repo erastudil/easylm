@@ -16,6 +16,7 @@ GitHub `erastudil/easylm` is SoT. this tree is the working copy.
 1. `README.md` · `CONTRIBUTING.md` · `COVENANT.md` · `LICENSE`
 2. stacks law: `stacks/LAW.md` · `stacks/TRUSTED_SOURCES.md`
 3. Studio: `docs/CURRICULUM.md`
+4. proposed on-ramps: `drafts/agy-review/` until judgement. not compiled.
 
 ## write
 

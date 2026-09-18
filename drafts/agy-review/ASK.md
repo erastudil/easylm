@@ -1,0 +1,1 @@
+Review the EasyLM stacks for missing or incomplete subjects, and for subjects that require knowledge the library does not teach yet. Anyone who can read should be able to start learning about anything from the level they already have. Drafts for Agy. Write additions to the GFC standard.

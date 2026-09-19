@@ -1736,6 +1736,53 @@ describe('ZCABS Canary Nonce Engine', () => {
       }
     });
 
+    it('patchWebGPUAdapterFallback wraps requestDevice to recover from DXGI_ERROR_DEVICE_REMOVED', async () => {
+      const mockHealthyDevice = { id: 'mock-healthy-device' };
+      const mockFallbackAdapter = {
+        name: 'Mock Integrated GPU',
+        limits: { maxBufferSize: 536870912 },
+        features: new Set(['shader-f16']),
+        requestDevice: async () => mockHealthyDevice
+      };
+      const mockBrokenDiscreteAdapter = {
+        name: 'Mock Broken Discrete GPU',
+        limits: { maxBufferSize: 1073741824 },
+        features: new Set(['shader-f16']),
+        requestDevice: async () => {
+          throw new Error("Failed to execute 'requestDevice' on 'GPUAdapter': D3D12 create command queue failed with DXGI_ERROR_DEVICE_REMOVED (0x887A0005)");
+        }
+      };
+
+      const g = globalThis as any;
+      const hadNavigator = 'navigator' in g && g.navigator !== undefined;
+      const origNav = hadNavigator ? g.navigator : undefined;
+      if (!hadNavigator) g.navigator = {};
+      const originalGpu = g.navigator.gpu;
+      try {
+        g.navigator.gpu = {
+          requestAdapter: async (opts?: any) => {
+            if (opts?.powerPreference === 'high-performance') return mockBrokenDiscreteAdapter;
+            if (opts?.powerPreference === 'low-power') return mockFallbackAdapter;
+            return null;
+          }
+        };
+
+        patchWebGPUAdapterFallback();
+        const adapter = await g.navigator.gpu.requestAdapter({ powerPreference: 'high-performance' });
+        expect(adapter).toBe(mockBrokenDiscreteAdapter);
+
+        // Calling requestDevice on the discrete adapter recovers by using the fallback adapter's device
+        const device = await adapter.requestDevice({ requiredLimits: { maxBufferSize: 268435456 } });
+        expect(device).toBe(mockHealthyDevice);
+      } finally {
+        if (!hadNavigator) {
+          delete g.navigator;
+        } else {
+          g.navigator.gpu = originalGpu;
+        }
+      }
+    });
+
     it('getWebGPUAdapter falls back through default and low-power adapters', async () => {
       const mockDefaultAdapter = { name: 'Mock Default GPU' };
       const g = globalThis as any;
@@ -1842,15 +1889,18 @@ describe('ZCABS Canary Nonce Engine', () => {
       expect(bonsai).toBeDefined();
       expect(bonsai?.label).toBe('Bonsai 2 27B');
       expect(bonsai?.vramTier).toBe('16gb');
-      expect(bonsai?.isRecommended).toBe(true);
       expect(bonsai?.isReasoning).toBe(true);
       expect(ALLOWED_MODEL_IDS.has('Bonsai-2-27B-MLC')).toBe(true);
 
       const customRec = CUSTOM_MODEL_RECORDS.find(m => m.model_id === 'Bonsai-2-27B-MLC');
       expect(customRec).toBeDefined();
+
+      const qwen3b = AVAILABLE_MODELS.find(m => m.id === 'Qwen2.5-3B-Instruct-q4f16_1-MLC');
+      expect(qwen3b?.isDefault).toBe(true);
+      expect(qwen3b?.isRecommended).toBe(true);
     });
 
-    it('detectDevice recommends Bonsai 2 for high performance GPUs (12GB VRAM class)', async () => {
+    it('detectDevice recommends Qwen 2.5 3B as default workhorse for discrete GPUs', async () => {
       const g = globalThis as any;
       const hadNavigator = 'navigator' in g && g.navigator !== undefined;
       const origNav = hadNavigator ? g.navigator : undefined;
@@ -1871,7 +1921,7 @@ describe('ZCABS Canary Nonce Engine', () => {
         const dev = await detectDevice();
         expect(dev.hardwareTier).toBe('high_performance');
         expect(dev.estimatedVRAMGB).toBe(12);
-        expect(dev.recommendedModel).toBe('Bonsai-2-27B-MLC');
+        expect(dev.recommendedModel).toBe('Qwen2.5-3B-Instruct-q4f16_1-MLC');
       } finally {
         if (!hadNavigator) delete g.navigator;
         else g.navigator.gpu = origGpu;

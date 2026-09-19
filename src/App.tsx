@@ -322,6 +322,10 @@ export const App: React.FC = () => {
   // Model & Personality Configuration
   const [selectedModel, setSelectedModel] = useState<string>(() => {
     const saved = localStorage.getItem('easylm_selected_model');
+    if (saved === 'Bonsai-2-27B-MLC') {
+      try { localStorage.removeItem('easylm_selected_model'); } catch {}
+      return DEFAULT_MODEL_ID;
+    }
     if (saved && AVAILABLE_MODELS.some(m => m.id === saved)) return saved;
     return DEFAULT_MODEL_ID;
   });
@@ -377,7 +381,11 @@ export const App: React.FC = () => {
         lower.includes('wasm') || lower.includes('pipeline') || lower.includes('device');
 
       setLoadErrorToast({
-        message: gpuDead ? 'WebGPU cannot see the GPU. The GPU worker is down.' : rawMsg,
+        message: gpuDead
+          ? (rawMsg.includes('0x887A0005') || rawMsg.includes('DXGI_ERROR_DEVICE_REMOVED')
+              ? 'WebGPU lost the GPU (D3D12 DXGI_ERROR_DEVICE_REMOVED). The Windows GPU driver was reset.'
+              : 'WebGPU cannot see the GPU. The GPU worker is down.')
+          : rawMsg,
         modelId: modelToLoad,
         isGPUOrCache: isGPUOrCache && !gpuDead,
         gpuDead
@@ -485,8 +493,11 @@ export const App: React.FC = () => {
       setDeviceInfo(dev);
       setWebGpuAvailable(dev.hasWebGPU);
       const savedModel = localStorage.getItem('easylm_selected_model');
-      if (savedModel && !AVAILABLE_MODELS.some(m => m.id === savedModel)) {
-        localStorage.removeItem('easylm_selected_model');
+      if (savedModel === 'Bonsai-2-27B-MLC') {
+        try { localStorage.removeItem('easylm_selected_model'); } catch {}
+        setSelectedModel(DEFAULT_MODEL_ID);
+      } else if (savedModel && !AVAILABLE_MODELS.some(m => m.id === savedModel)) {
+        try { localStorage.removeItem('easylm_selected_model'); } catch {}
         setSelectedModel(dev.recommendedModel || DEFAULT_MODEL_ID);
       } else if (!savedModel && dev.recommendedModel) {
         setSelectedModel(dev.recommendedModel);

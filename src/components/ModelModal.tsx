@@ -455,7 +455,7 @@ export const ModelModal: React.FC<ModelModalProps> = ({
           flexShrink: 0
         }}>
           <div style={{ fontSize: '0.74rem', color: '#71717a', maxWidth: '520px' }}>
-            💡 <strong>Guideline:</strong> Qwen 2.5 3B is the recommended default for 8GB cards. Bonsai 2 is recommended for high performance cards (~12GB VRAM and under).
+            💡 <strong>Guideline:</strong> Qwen 2.5 3B is the recommended default workhorse for all systems. Bonsai 2 is an optional heavy reasoning model for ~12GB+ VRAM cards.
           </div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             {onLoadModel && (

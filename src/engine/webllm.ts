@@ -52,6 +52,7 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     vramEst: '~2.2 GB VRAM',
     vramTier: '8gb',
     isDefault: true,
+    isRecommended: true,
     description: 'The everyday workhorse. Lightning fast, high IQ, light work on 8GB cards.'
   },
   {
@@ -131,8 +132,7 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     vramEst: '~6.8 GB VRAM',
     vramTier: '16gb',
     isReasoning: true,
-    isRecommended: true,
-    description: 'PrismML ternary 27B intelligence compressed to ~5.9GB. Recommended high performance model for ~12GB VRAM and under.'
+    description: 'PrismML ternary 27B intelligence compressed to ~5.9GB. Large reasoning model for ~12GB+ VRAM discrete GPUs.'
   },
   {
     id: 'gemma-2-9b-it-q4f16_1-MLC',
@@ -311,10 +311,88 @@ function armDeviceLostFence(engine: MLCEngine): void {
     // ignore
   }
 }
+
+let highPerformanceFailed = false;
+
+function adjustDescriptorForAdapter(descriptor: any, targetAdapter: any): any {
+  if (!descriptor) return descriptor;
+  const copy = { ...descriptor };
+  if (copy.requiredLimits && targetAdapter.limits) {
+    const limits: Record<string, number> = {};
+    for (const [k, v] of Object.entries(copy.requiredLimits)) {
+      if (typeof v === 'number' && typeof targetAdapter.limits[k] === 'number') {
+        limits[k] = Math.min(v, targetAdapter.limits[k]);
+      } else {
+        limits[k] = v as number;
+      }
+    }
+    copy.requiredLimits = limits;
+  }
+  if (Array.isArray(copy.requiredFeatures) && targetAdapter.features) {
+    copy.requiredFeatures = copy.requiredFeatures.filter((f: string) => targetAdapter.features.has(f));
+  }
+  return copy;
+}
+
+function wrapAdapterWithDeviceFallback(
+  adapter: any,
+  originalRequestAdapter: (opts?: any) => Promise<any>
+): any {
+  if (!adapter || typeof adapter.requestDevice !== 'function' || adapter.__easylm_wrapped) {
+    return adapter;
+  }
+  adapter.__easylm_wrapped = true;
+  const originalRequestDevice = adapter.requestDevice.bind(adapter);
+
+  adapter.requestDevice = async function (descriptor?: any) {
+    try {
+      return await originalRequestDevice(descriptor);
+    } catch (err: any) {
+      const msg = String(err?.message || err || '');
+      const isDeviceRemoved =
+        msg.includes('DEVICE_REMOVED') ||
+        msg.includes('0x887A0005') ||
+        msg.includes('create command queue failed') ||
+        msg.includes('DeviceRemoved') ||
+        msg.includes('device was lost') ||
+        msg.includes('Device is lost') ||
+        msg.includes('device_removed');
+
+      if (isDeviceRemoved) {
+        console.warn('[WebGPU] adapter.requestDevice failed with DXGI_ERROR_DEVICE_REMOVED. Bypassing broken discrete GPU and attempting fallback adapter...', err);
+        highPerformanceFailed = true;
+
+        // Try fallback adapters: low-power (integrated GPU) or default
+        const fallbackOptions = [{ powerPreference: 'low-power' }, undefined];
+        for (const fbOpts of fallbackOptions) {
+          try {
+            const fallbackAdapter = await originalRequestAdapter(fbOpts);
+            if (fallbackAdapter && fallbackAdapter !== adapter) {
+              console.warn('[WebGPU] Found alternative adapter, requesting device on fallback...');
+              const adjustedDesc = adjustDescriptorForAdapter(descriptor, fallbackAdapter);
+              const device = await fallbackAdapter.requestDevice(adjustedDesc);
+              if (device) {
+                console.warn('[WebGPU] Successfully recovered using fallback adapter device!');
+                return device;
+              }
+            }
+          } catch (fbErr) {
+            console.warn('[WebGPU] Fallback adapter requestDevice notice:', fbErr);
+          }
+        }
+      }
+      throw err;
+    }
+  };
+
+  return adapter;
+}
+
 /**
  * Resilient WebGPU adapter request wrapper.
  * If high-performance powerPreference fails (e.g. discrete GPU is sleeping, crashed,
  * or blocked by browser process), falls back gracefully through default, low-power, or retries.
+ * Wraps adapter.requestDevice to handle DXGI_ERROR_DEVICE_REMOVED on Windows Direct3D 12.
  */
 export function patchWebGPUAdapterFallback(): void {
   if (typeof navigator !== 'undefined' && 'gpu' in navigator && (navigator as any).gpu) {
@@ -325,42 +403,47 @@ export function patchWebGPUAdapterFallback(): void {
     gpu.requestAdapter = async function (options?: any) {
       if (gpuFence === 'process_dead') return null;
 
-      // 1. Try requested options
+      let effectiveOptions = options;
+      if (highPerformanceFailed && options?.powerPreference === 'high-performance') {
+        effectiveOptions = undefined;
+      }
+
+      // 1. Try requested/effective options
       try {
-        const adapter = await originalRequestAdapter(options);
-        if (adapter) return adapter;
+        const adapter = await originalRequestAdapter(effectiveOptions);
+        if (adapter) return wrapAdapterWithDeviceFallback(adapter, originalRequestAdapter);
       } catch (e) {
         console.warn('[WebGPU] Primary adapter request failed:', e);
       }
 
       // 2. Fallback: try default adapter (no power preference)
-      if (options?.powerPreference) {
+      if (effectiveOptions?.powerPreference) {
         try {
           console.warn('[WebGPU] Retrying with default power preference...');
           const fallbackAdapter = await originalRequestAdapter();
-          if (fallbackAdapter) return fallbackAdapter;
+          if (fallbackAdapter) return wrapAdapterWithDeviceFallback(fallbackAdapter, originalRequestAdapter);
         } catch {
           // ignore
         }
       }
 
       // 3. Fallback: try low-power adapter (integrated GPU)
-      if (options?.powerPreference !== 'low-power') {
+      if (effectiveOptions?.powerPreference !== 'low-power') {
         try {
           console.warn('[WebGPU] Retrying with low-power adapter...');
           const lowPowerAdapter = await originalRequestAdapter({ powerPreference: 'low-power' });
-          if (lowPowerAdapter) return lowPowerAdapter;
+          if (lowPowerAdapter) return wrapAdapterWithDeviceFallback(lowPowerAdapter, originalRequestAdapter);
         } catch {
           // ignore
         }
       }
 
-      // 4. Fallback: try high-performance adapter if options was empty/undefined
-      if (!options?.powerPreference) {
+      // 4. Fallback: try high-performance adapter if options was empty/undefined and high-performance hasn't failed
+      if (!effectiveOptions?.powerPreference && !highPerformanceFailed) {
         try {
           console.warn('[WebGPU] Retrying with high-performance adapter...');
           const hpAdapter = await originalRequestAdapter({ powerPreference: 'high-performance' });
-          if (hpAdapter) return hpAdapter;
+          if (hpAdapter) return wrapAdapterWithDeviceFallback(hpAdapter, originalRequestAdapter);
         } catch {
           // ignore
         }
@@ -370,7 +453,7 @@ export function patchWebGPUAdapterFallback(): void {
       try {
         await new Promise(resolve => setTimeout(resolve, 60));
         const retryAdapter = await originalRequestAdapter();
-        if (retryAdapter) return retryAdapter;
+        if (retryAdapter) return wrapAdapterWithDeviceFallback(retryAdapter, originalRequestAdapter);
       } catch {
         // ignore
       }
@@ -561,6 +644,7 @@ export async function resetWebGPUAndCaches(modelId?: string): Promise<{ success:
   isInitializing = false;
   initPromise = null;
   clearGpuFence();
+  highPerformanceFailed = false;
 
   // 2. Clear model cache or all caches
   const cacheResult = await clearModelCache(modelId);
@@ -679,8 +763,14 @@ export async function getOrInitEngine(
       const rawMsg = err?.message || String(err);
       applyFailureFence(rawMsg);
       let hint = '';
-      if (rawMsg.includes('Unable to find a compatible GPU') || gpuFence === 'process_dead') {
-        hint = ' [Diagnostic: WebGPU adapter request returned null. GPU worker is down. Do not retry init.]';
+      if (
+        rawMsg.includes('Unable to find a compatible GPU') ||
+        rawMsg.includes('DXGI_ERROR_DEVICE_REMOVED') ||
+        rawMsg.includes('0x887A0005') ||
+        rawMsg.includes('create command queue failed') ||
+        gpuFence === 'process_dead'
+      ) {
+        hint = ' [Diagnostic: Windows GPU device removed (D3D12 0x887A0005). Use "Restart GPU worker" or hard restart browser.]';
       } else if (rawMsg.includes('maxBufferSize') || rawMsg.includes('allocation')) {
         hint = ' [Diagnostic: Model memory exceeded GPU limits. Try selecting an ultralight model like Qwen 2.5 1.5B.]';
       } else if (rawMsg.includes('Integrity') || rawMsg.includes('fetch') || rawMsg.includes('corrupt') || rawMsg.includes('unexpected end') || rawMsg.includes('syntaxerror')) {

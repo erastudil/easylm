@@ -102,6 +102,7 @@ describe('context budget', () => {
   it('classifies GPU-process death separately from sleep dispose', () => {
     expect(classifyWebGpuFailure(new Error('Unable to find a compatible GPU'))).toBe('gpu_process_dead');
     expect(classifyWebGpuFailure(new Error('Failed to requestAdapter'))).toBe('gpu_process_dead');
+    expect(classifyWebGpuFailure(new Error("Failed to execute 'requestDevice' on 'GPUAdapter': D3D12 create command queue failed with DXGI_ERROR_DEVICE_REMOVED (0x887A0005)"))).toBe('gpu_process_dead');
     expect(classifyWebGpuFailure(new Error('device lost'))).toBe('device_lost');
     expect(classifyWebGpuFailure(new Error('Engine disposed'))).toBe('disposed');
     expect(classifyWebGpuFailure(new Error('out of memory'))).toBe('oom');

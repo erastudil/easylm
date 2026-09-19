@@ -157,7 +157,11 @@ export function classifyWebGpuFailure(err: unknown): WebGpuFailureKind {
     s.includes('cannot find webgpu') ||
     s.includes('failed to requestadapter') ||
     s.includes('adapter request returned null') ||
-    s.includes('gpu worker is down')
+    s.includes('gpu worker is down') ||
+    s.includes('dxgi_error_device_removed') ||
+    s.includes('0x887a0005') ||
+    s.includes('create command queue failed') ||
+    s.includes('device_removed')
   ) {
     return 'gpu_process_dead';
   }

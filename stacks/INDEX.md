@@ -1,6 +1,6 @@
 ---
 title: "The Stacks — pack map"
-date: "2026-09-14"
+date: "2026-09-18"
 status: living · easylm · the-stacks
 ---
 
@@ -21,6 +21,7 @@ each pack: `stacks/<slug>/TEXTBOOK.md` + `LINK_INDEX.md`.
 | 150 | psychology | neural architecture, cognition, memory, behavior |
 | 200 | religion | comparative religion, mythology, sacred traditions |
 | 300 | sociology | social structures, institutions, culture, anthropology |
+| 302.23 | media | feeds, recommenders, misinformation, platform health · level: hs · floor 13 |
 | 320 | civics | constitutions, rights, institutions |
 | 330 | finance | value, risk, accounting, markets |
 | 340 | law | jurisprudence, sources of law, procedure |

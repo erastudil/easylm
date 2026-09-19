@@ -69,7 +69,6 @@ The authoritative directory of verified government registries, legal entity port
 | **Index** | [INDEX.md](INDEX.md) |
 | **Deep Tracks** | [DEEP.md](DEEP.md) |
 | **Finance & Valuation** | `stacks/finance/TEXTBOOK.md` |
-| **Shop-Floor Operations & Kaizen** | `stacks/ops_5s_kaizen/TEXTBOOK.md` |
 | **Corporate Law & Contracts** | `stacks/law/TEXTBOOK.md` |
 | **Calculations & Unit Math Engine** | `stacks/tools/` · `mcp/CALC.md` |
 | **Methods & Statistical Testing** | `stacks/methods/TEXTBOOK.md` |

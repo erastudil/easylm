@@ -1,0 +1,1 @@
+Improve the media pack: writing per GFC (plain English intuition first, formal term after), level-tag accuracy per LAW.md levels, and link rot in LINK_INDEX.md. Do not add load-bearing numbers without a door.

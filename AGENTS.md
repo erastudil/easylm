@@ -1,7 +1,7 @@
 ---
 title: "easylm — dir law"
 summary: "browser WebGPU gift. AGPL. $0. local. The Stacks + Studio."
-last_updated: "2026-09-13"
+last_updated: "2026-09-18"
 status: living · easylm
 ---
 
@@ -17,6 +17,7 @@ GitHub `erastudil/easylm` is SoT. this tree is the working copy.
 2. stacks law: `stacks/LAW.md` · `stacks/TRUSTED_SOURCES.md`
 3. Studio: `docs/CURRICULUM.md`
 4. proposed on-ramps: `drafts/agy-review/` until judgement. not compiled.
+5. house policy: `docs/POLICIES.md` (5S/ponytail, GFC, tokens, progen) · `docs/KAIZEN.md` (nightly loop)
 
 ## write
 

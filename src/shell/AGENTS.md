@@ -9,7 +9,7 @@ status: living · easylm
 
 Phone layout for `max-width: 768px`. Desktop chrome is unchanged.
 
-Tabs: Learn · Studio · Chat · More. Persist `easylm_phone_tab`. First visit: Learn.
+Tabs: Chat · Studio · Learn · Options. Persist `easylm_phone_tab`. First visit: Chat.
 
 - `phone_tabs.ts` is the SoT for tab ids and storage.
 - `PhoneShell` mounts all four pages and hides inactive ones. Do not unmount Learn/Studio on tab change.

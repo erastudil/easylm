@@ -23,23 +23,28 @@ function memStore(seed: Record<string, string> = {}) {
 }
 
 describe('phone tabs', () => {
-  it('lists Learn Studio Chat More in that order', () => {
-    expect(PHONE_TABS).toEqual(['learn', 'studio', 'chat', 'more']);
+  it('lists Chat Studio Learn Options in that order', () => {
+    expect(PHONE_TABS).toEqual(['chat', 'studio', 'learn', 'options']);
   });
 
-  it('defaults to Learn', () => {
-    expect(DEFAULT_PHONE_TAB).toBe('learn');
-    expect(parsePhoneTab(null)).toBe('learn');
-    expect(parsePhoneTab(undefined)).toBe('learn');
-    expect(parsePhoneTab('nope')).toBe('learn');
-    expect(loadPhoneTab(null)).toBe('learn');
+  it('defaults to Chat', () => {
+    expect(DEFAULT_PHONE_TAB).toBe('chat');
+    expect(parsePhoneTab(null)).toBe('chat');
+    expect(parsePhoneTab(undefined)).toBe('chat');
+    expect(parsePhoneTab('nope')).toBe('chat');
+    expect(loadPhoneTab(null)).toBe('chat');
+  });
+
+  it('migrates legacy more tab to options', () => {
+    expect(parsePhoneTab('more')).toBe('options');
   });
 
   it('accepts only the four tab ids', () => {
-    expect(isPhoneTab('learn')).toBe(true);
-    expect(isPhoneTab('studio')).toBe(true);
     expect(isPhoneTab('chat')).toBe(true);
-    expect(isPhoneTab('more')).toBe(true);
+    expect(isPhoneTab('studio')).toBe(true);
+    expect(isPhoneTab('learn')).toBe(true);
+    expect(isPhoneTab('options')).toBe(true);
+    expect(isPhoneTab('more')).toBe(false);
     expect(isPhoneTab('history')).toBe(false);
     expect(isPhoneTab('')).toBe(false);
   });
@@ -49,8 +54,8 @@ describe('phone tabs', () => {
     savePhoneTab(store, 'studio');
     expect(store.dump()[PHONE_TAB_KEY]).toBe('studio');
     expect(loadPhoneTab(store)).toBe('studio');
-    savePhoneTab(store, 'chat');
-    expect(loadPhoneTab(store)).toBe('chat');
+    savePhoneTab(store, 'options');
+    expect(loadPhoneTab(store)).toBe('options');
   });
 
   it('narrow cut is 768', () => {

@@ -1,7 +1,7 @@
-export const PHONE_TABS = ['learn', 'studio', 'chat', 'more'] as const;
+export const PHONE_TABS = ['chat', 'studio', 'learn', 'options'] as const;
 export type PhoneTab = (typeof PHONE_TABS)[number];
 
-export const DEFAULT_PHONE_TAB: PhoneTab = 'learn';
+export const DEFAULT_PHONE_TAB: PhoneTab = 'chat';
 export const PHONE_TAB_KEY = 'easylm_phone_tab';
 export const NARROW_QUERY = '(max-width: 768px)';
 export const NARROW_MAX_PX = 768;
@@ -13,6 +13,7 @@ export function isPhoneTab(value: string | null | undefined): value is PhoneTab 
 }
 
 export function parsePhoneTab(raw: string | null | undefined): PhoneTab {
+  if (raw === 'more') return 'options';
   return isPhoneTab(raw) ? raw : DEFAULT_PHONE_TAB;
 }
 

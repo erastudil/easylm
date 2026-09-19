@@ -1170,31 +1170,6 @@ export const App: React.FC = () => {
           tab={phoneTab}
           onTab={handlePhoneTab}
           keyboardOpen={keyboardOpen}
-          learn={
-            <LearnModal
-              isOpen
-              variant="page"
-              onClose={() => handlePhoneTab('chat')}
-              profileId={currentProfile.id}
-              kidSafe={currentProfile.role === 'kid'}
-              onOpenStudio={handleOpenStudio}
-            />
-          }
-          studio={
-            <StudioModal
-              isOpen
-              variant="page"
-              onClose={() => handlePhoneTab('chat')}
-              profileId={currentProfile.id}
-              kidSafe={currentProfile.role === 'kid'}
-              initialTarget={studioTarget}
-              onSwitchToLearn={handleOpenLearn}
-              onInsertIntoChat={(text) => {
-                setInputPrompt((prev) => (prev ? `${prev}\n\n${text}` : text));
-                handlePhoneTab('chat');
-              }}
-            />
-          }
           chat={
             <>
               <ChatPhoneBar
@@ -1230,7 +1205,32 @@ export const App: React.FC = () => {
               {chatPane}
             </>
           }
-          more={
+          studio={
+            <StudioModal
+              isOpen
+              variant="page"
+              onClose={() => handlePhoneTab('chat')}
+              profileId={currentProfile.id}
+              kidSafe={currentProfile.role === 'kid'}
+              initialTarget={studioTarget}
+              onSwitchToLearn={handleOpenLearn}
+              onInsertIntoChat={(text) => {
+                setInputPrompt((prev) => (prev ? `${prev}\n\n${text}` : text));
+                handlePhoneTab('chat');
+              }}
+            />
+          }
+          learn={
+            <LearnModal
+              isOpen
+              variant="page"
+              onClose={() => handlePhoneTab('chat')}
+              profileId={currentProfile.id}
+              kidSafe={currentProfile.role === 'kid'}
+              onOpenStudio={handleOpenStudio}
+            />
+          }
+          options={
             <MoreView
               profileName={currentProfile.name}
               profileAvatar={currentProfile.avatar}

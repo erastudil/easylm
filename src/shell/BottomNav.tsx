@@ -2,10 +2,10 @@ import React from 'react';
 import { PhoneTab } from './phone_tabs';
 
 const TABS: Array<{ id: PhoneTab; label: string }> = [
-  { id: 'learn', label: 'Learn' },
-  { id: 'studio', label: 'Studio' },
   { id: 'chat', label: 'Chat' },
-  { id: 'more', label: 'More' }
+  { id: 'studio', label: 'Studio' },
+  { id: 'learn', label: 'Learn' },
+  { id: 'options', label: 'Options' }
 ];
 
 export const BottomNav: React.FC<{

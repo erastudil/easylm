@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- **Phone shell:** At `max-width: 768px` the app is four full-screen tabs — Learn, Studio, Chat, More — with a bottom nav. Learn and Studio are pages, not overlays on chat. Studio Read drills packs → chapters → text. Chat is a thin bar, a Chats sheet, and a ⋯ menu. Desktop sidebar and header HUD are unchanged.
+- **Phone shell:** At `max-width: 768px` the app is four full-screen tabs — Chat (default), Studio, Learn, Options — with a bottom nav. Learn and Studio are pages, not overlays on chat. Studio Read drills packs → chapters → text. Chat is a thin bar, a Chats sheet, and a ⋯ menu. Desktop sidebar and header HUD are unchanged.
 - **Bonsai 2 27B Integration & ~12GB VRAM Recommendation:**
   - Integrated PrismML's breakthrough **Ternary Bonsai 2 27B** into the WebGPU model suite.
   - Designated as official **Recommended Model for ~12GB VRAM and under**—bringing 27B-parameter chain-of-thought intelligence and 262k context down to consumer GPUs in ~5.95 GB compressed weights and ~6.8 GB VRAM footprint.

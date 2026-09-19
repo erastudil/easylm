@@ -3,7 +3,7 @@ import { Session } from '../types';
 import { exportBackupToDisk, restoreBackupFromDisk, wipeAllStoredSessions } from '../engine/storage';
 import { isVaultEncrypted } from '../engine/crypto_vault';
 
-export const MoreView: React.FC<{
+export const OptionsView: React.FC<{
   profileName: string;
   profileAvatar: string;
   modelLabel: string;
@@ -140,3 +140,5 @@ export const MoreView: React.FC<{
     </div>
   );
 };
+
+export const MoreView = OptionsView;

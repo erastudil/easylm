@@ -151,6 +151,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, a
 
   return (
     <div
+      className="modal-overlay"
       style={{
         position: 'fixed',
         inset: 0,

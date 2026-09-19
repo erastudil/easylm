@@ -73,6 +73,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
 
   return (
     <div
+      className="modal-overlay"
       style={{
         position: 'fixed',
         inset: 0,
@@ -87,6 +88,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
       onClick={onClose}
     >
       <div
+        className="modal-sheet"
         style={{
           backgroundColor: '#0c0c12',
           border: '1px solid rgba(139, 92, 246, 0.35)',

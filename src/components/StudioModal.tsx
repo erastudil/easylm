@@ -46,6 +46,7 @@ export interface StudioModalProps {
   onClose: () => void;
   profileId: string;
   kidSafe: boolean;
+  variant?: 'overlay' | 'page';
   initialTarget?: StudioTarget | null;
   onSwitchToLearn?: () => void;
   onInsertIntoChat?: (text: string) => void;
@@ -88,6 +89,7 @@ export const StudioModal: React.FC<StudioModalProps> = ({
   onClose,
   profileId,
   kidSafe,
+  variant = 'overlay',
   initialTarget,
   onSwitchToLearn,
   onInsertIntoChat,
@@ -96,6 +98,7 @@ export const StudioModal: React.FC<StudioModalProps> = ({
   canNavigateBack,
   canNavigateForward
 }) => {
+  const page = variant === 'page';
   const [activeTool, setActiveTool] = useState<StudioTool>('read');
 
   // Handle incoming target whenever modal opens or target changes
@@ -107,10 +110,102 @@ export const StudioModal: React.FC<StudioModalProps> = ({
 
   if (!isOpen) return null;
 
+  const toolTabs = (
+    <div className={page ? 'seg-row' : undefined} style={page ? undefined : {
+      display: 'flex',
+      background: '#111118',
+      borderRadius: '8px',
+      border: '1px solid rgba(139, 92, 246, 0.3)',
+      padding: '3px',
+      width: 'fit-content',
+      gap: '3px',
+      flexWrap: 'wrap'
+    }}>
+      {([
+        { id: 'read' as const, label: 'Read' },
+        { id: 'write' as const, label: 'Write' },
+        { id: 'code' as const, label: 'Code' },
+        { id: 'graph' as const, label: 'Graph' },
+        { id: 'draw' as const, label: 'Draw' }
+      ]).map((t) => (
+        <button
+          key={t.id}
+          type="button"
+          className={page && activeTool === t.id ? 'seg-on' : undefined}
+          style={page ? undefined : tabBtnStyle(activeTool === t.id)}
+          onClick={() => setActiveTool(t.id)}
+          title={t.label}
+        >
+          {t.label}
+        </button>
+      ))}
+    </div>
+  );
+
+  const tools = (
+    <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+      {activeTool === 'read' && (
+        <ReadTool
+          profileId={profileId}
+          phone={page}
+          initialTarget={initialTarget}
+          onSendToWrite={(text, title) => {
+            setActiveTool('write');
+          }}
+        />
+      )}
+      {activeTool === 'write' && (
+        <WriteTool
+          phone={page}
+          initialTitle={initialTarget?.title || 'Academic Essay'}
+          initialContent={initialTarget?.initialContent || ''}
+          onInsertIntoChat={onInsertIntoChat}
+        />
+      )}
+      {activeTool === 'code' && (
+        <CodeTool
+          phone={page}
+          initialContent={initialTarget?.initialContent}
+          onInsertIntoChat={onInsertIntoChat}
+          onSendToWrite={(code, title) => {
+            setActiveTool('write');
+          }}
+        />
+      )}
+      {activeTool === 'graph' && (
+        <GraphTool
+          phone={page}
+          onInsertIntoChat={onInsertIntoChat}
+          onSendToWrite={(svg, title) => {
+            setActiveTool('write');
+          }}
+        />
+      )}
+      {activeTool === 'draw' && (
+        <DrawTool
+          onInsertIntoChat={onInsertIntoChat}
+          onSendToWrite={(dataUrl, title) => {
+            setActiveTool('write');
+          }}
+        />
+      )}
+    </div>
+  );
+
+  if (page) {
+    return (
+      <div className="studio-page">
+        <div className="studio-page-title">Studio</div>
+        {toolTabs}
+        {tools}
+      </div>
+    );
+  }
+
   return (
-    <div style={overlayStyle} onClick={onClose}>
+    <div className="modal-overlay" style={overlayStyle} onClick={onClose}>
       <div
-        className="card-panel"
+        className="card-panel modal-sheet"
         style={{
           width: '98vw',
           maxWidth: '1680px',
@@ -212,108 +307,8 @@ export const StudioModal: React.FC<StudioModalProps> = ({
           </div>
         </div>
 
-        {/* Studio Tool Selection Tabs */}
-        <div
-          style={{
-            display: 'flex',
-            background: '#111118',
-            borderRadius: '8px',
-            border: '1px solid rgba(139, 92, 246, 0.3)',
-            padding: '3px',
-            width: 'fit-content',
-            gap: '3px'
-          }}
-        >
-          <button
-            type="button"
-            style={tabBtnStyle(activeTool === 'read')}
-            onClick={() => setActiveTool('read')}
-            title="Read: The Dewey Stacks Textbooks and Sovereign Profile Memories"
-          >
-            <span>📖</span> Read
-          </button>
-          <button
-            type="button"
-            style={tabBtnStyle(activeTool === 'write')}
-            onClick={() => setActiveTool('write')}
-            title="Write: Document Studio, Markdown Editor & Academic Export"
-          >
-            <span>✍️</span> Write
-          </button>
-          <button
-            type="button"
-            style={tabBtnStyle(activeTool === 'code')}
-            onClick={() => setActiveTool('code')}
-            title="Code: Interactive Code Sandbox & Runner"
-          >
-            <span>💻</span> Code
-          </button>
-          <button
-            type="button"
-            style={tabBtnStyle(activeTool === 'graph')}
-            onClick={() => setActiveTool('graph')}
-            title="Graph: 2D Coordinate Plane & Function Plotter"
-          >
-            <span>📈</span> Graph
-          </button>
-          <button
-            type="button"
-            style={tabBtnStyle(activeTool === 'draw')}
-            onClick={() => setActiveTool('draw')}
-            title="Draw / Paint: Interactive Canvas Sketching & Diagramming"
-          >
-            <span>🎨</span> Draw
-          </button>
-        </div>
-
-        {/* Tool Panes */}
-        <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-          {activeTool === 'read' && (
-            <ReadTool
-              profileId={profileId}
-              initialTarget={initialTarget}
-              onSendToWrite={(text, title) => {
-                setActiveTool('write');
-              }}
-            />
-          )}
-
-          {activeTool === 'write' && (
-            <WriteTool
-              initialTitle={initialTarget?.title || 'Academic Essay'}
-              initialContent={initialTarget?.initialContent || ''}
-              onInsertIntoChat={onInsertIntoChat}
-            />
-          )}
-
-          {activeTool === 'code' && (
-            <CodeTool
-              initialContent={initialTarget?.initialContent}
-              onInsertIntoChat={onInsertIntoChat}
-              onSendToWrite={(code, title) => {
-                setActiveTool('write');
-              }}
-            />
-          )}
-
-          {activeTool === 'graph' && (
-            <GraphTool
-              onInsertIntoChat={onInsertIntoChat}
-              onSendToWrite={(svg, title) => {
-                setActiveTool('write');
-              }}
-            />
-          )}
-
-          {activeTool === 'draw' && (
-            <DrawTool
-              onInsertIntoChat={onInsertIntoChat}
-              onSendToWrite={(dataUrl, title) => {
-                setActiveTool('write');
-              }}
-            />
-          )}
-        </div>
+        {toolTabs}
+        {tools}
       </div>
     </div>
   );
@@ -326,11 +321,13 @@ export const StudioModal: React.FC<StudioModalProps> = ({
 function ReadTool({
   profileId,
   initialTarget,
-  onSendToWrite
+  onSendToWrite,
+  phone
 }: {
   profileId: string;
   initialTarget?: StudioTarget | null;
   onSendToWrite: (text: string, title: string) => void;
+  phone?: boolean;
 }) {
   const [activeTab, setActiveTab] = useState<'stacks' | 'memories'>('stacks');
   const [searchQuery, setSearchQuery] = useState('');
@@ -345,6 +342,12 @@ function ReadTool({
     return STACKS_PACKS[0]?.slug || '';
   });
   const [selectedChapterIdx, setSelectedChapterIdx] = useState<number>(0);
+  const [phoneScreen, setPhoneScreen] = useState<'packs' | 'chapters' | 'reader'>(() => {
+    if (!phone) return 'packs';
+    if (initialTarget?.stackId && initialTarget?.chapterQuery) return 'reader';
+    if (initialTarget?.stackId) return 'chapters';
+    return 'packs';
+  });
 
   // Profile memories state
   const [memories, setMemories] = useState<MemoryEntry[]>(() => getProfileMemories(profileId));
@@ -362,6 +365,11 @@ function ReadTool({
       }
     }
   }, [initialTarget, selectedPackSlug]);
+
+  useEffect(() => {
+    if (!phone || !initialTarget?.stackId) return;
+    setPhoneScreen(initialTarget.chapterQuery ? 'reader' : 'chapters');
+  }, [phone, initialTarget]);
 
   const filteredPacks = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -404,6 +412,110 @@ function ReadTool({
     deleteProfileMemory(id);
     setMemories(getProfileMemories(profileId));
   };
+
+  if (phone) {
+    return (
+      <div className="studio-read-phone">
+        <div className="seg-row">
+          <button type="button" className={activeTab === 'stacks' ? 'seg-on' : undefined} onClick={() => { setActiveTab('stacks'); setPhoneScreen('packs'); }}>
+            Stacks
+          </button>
+          <button type="button" className={activeTab === 'memories' ? 'seg-on' : undefined} onClick={() => setActiveTab('memories')}>
+            Notes
+          </button>
+        </div>
+        {activeTab === 'memories' ? (
+          <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', gap: '0.35rem' }}>
+              <input
+                type="text"
+                value={newMemoryText}
+                onChange={(e) => setNewMemoryText(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleAddMemory()}
+                placeholder="Add a note"
+                style={{ flex: 1, backgroundColor: '#07070a', border: '1px solid rgba(139, 92, 246, 0.25)', borderRadius: '6px', padding: '0.55rem 0.6rem', fontSize: '0.88rem', color: '#ffffff' }}
+              />
+              <button type="button" onClick={handleAddMemory} className="btn-pill btn-pill-primary" style={{ minHeight: 44 }}>Add</button>
+            </div>
+            <div style={{ flex: 1, overflowY: 'auto' }}>
+              {memories.map((m) => (
+                <div key={m.id} className="phone-session">
+                  <span style={{ wordBreak: 'break-word' }}>{m.text}</span>
+                  <button type="button" className="phone-session-del" onClick={() => handleDeleteMemory(m.id)} title="Delete">×</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : phoneScreen === 'packs' ? (
+          <>
+            <input
+              type="text"
+              placeholder="Search stacks"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{ width: '100%', backgroundColor: '#07070a', border: '1px solid rgba(139, 92, 246, 0.25)', borderRadius: '8px', padding: '0.55rem 0.7rem', fontSize: '0.88rem', color: '#ffffff', flexShrink: 0 }}
+            />
+            <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+              {filteredPacks.map((p) => (
+                <button
+                  key={p.slug}
+                  type="button"
+                  className="phone-session"
+                  style={{ textAlign: 'left' }}
+                  onClick={() => {
+                    setSelectedPackSlug(p.slug);
+                    setSelectedChapterIdx(0);
+                    setPhoneScreen('chapters');
+                  }}
+                >
+                  <span className="phone-session-title">{p.title}</span>
+                </button>
+              ))}
+            </div>
+          </>
+        ) : phoneScreen === 'chapters' ? (
+          <>
+            <button type="button" className="btn-pill" style={{ minHeight: 40, alignSelf: 'flex-start' }} onClick={() => setPhoneScreen('packs')}>
+              Stacks
+            </button>
+            <div className="learn-page-title">{currentPack?.title}</div>
+            <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+              {chapters.map((ch, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  className="phone-session"
+                  style={{ textAlign: 'left' }}
+                  onClick={() => {
+                    setSelectedChapterIdx(idx);
+                    setPhoneScreen('reader');
+                  }}
+                >
+                  <span className="phone-session-title">{ch.heading}</span>
+                </button>
+              ))}
+            </div>
+          </>
+        ) : (
+          <>
+            <button type="button" className="btn-pill" style={{ minHeight: 40, alignSelf: 'flex-start' }} onClick={() => setPhoneScreen('chapters')}>
+              Chapters
+            </button>
+            <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', wordBreak: 'break-word' }}>
+              {currentChapter ? (
+                <>
+                  <h2 style={{ color: '#ffffff', fontSize: '1.15rem', marginTop: 0 }}>{currentChapter.heading}</h2>
+                  <MarkdownRenderer content={currentChapter.body} />
+                </>
+              ) : (
+                <div style={{ color: '#a1a1aa' }}>Select a chapter.</div>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '0.85rem', height: '100%', minHeight: 0 }}>
@@ -733,18 +845,20 @@ function ReadTool({
 function WriteTool({
   initialTitle,
   initialContent,
-  onInsertIntoChat
+  onInsertIntoChat,
+  phone
 }: {
   initialTitle: string;
   initialContent: string;
   onInsertIntoChat?: (text: string) => void;
+  phone?: boolean;
 }) {
   const [content, setContent] = useState(initialContent);
   const [title, setTitle] = useState(initialTitle);
   const [author, setAuthor] = useState('EasyLM Scholar');
   const [subject, setSubject] = useState('General Studies');
   const [date, setDate] = useState(new Date().toLocaleDateString());
-  const [viewMode, setViewMode] = useState<'split' | 'edit' | 'preview'>('split');
+  const [viewMode, setViewMode] = useState<'split' | 'edit' | 'preview'>(phone ? 'edit' : 'split');
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
 
   const metadata: DocumentMetadata = {
@@ -895,7 +1009,7 @@ function WriteTool({
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <div style={{ display: 'flex', background: '#111118', borderRadius: '4px', border: '1px solid rgba(139, 92, 246, 0.25)', padding: '2px' }}>
-            {(['split', 'edit', 'preview'] as const).map((m) => (
+            {(phone ? (['edit', 'preview'] as const) : (['split', 'edit', 'preview'] as const)).map((m) => (
               <button
                 key={m}
                 type="button"
@@ -929,11 +1043,12 @@ function WriteTool({
 
       {/* Editor & Preview Pane */}
       <div
+        className="studio-write-split"
         style={{
           flex: 1,
           minHeight: 0,
           display: 'grid',
-          gridTemplateColumns: viewMode === 'split' ? '1fr 1fr' : '1fr',
+          gridTemplateColumns: viewMode === 'split' && !phone ? '1fr 1fr' : '1fr',
           gap: '0.75rem'
         }}
       >
@@ -992,11 +1107,13 @@ function WriteTool({
 function CodeTool({
   initialContent,
   onInsertIntoChat,
-  onSendToWrite
+  onSendToWrite,
+  phone
 }: {
   initialContent?: string;
   onInsertIntoChat?: (text: string) => void;
   onSendToWrite?: (code: string, title: string) => void;
+  phone?: boolean;
 }) {
   const [code, setCode] = useState(
     initialContent ||
@@ -1527,7 +1644,7 @@ self.onunhandledrejection = function(e) {
       </div>
 
       {/* Editor & Console Split View */}
-      <div style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '0.75rem' }}>
+      <div className="studio-code-split" style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: phone ? '1fr' : '1.2fr 1fr', gap: '0.75rem' }}>
         {/* Code Input */}
         <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 }}>
           <div style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: '#8b5cf6', marginBottom: '0.25rem', fontWeight: 600 }}>
@@ -1617,10 +1734,12 @@ interface CalculatorFunction {
 
 function GraphTool({
   onInsertIntoChat,
-  onSendToWrite
+  onSendToWrite,
+  phone
 }: {
   onInsertIntoChat?: (text: string) => void;
   onSendToWrite?: (svg: string, title: string) => void;
+  phone?: boolean;
 }) {
   const [functions, setFunctions] = useState<CalculatorFunction[]>([
     { id: '1', fn: 'x^2 - 4', color: '#a78bfa', label: 'f₁(x)', visible: true },
@@ -2081,7 +2200,7 @@ function GraphTool({
         </div>
       ) : (
         /* Live SVG Plot & Calculus Controls View */
-        <div style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: subTab === 'calc' ? '1fr 280px' : '1fr', gap: '0.65rem' }}>
+        <div className="studio-graph-split" style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: subTab === 'calc' && !phone ? '1fr 280px' : '1fr', gap: '0.65rem' }}>
           {/* Left: SVG Canvas */}
           <div
             onMouseMove={handleSvgMouseMove}

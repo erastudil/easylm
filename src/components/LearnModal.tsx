@@ -42,6 +42,7 @@ interface LearnModalProps {
   onClose: () => void;
   profileId: string;
   kidSafe: boolean;
+  variant?: 'overlay' | 'page';
   onOpenStudio?: (target: StudioTarget) => void;
   onNavigateBack?: () => void;
   onNavigateForward?: () => void;
@@ -77,12 +78,14 @@ export const LearnModal: React.FC<LearnModalProps> = ({
   onClose,
   profileId,
   kidSafe,
+  variant = 'overlay',
   onOpenStudio,
   onNavigateBack,
   onNavigateForward,
   canNavigateBack,
   canNavigateForward
 }) => {
+  const page = variant === 'page';
   const [tab, setTab] = useState<Tab>('catalog');
   const [p, setP] = useState<Progress>(() => loadProgress(profileId));
   const [courseId, setCourseId] = useState<string | null>(null);
@@ -95,7 +98,10 @@ export const LearnModal: React.FC<LearnModalProps> = ({
     const loaded = adjustSchedule(loadProgress(profileId), today);
     saveProgress(loaded);
     setP(loaded);
-  }, [isOpen, profileId, today]);
+    if (page && loaded.enrolled.length > 0) {
+      setTab((prev) => (prev === 'catalog' ? 'today' : prev));
+    }
+  }, [isOpen, profileId, today, page]);
 
   if (!isOpen) return null;
 
@@ -109,29 +115,13 @@ export const LearnModal: React.FC<LearnModalProps> = ({
   const loc = courseId && lessonId ? lessonById(courseId, lessonId) : undefined;
   const activeItem = activeItemId ? getItem(activeItemId) : undefined;
 
-  return (
-    <div style={overlay} onClick={onClose}>
-      <div
-        className="card-elevated"
-        style={{
-          width: '96vw',
-          maxWidth: '1480px',
-          height: '94vh',
-          display: 'flex',
-          flexDirection: 'column',
-          padding: '1.25rem',
-          position: 'relative',
-          backgroundColor: '#0c0c12',
-          border: '1px solid rgba(139, 92, 246, 0.35)',
-          borderRadius: '16px',
-          overflow: 'hidden'
-        }}
-        onClick={e => e.stopPropagation()}
-      >
-        {/* Header */}
+  const hideList = page && Boolean(activeItem);
+
+  const inner = (
+    <>
+      {!page && (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            {/* In-app Navigation */}
             <div style={{ display: 'flex', gap: '0.25rem' }}>
               <button
                 type="button"
@@ -154,33 +144,25 @@ export const LearnModal: React.FC<LearnModalProps> = ({
                 ▶
               </button>
             </div>
-
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <span style={{ fontSize: '1.2rem' }}>🎓</span>
                 <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: '#ffffff', fontSize: '1.05rem' }}>
                   EasyLM Learn
                 </span>
-                <span style={{ fontSize: '0.68rem', backgroundColor: 'rgba(52, 211, 153, 0.15)', color: '#34d399', border: '1px solid rgba(52, 211, 153, 0.3)', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>
-                  Public Good
-                </span>
-              </div>
-              <div style={{ fontSize: '0.72rem', color: '#a1a1aa', marginTop: '0.1rem' }}>
-                Universal collegiate curriculum · Patient teacher · Education for all · Free forever
               </div>
             </div>
           </div>
-
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
             {onOpenStudio && (
               <button
                 type="button"
                 className="btn-pill"
                 style={{ backgroundColor: 'rgba(139, 92, 246, 0.2)', borderColor: '#8b5cf6', color: '#c4b5fd', fontSize: '0.74rem', padding: '0.25rem 0.6rem' }}
-                title="Open Studio tools (Read textbooks, Write, Code, Graph, Draw)"
+                title="Open Studio"
                 onClick={() => onOpenStudio({ tool: 'read' })}
               >
-                🎨 Open Studio
+                Studio
               </button>
             )}
             <button
@@ -194,33 +176,38 @@ export const LearnModal: React.FC<LearnModalProps> = ({
             </button>
           </div>
         </div>
+      )}
 
-        {/* Navigation Tabs */}
-        <div style={{ display: 'flex', gap: '0.4rem', borderBottom: '1px solid rgba(139, 92, 246, 0.2)', paddingBottom: '0.4rem', marginBottom: '0.8rem' }}>
-          <button type="button" style={tabBtn(tab === 'catalog')} onClick={() => { setTab('catalog'); setActiveItemId(null); }}>
-            Courses Catalog
+      {page && !hideList && <div className="learn-page-title">Learn</div>}
+
+      {!hideList && (
+        <div className={page ? 'seg-row' : undefined} style={page ? undefined : { display: 'flex', gap: '0.4rem', borderBottom: '1px solid rgba(139, 92, 246, 0.2)', paddingBottom: '0.4rem', marginBottom: '0.8rem', flexWrap: 'wrap' }}>
+          <button type="button" className={page && tab === 'catalog' ? 'seg-on' : undefined} style={page ? undefined : tabBtn(tab === 'catalog')} onClick={() => { setTab('catalog'); setActiveItemId(null); }}>
+            Catalog
           </button>
-          <button type="button" style={tabBtn(tab === 'walk')} onClick={() => { setTab('walk'); setActiveItemId(null); }}>
-            Syllabus Walk
+          <button type="button" className={page && tab === 'walk' ? 'seg-on' : undefined} style={page ? undefined : tabBtn(tab === 'walk')} onClick={() => { setTab('walk'); setActiveItemId(null); }}>
+            Walk
           </button>
-          <button type="button" style={tabBtn(tab === 'today')} onClick={() => { setTab('today'); setActiveItemId(null); }}>
-            Daily Tasks
+          <button type="button" className={page && tab === 'today' ? 'seg-on' : undefined} style={page ? undefined : tabBtn(tab === 'today')} onClick={() => { setTab('today'); setActiveItemId(null); }}>
+            Today
           </button>
-          <button type="button" style={tabBtn(tab === 'cards')} onClick={() => { setTab('cards'); setActiveItemId(null); }}>
-            Flashcards
+          <button type="button" className={page && tab === 'cards' ? 'seg-on' : undefined} style={page ? undefined : tabBtn(tab === 'cards')} onClick={() => { setTab('cards'); setActiveItemId(null); }}>
+            Cards
           </button>
-          <button type="button" style={tabBtn(tab === 'record')} onClick={() => { setTab('record'); setActiveItemId(null); }}>
-            Transcript &amp; Badges
+          <button type="button" className={page && tab === 'record' ? 'seg-on' : undefined} style={page ? undefined : tabBtn(tab === 'record')} onClick={() => { setTab('record'); setActiveItemId(null); }}>
+            Record
           </button>
         </div>
+      )}
 
-        {/* Content Pane */}
-        <div style={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
+      {!hideList && (
+        <div className={page ? 'learn-body' : undefined} style={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
           {tab === 'catalog' && (
             <Catalog
               courses={allCourses}
               p={p}
               kidSafe={kidSafe}
+              compact={page}
               onEnroll={id => {
                 const next = enroll(p, id, today);
                 persist(next);
@@ -234,8 +221,9 @@ export const LearnModal: React.FC<LearnModalProps> = ({
               p={p}
               course={currentCourse}
               loc={loc}
+              phone={page}
               onPickCourse={id => {
-                setCourseId(id);
+                setCourseId(id || null);
                 setLessonId(null);
                 setActiveItemId(null);
               }}
@@ -268,20 +256,48 @@ export const LearnModal: React.FC<LearnModalProps> = ({
           )}
           {tab === 'record' && <RecordPane p={p} />}
         </div>
+      )}
 
-        {/* Active Lesson Item Runner */}
-        {activeItem && loc && (
-          <ItemRunner
-            item={activeItem}
-            courseSlug={loc.course.id}
-            p={p}
-            today={today}
-            kidSafe={kidSafe}
-            onClose={() => setActiveItemId(null)}
-            onChange={persist}
-            onOpenStudio={onOpenStudio}
-          />
-        )}
+      {activeItem && loc && (
+        <ItemRunner
+          item={activeItem}
+          courseSlug={loc.course.id}
+          p={p}
+          today={today}
+          kidSafe={kidSafe}
+          page={page}
+          onClose={() => setActiveItemId(null)}
+          onChange={persist}
+          onOpenStudio={onOpenStudio}
+        />
+      )}
+    </>
+  );
+
+  if (page) {
+    return <div className="learn-page">{inner}</div>;
+  }
+
+  return (
+    <div className="modal-overlay" style={overlay} onClick={onClose}>
+      <div
+        className="card-elevated modal-sheet"
+        style={{
+          width: '96vw',
+          maxWidth: '1480px',
+          height: '94vh',
+          display: 'flex',
+          flexDirection: 'column',
+          padding: '1.25rem',
+          position: 'relative',
+          backgroundColor: '#0c0c12',
+          border: '1px solid rgba(139, 92, 246, 0.35)',
+          borderRadius: '16px',
+          overflow: 'hidden'
+        }}
+        onClick={e => e.stopPropagation()}
+      >
+        {inner}
       </div>
     </div>
   );
@@ -291,11 +307,13 @@ function Catalog({
   courses,
   p,
   kidSafe,
+  compact,
   onEnroll
 }: {
   courses: CoursePack[];
   p: Progress;
   kidSafe: boolean;
+  compact?: boolean;
   onEnroll: (id: string) => void;
 }) {
   if (!courses.length) {
@@ -303,10 +321,12 @@ function Catalog({
   }
   return (
     <div style={{ display: 'grid', gap: '0.75rem' }}>
-      <div style={{ fontSize: '0.78rem', color: '#a1a1aa', lineHeight: 1.5 }}>
-        Undergraduate collegiate walks. The app is the patient teacher. Self-paced, pass/fail, zero rent on knowledge.
-        {kidSafe ? ' Kid Safe mode active: all network tools and external requests are blocked.' : ''}
-      </div>
+      {!compact && (
+        <div style={{ fontSize: '0.78rem', color: '#a1a1aa', lineHeight: 1.5 }}>
+          Undergraduate collegiate walks. The app is the patient teacher. Self-paced, pass/fail, zero rent on knowledge.
+          {kidSafe ? ' Kid Safe mode active: all network tools and external requests are blocked.' : ''}
+        </div>
+      )}
       {courses.map(c => {
         const in_ = p.enrolled.includes(c.id);
         return (
@@ -345,6 +365,7 @@ function Walk({
   p,
   course,
   loc,
+  phone,
   onPickCourse,
   onPickLesson,
   onOpenItem
@@ -352,16 +373,19 @@ function Walk({
   p: Progress;
   course?: CoursePack;
   loc: ReturnType<typeof lessonById>;
+  phone?: boolean;
   onPickCourse: (id: string) => void;
   onPickLesson: (courseId: string, lessonId: string) => void;
   onOpenItem: (id: string) => void;
 }) {
   if (!p.enrolled.length) {
-    return <div style={{ color: '#a1a1aa', padding: '1.5rem', textAlign: 'center' }}>Please enroll in a course from the catalog to begin learning.</div>;
+    return <div style={{ color: '#a1a1aa', padding: '1.5rem', textAlign: 'center' }}>Enroll in a course from Catalog.</div>;
   }
+  const showCourseList = !phone || !course;
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '0.75rem', minHeight: '100%' }}>
-      <div style={{ borderRight: '1px solid rgba(255, 255, 255, 0.06)', paddingRight: '0.5rem' }}>
+    <div className={phone ? 'learn-walk-phone' : undefined} style={phone ? undefined : { display: 'grid', gridTemplateColumns: '220px 1fr', gap: '0.75rem', minHeight: '100%' }}>
+      {showCourseList && (
+      <div style={phone ? undefined : { borderRight: '1px solid rgba(255, 255, 255, 0.06)', paddingRight: '0.5rem' }}>
         <div style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: '#71717a', textTransform: 'uppercase', marginBottom: '0.4rem' }}>
           Enrolled Courses
         </div>
@@ -390,7 +414,13 @@ function Walk({
           );
         })}
       </div>
+      )}
       <div>
+        {phone && course && (
+          <button type="button" className="btn-pill" style={{ marginBottom: '0.6rem', minHeight: 36 }} onClick={() => onPickCourse('')}>
+            Courses
+          </button>
+        )}
         {!course && <div style={{ color: '#a1a1aa' }}>Select a course to view the syllabus.</div>}
         {course && !loc && (
           <div style={{ display: 'grid', gap: '0.5rem' }}>
@@ -653,7 +683,8 @@ function ItemRunner({
   kidSafe,
   onClose,
   onChange,
-  onOpenStudio
+  onOpenStudio,
+  page
 }: {
   item: PublicItem;
   courseSlug: string;
@@ -663,11 +694,13 @@ function ItemRunner({
   onClose: () => void;
   onChange: (p: Progress) => void;
   onOpenStudio?: (target: StudioTarget) => void;
+  page?: boolean;
 }) {
   const done = itemComplete(p, item.id);
   return (
     <div
-      style={{
+      className={page ? 'learn-item-page' : undefined}
+      style={page ? { padding: '0.25rem 0.15rem' } : {
         borderTop: '1px solid rgba(139, 92, 246, 0.3)',
         paddingTop: '0.75rem',
         marginTop: '0.5rem',

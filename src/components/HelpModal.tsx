@@ -18,6 +18,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose, onOpenWel
 
   return (
     <div
+      className="modal-overlay"
       style={{
         position: 'fixed',
         inset: 0,

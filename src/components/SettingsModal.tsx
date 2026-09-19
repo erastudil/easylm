@@ -188,7 +188,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   };
 
   return (
-    <div style={{
+    <div className="modal-overlay" style={{
       position: 'fixed',
       inset: 0,
       backgroundColor: 'rgba(0, 0, 0, 0.85)',

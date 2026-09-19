@@ -14,5 +14,5 @@ tests never live inside `src/`. `src/` stays pure shipping application code.
 
 1. **one test home** : all unit, regression, invariant, and preflight tests live here under `tests/`.
 2. **test command** : `npm test` runs `vitest run` targeting `tests/**/*.test.ts`.
-3. **import paths** : imports point explicitly to `../src/engine/...`, `../src/data/...`, and `../src/types`.
+3. **import paths** : imports point explicitly to `../src/engine/...`, `../src/data/...`, `../src/types`, and `../src/shell/...` for phone-tab helpers.
 4. **fences** : tests verify SSRF whitelists, PIN hashing, kidsafe filters, CSP headers, and math sandbox isolation.

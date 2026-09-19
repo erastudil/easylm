@@ -20,6 +20,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({
 
   return (
     <div
+      className="modal-overlay"
       style={{
         position: 'fixed',
         inset: 0,

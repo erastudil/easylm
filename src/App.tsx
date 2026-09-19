@@ -30,7 +30,6 @@ import {
 } from './engine/context_budget';
 import { clockQueryOf, mathExpressionOf, stacksQueryOf, unitConversionOf } from './engine/preflight';
 import { Sidebar } from './components/Sidebar';
-import { MessageItem } from './components/MessageItem';
 import { SettingsModal } from './components/SettingsModal';
 
 import { ModelModal } from './components/ModelModal';
@@ -56,15 +55,20 @@ import {
 } from './engine/family';
 import { ParentalModal } from './components/ParentalModal';
 import { ProfileModal } from './components/ProfileModal';
-import { AttachmentBar } from './components/AttachmentBar';
 import { WelcomeModal } from './components/WelcomeModal';
 import { VaultUnlockModal } from './components/VaultUnlockModal';
 import { isVaultEncrypted, isVaultUnlocked, lockVault } from './engine/crypto_vault';
-import { HnaiLogo } from './components/HnaiLogo';
-
 import { HistoryModal } from './components/HistoryModal';
 import { LearnModal } from './components/LearnModal';
 import { StudioModal, StudioTarget } from './components/StudioModal';
+import { useNarrow } from './shell/useNarrow';
+import { useKeyboardOpen } from './shell/useKeyboardInset';
+import { loadPhoneTab, savePhoneTab, PhoneTab } from './shell/phone_tabs';
+import { PhoneShell } from './shell/PhoneShell';
+import { ChatPane } from './shell/ChatPane';
+import { ChatPhoneBar } from './shell/ChatPhoneBar';
+import { ChatSheet } from './shell/ChatSheet';
+import { MoreView } from './shell/MoreView';
 
 export interface StarterChip {
   label: string;
@@ -123,6 +127,20 @@ export const App: React.FC = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [activeSessionId, setActiveSessionIdState] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(() => typeof window !== 'undefined' ? window.innerWidth > 768 : false);
+  const narrow = useNarrow();
+  const keyboardOpen = useKeyboardOpen();
+  const [phoneTab, setPhoneTab] = useState<PhoneTab>(() =>
+    loadPhoneTab(typeof localStorage !== 'undefined' ? localStorage : null)
+  );
+  const [chatsSheetOpen, setChatsSheetOpen] = useState(false);
+  const [chatOverflowOpen, setChatOverflowOpen] = useState(false);
+
+  const handlePhoneTab = (tab: PhoneTab) => {
+    setPhoneTab(tab);
+    savePhoneTab(typeof localStorage !== 'undefined' ? localStorage : null, tab);
+    setChatsSheetOpen(false);
+    setChatOverflowOpen(false);
+  };
   const [vaultLocked, setVaultLocked] = useState<boolean>(() => {
     return typeof window !== 'undefined' && isVaultEncrypted() && !isVaultUnlocked();
   });
@@ -222,6 +240,10 @@ export const App: React.FC = () => {
   };
 
   const handleOpenLearn = () => {
+    if (narrow) {
+      handlePhoneTab('learn');
+      return;
+    }
     setHistoryOpen(false);
     setStudioOpen(false);
     setLearnOpen(true);
@@ -229,19 +251,35 @@ export const App: React.FC = () => {
   };
 
   const handleOpenStudio = (target?: StudioTarget) => {
+    setStudioTarget(target || null);
+    if (narrow) {
+      handlePhoneTab('studio');
+      return;
+    }
     setHistoryOpen(false);
     setLearnOpen(false);
-    setStudioTarget(target || null);
     setStudioOpen(true);
     pushNav({ view: 'studio', studioTarget: target });
   };
 
   const handleOpenHistory = () => {
+    if (narrow) {
+      setHistoryOpen(true);
+      return;
+    }
     setLearnOpen(false);
     setStudioOpen(false);
     setHistoryOpen(true);
     pushNav({ view: 'history' });
   };
+
+  useEffect(() => {
+    if (narrow) {
+      setLearnOpen(false);
+      setStudioOpen(false);
+      setSidebarOpen(false);
+    }
+  }, [narrow]);
 
   const handleOpenDocument = (content: string, title?: string) => {
     handleOpenStudio({
@@ -1081,6 +1119,233 @@ export const App: React.FC = () => {
   const currentModelLabel = AVAILABLE_MODELS.find(m => m.id === selectedModel)?.label || 'Qwen 2.5 3B';
   const currentPersonality = PERSONALITIES.find(p => p.id === clampPersonalityIdForRole(selectedPersonality, currentProfile.role)) || PERSONALITIES.find(p => p.id === 'socratic_kid') || PERSONALITIES[0];
 
+  const chatPane = (
+    <ChatPane
+      compact={narrow}
+      activeSession={activeSession}
+      isGenerating={isGenerating}
+      starterChips={starterChips}
+      personalityName={currentPersonality.name}
+      inputPrompt={inputPrompt}
+      piiAlert={piiAlert}
+      storageAlert={storageAlert}
+      attachedDoc={attachedDoc}
+      fileInputRef={fileInputRef}
+      messagesEndRef={messagesEndRef}
+      onShuffleChips={handleShuffleChips}
+      onSendChip={(prompt) => handleSendMessage(prompt)}
+      onOpenWelcome={() => setWelcomeModalOpen(true)}
+      onOpenVoices={() => setPersonalityModalOpen(true)}
+      onOpenDocument={(text) => handleOpenDocument(text, activeSession?.title || 'Assignment Document')}
+      onRateMessage={(messageId, rating) => handleRateMessage(messageId, rating)}
+      onDismissPii={() => setPiiAlert(null)}
+      onDismissStorage={() => setStorageAlert(null)}
+      onRemoveDoc={() => setAttachedDoc(null)}
+      onQuickAction={(actionPrompt) => handleSendMessage(actionPrompt)}
+      onFilePicked={handleFileIngest}
+      onInputPrompt={setInputPrompt}
+      onSend={() => handleSendMessage()}
+      onStop={handleStopGeneration}
+    />
+  );
+
+  if (narrow) {
+    return (
+      <div
+        style={{ height: '100dvh', maxHeight: '100dvh', width: '100vw', maxWidth: '100vw', overflow: 'hidden', backgroundColor: '#000000' }}
+        onDragOver={(e) => { e.preventDefault(); setIsDraggingFile(true); }}
+        onDragLeave={() => setIsDraggingFile(false)}
+        onDrop={handleDrop}
+      >
+        {isDraggingFile && (
+          <div style={{
+            position: 'fixed', inset: 0, backgroundColor: 'rgba(139, 92, 246, 0.25)', border: '3px dashed #8b5cf6',
+            zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff',
+            fontFamily: 'var(--font-mono)', fontSize: '1.1rem'
+          }}>
+            Drop a text file to attach
+          </div>
+        )}
+        <PhoneShell
+          tab={phoneTab}
+          onTab={handlePhoneTab}
+          keyboardOpen={keyboardOpen}
+          learn={
+            <LearnModal
+              isOpen
+              variant="page"
+              onClose={() => handlePhoneTab('chat')}
+              profileId={currentProfile.id}
+              kidSafe={currentProfile.role === 'kid'}
+              onOpenStudio={handleOpenStudio}
+            />
+          }
+          studio={
+            <StudioModal
+              isOpen
+              variant="page"
+              onClose={() => handlePhoneTab('chat')}
+              profileId={currentProfile.id}
+              kidSafe={currentProfile.role === 'kid'}
+              initialTarget={studioTarget}
+              onSwitchToLearn={handleOpenLearn}
+              onInsertIntoChat={(text) => {
+                setInputPrompt((prev) => (prev ? `${prev}\n\n${text}` : text));
+                handlePhoneTab('chat');
+              }}
+            />
+          }
+          chat={
+            <>
+              <ChatPhoneBar
+                title={activeSession?.title || 'Chat'}
+                modelReady={isModelReady}
+                working={isGenerating || Boolean(modelProgress && modelProgress.progress < 1)}
+                thinkingOn={extendedThinking}
+                handsOn={toolsEnabled}
+                voiceName={currentPersonality.name}
+                modelLabel={currentModelLabel}
+                overflowOpen={chatOverflowOpen}
+                onOpenChats={() => { setChatOverflowOpen(false); setChatsSheetOpen(true); }}
+                onToggleOverflow={() => setChatOverflowOpen((v) => !v)}
+                onToggleThink={() => setExtendedThinking((v) => !v)}
+                onToggleHands={() => setToolsEnabled((v) => !v)}
+                onOpenVoice={() => { setChatOverflowOpen(false); setPersonalityModalOpen(true); }}
+                onOpenModel={() => { setChatOverflowOpen(false); setModelModalOpen(true); }}
+                onLoadModel={() => { setChatOverflowOpen(false); handleLoadModel(); }}
+                onOpenProfile={() => { setChatOverflowOpen(false); setProfileModalOpen(true); }}
+              />
+              {!webGpuAvailable && (
+                <div className="phone-banner" style={{ backgroundColor: '#1c1307', borderBottom: '1px solid #d97706', color: '#fbbf24' }}>
+                  {deviceInfo?.isIOS
+                    ? 'iOS: Settings → Safari → Advanced → Feature Flags → WebGPU, then refresh.'
+                    : 'WebGPU missing. Chrome or Edge for local chat. Learn and Studio still work.'}
+                </div>
+              )}
+              {modelProgress && (
+                <div className="phone-banner" style={{ backgroundColor: '#12121c', borderBottom: '1px solid #8b5cf6', color: '#c4b5fd' }}>
+                  {modelProgress.text}
+                </div>
+              )}
+              {chatPane}
+            </>
+          }
+          more={
+            <MoreView
+              profileName={currentProfile.name}
+              profileAvatar={currentProfile.avatar}
+              modelLabel={currentModelLabel}
+              isModelReady={isModelReady}
+              onOpenProfile={() => setProfileModalOpen(true)}
+              onOpenModel={() => setModelModalOpen(true)}
+              onLoadModel={() => handleLoadModel()}
+              onOpenSettings={handleOpenSettings}
+              onOpenHistory={handleOpenHistory}
+              onOpenHelp={() => setHelpOpen(true)}
+              onOpenFeedback={() => setFeedbackModalOpen(true)}
+              onOpenCredits={handleOpenCredits}
+              onOpenSupport={() => setSupportOpen(true)}
+              onLockVault={() => {
+                lockVault();
+                setVaultLocked(true);
+              }}
+              onSessionsReload={handleSessionsReload}
+              sessions={sessions}
+            />
+          }
+          sheet={chatsSheetOpen ? (
+            <ChatSheet
+              sessions={sessions}
+              activeSessionId={activeSessionId}
+              onSelectSession={setActiveSessionIdState}
+              onNewSession={handleNewSession}
+              onDeleteSession={handleDeleteSession}
+              onOpenHistory={handleOpenHistory}
+              onClose={() => setChatsSheetOpen(false)}
+            />
+          ) : null}
+        />
+        <HelpModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} onOpenWelcomeGuide={() => setWelcomeModalOpen(true)} />
+        <SupportModal isOpen={supportOpen} onClose={() => setSupportOpen(false)} />
+        <FeedbackModal isOpen={feedbackModalOpen} onClose={() => setFeedbackModalOpen(false)} activeModel={currentModelLabel} />
+        <GpuRestartModal isOpen={gpuRestartOpen} onClose={() => setGpuRestartOpen(false)} />
+        <SettingsModal
+          isOpen={settingsOpen}
+          onClose={() => setSettingsOpen(false)}
+          initialTab={settingsTab}
+          temperature={temperature}
+          onChangeTemperature={setTemperature}
+          contextLimit={contextLimit}
+          onChangeContextLimit={handleUpdateContextLimit}
+          searxngUrl={searxngUrl}
+          onChangeSearxngUrl={handleUpdateSearxng}
+          showWelcomeMessage={showWelcomeMessage}
+          onToggleWelcomeMessage={handleToggleWelcomeMessage}
+          deviceInfo={deviceInfo}
+          onOpenModelModal={() => setModelModalOpen(true)}
+          onOpenProfiles={() => setProfileModalOpen(true)}
+          onOpenWelcomeGuide={() => setWelcomeModalOpen(true)}
+          onVaultStateChange={() => { setStarterChips(pickRandomStarterChips(6)); }}
+          onLockVault={() => { setVaultLocked(true); }}
+        />
+        <VaultUnlockModal
+          isOpen={vaultLocked}
+          onUnlocked={handleVaultUnlocked}
+          onResetVault={() => { setVaultLocked(false); setSessions([]); handleNewSession(); }}
+        />
+        <ModelModal
+          isOpen={modelModalOpen}
+          onClose={() => setModelModalOpen(false)}
+          selectedModel={selectedModel}
+          onSelectModel={handleSelectModel}
+          deviceInfo={deviceInfo}
+          isModelReady={isModelReady}
+          onLoadModel={handleLoadModel}
+          modelProgress={modelProgress}
+        />
+        <WelcomeModal
+          isOpen={welcomeModalOpen}
+          onClose={handleCloseWelcomeModal}
+          onOpenHelp={() => setHelpOpen(true)}
+          onOpenVoices={() => setPersonalityModalOpen(true)}
+        />
+        <PersonalityModal
+          isOpen={personalityModalOpen}
+          onClose={() => setPersonalityModalOpen(false)}
+          selectedPersonality={selectedPersonality}
+          onSelectPersonality={(id) => {
+            setSelectedPersonality(clampPersonalityIdForRole(id, currentProfile.role));
+          }}
+          onOpenCustomSettings={() => setSettingsOpen(true)}
+          kidSafe={currentProfile.role === 'kid'}
+        />
+        <ProfileModal
+          isOpen={profileModalOpen}
+          onClose={() => setProfileModalOpen(false)}
+          onRequestPinVerify={handleRequestPinVerify}
+          onOpenPinSetup={handleOpenPinSetup}
+          onProfileChanged={handleProfileChanged}
+          sessions={sessions}
+        />
+        <ParentalModal
+          isOpen={parentalModalOpen}
+          mode={parentalModalMode}
+          onClose={() => setParentalModalOpen(false)}
+          onSuccess={handlePinSuccess}
+        />
+        <HistoryModal
+          isOpen={historyOpen}
+          onClose={() => setHistoryOpen(false)}
+          sessions={sessions}
+          activeSessionId={activeSessionId}
+          onSelectSession={(id) => { setActiveSessionIdState(id); setHistoryOpen(false); handlePhoneTab('chat'); }}
+          onDeleteSession={handleDeleteSession}
+          onNewSession={handleNewSession}
+        />
+      </div>
+    );
+  }
+
   return (
     <div 
       style={{ display: 'flex', height: '100dvh', maxHeight: '100dvh', width: '100vw', maxWidth: '100vw', overflow: 'hidden', backgroundColor: '#000000' }}
@@ -1542,335 +1807,7 @@ export const App: React.FC = () => {
           </div>
         )}
 
-        {/* Messages Stream */}
-        <div className="messages-scroll-area" style={{ flex: '1 1 auto', minHeight: 0, overflowY: 'auto', overflowX: 'hidden', padding: '1.5rem 2rem', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ maxWidth: '1080px', width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-            {activeSession && activeSession.messages.length === 0 ? (
-              <div style={{
-                flex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                textAlign: 'center',
-                padding: '2rem 1rem',
-                minHeight: '100%'
-              }}>
-                <div style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <HnaiLogo size="md" />
-                  <span style={{ fontSize: '1.4rem', fontWeight: 700, fontFamily: 'var(--font-mono)', color: '#ffffff' }}>
-                    EasyLM
-                  </span>
-                  <span style={{
-                    fontSize: '0.65rem',
-                    fontWeight: 700,
-                    fontFamily: 'var(--font-mono)',
-                    padding: '0.12rem 0.45rem',
-                    borderRadius: '6px',
-                    backgroundColor: 'rgba(139, 92, 246, 0.25)',
-                    border: '1px solid #8b5cf6',
-                    color: '#c4b5fd'
-                  }}>
-                    PUBLIC BETA
-                  </span>
-                </div>
-                <p style={{ margin: '0 0 1.75rem 0', fontSize: '0.88rem', color: '#a1a1aa', maxWidth: '540px', lineHeight: 1.55 }}>
-                  Zero-Install Local WebGPU Intelligence · In-Browser Privacy · Deterministic Tools &amp; University Stacks
-                </p>
-
-                {/* Prompt Starter Chips */}
-                <div style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '0.65rem',
-                  maxWidth: '740px',
-                  marginBottom: '1.75rem'
-                }}>
-                  <div style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: '0.65rem',
-                    justifyContent: 'center'
-                  }}>
-                    {starterChips.map((chip) => (
-                      <button
-                        key={chip.prompt}
-                        onClick={() => handleSendMessage(chip.prompt)}
-                        className="btn-pill"
-                        style={{
-                          fontSize: '0.78rem',
-                          padding: '0.45rem 0.85rem',
-                          backgroundColor: '#111118',
-                          borderColor: 'rgba(139, 92, 246, 0.25)',
-                          color: '#d4d4d8',
-                          cursor: 'pointer',
-                          transition: 'all 0.15s ease',
-                          gap: '0.35rem'
-                        }}
-                        title={`Send: "${chip.prompt}"`}
-                      >
-                        <span style={{ fontWeight: 600, color: '#c4b5fd' }}>{chip.label}:</span>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.74rem' }}>{chip.prompt}</span>
-                      </button>
-                    ))}
-                  </div>
-
-                  <button
-                    onClick={handleShuffleChips}
-                    className="btn-pill"
-                    style={{
-                      fontSize: '0.72rem',
-                      padding: '0.3rem 0.75rem',
-                      backgroundColor: 'rgba(139, 92, 246, 0.12)',
-                      borderColor: 'rgba(139, 92, 246, 0.35)',
-                      color: '#c4b5fd',
-                      cursor: 'pointer',
-                      gap: '0.35rem'
-                    }}
-                    title="Shuffle for new starter questions from The Stacks and tools"
-                  >
-                    <span>🎲</span> Shuffle
-                  </button>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.78rem', color: '#71717a' }}>
-                  <button
-                    onClick={() => setWelcomeModalOpen(true)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: '#a78bfa',
-                      cursor: 'pointer',
-                      fontSize: '0.78rem',
-                      textDecoration: 'underline',
-                      fontFamily: 'var(--font-mono)'
-                    }}
-                  >
-                    👋 Open Welcome &amp; Tool Guide
-                  </button>
-                  <span>·</span>
-                  <button
-                    onClick={() => setPersonalityModalOpen(true)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: '#a78bfa',
-                      cursor: 'pointer',
-                      fontSize: '0.78rem',
-                      textDecoration: 'underline',
-                      fontFamily: 'var(--font-mono)'
-                    }}
-                  >
-                    🎭 Switch Voice ({currentPersonality.name})
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <>
-                {activeSession && activeSession.messages.map((m) => (
-                  <MessageItem
-                    key={m.id}
-                    message={m}
-                    onOpenDocument={(text) => handleOpenDocument(text, activeSession.title || 'Assignment Document')}
-                    onRateMessage={(rating) => handleRateMessage(m.id, rating)}
-                  />
-                ))}
-                <div ref={messagesEndRef} style={{ height: '1.5rem', flexShrink: 0 }} />
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Floating Rounded Prompt Bar */}
-        <div className="prompt-wrapper" style={{ flexShrink: 0, width: '100%', padding: '0.75rem 2rem 1.25rem', display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 20 }}>
-          {/* Floating Stop Indicator when generating */}
-          {isGenerating && (
-            <div style={{ marginBottom: '0.5rem', zIndex: 25 }}>
-              <button
-                onClick={handleStopGeneration}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.45rem',
-                  padding: '0.35rem 0.95rem',
-                  backgroundColor: '#18181b',
-                  border: '1px solid rgba(239, 68, 68, 0.6)',
-                  borderRadius: '9999px',
-                  color: '#f87171',
-                  fontSize: '0.78rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 14px rgba(0, 0, 0, 0.6)',
-                  transition: 'all 0.15s ease'
-                }}
-                title="Stop generating response (Esc)"
-              >
-                <span style={{ fontSize: '0.7rem' }}>⏹</span>
-                <span>Stop Generating</span>
-                <span style={{ color: '#71717a', fontSize: '0.7rem', fontWeight: 400 }}>(Esc)</span>
-              </button>
-            </div>
-          )}
-
-          {/* PII Safety Alert Banner */}
-          {piiAlert && (
-            <div style={{
-              maxWidth: '1080px',
-              width: '100%',
-              margin: '0 auto 0.45rem auto',
-              padding: '0.5rem 0.85rem',
-              backgroundColor: 'rgba(234, 179, 8, 0.12)',
-              border: '1px solid rgba(234, 179, 8, 0.4)',
-              borderRadius: '10px',
-              color: '#fde047',
-              fontSize: '0.78rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.4)'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <span>{piiAlert}</span>
-              </div>
-              <button
-                onClick={() => setPiiAlert(null)}
-                style={{ background: 'transparent', border: 'none', color: '#fde047', cursor: 'pointer', fontSize: '1rem', padding: '0 0.3rem' }}
-              >
-                ×
-              </button>
-            </div>
-          )}
-
-          {storageAlert && (
-            <div style={{
-              maxWidth: '1080px',
-              width: '100%',
-              margin: '0 auto 0.45rem auto',
-              padding: '0.5rem 0.85rem',
-              backgroundColor: 'rgba(239, 68, 68, 0.12)',
-              border: '1px solid rgba(239, 68, 68, 0.4)',
-              borderRadius: '10px',
-              color: '#fca5a5',
-              fontSize: '0.78rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between'
-            }}>
-              <span>{storageAlert}</span>
-              <button
-                onClick={() => setStorageAlert(null)}
-                style={{ background: 'transparent', border: 'none', color: '#fca5a5', cursor: 'pointer', fontSize: '1rem', padding: '0 0.3rem' }}
-              >
-                ×
-              </button>
-            </div>
-          )}
-
-          {/* Attached Document Bar with Quick Study Actions */}
-          <AttachmentBar
-            doc={attachedDoc}
-            onRemove={() => setAttachedDoc(null)}
-            onQuickAction={(actionPrompt) => handleSendMessage(actionPrompt)}
-          />
-
-          <div className="floating-prompt" style={{ maxWidth: '1080px', width: '100%', padding: '0.55rem 0.95rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              {/* Attachment Button */}
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: attachedDoc ? '#8b5cf6' : '#71717a',
-                  fontSize: '1.25rem',
-                  cursor: 'pointer',
-                  padding: '0.3rem'
-                }}
-                title="Attach text, code, notes, or homework document"
-              >
-                📎
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".txt,.md,.json,.csv,.py,.ts,.js,.rs,.css"
-                style={{ display: 'none' }}
-                onChange={(e) => {
-                  if (e.target.files && e.target.files[0]) {
-                    handleFileIngest(e.target.files[0]);
-                  }
-                }}
-              />
-
-              {/* Text Input */}
-              <textarea
-                value={inputPrompt}
-                onChange={(e) => setInputPrompt(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSendMessage();
-                  }
-                }}
-                placeholder="Ask anything, do math, paste a link, or drop a document..."
-                rows={1}
-                style={{
-                  flex: 1,
-                  background: 'transparent',
-                  border: 'none',
-                  outline: 'none',
-                  color: '#ffffff',
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '0.95rem',
-                  resize: 'none',
-                  maxHeight: '120px',
-                  padding: '0.5rem 0'
-                }}
-              />
-
-              {/* Send or Stop Button */}
-              {isGenerating ? (
-                <button
-                  onClick={handleStopGeneration}
-                  className="btn-pill"
-                  style={{
-                    padding: '0.5rem 0.95rem',
-                    backgroundColor: '#dc2626',
-                    border: '1px solid #ef4444',
-                    color: '#ffffff',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.35rem',
-                    fontSize: '0.8rem',
-                    fontWeight: 600,
-                    borderRadius: '9999px',
-                    transition: 'all 0.15s ease'
-                  }}
-                  title="Stop generating response (Esc)"
-                >
-                  <span style={{ fontSize: '0.75rem' }}>⏹</span>
-                  <span>Stop</span>
-                </button>
-              ) : (
-                <button
-                  onClick={handleSendMessage}
-                  disabled={!inputPrompt.trim()}
-                  className="btn-pill btn-pill-primary"
-                  style={{
-                    padding: '0.5rem 1rem',
-                    opacity: !inputPrompt.trim() ? 0.4 : 1,
-                    cursor: !inputPrompt.trim() ? 'not-allowed' : 'pointer'
-                  }}
-                  title="Send message (Enter)"
-                >
-                  ➤
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
+        {chatPane}
       </main>
 
       {/* Help Modal */}

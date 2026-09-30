@@ -43,6 +43,7 @@ import { detectDevice, DeviceInfo } from './engine/device';
 import { createWelcomeMessage, WELCOME_TOOLBOX_CONTENT } from './data/welcome';
 import { CORE_INTERACTION_PROTOCOLS, CORE_INTERACTION_PROTOCOLS_COMPACT, CORE_INTERACTION_PROTOCOLS_KID } from './data/protocols';
 import { GpuRestartModal } from './components/GpuRestartModal';
+import { HardwareRecommendationModal } from './components/HardwareRecommendationModal';
 import {
   UserProfile,
   AttachedDoc,
@@ -189,6 +190,10 @@ export const App: React.FC = () => {
   const [studioOpen, setStudioOpen] = useState(false);
   const [studioTarget, setStudioTarget] = useState<StudioTarget | null>(null);
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
+  const [hardwareModalOpen, setHardwareModalOpen] = useState(false);
+  const [showHardwarePrompt, setShowHardwarePrompt] = useState<boolean>(() => {
+    return localStorage.getItem('easylm_show_hardware_prompt') !== 'false';
+  });
 
   // In-app navigation stack for back/forward traversal across Learn, Studio & History
   interface NavState {
@@ -439,6 +444,36 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleHardwareConfirmLoad = (remember: boolean) => {
+    if (remember) {
+      localStorage.setItem('easylm_show_hardware_prompt', 'false');
+      localStorage.setItem('easylm_auto_load_model', 'true');
+      setShowHardwarePrompt(false);
+    }
+    setHardwareModalOpen(false);
+    handleLoadModel(deviceInfo?.recommendedModel);
+  };
+
+  const handleHardwareDecline = (remember: boolean) => {
+    if (remember) {
+      localStorage.setItem('easylm_show_hardware_prompt', 'false');
+      localStorage.setItem('easylm_auto_load_model', 'false');
+      setShowHardwarePrompt(false);
+    }
+    setHardwareModalOpen(false);
+  };
+
+  const handleToggleHardwarePrompt = () => {
+    const nextVal = !showHardwarePrompt;
+    setShowHardwarePrompt(nextVal);
+    if (nextVal) {
+      localStorage.removeItem('easylm_show_hardware_prompt');
+      localStorage.removeItem('easylm_auto_load_model');
+    } else {
+      localStorage.setItem('easylm_show_hardware_prompt', 'false');
+    }
+  };
+
   const handleRequestPinVerify = (onSuccess: () => void) => {
     setPendingPinAction(() => onSuccess);
     setParentalModalMode('verify');
@@ -505,6 +540,15 @@ export const App: React.FC = () => {
       const savedLimit = localStorage.getItem('easylm_context_limit');
       if (!savedLimit && dev.recommendedContextLimit) {
         setContextLimit(dev.recommendedContextLimit);
+      }
+
+      // Hardware detected: prompt to load recommended model weights unless remembered otherwise
+      const showPromptPref = localStorage.getItem('easylm_show_hardware_prompt');
+      const autoLoad = localStorage.getItem('easylm_auto_load_model');
+      if (showPromptPref !== 'false') {
+        setHardwareModalOpen(true);
+      } else if (autoLoad === 'true') {
+        handleLoadModel(dev.recommendedModel);
       }
     });
 
@@ -1280,6 +1324,17 @@ export const App: React.FC = () => {
         <SupportModal isOpen={supportOpen} onClose={() => setSupportOpen(false)} />
         <FeedbackModal isOpen={feedbackModalOpen} onClose={() => setFeedbackModalOpen(false)} activeModel={currentModelLabel} />
         <GpuRestartModal isOpen={gpuRestartOpen} onClose={() => setGpuRestartOpen(false)} />
+        <HardwareRecommendationModal
+          isOpen={hardwareModalOpen}
+          onClose={() => setHardwareModalOpen(false)}
+          deviceInfo={deviceInfo}
+          onConfirmLoad={handleHardwareConfirmLoad}
+          onDecline={handleHardwareDecline}
+          onOpenSettings={() => {
+            setSettingsTab('engine');
+            setSettingsOpen(true);
+          }}
+        />
         <SettingsModal
           isOpen={settingsOpen}
           onClose={() => setSettingsOpen(false)}
@@ -1292,6 +1347,8 @@ export const App: React.FC = () => {
           onChangeSearxngUrl={handleUpdateSearxng}
           showWelcomeMessage={showWelcomeMessage}
           onToggleWelcomeMessage={handleToggleWelcomeMessage}
+          showHardwarePrompt={showHardwarePrompt}
+          onToggleHardwarePrompt={handleToggleHardwarePrompt}
           deviceInfo={deviceInfo}
           onOpenModelModal={() => setModelModalOpen(true)}
           onOpenProfiles={() => setProfileModalOpen(true)}
@@ -1846,6 +1903,19 @@ export const App: React.FC = () => {
         onClose={() => setGpuRestartOpen(false)}
       />
 
+      {/* Hardware Detected & Recommended Model Load Modal */}
+      <HardwareRecommendationModal
+        isOpen={hardwareModalOpen}
+        onClose={() => setHardwareModalOpen(false)}
+        deviceInfo={deviceInfo}
+        onConfirmLoad={handleHardwareConfirmLoad}
+        onDecline={handleHardwareDecline}
+        onOpenSettings={() => {
+          setSettingsTab('engine');
+          setSettingsOpen(true);
+        }}
+      />
+
       {/* Settings Modal */}
       <SettingsModal
         isOpen={settingsOpen}
@@ -1859,6 +1929,8 @@ export const App: React.FC = () => {
         onChangeSearxngUrl={handleUpdateSearxng}
         showWelcomeMessage={showWelcomeMessage}
         onToggleWelcomeMessage={handleToggleWelcomeMessage}
+        showHardwarePrompt={showHardwarePrompt}
+        onToggleHardwarePrompt={handleToggleHardwarePrompt}
         deviceInfo={deviceInfo}
         onOpenModelModal={() => setModelModalOpen(true)}
         onOpenProfiles={() => setProfileModalOpen(true)}

@@ -349,11 +349,24 @@ function ReadTool({
     return 'packs';
   });
 
+  const chapterRefs = useRef<{ [key: number]: HTMLElement | null }>({});
+  const phoneChapterRefs = useRef<{ [key: number]: HTMLElement | null }>({});
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const phoneReaderScrollRef = useRef<HTMLDivElement | null>(null);
+
+  const jumpToChapter = (idx: number) => {
+    setSelectedChapterIdx(idx);
+    const target = chapterRefs.current[idx];
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   // Profile memories state
   const [memories, setMemories] = useState<MemoryEntry[]>(() => getProfileMemories(profileId));
   const [newMemoryText, setNewMemoryText] = useState('');
 
-  // Auto-select chapter if chapterQuery provided
+  // Auto-select chapter and jump to heading if chapterQuery provided
   useEffect(() => {
     if (initialTarget?.chapterQuery) {
       const currentPack = STACKS_PACKS.find((p) => p.slug === selectedPackSlug);
@@ -361,7 +374,13 @@ function ReadTool({
         const chs = splitChapters(currentPack.textbook);
         const q = initialTarget.chapterQuery.toLowerCase();
         const found = chs.findIndex((c) => c.heading.toLowerCase().includes(q));
-        if (found !== -1) setSelectedChapterIdx(found);
+        if (found !== -1) {
+          setSelectedChapterIdx(found);
+          setTimeout(() => {
+            chapterRefs.current[found]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            phoneChapterRefs.current[found]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 100);
+        }
       }
     }
   }, [initialTarget, selectedPackSlug]);
@@ -400,6 +419,44 @@ function ReadTool({
   const externalDoors = useMemo(() => {
     return currentPack ? extractDoors(currentPack.links) : [];
   }, [currentPack]);
+
+  useEffect(() => {
+    setSelectedChapterIdx(0);
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+    }
+    if (phoneReaderScrollRef.current) {
+      phoneReaderScrollRef.current.scrollTop = 0;
+    }
+  }, [selectedPackSlug]);
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const containerTop = container.getBoundingClientRect().top;
+      let activeIdx = 0;
+      let minDistance = Infinity;
+
+      chapters.forEach((_, idx) => {
+        const el = chapterRefs.current[idx];
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          const distance = Math.abs(rect.top - containerTop);
+          if (rect.top <= containerTop + 140 && distance < minDistance) {
+            minDistance = distance;
+            activeIdx = idx;
+          }
+        }
+      });
+
+      setSelectedChapterIdx(activeIdx);
+    };
+
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [chapters]);
 
   const handleAddMemory = () => {
     if (!newMemoryText.trim()) return;
@@ -489,6 +546,9 @@ function ReadTool({
                   onClick={() => {
                     setSelectedChapterIdx(idx);
                     setPhoneScreen('reader');
+                    setTimeout(() => {
+                      phoneChapterRefs.current[idx]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 60);
                   }}
                 >
                   <span className="phone-session-title">{ch.heading}</span>
@@ -501,12 +561,38 @@ function ReadTool({
             <button type="button" className="btn-pill" style={{ minHeight: 40, alignSelf: 'flex-start' }} onClick={() => setPhoneScreen('chapters')}>
               Chapters
             </button>
-            <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', wordBreak: 'break-word' }}>
-              {currentChapter ? (
-                <>
-                  <h2 style={{ color: '#ffffff', fontSize: '1.15rem', marginTop: 0 }}>{currentChapter.heading}</h2>
-                  <MarkdownRenderer content={currentChapter.body} />
-                </>
+            <div
+              ref={phoneReaderScrollRef}
+              style={{
+                flex: 1,
+                minHeight: 0,
+                overflowY: 'auto',
+                overflowX: 'hidden',
+                wordBreak: 'break-word',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '2rem',
+                scrollBehavior: 'smooth'
+              }}
+            >
+              {chapters.length > 0 ? (
+                chapters.map((ch, idx) => (
+                  <article
+                    key={idx}
+                    id={`phone-chapter-${idx}`}
+                    ref={(el) => { phoneChapterRefs.current[idx] = el; }}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.5rem',
+                      paddingBottom: idx === chapters.length - 1 ? '1rem' : '2rem',
+                      borderBottom: idx === chapters.length - 1 ? 'none' : '1px solid rgba(139, 92, 246, 0.15)'
+                    }}
+                  >
+                    <h2 style={{ color: '#ffffff', fontSize: '1.15rem', marginTop: 0 }}>{ch.heading}</h2>
+                    <MarkdownRenderer content={ch.body} />
+                  </article>
+                ))
               ) : (
                 <div style={{ color: '#a1a1aa' }}>Select a chapter.</div>
               )}
@@ -756,7 +842,10 @@ function ReadTool({
             <button
               type="button"
               className="btn-pill"
-              onClick={() => onSendToWrite(`# ${currentPack?.title}\n## ${currentChapter?.heading}\n\n${currentChapter?.body}`, currentPack?.title || 'Notes')}
+              onClick={() => {
+                const ch = chapters[selectedChapterIdx] || chapters[0];
+                onSendToWrite(`# ${currentPack?.title}\n## ${ch?.heading || ''}\n\n${ch?.body || ''}`, currentPack?.title || 'Notes');
+              }}
               style={{ fontSize: '0.74rem', padding: '0.3rem 0.7rem', gap: '0.3rem' }}
               title="Send this chapter into Write to edit or cite"
             >
@@ -781,7 +870,7 @@ function ReadTool({
             <button
               key={idx}
               type="button"
-              onClick={() => setSelectedChapterIdx(idx)}
+              onClick={() => jumpToChapter(idx)}
               style={{
                 fontSize: '0.72rem',
                 padding: '0.25rem 0.65rem',
@@ -797,17 +886,54 @@ function ReadTool({
           ))}
         </div>
 
-        {/* Chapter Body & External Doors */}
-        <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', wordBreak: 'break-word', overflowWrap: 'break-word', padding: '1.25rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          {currentChapter ? (
-            <div>
-              <h2 style={{ color: '#ffffff', fontSize: '1.25rem', marginTop: 0, marginBottom: '0.85rem', borderBottom: '1px solid rgba(139, 92, 246, 0.3)', paddingBottom: '0.5rem' }}>
-                {currentChapter.heading}
-              </h2>
-              <MarkdownRenderer content={currentChapter.body} />
-            </div>
+        {/* Continuous Scroll Document View */}
+        <div
+          ref={scrollContainerRef}
+          style={{
+            flex: 1,
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            wordBreak: 'break-word',
+            overflowWrap: 'break-word',
+            padding: '1.25rem 1.5rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '2.5rem',
+            scrollBehavior: 'smooth'
+          }}
+        >
+          {chapters.length > 0 ? (
+            chapters.map((ch, idx) => (
+              <article
+                key={idx}
+                id={`chapter-${idx}`}
+                ref={(el) => { chapterRefs.current[idx] = el; }}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.85rem',
+                  paddingBottom: idx === chapters.length - 1 ? '1rem' : '2.5rem',
+                  borderBottom: idx === chapters.length - 1 ? 'none' : '1px solid rgba(139, 92, 246, 0.2)'
+                }}
+              >
+                <h2
+                  style={{
+                    color: '#ffffff',
+                    fontSize: '1.25rem',
+                    marginTop: 0,
+                    marginBottom: '0.85rem',
+                    borderBottom: '1px solid rgba(139, 92, 246, 0.3)',
+                    paddingBottom: '0.5rem',
+                    scrollMarginTop: '0.5rem'
+                  }}
+                >
+                  {ch.heading}
+                </h2>
+                <MarkdownRenderer content={ch.body} />
+              </article>
+            ))
           ) : (
-            <div style={{ color: '#a1a1aa' }}>Select a chapter to read.</div>
+            <div style={{ color: '#a1a1aa' }}>Select a textbook to read.</div>
           )}
 
           {/* Primary Portals & External Doors (Open in new tabs) */}

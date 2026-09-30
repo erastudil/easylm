@@ -7,11 +7,12 @@ import { MarkdownRenderer } from './MarkdownRenderer';
 
 interface MessageItemProps {
   message: Message;
+  streaming?: boolean;
   onOpenDocument?: (content: string) => void;
   onRateMessage?: (rating: TriLakeRating) => void;
 }
 
-export const MessageItem: React.FC<MessageItemProps> = ({ message, onOpenDocument, onRateMessage }) => {
+export const MessageItem: React.FC<MessageItemProps> = ({ message, streaming, onOpenDocument, onRateMessage }) => {
   const isUser = message.role === 'user';
 
   return (
@@ -23,7 +24,13 @@ export const MessageItem: React.FC<MessageItemProps> = ({ message, onOpenDocumen
             {isUser ? 'You' : 'EasyLM'}
           </span>
           <span>·</span>
-          <span>{new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+          {streaming ? (
+            <span className="animate-pulse" style={{ color: '#34d399', fontWeight: 600 }}>
+              Generating...
+            </span>
+          ) : (
+            <span>{new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+          )}
         </div>
         
         {/* Sleek copy button in header for user prompts */}
@@ -58,7 +65,10 @@ export const MessageItem: React.FC<MessageItemProps> = ({ message, onOpenDocumen
             {message.content}
           </div>
         ) : (
-          <MarkdownRenderer content={message.content} />
+          <div>
+            <MarkdownRenderer content={message.content} />
+            {streaming && <span className="streaming-cursor">▌</span>}
+          </div>
         )}
 
         {/* Sleek Action bar for assistant message */}

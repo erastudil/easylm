@@ -23,6 +23,8 @@ interface SettingsModalProps {
   onChangeSearxngUrl: (url: string) => void;
   showWelcomeMessage: boolean;
   onToggleWelcomeMessage: () => void;
+  showHardwarePrompt?: boolean;
+  onToggleHardwarePrompt?: () => void;
   deviceInfo?: DeviceInfo | null;
   initialTab?: 'engine' | 'security' | 'credits';
   onOpenModelModal?: () => void;
@@ -43,6 +45,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onChangeSearxngUrl,
   showWelcomeMessage,
   onToggleWelcomeMessage,
+  showHardwarePrompt,
+  onToggleHardwarePrompt,
   deviceInfo,
   initialTab,
   onOpenModelModal,
@@ -1041,6 +1045,35 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             style={{ accentColor: '#8b5cf6', width: '1.15rem', height: '1.15rem', cursor: 'pointer' }}
           />
         </div>
+
+        {/* Toggle Hardware Recommendation Prompt on startup */}
+        {onToggleHardwarePrompt && (
+          <div style={{
+            backgroundColor: '#111118',
+            border: '1px solid rgba(139, 92, 246, 0.25)',
+            borderRadius: '12px',
+            padding: '0.85rem 1rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            cursor: 'pointer'
+          }} onClick={onToggleHardwarePrompt}>
+            <div>
+              <div style={{ fontSize: '0.84rem', fontWeight: 500, color: '#ffffff' }}>
+                ⚡ Ask to load recommended model on startup
+              </div>
+              <div style={{ fontSize: '0.72rem', color: '#71717a', marginTop: '0.15rem' }}>
+                Prompts to load the recommended model weights for your device from Hugging Face on startup.
+              </div>
+            </div>
+            <input
+              type="checkbox"
+              checked={showHardwarePrompt ?? true}
+              onChange={onToggleHardwarePrompt}
+              style={{ accentColor: '#8b5cf6', width: '1.15rem', height: '1.15rem', cursor: 'pointer' }}
+            />
+          </div>
+        )}
 
         {/* WebGPU & Weight Cache Maintenance */}
         <div style={{

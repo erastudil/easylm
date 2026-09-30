@@ -114,14 +114,44 @@ export const ChatPane: React.FC<{
             </div>
           ) : (
             <>
-              {activeSession.messages.map((m) => (
+              {activeSession.messages.map((m, idx) => (
                 <MessageItem
                   key={m.id}
                   message={m}
+                  streaming={isGenerating && idx === activeSession.messages.length - 1 && m.role === 'assistant'}
                   onOpenDocument={(text) => onOpenDocument(text)}
                   onRateMessage={(rating) => onRateMessage(m.id, rating)}
                 />
               ))}
+              {isGenerating && activeSession.messages[activeSession.messages.length - 1]?.role === 'user' && (
+                <div className="flex flex-col w-full items-start my-3.5 prompt-processing-row">
+                  <div className="flex items-center gap-1.5 mb-1.5 px-2 text-xs font-mono text-zinc-500">
+                    <span style={{ color: '#a78bfa', fontWeight: 600 }}>EasyLM</span>
+                    <span>·</span>
+                    <span className="animate-pulse" style={{ color: '#34d399', fontWeight: 600 }}>
+                      Processing prompt...
+                    </span>
+                  </div>
+                  <div className="bubble-assistant processing-bubble" style={{ minWidth: '240px', padding: '0.85rem 1.15rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <div className="processing-dots">
+                        <span className="processing-dot dot-1" />
+                        <span className="processing-dot dot-2" />
+                        <span className="processing-dot dot-3" />
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+                        <span style={{ fontSize: '0.82rem', color: '#ffffff', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
+                          Processing prompt...
+                        </span>
+                        <span style={{ fontSize: '0.7rem', color: '#a1a1aa' }}>
+                          WebGPU active · calculating tokens
+                        </span>
+                      </div>
+                    </div>
+                    <div className="processing-shimmer-line" />
+                  </div>
+                </div>
+              )}
               <div ref={messagesEndRef} style={{ height: '1.5rem', flexShrink: 0 }} />
             </>
           )}
@@ -130,7 +160,11 @@ export const ChatPane: React.FC<{
 
       <div className="prompt-wrapper">
         {isGenerating && (
-          <div className="chat-stop-row">
+          <div className="chat-stop-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: '0.75rem' }}>
+            <div className="processing-pulse-track">
+              <div className="processing-pulse-bar" />
+              <span className="processing-pulse-text">Model is active · computing response</span>
+            </div>
             <button type="button" className="chat-stop-btn" onClick={onStop} title="Stop generating">
               Stop
             </button>

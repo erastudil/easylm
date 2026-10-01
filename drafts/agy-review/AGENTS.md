@@ -12,12 +12,15 @@ this folder is **proposed** stacks and law. it is not live. `scripts/compile_sta
 ## read
 
 1. `README.md` · map
-2. `GAP.md` · what is missing, thin, or locked behind a prior book
-3. `LEVELS.md` · proposed law: a reader starts where they are
-4. `PREREQ.md` · who needs whom
-5. `packs/` · new books
-6. `ramps/` · chapter 0 for living undergrad packs
-7. living law: `stacks/LAW.md` · `docs/CURRICULUM.md`
+2. `WRITER.md` · writer kit
+3. `CATALOG.md` · cards
+4. `WAVE.md` · queue
+5. `GAP.md` · holes
+6. `LEVELS.md` · start law
+7. `PREREQ.md` · who needs whom
+8. `packs/` · new books
+9. `ramps/` · chapter 0
+10. living law: `stacks/LAW.md` · `docs/CURRICULUM.md`
 
 ## write
 

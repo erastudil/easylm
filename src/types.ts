@@ -53,7 +53,7 @@ export interface Personality {
   avatar?: string;
   era?: string;
   writingStyle?: string;
-  category?: 'practical' | 'philosophy' | 'science' | 'literature' | 'characters';
+  category?: 'practical' | 'philosophy' | 'science' | 'literature' | 'characters' | 'clinical';
   book?: string;
 }
 

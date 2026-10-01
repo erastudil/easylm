@@ -29,4 +29,4 @@ GitHub `erastudil/easylm` is SoT. this tree is the working copy.
 
 ## refuse
 
-homework mills as sources. vendoring NC bodies (MIT OCW) into git. cloud gradebooks. deadline shame. horizontal scroll bars. button parentheticals.
+homework farms as sources. vendoring NC bodies (MIT OCW) into git. cloud gradebooks. deadline shame. horizontal scroll bars. button parentheticals.

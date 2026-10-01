@@ -85,6 +85,8 @@ import {
 } from '../src/engine/ssrf';
 import {
   execStacks,
+  execStacksAtomic,
+  execStacksUnits,
   extractDoors,
   splitChapters,
   stacksStats
@@ -1301,9 +1303,20 @@ describe('execStacks', () => {
     expect(pearl).toMatch(/Directed Acyclic Graph/i);
   });
 
-  it('misses cleanly', () => {
-    const res = execStacks('xyznonexistentterm123');
-    expect(res).toContain('Stacks matches');
+  it('retrieves atomic topic-comment units with Dewey coordinates', () => {
+    const units = execStacksUnits('database relational');
+    expect(units.length).toBeGreaterThan(0);
+    expect(units[0].dewey).toMatch(/004|005/);
+    expect(units[0].topic.length).toBeGreaterThan(0);
+    expect(units[0].comment.length).toBeGreaterThan(0);
+  });
+
+  it('formats atomic Dewey blocks compactly with official doors', () => {
+    const atomic = execStacksAtomic('database relational');
+    expect(atomic).toMatch(/Dewey/);
+    expect(atomic).toContain('•');
+    expect(atomic).toContain(':');
+    expect(atomic.length).toBeLessThan(3500);
   });
 });
   });

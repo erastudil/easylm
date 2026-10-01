@@ -137,7 +137,9 @@ export async function detectDevice(): Promise<DeviceInfo> {
   let recommendedContextLimit = 32768; // 32k comfortable default for 8GB
 
   if (isMobile) {
-    if ((maxMemoryGB && maxMemoryGB <= 4) || (maxBufferSizeMB && maxBufferSizeMB < 512)) {
+    // Mobile phones must always use ultralight (1.5B model) to prevent browser tab crashes.
+    // Tablets with >4GB memory and high buffer limits can qualify for standard.
+    if (!isTablet || (maxMemoryGB && maxMemoryGB <= 4) || (maxBufferSizeMB && maxBufferSizeMB < 512)) {
       hardwareTier = 'ultralight';
       estimatedVRAMGB = 4;
       recommendedContextLimit = 8192;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Session, TriLakeRating } from '../types';
 import { AttachedDoc } from '../engine/family';
 import { MessageItem } from '../components/MessageItem';
@@ -64,6 +64,15 @@ export const ChatPane: React.FC<{
   onStop
 }) => {
   const empty = !activeSession || activeSession.messages.length === 0;
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    const nextH = Math.min(el.scrollHeight, 120);
+    el.style.height = `${Math.max(nextH, 36)}px`;
+  }, [inputPrompt]);
 
   return (
     <div className={compact ? 'chat-pane chat-pane-compact' : 'chat-pane'}>
@@ -209,6 +218,7 @@ export const ChatPane: React.FC<{
             }}
           />
           <textarea
+            ref={textareaRef}
             value={inputPrompt}
             onChange={(e) => onInputPrompt(e.target.value)}
             onKeyDown={(e) => {

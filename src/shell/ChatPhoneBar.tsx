@@ -49,34 +49,41 @@ export const ChatPhoneBar: React.FC<{
         ⋯
       </button>
       {overflowOpen && (
-        <div className="chat-overflow">
-          <button type="button" className="more-row" onClick={onToggleThink} title="Extended thinking">
-            <span>Think</span>
-            <span>{thinkingOn ? 'ON' : 'OFF'}</span>
-          </button>
-          <button type="button" className="more-row" onClick={onToggleHands} title="Local tools">
-            <span>Hands</span>
-            <span>{handsOn ? 'ON' : 'OFF'}</span>
-          </button>
-          <button type="button" className="more-row" onClick={onOpenVoice} title="Voice">
-            <span>Voice</span>
-            <span>{voiceName}</span>
-          </button>
-          <button type="button" className="more-row" onClick={onOpenModel} title="Model">
-            <span>Model</span>
-            <span>{modelLabel.split('(')[0].trim()}</span>
-          </button>
-          {!modelReady && (
-            <button type="button" className="more-row" onClick={onLoadModel} title="Load model">
-              <span>Load</span>
+        <>
+          <div
+            className="chat-overflow-backdrop"
+            onClick={onToggleOverflow}
+            style={{ position: 'fixed', inset: 0, zIndex: 55, background: 'transparent' }}
+          />
+          <div className="chat-overflow" style={{ zIndex: 60 }}>
+            <button type="button" className="more-row" onClick={onToggleThink} title="Extended thinking">
+              <span>Think</span>
+              <span>{thinkingOn ? 'ON' : 'OFF'}</span>
+            </button>
+            <button type="button" className="more-row" onClick={onToggleHands} title="Local tools">
+              <span>Hands</span>
+              <span>{handsOn ? 'ON' : 'OFF'}</span>
+            </button>
+            <button type="button" className="more-row" onClick={onOpenVoice} title="Voice">
+              <span>Voice</span>
+              <span>{voiceName}</span>
+            </button>
+            <button type="button" className="more-row" onClick={onOpenModel} title="Model">
+              <span>Model</span>
+              <span>{modelLabel.split('(')[0].trim()}</span>
+            </button>
+            {!modelReady && (
+              <button type="button" className="more-row" onClick={onLoadModel} title="Load model">
+                <span>Load</span>
+                <span>›</span>
+              </button>
+            )}
+            <button type="button" className="more-row" onClick={onOpenProfile} title="Profile">
+              <span>Profile</span>
               <span>›</span>
             </button>
-          )}
-          <button type="button" className="more-row" onClick={onOpenProfile} title="Profile">
-            <span>Profile</span>
-            <span>›</span>
-          </button>
-        </div>
+          </div>
+        </>
       )}
     </header>
   );

@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   PERSONALITIES,
   PERSONALITY_CATEGORIES,
   ExtendedPersonality,
-  getPersonalitiesForRole
+  getPersonalitiesForRole,
+  getAllPersonalities,
+  exportPersonalitiesToJson,
+  importPersonalitiesFromJson
 } from '../data/personalities';
 
 interface PersonalityModalProps {
@@ -26,10 +29,12 @@ export const PersonalityModal: React.FC<PersonalityModalProps> = ({
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [statusMessage, setStatusMessage] = useState<string>('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!isOpen) return null;
 
-  const gallery = getPersonalitiesForRole(kidSafe ? 'kid' : 'parent');
+  const gallery = getAllPersonalities(kidSafe ? 'kid' : 'parent');
 
   const filteredPersonalities = gallery.filter(p => {
     // Category match
@@ -158,7 +163,8 @@ export const PersonalityModal: React.FC<PersonalityModalProps> = ({
                   }}
                 >
                   <span>{cat.icon}</span>
-                  <span>{cat.label} ({count})</span>
+                  <span>{cat.label}</span>
+                  <span style={{ fontSize: '0.68rem', opacity: 0.75, marginLeft: '0.15rem' }}>{count}</span>
                 </button>
               );
             })}
@@ -231,19 +237,86 @@ export const PersonalityModal: React.FC<PersonalityModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(139, 92, 246, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
-          <div style={{ fontSize: '0.72rem', color: '#71717a' }}>
-            {kidSafe
-              ? 'Kid Safe gallery lock — adult voices do not load on this profile.'
-              : 'Historical figures & public domain literature. Zero brand infringement.'}
+        <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(139, 92, 246, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', flexShrink: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '0.72rem', color: '#71717a' }}>
+              {kidSafe
+                ? 'Kid Safe gallery lock — adult voices do not load on this profile.'
+                : 'Historical figures, clinical coaches, & custom personas. 100% on-device.'}
+            </span>
+            {statusMessage && (
+              <span style={{ fontSize: '0.72rem', color: '#a78bfa' }}>
+                {statusMessage}
+              </span>
+            )}
           </div>
-          <button
-            onClick={onClose}
-            className="btn-pill btn-pill-primary"
-            style={{ padding: '0.4rem 1.25rem' }}
-          >
-            Done
-          </button>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+            {!kidSafe && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const json = exportPersonalitiesToJson();
+                    const blob = new Blob([json], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `easylm-personalities-${Date.now()}.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    setStatusMessage('Exported cards.');
+                    window.setTimeout(() => setStatusMessage(''), 3000);
+                  }}
+                  className="btn-pill"
+                  style={{ fontSize: '0.75rem', padding: '0.35rem 0.75rem' }}
+                >
+                  Export Cards
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="btn-pill"
+                  style={{ fontSize: '0.75rem', padding: '0.35rem 0.75rem' }}
+                >
+                  Import Cards
+                </button>
+
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept=".json"
+                  style={{ display: 'none' }}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                      const content = String(event.target?.result || '');
+                      const res = importPersonalitiesFromJson(content);
+                      if (res.imported > 0) {
+                        setStatusMessage(`Imported ${res.imported} cards.`);
+                      } else {
+                        setStatusMessage(res.errors[0] || 'Import failed.');
+                      }
+                      window.setTimeout(() => setStatusMessage(''), 4000);
+                    };
+                    reader.readAsText(file);
+                    e.target.value = '';
+                  }}
+                />
+              </>
+            )}
+
+            <button
+              onClick={onClose}
+              className="btn-pill btn-pill-primary"
+              style={{ padding: '0.4rem 1.25rem' }}
+            >
+              Done
+            </button>
+          </div>
         </div>
       </div>
     </div>

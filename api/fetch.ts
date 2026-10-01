@@ -1,6 +1,8 @@
 import * as dns from 'node:dns/promises';
 
 const STATIC_ALLOWED = new Set([
+  'https://easylm.app',
+  'https://www.easylm.app',
   'https://easylm.vercel.app',
   'http://localhost:5175',
   'http://127.0.0.1:5175',
@@ -15,7 +17,10 @@ function allowedOrigin(origin: string | undefined | null): string | null {
   try {
     const u = new URL(o);
     if (u.protocol !== 'https:') return null;
-    if (u.hostname.toLowerCase() === 'easylm.vercel.app' && !u.port) return `${u.protocol}//${u.hostname}`;
+    const h = u.hostname.toLowerCase();
+    if ((h === 'easylm.app' || h === 'www.easylm.app' || h === 'easylm.vercel.app') && !u.port) {
+      return `${u.protocol}//${u.hostname}`;
+    }
     return null;
   } catch {
     return null;
@@ -217,7 +222,7 @@ function parsePublicHttpsUrl(raw: string): { ok: true; url: URL } | { ok: false;
 }
 
 const COMMON_HEADERS = {
-  'User-Agent': 'EasyLM/0.1.0 (https://easylm.vercel.app; info@humansandai.com)',
+  'User-Agent': 'EasyLM/0.1.0 (https://easylm.app; info@humansandai.com)',
   Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,text/plain;q=0.8,*/*;q=0.7'
 };
 

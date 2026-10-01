@@ -27,4 +27,4 @@ body:
     id: url
     attributes:
       label: URL
-      placeholder: https://easylm.vercel.app
+      placeholder: https://easylm.app

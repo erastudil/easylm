@@ -730,6 +730,8 @@ describe('execMath', () => {
   describe('origin', () => {
 describe('allowedOrigin', () => {
   it('allows prod and local vite, rejects *', () => {
+    expect(allowedOrigin('https://easylm.app')).toBe('https://easylm.app');
+    expect(allowedOrigin('https://www.easylm.app')).toBe('https://www.easylm.app');
     expect(allowedOrigin('https://easylm.vercel.app')).toBe('https://easylm.vercel.app');
     expect(allowedOrigin('http://localhost:5175')).toBe('http://localhost:5175');
     expect(allowedOrigin('https://evil.example')).toBe(null);
@@ -740,6 +742,8 @@ describe('allowedOrigin', () => {
     expect(allowedOrigin('https://easylm-attacker.vercel.app')).toBe(null);
     expect(allowedOrigin('https://easylm-git-main-evil.vercel.app')).toBe(null);
     expect(allowedOrigin('https://not-easylm.vercel.app')).toBe(null);
+    expect(allowedOrigin('https://easylm.app.attacker.com')).toBe(null);
+    expect(allowedOrigin('https://fake-easylm.app')).toBe(null);
   });
 
   it('verifies vercel.json CSP contains unsafe-eval and worker blob support for Studio Sandbox', () => {

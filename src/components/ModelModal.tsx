@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ModelOption } from '../types';
-import { AVAILABLE_MODELS, registerCustomHFModel, ProgressStatus, resetWebGPUAndCaches } from '../engine/webllm';
-import { DeviceInfo } from '../engine/device';
+import { AVAILABLE_MODELS, registerCustomHFModel, ProgressStatus, resetWebGPUAndCaches, getModelVramMB } from '../engine/webllm';
+import { DeviceInfo, fitsIOSBudget } from '../engine/device';
 
 interface ModelModalProps {
   isOpen: boolean;
@@ -333,16 +333,21 @@ export const ModelModal: React.FC<ModelModalProps> = ({
               {filteredModels.map(m => {
                 const isSelected = selectedModel === m.id;
                 const isCurrentlyReady = isSelected && isModelReady;
+                const isIOS = !!deviceInfo?.isIOS;
+                const tooLargeForIOS = isIOS && !fitsIOSBudget(m.id);
+                const vramGB = ((getModelVramMB(m.id) ?? m.sizeMB) / 1000).toFixed(1);
                 return (
                   <div
                     key={m.id}
-                    onClick={() => onSelectModel(m.id)}
+                    onClick={() => { if (!tooLargeForIOS) onSelectModel(m.id); }}
+                    aria-disabled={tooLargeForIOS || undefined}
                     style={{
+                      opacity: tooLargeForIOS ? 0.5 : 1,
                       padding: '0.85rem',
                       backgroundColor: isSelected ? 'rgba(139, 92, 246, 0.12)' : '#111118',
                       border: isSelected ? '1.5px solid #8b5cf6' : '1px solid rgba(139, 92, 246, 0.2)',
                       borderRadius: '10px',
-                      cursor: 'pointer',
+                      cursor: tooLargeForIOS ? 'not-allowed' : 'pointer',
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'space-between',
@@ -364,7 +369,12 @@ export const ModelModal: React.FC<ModelModalProps> = ({
                           {m.vramEst}
                         </span>
 
-                        <div style={{ display: 'flex', gap: '0.25rem' }}>
+                        <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
+                          {isIOS && !tooLargeForIOS && (
+                            <span style={{ fontSize: '0.64rem', padding: '0.1rem 0.35rem', borderRadius: '4px', backgroundColor: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', fontWeight: 600 }}>
+                              {deviceInfo?.isTablet ? 'Fits iPad' : 'Fits iPhone'}
+                            </span>
+                          )}
                           {m.isDefault && (
                             <span style={{ fontSize: '0.64rem', padding: '0.1rem 0.35rem', borderRadius: '4px', backgroundColor: 'rgba(234, 179, 8, 0.15)', color: '#fde047', fontWeight: 600 }}>
                               Default
@@ -405,7 +415,11 @@ export const ModelModal: React.FC<ModelModalProps> = ({
                         Download: ~{(m.sizeMB / 1024).toFixed(1)} GB
                       </span>
 
-                      {isSelected ? (
+                      {tooLargeForIOS ? (
+                        <span style={{ color: '#a1a1aa', fontWeight: 500, textAlign: 'right' }}>
+                          Needs a laptop or desktop GPU ({vramGB} GB)
+                        </span>
+                      ) : isSelected ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                           {isCurrentlyReady ? (
                             <span style={{ color: '#10b981', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>

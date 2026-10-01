@@ -19,7 +19,9 @@ import {
   isEngineReady,
   resetWebGPUAndCaches,
   getGpuFence,
-  clearGpuFence
+  clearGpuFence,
+  nextSmallerModel,
+  takeInterruptedLoad
 } from './engine/webllm';
 import { dispatchTool, SYSTEM_TOOLS_PROMPT, SYSTEM_TOOLS_PROMPT_KID } from './engine/tools';
 import {
@@ -39,7 +41,7 @@ import { HelpModal } from './components/HelpModal';
 import { SupportModal } from './components/SupportModal';
 import { FeedbackModal } from './components/FeedbackModal';
 import { EASYLM_GUIDE_PROMPT_CONTEXT } from './data/help_guide';
-import { detectDevice, DeviceInfo } from './engine/device';
+import { detectDevice, DeviceInfo, fitsIOSBudget, IOS_MODEL_BUDGET_MB } from './engine/device';
 import { createWelcomeMessage, WELCOME_TOOLBOX_CONTENT } from './data/welcome';
 import { CORE_INTERACTION_PROTOCOLS, CORE_INTERACTION_PROTOCOLS_COMPACT, CORE_INTERACTION_PROTOCOLS_KID } from './data/protocols';
 import { GpuRestartModal } from './components/GpuRestartModal';
@@ -524,30 +526,55 @@ export const App: React.FC = () => {
 
   // 1. Initial boot: detect device hardware & load sessions
   useEffect(() => {
-    detectDevice().then(dev => {
+    detectDevice().then(detected => {
+      const dev = { ...detected };
+      const modelLabel = (id: string) => AVAILABLE_MODELS.find(m => m.id === id)?.label || id;
+      // A load that never finished on the last visit (tab killed mid-load): step down one size.
+      const interrupted = takeInterruptedLoad();
+      const smaller = interrupted ? nextSmallerModel(interrupted, dev.isIOS ? IOS_MODEL_BUDGET_MB : undefined) : undefined;
+      if (smaller) dev.recommendedModel = smaller;
+
       setDeviceInfo(dev);
       setWebGpuAvailable(dev.hasWebGPU);
       const savedModel = localStorage.getItem('easylm_selected_model');
       if (savedModel === 'Bonsai-2-27B-MLC') {
         try { localStorage.removeItem('easylm_selected_model'); } catch {}
-        setSelectedModel(DEFAULT_MODEL_ID);
+        setSelectedModel(dev.recommendedModel || DEFAULT_MODEL_ID);
       } else if (savedModel && !AVAILABLE_MODELS.some(m => m.id === savedModel)) {
         try { localStorage.removeItem('easylm_selected_model'); } catch {}
         setSelectedModel(dev.recommendedModel || DEFAULT_MODEL_ID);
       } else if (!savedModel && dev.recommendedModel) {
         setSelectedModel(dev.recommendedModel);
+      } else if (savedModel && (smaller || (dev.isIOS && !fitsIOSBudget(savedModel)))) {
+        setSelectedModel(dev.recommendedModel);
+        try { localStorage.setItem('easylm_selected_model', dev.recommendedModel); } catch {}
       }
       const savedLimit = localStorage.getItem('easylm_context_limit');
       if (!savedLimit && dev.recommendedContextLimit) {
         setContextLimit(dev.recommendedContextLimit);
+      } else if (dev.isIOS && savedLimit && parseInt(savedLimit, 10) > dev.recommendedContextLimit) {
+        setContextLimit(dev.recommendedContextLimit);
       }
 
-      // Hardware detected: prompt to load recommended model weights unless remembered otherwise
+      if (interrupted) {
+        try { localStorage.setItem('easylm_auto_load_model', 'false'); } catch {}
+        setLoadErrorToast({
+          message: smaller
+            ? `${modelLabel(interrupted)} stopped loading last time. ${modelLabel(smaller)} is selected and uses less memory. Tap Load when ready.`
+            : `${modelLabel(interrupted)} stopped loading last time. Tap Load to try again.`,
+          modelId: smaller || interrupted,
+          isGPUOrCache: false
+        });
+        return;
+      }
+
+      // Hardware detected: prompt to load recommended model weights unless remembered otherwise.
+      // Phones and tablets never auto-load at boot; the user taps Load.
       const showPromptPref = localStorage.getItem('easylm_show_hardware_prompt');
       const autoLoad = localStorage.getItem('easylm_auto_load_model');
       if (showPromptPref !== 'false') {
         setHardwareModalOpen(true);
-      } else if (autoLoad === 'true') {
+      } else if (autoLoad === 'true' && !dev.isMobile) {
         handleLoadModel(dev.recommendedModel);
       }
     });

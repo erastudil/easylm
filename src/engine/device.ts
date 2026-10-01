@@ -1,6 +1,30 @@
-import { patchWebGPUAdapterFallback } from './webllm';
+import { patchWebGPUAdapterFallback, getModelVramMB } from './webllm';
 
-export type HardwareTier = 'ultralight' | 'standard' | 'high_performance' | 'workstation';
+export type HardwareTier = 'mobile' | 'ultralight' | 'standard' | 'high_performance' | 'workstation';
+
+/** iPhone / iPad / iPod, including iPadOS reporting itself as MacIntel. */
+export function isIOSDevice(nav: Partial<Navigator> | undefined = typeof navigator !== 'undefined' ? navigator : undefined): boolean {
+  if (!nav) return false;
+  const ua = nav.userAgent || '';
+  return /iPhone|iPad|iPod/.test(ua) || (nav.platform === 'MacIntel' && (nav.maxTouchPoints || 0) > 1);
+}
+
+/** Phones and tablets: iOS or Android. */
+export function isMobileDevice(nav: Partial<Navigator> | undefined = typeof navigator !== 'undefined' ? navigator : undefined): boolean {
+  if (!nav) return false;
+  return isIOSDevice(nav) || /Android/i.test(nav.userAgent || '');
+}
+
+/** iOS Safari ends a tab somewhere around 1.5-3 GB; models above this budget are kept off iPhone/iPad. */
+export const IOS_MODEL_BUDGET_MB = 1024;
+export const IOS_RECOMMENDED_MODEL = 'Llama-3.2-1B-Instruct-q4f16_1-MLC';
+export const IOS_FALLBACK_MODEL = 'SmolLM2-360M-Instruct-q4f16_1-MLC';
+export const IOS_CONTEXT_LIMIT = 4096;
+
+export function fitsIOSBudget(modelId: string): boolean {
+  const mb = getModelVramMB(modelId);
+  return mb !== undefined && mb <= IOS_MODEL_BUDGET_MB;
+}
 
 export interface DeviceInfo {
   isMobile: boolean;
@@ -27,8 +51,29 @@ export interface DeviceInfo {
  * - Recommends hardware-matched context limits (2k, 4k, 8k).
  */
 export async function detectDevice(): Promise<DeviceInfo> {
+  try {
+    return await detectDeviceUnsafe();
+  } catch {
+    // Detection must never take the app down: fall back to UA-only facts.
+    const isIOS = isIOSDevice();
+    const isAndroid = !isIOS && isMobileDevice();
+    return {
+      isMobile: isIOS || isAndroid,
+      isTablet: false,
+      isIOS,
+      isAndroid,
+      hasWebGPU: false,
+      osName: isIOS ? 'iOS' : isAndroid ? 'Android' : 'Desktop',
+      recommendedModel: isIOS ? IOS_RECOMMENDED_MODEL : 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',
+      hardwareTier: isIOS ? 'mobile' : 'ultralight',
+      recommendedContextLimit: isIOS ? IOS_CONTEXT_LIMIT : 8192
+    };
+  }
+}
+
+async function detectDeviceUnsafe(): Promise<DeviceInfo> {
   const ua = typeof navigator !== 'undefined' ? navigator.userAgent || '' : '';
-  const isIOS = /iPad|iPhone|iPod/.test(ua) || (typeof navigator !== 'undefined' && navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const isIOS = isIOSDevice();
   const isAndroid = /Android/i.test(ua);
   // Real mobile device check - never treat half-screen laptop windows as a phone!
   const isMobile = isIOS || isAndroid;
@@ -136,7 +181,12 @@ export async function detectDevice(): Promise<DeviceInfo> {
   let estimatedVRAMGB = 8;
   let recommendedContextLimit = 32768; // 32k comfortable default for 8GB
 
-  if (isMobile) {
+  if (isIOS) {
+    // Safari exposes neither deviceMemory nor a useful maxBufferSize, so iOS always gets the small tier.
+    hardwareTier = 'mobile';
+    estimatedVRAMGB = 1;
+    recommendedContextLimit = IOS_CONTEXT_LIMIT;
+  } else if (isMobile) {
     if ((maxMemoryGB && maxMemoryGB <= 4) || (maxBufferSizeMB && maxBufferSizeMB < 512)) {
       hardwareTier = 'ultralight';
       estimatedVRAMGB = 4;
@@ -164,11 +214,14 @@ export async function detectDevice(): Promise<DeviceInfo> {
     }
   }
 
-  // Model recommendation:
-  // - Ultralight -> 1.5B (~1.4 GB VRAM)
-  // - Standard / High Performance / Workstation -> Qwen 2.5 3B (~2.2 GB VRAM) — stable everyday workhorse
+  // Model recommendation (VRAM from web-llm prebuiltAppConfig vram_required_MB):
+  // - Mobile (iOS) -> Llama 3.2 1B (~879 MB), SmolLM2 360M (~376 MB) as fallback
+  // - Ultralight -> Qwen 2.5 1.5B (~1.6 GB VRAM)
+  // - Standard / High Performance / Workstation -> Qwen 2.5 3B (~2.5 GB VRAM) — stable everyday workhorse
   let recommendedModel = 'Qwen2.5-3B-Instruct-q4f16_1-MLC';
-  if (hardwareTier === 'ultralight') {
+  if (hardwareTier === 'mobile') {
+    recommendedModel = fitsIOSBudget(IOS_RECOMMENDED_MODEL) ? IOS_RECOMMENDED_MODEL : IOS_FALLBACK_MODEL;
+  } else if (hardwareTier === 'ultralight') {
     recommendedModel = 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC';
   }
 

@@ -1,4 +1,4 @@
-import { patchWebGPUAdapterFallback, getModelVramMB } from './webllm';
+import { patchWebGPUAdapterFallback, getModelVramMB, modelForProfile } from './webllm';
 
 export type HardwareTier = 'mobile' | 'ultralight' | 'standard' | 'high_performance' | 'workstation';
 
@@ -50,7 +50,17 @@ export interface DeviceInfo {
  * - Laptops with iGPU or discrete GPU default to Standard (8GB class / 3B model), not ultralight.
  * - Recommends hardware-matched context limits (2k, 4k, 8k).
  */
-export async function detectDevice(): Promise<DeviceInfo> {
+export async function detectDevice(opts: { kidMode?: boolean } = {}): Promise<DeviceInfo> {
+  return deviceInfoForProfile(await detectDeviceAnyProfile(), !!opts.kidMode);
+}
+
+/** Recommendation for the active profile: a kid profile gets Llama 3.2 1B in place of an excluded model. */
+export function deviceInfoForProfile(dev: DeviceInfo, kidMode: boolean): DeviceInfo {
+  const recommendedModel = modelForProfile(dev.recommendedModel, kidMode);
+  return recommendedModel === dev.recommendedModel ? dev : { ...dev, recommendedModel };
+}
+
+async function detectDeviceAnyProfile(): Promise<DeviceInfo> {
   try {
     return await detectDeviceUnsafe();
   } catch {
@@ -215,7 +225,7 @@ async function detectDeviceUnsafe(): Promise<DeviceInfo> {
   }
 
   // Model recommendation (VRAM from web-llm prebuiltAppConfig vram_required_MB):
-  // - Mobile (iOS) -> Llama 3.2 1B (~879 MB), SmolLM2 360M (~376 MB) as fallback
+  // - Mobile (iOS) -> Llama 3.2 1B (~879 MB), SmolLM2 360M (~376 MB) as fallback (adult profiles; kid profiles stay on 1B)
   // - Ultralight -> Qwen 2.5 1.5B (~1.6 GB VRAM)
   // - Standard / High Performance / Workstation -> Qwen 2.5 3B (~2.5 GB VRAM) — stable everyday workhorse
   let recommendedModel = 'Qwen2.5-3B-Instruct-q4f16_1-MLC';

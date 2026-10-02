@@ -200,6 +200,9 @@ export const AVAILABLE_MODELS: ModelOption[] = [
 
 export const ALLOWED_MODEL_IDS = new Set(AVAILABLE_MODELS.map(m => m.id));
 
+/** Curated picker ids, fixed at build time. Custom Hugging Face registrations never join this set. */
+export const CURATED_MODEL_IDS: ReadonlySet<string> = new Set(AVAILABLE_MODELS.map(m => m.id));
+
 /**
  * Largest general model that is smaller than `modelId` (by vram_required_MB),
  * optionally capped at `maxMB`. Reasoning and coding specialists are skipped.
@@ -219,21 +222,52 @@ export function nextSmallerModel(modelId: string, maxMB?: number, exclude?: Read
 }
 
 /**
- * Models the crash step-down never picks while Kid mode is on.
+ * Models a kid profile never runs (picker, saved selection, recommendation, load, step-down).
  * SmolLM2 360M failed the Kid Safe A and C checks on 2026-10-02 (PR #4).
  */
-export const KID_MODE_STEP_DOWN_EXCLUDED: ReadonlySet<string> = new Set(['SmolLM2-360M-Instruct-q4f16_1-MLC']);
+export const KID_MODE_EXCLUDED_MODELS: ReadonlySet<string> = new Set(['SmolLM2-360M-Instruct-q4f16_1-MLC']);
+
+/** Model a kid profile uses in place of any model outside the kid allowlist. */
+export const KID_MODE_MODEL_ID = 'Llama-3.2-1B-Instruct-q4f16_1-MLC';
+
+/** Kid allowlist: curated picker models minus KID_MODE_EXCLUDED_MODELS. Custom Hugging Face ids stay off it. */
+export const KID_ALLOWED_MODEL_IDS: ReadonlySet<string> = new Set(
+  [...CURATED_MODEL_IDS].filter(id => !KID_MODE_EXCLUDED_MODELS.has(id))
+);
+
+export function isModelAllowedForKid(modelId: string): boolean {
+  return KID_ALLOWED_MODEL_IDS.has(modelId);
+}
+
+// Load-path guard: set by the app whenever the active profile changes.
+let engineKidMode = false;
+export function setEngineKidMode(on: boolean): void {
+  engineKidMode = on;
+}
+export function isEngineKidMode(): boolean {
+  return engineKidMode;
+}
+
+/** Returns the model to run for the active profile: ids outside the kid allowlist map to KID_MODE_MODEL_ID in Kid mode. */
+export function modelForProfile(modelId: string, kidMode: boolean): string {
+  return kidMode && !isModelAllowedForKid(modelId) ? KID_MODE_MODEL_ID : modelId;
+}
+
+/** Picker list for the active profile. */
+export function modelsForProfile(kidMode: boolean): ModelOption[] {
+  return kidMode ? AVAILABLE_MODELS.filter(m => isModelAllowedForKid(m.id)) : AVAILABLE_MODELS;
+}
 
 /**
  * Model to select after a load was interrupted (tab killed mid-load).
- * In Kid mode the step-down skips KID_MODE_STEP_DOWN_EXCLUDED; when nothing else fits,
+ * In Kid mode the step-down skips KID_MODE_EXCLUDED_MODELS; when nothing else fits,
  * it returns undefined so the app keeps the current model with auto-load off.
  */
 export function crashStepDownModel(
   interruptedId: string,
   opts: { maxMB?: number; kidMode?: boolean } = {}
 ): string | undefined {
-  return nextSmallerModel(interruptedId, opts.maxMB, opts.kidMode ? KID_MODE_STEP_DOWN_EXCLUDED : undefined);
+  return nextSmallerModel(interruptedId, opts.maxMB, opts.kidMode ? KID_MODE_EXCLUDED_MODELS : undefined);
 }
 
 // Crash-loop breaker: a tab killed mid-load (iOS memory limit) leaves this key behind.
@@ -269,12 +303,15 @@ export const EASYLM_APP_CONFIG: AppConfig = {
   ]
 };
 
-export function registerCustomHFModel(record: ModelRecord): void {
+/** Registers a custom Hugging Face model for adult profiles. Returns false (and registers nothing) in Kid mode. */
+export function registerCustomHFModel(record: ModelRecord, kidMode: boolean = engineKidMode): boolean {
+  if (kidMode) return false;
   CUSTOM_MODEL_RECORDS.push(record);
   ALLOWED_MODEL_IDS.add(record.model_id);
   if (!EASYLM_APP_CONFIG.model_list.some(m => m.model_id === record.model_id)) {
     EASYLM_APP_CONFIG.model_list.push(record);
   }
+  return true;
 }
 
 /**
@@ -758,7 +795,7 @@ export async function getOrInitEngine(
   if (!isWebGPUSupported()) {
     throw new Error('WebGPU is not supported or not enabled in this browser. Please use Chrome, Edge, or enable WebGPU.');
   }
-  if (!ALLOWED_MODEL_IDS.has(modelId)) {
+  if (!ALLOWED_MODEL_IDS.has(modelId) || (engineKidMode && !isModelAllowedForKid(modelId))) {
     throw new Error('That model is not offered in this EasyLM build.');
   }
   if (gpuFence === 'process_dead') {

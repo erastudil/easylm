@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ModelOption } from '../types';
-import { AVAILABLE_MODELS, registerCustomHFModel, ProgressStatus, resetWebGPUAndCaches, getModelVramMB } from '../engine/webllm';
+import { modelsForProfile, registerCustomHFModel, ProgressStatus, resetWebGPUAndCaches, getModelVramMB } from '../engine/webllm';
 import { DeviceInfo, fitsIOSBudget } from '../engine/device';
 
 interface ModelModalProps {
@@ -12,6 +12,8 @@ interface ModelModalProps {
   isModelReady?: boolean;
   onLoadModel?: (id: string) => void;
   modelProgress?: ProgressStatus | null;
+  /** Kid profile active: the picker lists kid-allowed models only. */
+  kidMode?: boolean;
 }
 
 export const ModelModal: React.FC<ModelModalProps> = ({
@@ -22,7 +24,8 @@ export const ModelModal: React.FC<ModelModalProps> = ({
   deviceInfo,
   isModelReady,
   onLoadModel,
-  modelProgress
+  modelProgress,
+  kidMode = false
 }) => {
   const [activeTab, setActiveTab] = useState<'all' | '4gb' | '8gb' | '16gb' | 'hf'>('all');
   const [hfQuery, setHfQuery] = useState('');
@@ -47,7 +50,8 @@ export const ModelModal: React.FC<ModelModalProps> = ({
 
   if (!isOpen) return null;
 
-  const filteredModels = AVAILABLE_MODELS.filter(m => {
+  const pickerModels = modelsForProfile(kidMode);
+  const filteredModels = pickerModels.filter(m => {
     if (activeTab === 'all') return true;
     if (activeTab === '4gb') return m.vramTier === '4gb';
     if (activeTab === '8gb') return m.vramTier === '8gb';
@@ -81,13 +85,15 @@ export const ModelModal: React.FC<ModelModalProps> = ({
   };
 
   const handleSelectCustomHfModel = (repoId: string) => {
+    if (kidMode) return;
     const modelId = repoId.split('/')[1] || repoId;
-    registerCustomHFModel({
+    const registered = registerCustomHFModel({
       model: `https://huggingface.co/${repoId}`,
       model_id: modelId,
       model_lib: `https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/${modelId}_cs1k-webgpu.wasm`,
       vram_required_MB: 4000
-    });
+    }, kidMode);
+    if (!registered) return;
     onSelectModel(modelId);
     if (onLoadModel) onLoadModel(modelId);
     onClose();
@@ -190,7 +196,7 @@ export const ModelModal: React.FC<ModelModalProps> = ({
                 border: '1px solid rgba(16, 185, 129, 0.3)',
                 fontWeight: 600
               }}>
-                Recommended: {deviceInfo?.recommendedModel ? (AVAILABLE_MODELS.find(m => m.id === deviceInfo.recommendedModel)?.label || deviceInfo.recommendedModel) : 'Qwen 2.5 3B'}
+                Recommended: {deviceInfo?.recommendedModel ? (pickerModels.find(m => m.id === deviceInfo.recommendedModel)?.label || deviceInfo.recommendedModel) : 'Qwen 2.5 3B'}
               </span>
             </div>
             {cacheNotice && (
@@ -204,12 +210,12 @@ export const ModelModal: React.FC<ModelModalProps> = ({
         {/* Filter Tabs */}
         <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginBottom: '0.85rem', flexShrink: 0 }}>
           {[
-            { id: 'all', label: 'All Models', count: AVAILABLE_MODELS.length },
-            { id: '8gb', label: '6GB–8GB (Standard / Laptops)', count: AVAILABLE_MODELS.filter(m => m.vramTier === '8gb').length },
-            { id: '4gb', label: '4GB (Ultralight / Mobile)', count: AVAILABLE_MODELS.filter(m => m.vramTier === '4gb').length },
-            { id: '16gb', label: '8GB–16GB (High Performance)', count: AVAILABLE_MODELS.filter(m => m.vramTier === '16gb').length },
+            { id: 'all', label: 'All Models', count: pickerModels.length },
+            { id: '8gb', label: '6GB–8GB (Standard / Laptops)', count: pickerModels.filter(m => m.vramTier === '8gb').length },
+            { id: '4gb', label: '4GB (Ultralight / Mobile)', count: pickerModels.filter(m => m.vramTier === '4gb').length },
+            { id: '16gb', label: '8GB–16GB (High Performance)', count: pickerModels.filter(m => m.vramTier === '16gb').length },
             { id: 'hf', label: '🤗 Search Hugging Face', count: undefined }
-          ].map(tab => (
+          ].filter(tab => !(kidMode && tab.id === 'hf')).map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
@@ -230,7 +236,7 @@ export const ModelModal: React.FC<ModelModalProps> = ({
 
         {/* Content Area */}
         <div style={{ flex: 1, overflowY: 'auto', paddingRight: '0.25rem' }}>
-          {activeTab === 'hf' ? (
+          {activeTab === 'hf' && !kidMode ? (
             /* Hugging Face Explorer */
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <div style={{

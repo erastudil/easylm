@@ -204,17 +204,36 @@ export const ALLOWED_MODEL_IDS = new Set(AVAILABLE_MODELS.map(m => m.id));
  * Largest general model that is smaller than `modelId` (by vram_required_MB),
  * optionally capped at `maxMB`. Reasoning and coding specialists are skipped.
  */
-export function nextSmallerModel(modelId: string, maxMB?: number): string | undefined {
+export function nextSmallerModel(modelId: string, maxMB?: number, exclude?: ReadonlySet<string>): string | undefined {
   const current = getModelVramMB(modelId) ?? Infinity;
   let best: { id: string; mb: number } | undefined;
   for (const m of AVAILABLE_MODELS) {
     if (m.isReasoning || m.isCoding || m.id === modelId) continue;
+    if (exclude?.has(m.id)) continue;
     const mb = getModelVramMB(m.id);
     if (mb === undefined || mb >= current) continue;
     if (maxMB !== undefined && mb > maxMB) continue;
     if (!best || mb > best.mb) best = { id: m.id, mb };
   }
   return best?.id;
+}
+
+/**
+ * Models the crash step-down never picks while Kid mode is on.
+ * SmolLM2 360M failed the Kid Safe A and C checks on 2026-10-02 (PR #4).
+ */
+export const KID_MODE_STEP_DOWN_EXCLUDED: ReadonlySet<string> = new Set(['SmolLM2-360M-Instruct-q4f16_1-MLC']);
+
+/**
+ * Model to select after a load was interrupted (tab killed mid-load).
+ * In Kid mode the step-down skips KID_MODE_STEP_DOWN_EXCLUDED; when nothing else fits,
+ * it returns undefined so the app keeps the current model with auto-load off.
+ */
+export function crashStepDownModel(
+  interruptedId: string,
+  opts: { maxMB?: number; kidMode?: boolean } = {}
+): string | undefined {
+  return nextSmallerModel(interruptedId, opts.maxMB, opts.kidMode ? KID_MODE_STEP_DOWN_EXCLUDED : undefined);
 }
 
 // Crash-loop breaker: a tab killed mid-load (iOS memory limit) leaves this key behind.

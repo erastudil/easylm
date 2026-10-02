@@ -20,7 +20,7 @@ import {
   resetWebGPUAndCaches,
   getGpuFence,
   clearGpuFence,
-  nextSmallerModel,
+  crashStepDownModel,
   takeInterruptedLoad
 } from './engine/webllm';
 import { dispatchTool, SYSTEM_TOOLS_PROMPT, SYSTEM_TOOLS_PROMPT_KID } from './engine/tools';
@@ -531,7 +531,13 @@ export const App: React.FC = () => {
       const modelLabel = (id: string) => AVAILABLE_MODELS.find(m => m.id === id)?.label || id;
       // A load that never finished on the last visit (tab killed mid-load): step down one size.
       const interrupted = takeInterruptedLoad();
-      const smaller = interrupted ? nextSmallerModel(interrupted, dev.isIOS ? IOS_MODEL_BUDGET_MB : undefined) : undefined;
+      // Kid mode: the step-down skips models that failed the Kid Safe checks (SmolLM2 360M).
+      const smaller = interrupted
+        ? crashStepDownModel(interrupted, {
+            maxMB: dev.isIOS ? IOS_MODEL_BUDGET_MB : undefined,
+            kidMode: getActiveProfile().role === 'kid'
+          })
+        : undefined;
       if (smaller) dev.recommendedModel = smaller;
 
       setDeviceInfo(dev);

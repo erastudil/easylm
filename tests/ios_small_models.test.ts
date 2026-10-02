@@ -12,6 +12,8 @@ import {
   ALLOWED_MODEL_IDS,
   getModelVramMB,
   nextSmallerModel,
+  crashStepDownModel,
+  KID_MODE_STEP_DOWN_EXCLUDED,
   takeInterruptedLoad,
   getOrInitEngine,
   unloadActiveEngine,
@@ -125,6 +127,29 @@ describe('model sizes come from web-llm records', () => {
     expect(nextSmallerModel(IOS_RECOMMENDED_MODEL, IOS_MODEL_BUDGET_MB)).toBe(IOS_FALLBACK_MODEL);
     expect(nextSmallerModel(IOS_FALLBACK_MODEL, IOS_MODEL_BUDGET_MB)).toBeUndefined();
     expect(nextSmallerModel('Qwen2.5-3B-Instruct-q4f16_1-MLC')).toBe('Llama-3.2-3B-Instruct-q4f16_1-MLC');
+  });
+});
+
+describe('crash step-down in Kid mode', () => {
+  it('keeps SmolLM2 360M out of the step-down while Kid mode is on', () => {
+    expect(KID_MODE_STEP_DOWN_EXCLUDED.has(IOS_FALLBACK_MODEL)).toBe(true);
+    // Llama 3.2 1B crashed: Kid mode keeps the current model (auto-load turns off), adults step down to 360M.
+    expect(crashStepDownModel(IOS_RECOMMENDED_MODEL, { maxMB: IOS_MODEL_BUDGET_MB, kidMode: true })).toBeUndefined();
+    expect(crashStepDownModel(IOS_RECOMMENDED_MODEL, { maxMB: IOS_MODEL_BUDGET_MB, kidMode: false })).toBe(IOS_FALLBACK_MODEL);
+  });
+
+  it('picks Llama 3.2 1B for Kid mode when a larger model crashed on iOS', () => {
+    expect(crashStepDownModel('Qwen2.5-1.5B-Instruct-q4f16_1-MLC', { maxMB: IOS_MODEL_BUDGET_MB, kidMode: true })).toBe(IOS_RECOMMENDED_MODEL);
+    expect(crashStepDownModel('Qwen2.5-3B-Instruct-q4f16_1-MLC', { maxMB: IOS_MODEL_BUDGET_MB, kidMode: true })).toBe(IOS_RECOMMENDED_MODEL);
+  });
+
+  it('never returns an excluded model in Kid mode, for any interrupted model', () => {
+    for (const m of AVAILABLE_MODELS) {
+      for (const maxMB of [undefined, IOS_MODEL_BUDGET_MB]) {
+        const next = crashStepDownModel(m.id, { maxMB, kidMode: true });
+        if (next !== undefined) expect(KID_MODE_STEP_DOWN_EXCLUDED.has(next)).toBe(false);
+      }
+    }
   });
 });
 

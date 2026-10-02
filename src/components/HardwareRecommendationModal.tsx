@@ -167,7 +167,7 @@ export const HardwareRecommendationModal: React.FC<HardwareRecommendationModalPr
                   {recModel?.label || recModelId}
                 </div>
                 <div style={{ fontSize: '0.72rem', color: '#c4b5fd', fontFamily: 'var(--font-mono)' }}>
-                  {recModel?.vramEst || '~2.2 GB VRAM'}
+                  {recModel?.vramEst || '~2.5 GB VRAM'}
                   {recModel?.sizeMB ? ` · ~${Math.round((recModel.sizeMB / 1024) * 10) / 10} GB download` : ''}
                 </div>
               </div>

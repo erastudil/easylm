@@ -43,13 +43,26 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
   }
 ];
 
+/** VRAM figure from web-llm's model record (prebuiltAppConfig or CUSTOM_MODEL_RECORDS), in MB. */
+export function getModelVramMB(modelId: string): number | undefined {
+  const rec =
+    CUSTOM_MODEL_RECORDS.find(m => m.model_id === modelId) ||
+    prebuiltAppConfig.model_list.find(m => m.model_id === modelId);
+  return typeof rec?.vram_required_MB === 'number' ? rec.vram_required_MB : undefined;
+}
+
+function vramLabel(modelId: string): string {
+  const mb = getModelVramMB(modelId);
+  return mb === undefined ? 'VRAM unknown' : `~${(mb / 1000).toFixed(1)} GB VRAM`;
+}
+
 export const AVAILABLE_MODELS: ModelOption[] = [
   // 6GB - 8GB Tier (Standard / Laptops / 8GB GPU — The Workhorses)
   {
     id: 'Qwen2.5-3B-Instruct-q4f16_1-MLC',
     label: 'Qwen 2.5 3B Instruct',
     sizeMB: 1950,
-    vramEst: '~2.2 GB VRAM',
+    vramEst: vramLabel('Qwen2.5-3B-Instruct-q4f16_1-MLC'),
     vramTier: '8gb',
     isDefault: true,
     isRecommended: true,
@@ -59,7 +72,7 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     id: 'Llama-3.2-3B-Instruct-q4f16_1-MLC',
     label: 'Llama 3.2 3B Instruct',
     sizeMB: 2000,
-    vramEst: '~2.3 GB VRAM',
+    vramEst: vramLabel('Llama-3.2-3B-Instruct-q4f16_1-MLC'),
     vramTier: '8gb',
     description: "Meta's sharp 3B model. Balanced reasoning and concise conversational flow."
   },
@@ -67,7 +80,7 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     id: 'DeepSeek-R1-Distill-Qwen-7B-q4f16_1-MLC',
     label: 'DeepSeek-R1 Distill Qwen 7B',
     sizeMB: 4500,
-    vramEst: '~5.1 GB VRAM',
+    vramEst: vramLabel('DeepSeek-R1-Distill-Qwen-7B-q4f16_1-MLC'),
     vramTier: '8gb',
     isReasoning: true,
     description: 'Heavyweight reasoning. Deep chain-of-thought analysis for 8GB+ GPUs.'
@@ -76,7 +89,7 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     id: 'Phi-3.5-mini-instruct-q4f16_1-MLC',
     label: 'Phi-3.5 Mini 3.8B Instruct',
     sizeMB: 2400,
-    vramEst: '~3.7 GB VRAM',
+    vramEst: vramLabel('Phi-3.5-mini-instruct-q4f16_1-MLC'),
     vramTier: '8gb',
     description: "Microsoft's high-efficiency 3.8B model. Superb logic and factual recall."
   },
@@ -86,15 +99,15 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     id: 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',
     label: 'Qwen 2.5 1.5B Instruct',
     sizeMB: 1100,
-    vramEst: '~1.4 GB VRAM',
+    vramEst: vramLabel('Qwen2.5-1.5B-Instruct-q4f16_1-MLC'),
     vramTier: '4gb',
-    description: 'Instant startup, ultra-low memory. Runs comfortably on any laptop or phone.'
+    description: 'Instant startup, low memory. Runs comfortably on laptops with integrated graphics.'
   },
   {
     id: 'DeepSeek-R1-Distill-Qwen-1.5B-q4f16_1-MLC',
     label: 'DeepSeek-R1 Distill Qwen 1.5B',
     sizeMB: 1020,
-    vramEst: '~1.6 GB VRAM',
+    vramEst: vramLabel('DeepSeek-R1-Distill-Qwen-1.5B-q4f16_1-MLC'),
     vramTier: '4gb',
     isReasoning: true,
     description: 'Extended reasoning and step-by-step thinking built for 4GB VRAM systems.'
@@ -102,16 +115,24 @@ export const AVAILABLE_MODELS: ModelOption[] = [
   {
     id: 'Llama-3.2-1B-Instruct-q4f16_1-MLC',
     label: 'Llama 3.2 1B Instruct',
-    sizeMB: 880,
-    vramEst: '~0.9 GB VRAM',
+    sizeMB: 663,
+    vramEst: vramLabel('Llama-3.2-1B-Instruct-q4f16_1-MLC'),
     vramTier: '4gb',
     description: 'Meta compact 1B. Minimal footprint, instant response for rapid notes.'
+  },
+  {
+    id: 'SmolLM2-360M-Instruct-q4f16_1-MLC',
+    label: 'SmolLM2 360M Instruct',
+    sizeMB: 194,
+    vramEst: vramLabel('SmolLM2-360M-Instruct-q4f16_1-MLC'),
+    vramTier: '4gb',
+    description: 'Hugging Face pocket model. Smallest footprint for older phones and quick replies.'
   },
   {
     id: 'SmolLM2-1.7B-Instruct-q4f16_1-MLC',
     label: 'SmolLM2 1.7B Instruct',
     sizeMB: 1200,
-    vramEst: '~1.8 GB VRAM',
+    vramEst: vramLabel('SmolLM2-1.7B-Instruct-q4f16_1-MLC'),
     vramTier: '4gb',
     description: 'Hugging Face compact distilled intelligence. Clean, articulate writing.'
   },
@@ -119,7 +140,7 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     id: 'gemma-2-2b-it-q4f16_1-MLC',
     label: 'Gemma 2 2B Instruct',
     sizeMB: 1600,
-    vramEst: '~1.9 GB VRAM',
+    vramEst: vramLabel('gemma-2-2b-it-q4f16_1-MLC'),
     vramTier: '4gb',
     description: "Google's architectural marvel. Exceptional instruction following at 2B."
   },
@@ -129,7 +150,7 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     id: 'Bonsai-2-27B-MLC',
     label: 'Bonsai 2 27B',
     sizeMB: 5950,
-    vramEst: '~6.8 GB VRAM',
+    vramEst: vramLabel('Bonsai-2-27B-MLC'),
     vramTier: '16gb',
     isReasoning: true,
     description: 'PrismML ternary 27B intelligence compressed to ~5.9GB. Large reasoning model for ~12GB+ VRAM discrete GPUs.'
@@ -138,7 +159,7 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     id: 'gemma-2-9b-it-q4f16_1-MLC',
     label: 'Gemma 2 9B Instruct',
     sizeMB: 5800,
-    vramEst: '~6.4 GB VRAM',
+    vramEst: vramLabel('gemma-2-9b-it-q4f16_1-MLC'),
     vramTier: '16gb',
     description: 'High caliber intelligence. 9B runs comfortably on 8GB-16GB GPUs without overload.'
   },
@@ -146,7 +167,7 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     id: 'Qwen2.5-7B-Instruct-q4f16_1-MLC',
     label: 'Qwen 2.5 7B Instruct',
     sizeMB: 4500,
-    vramEst: '~5.1 GB VRAM',
+    vramEst: vramLabel('Qwen2.5-7B-Instruct-q4f16_1-MLC'),
     vramTier: '16gb',
     description: 'Full-sized 7B flagship. Comprehensive world knowledge and complex synthesis.'
   },
@@ -154,7 +175,7 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     id: 'Llama-3.1-8B-Instruct-q4f16_1-MLC',
     label: 'Llama 3.1 8B Instruct',
     sizeMB: 4900,
-    vramEst: '~5.0 GB VRAM',
+    vramEst: vramLabel('Llama-3.1-8B-Instruct-q4f16_1-MLC'),
     vramTier: '16gb',
     description: "Meta's flagship open weight model. Nuanced dialogue and robust reasoning."
   },
@@ -162,7 +183,7 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     id: 'Mistral-7B-Instruct-v0.3-q4f16_1-MLC',
     label: 'Mistral 7B Instruct v0.3',
     sizeMB: 4400,
-    vramEst: '~4.6 GB VRAM',
+    vramEst: vramLabel('Mistral-7B-Instruct-v0.3-q4f16_1-MLC'),
     vramTier: '16gb',
     description: 'European open source champion. Exceptional comprehension and natural dialogue.'
   },
@@ -170,7 +191,7 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     id: 'Qwen2.5-Coder-7B-Instruct-q4f16_1-MLC',
     label: 'Qwen 2.5 Coder 7B Instruct',
     sizeMB: 4500,
-    vramEst: '~5.1 GB VRAM',
+    vramEst: vramLabel('Qwen2.5-Coder-7B-Instruct-q4f16_1-MLC'),
     vramTier: '16gb',
     isCoding: true,
     description: 'Specialized coding powerhouse. Program synthesis, debugging, and systems architecture.'
@@ -178,6 +199,101 @@ export const AVAILABLE_MODELS: ModelOption[] = [
 ];
 
 export const ALLOWED_MODEL_IDS = new Set(AVAILABLE_MODELS.map(m => m.id));
+
+/** Curated picker ids, fixed at build time. Custom Hugging Face registrations never join this set. */
+export const CURATED_MODEL_IDS: ReadonlySet<string> = new Set(AVAILABLE_MODELS.map(m => m.id));
+
+/**
+ * Largest general model that is smaller than `modelId` (by vram_required_MB),
+ * optionally capped at `maxMB`. Reasoning and coding specialists are skipped.
+ */
+export function nextSmallerModel(modelId: string, maxMB?: number, exclude?: ReadonlySet<string>): string | undefined {
+  const current = getModelVramMB(modelId) ?? Infinity;
+  let best: { id: string; mb: number } | undefined;
+  for (const m of AVAILABLE_MODELS) {
+    if (m.isReasoning || m.isCoding || m.id === modelId) continue;
+    if (exclude?.has(m.id)) continue;
+    const mb = getModelVramMB(m.id);
+    if (mb === undefined || mb >= current) continue;
+    if (maxMB !== undefined && mb > maxMB) continue;
+    if (!best || mb > best.mb) best = { id: m.id, mb };
+  }
+  return best?.id;
+}
+
+/**
+ * Models a kid profile never runs (picker, saved selection, recommendation, load, step-down).
+ * SmolLM2 360M failed the Kid Safe A and C checks on 2026-10-02 (PR #4).
+ */
+export const KID_MODE_EXCLUDED_MODELS: ReadonlySet<string> = new Set(['SmolLM2-360M-Instruct-q4f16_1-MLC']);
+
+/** Model a kid profile uses in place of any model outside the kid allowlist. */
+export const KID_MODE_MODEL_ID = 'Llama-3.2-1B-Instruct-q4f16_1-MLC';
+
+/** Kid allowlist: curated picker models minus KID_MODE_EXCLUDED_MODELS. Custom Hugging Face ids stay off it. */
+export const KID_ALLOWED_MODEL_IDS: ReadonlySet<string> = new Set(
+  [...CURATED_MODEL_IDS].filter(id => !KID_MODE_EXCLUDED_MODELS.has(id))
+);
+
+export function isModelAllowedForKid(modelId: string): boolean {
+  return KID_ALLOWED_MODEL_IDS.has(modelId);
+}
+
+// Load-path guard: set by the app whenever the active profile changes.
+let engineKidMode = false;
+export function setEngineKidMode(on: boolean): void {
+  engineKidMode = on;
+}
+export function isEngineKidMode(): boolean {
+  return engineKidMode;
+}
+
+/** Returns the model to run for the active profile: ids outside the kid allowlist map to KID_MODE_MODEL_ID in Kid mode. */
+export function modelForProfile(modelId: string, kidMode: boolean): string {
+  return kidMode && !isModelAllowedForKid(modelId) ? KID_MODE_MODEL_ID : modelId;
+}
+
+/** Picker list for the active profile. */
+export function modelsForProfile(kidMode: boolean): ModelOption[] {
+  return kidMode ? AVAILABLE_MODELS.filter(m => isModelAllowedForKid(m.id)) : AVAILABLE_MODELS;
+}
+
+/**
+ * Model to select after a load was interrupted (tab killed mid-load).
+ * In Kid mode the step-down skips KID_MODE_EXCLUDED_MODELS; when nothing else fits,
+ * it returns undefined so the app keeps the current model with auto-load off.
+ */
+export function crashStepDownModel(
+  interruptedId: string,
+  opts: { maxMB?: number; kidMode?: boolean } = {}
+): string | undefined {
+  return nextSmallerModel(interruptedId, opts.maxMB, opts.kidMode ? KID_MODE_EXCLUDED_MODELS : undefined);
+}
+
+// Crash-loop breaker: a tab killed mid-load (iOS memory limit) leaves this key behind.
+export const LOADING_FLAG_KEY = 'easylm_loading_model';
+
+function setLoadingFlag(modelId: string | null): void {
+  try {
+    if (typeof localStorage === 'undefined') return;
+    if (modelId) localStorage.setItem(LOADING_FLAG_KEY, modelId);
+    else localStorage.removeItem(LOADING_FLAG_KEY);
+  } catch {
+    // storage unavailable
+  }
+}
+
+/** Returns the model id whose load never finished on a previous visit, and clears the flag. */
+export function takeInterruptedLoad(): string | null {
+  try {
+    if (typeof localStorage === 'undefined') return null;
+    const id = localStorage.getItem(LOADING_FLAG_KEY);
+    if (id) localStorage.removeItem(LOADING_FLAG_KEY);
+    return id;
+  } catch {
+    return null;
+  }
+}
 
 export const EASYLM_APP_CONFIG: AppConfig = {
   ...prebuiltAppConfig,
@@ -187,12 +303,15 @@ export const EASYLM_APP_CONFIG: AppConfig = {
   ]
 };
 
-export function registerCustomHFModel(record: ModelRecord): void {
+/** Registers a custom Hugging Face model for adult profiles. Returns false (and registers nothing) in Kid mode. */
+export function registerCustomHFModel(record: ModelRecord, kidMode: boolean = engineKidMode): boolean {
+  if (kidMode) return false;
   CUSTOM_MODEL_RECORDS.push(record);
   ALLOWED_MODEL_IDS.add(record.model_id);
   if (!EASYLM_APP_CONFIG.model_list.some(m => m.model_id === record.model_id)) {
     EASYLM_APP_CONFIG.model_list.push(record);
   }
+  return true;
 }
 
 /**
@@ -677,7 +796,7 @@ export async function getOrInitEngine(
   if (!isWebGPUSupported()) {
     throw new Error('WebGPU is not supported or not enabled in this browser. Please use Chrome, Edge, or enable WebGPU.');
   }
-  if (!ALLOWED_MODEL_IDS.has(modelId)) {
+  if (!ALLOWED_MODEL_IDS.has(modelId) || (engineKidMode && !isModelAllowedForKid(modelId))) {
     throw new Error('That model is not offered in this EasyLM build.');
   }
   if (gpuFence === 'process_dead') {
@@ -732,6 +851,7 @@ export async function getOrInitEngine(
       }
 
       currentContextLimit = targetContext;
+      setLoadingFlag(modelId);
       const engine = await CreateMLCEngine(
         modelId,
         {
@@ -750,6 +870,7 @@ export async function getOrInitEngine(
         }
       );
 
+      setLoadingFlag(null);
       activeEngine = engine;
       currentLoadedModel = modelId;
       isInitializing = false;
@@ -757,6 +878,7 @@ export async function getOrInitEngine(
       armDeviceLostFence(engine);
       return engine;
     } catch (err: any) {
+      setLoadingFlag(null);
       activeEngine = null;
       currentLoadedModel = '';
       isInitializing = false;

@@ -8,3 +8,7 @@ src/data/warehouse_compiled.ts
 
 .vercel
 .env*
+
+__pycache__/
+*.pyc
+

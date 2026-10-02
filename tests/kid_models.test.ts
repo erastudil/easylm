@@ -158,16 +158,16 @@ describe('kid model picker UI', () => {
       kidMode
     }));
 
-  it('kid picker lists Llama 3.2 1B, omits SmolLM2 360M and the Hugging Face search tab', () => {
+  it('kid picker lists Llama 3.2 1B, omits SmolLM2 360M and the Hugging Face tab', () => {
     const html = render(true);
     expect(html).toContain('Llama 3.2 1B');
     expect(html).not.toContain('SmolLM2 360M');
-    expect(html).not.toContain('Search Hugging Face');
+    expect(html).not.toContain('<span>Hugging Face</span>');
   });
 
-  it('adult picker keeps SmolLM2 360M and the Hugging Face search tab', () => {
+  it('adult picker keeps SmolLM2 360M and the Hugging Face tab', () => {
     const html = render(false);
     expect(html).toContain('SmolLM2 360M');
-    expect(html).toContain('Search Hugging Face');
+    expect(html).toContain('<span>Hugging Face</span>');
   });
 });

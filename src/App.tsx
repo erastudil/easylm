@@ -1261,7 +1261,16 @@ export const App: React.FC = () => {
   if (narrow) {
     return (
       <div
-        style={{ height: '100dvh', maxHeight: '100dvh', width: '100vw', maxWidth: '100vw', overflow: 'hidden', backgroundColor: '#000000' }}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          height: 'var(--vv-height, 100dvh)',
+          maxHeight: 'var(--vv-height, 100dvh)',
+          width: '100vw',
+          maxWidth: '100vw',
+          overflow: 'hidden',
+          backgroundColor: '#000000'
+        }}
         onDragOver={(e) => { e.preventDefault(); setIsDraggingFile(true); }}
         onDragLeave={() => setIsDraggingFile(false)}
         onDrop={handleDrop}

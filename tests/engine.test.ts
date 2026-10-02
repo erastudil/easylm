@@ -85,6 +85,8 @@ import {
 } from '../src/engine/ssrf';
 import {
   execStacks,
+  execStacksAtomic,
+  execStacksUnits,
   extractDoors,
   splitChapters,
   stacksStats
@@ -728,6 +730,8 @@ describe('execMath', () => {
   describe('origin', () => {
 describe('allowedOrigin', () => {
   it('allows prod and local vite, rejects *', () => {
+    expect(allowedOrigin('https://easylm.app')).toBe('https://easylm.app');
+    expect(allowedOrigin('https://www.easylm.app')).toBe('https://www.easylm.app');
     expect(allowedOrigin('https://easylm.vercel.app')).toBe('https://easylm.vercel.app');
     expect(allowedOrigin('http://localhost:5175')).toBe('http://localhost:5175');
     expect(allowedOrigin('https://evil.example')).toBe(null);
@@ -738,6 +742,8 @@ describe('allowedOrigin', () => {
     expect(allowedOrigin('https://easylm-attacker.vercel.app')).toBe(null);
     expect(allowedOrigin('https://easylm-git-main-evil.vercel.app')).toBe(null);
     expect(allowedOrigin('https://not-easylm.vercel.app')).toBe(null);
+    expect(allowedOrigin('https://easylm.app.attacker.com')).toBe(null);
+    expect(allowedOrigin('https://fake-easylm.app')).toBe(null);
   });
 
   it('verifies vercel.json CSP contains unsafe-eval and worker blob support for Studio Sandbox', () => {
@@ -1301,9 +1307,20 @@ describe('execStacks', () => {
     expect(pearl).toMatch(/Directed Acyclic Graph/i);
   });
 
-  it('misses cleanly', () => {
-    const res = execStacks('xyznonexistentterm123');
-    expect(res).toContain('Stacks matches');
+  it('retrieves atomic topic-comment units with Dewey coordinates', () => {
+    const units = execStacksUnits('database relational');
+    expect(units.length).toBeGreaterThan(0);
+    expect(units[0].dewey).toMatch(/004|005/);
+    expect(units[0].topic.length).toBeGreaterThan(0);
+    expect(units[0].comment.length).toBeGreaterThan(0);
+  });
+
+  it('formats atomic Dewey blocks compactly with official doors', () => {
+    const atomic = execStacksAtomic('database relational');
+    expect(atomic).toMatch(/Dewey/);
+    expect(atomic).toContain('•');
+    expect(atomic).toContain(':');
+    expect(atomic.length).toBeLessThan(3500);
   });
 });
   });

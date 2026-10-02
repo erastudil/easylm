@@ -393,8 +393,9 @@ export function clearGpuFence(): void {
 
 function applyFailureFence(err: unknown): ReturnType<typeof classifyWebGpuFailure> {
   const kind = classifyWebGpuFailure(err);
-  if (kind === 'gpu_process_dead') gpuFence = 'process_dead';
-  else if (kind === 'device_lost' || kind === 'oom') {
+  if (kind === 'gpu_process_dead') {
+    gpuFence = 'process_dead';
+  } else if (kind === 'device_lost') {
     if (gpuFence !== 'process_dead') gpuFence = 'lost';
   }
   return kind;

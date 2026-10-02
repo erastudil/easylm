@@ -211,10 +211,10 @@ export const ModelModal: React.FC<ModelModalProps> = ({
         <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginBottom: '0.85rem', flexShrink: 0 }}>
           {[
             { id: 'all', label: 'All Models', count: pickerModels.length },
-            { id: '8gb', label: '6GB–8GB (Standard / Laptops)', count: pickerModels.filter(m => m.vramTier === '8gb').length },
-            { id: '4gb', label: '4GB (Ultralight / Mobile)', count: pickerModels.filter(m => m.vramTier === '4gb').length },
-            { id: '16gb', label: '8GB–16GB (High Performance)', count: pickerModels.filter(m => m.vramTier === '16gb').length },
-            { id: 'hf', label: '🤗 Search Hugging Face', count: undefined }
+            { id: '8gb', label: 'Standard', count: pickerModels.filter(m => m.vramTier === '8gb').length },
+            { id: '4gb', label: 'Ultralight', count: pickerModels.filter(m => m.vramTier === '4gb').length },
+            { id: '16gb', label: 'High Performance', count: pickerModels.filter(m => m.vramTier === '16gb').length },
+            { id: 'hf', label: 'Hugging Face', count: undefined }
           ].filter(tab => !(kidMode && tab.id === 'hf')).map(tab => (
             <button
               key={tab.id}
@@ -226,10 +226,16 @@ export const ModelModal: React.FC<ModelModalProps> = ({
                 backgroundColor: activeTab === tab.id ? 'rgba(139, 92, 246, 0.25)' : '#111118',
                 borderColor: activeTab === tab.id ? '#8b5cf6' : 'rgba(139, 92, 246, 0.2)',
                 color: activeTab === tab.id ? '#ffffff' : '#a1a1aa',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.3rem'
               }}
             >
-              {tab.label} {tab.count !== undefined ? `(${tab.count})` : ''}
+              <span>{tab.label}</span>
+              {tab.count !== undefined && (
+                <span style={{ fontSize: '0.68rem', opacity: 0.75 }}>{tab.count}</span>
+              )}
             </button>
           ))}
         </div>

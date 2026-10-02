@@ -593,6 +593,29 @@ html, body {
     max-width: 100% !important;
     width: 100% !important;
   }
+
+  /* Prevent iOS Safari input auto-zoom */
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+
+  /* Smooth touch scrolling and overscroll confinement */
+  .messages-scroll-area,
+  .phone-sheet-list,
+  .more-view,
+  .learn-body,
+  .studio-body,
+  .modal-sheet,
+  .card-panel {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+  }
+
+  /* Touch ergonomics and tap highlights */
+  button, .btn-pill, .phone-tab, .more-row {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
 }
 
 @media (min-width: 769px) {
@@ -608,7 +631,7 @@ html, body {
   flex-direction: column;
   height: 100dvh;
   height: var(--vv-height, 100dvh);
-  max-height: 100dvh;
+  max-height: var(--vv-height, 100dvh);
   width: 100%;
   overflow: hidden;
   background: #000000;
@@ -642,12 +665,12 @@ html, body {
   flex-shrink: 0;
   border-top: 1px solid rgba(139, 92, 246, 0.35);
   background: #07070b;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 6px);
 }
 
 .phone-tab {
   flex: 1 1 25%;
-  min-height: 44px;
+  min-height: 48px;
   min-width: 0;
   border: none;
   background: transparent;
@@ -655,6 +678,8 @@ html, body {
   font-family: var(--font-mono);
   font-size: 0.82rem;
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .phone-tab-on {
@@ -1125,12 +1150,14 @@ html, body {
     align-items: stretch !important;
     justify-content: stretch !important;
   }
-  .modal-overlay > div {
+  .modal-overlay > div,
+  .modal-overlay .card-panel {
     width: 100% !important;
     max-width: 100% !important;
     height: 100% !important;
     max-height: 100% !important;
     border-radius: 0 !important;
+    padding: 0.85rem 0.75rem !important;
   }
   .chat-pane-compact .messages-scroll-area {
     padding: 0.65rem 0.6rem 0.5rem !important;
@@ -1140,6 +1167,18 @@ html, body {
   }
   .phone-shell-kb .prompt-wrapper {
     padding-bottom: 0.35rem !important;
+  }
+  .math-box,
+  .math-box-expr {
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    word-break: break-word !important;
+  }
+  .katex-display {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch;
   }
 }
 

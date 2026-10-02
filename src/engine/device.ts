@@ -197,7 +197,8 @@ async function detectDeviceUnsafe(): Promise<DeviceInfo> {
     estimatedVRAMGB = 1;
     recommendedContextLimit = IOS_CONTEXT_LIMIT;
   } else if (isMobile) {
-    if ((maxMemoryGB && maxMemoryGB <= 4) || (maxBufferSizeMB && maxBufferSizeMB < 512)) {
+    // Android phones use ultralight (1.5B model). Tablets with >4GB memory and high buffer limits qualify for standard.
+    if (!isTablet || (maxMemoryGB && maxMemoryGB <= 4) || (maxBufferSizeMB && maxBufferSizeMB < 512)) {
       hardwareTier = 'ultralight';
       estimatedVRAMGB = 4;
       recommendedContextLimit = 8192;

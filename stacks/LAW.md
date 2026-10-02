@@ -1,6 +1,6 @@
 ---
 title: "The Stacks — library law"
-date: "2026-09-13"
+date: "2026-09-18"
 status: living · easylm · the-stacks
 ---
 
@@ -59,3 +59,22 @@ EasyLM is public AGPL-3.0-or-later. packs here are **general education**. no hou
 Hands: `calc` and `units` do arithmetic. The Stacks tool returns the chapter. the model does not invent the constant.
 
 Studio: pass / fail. as many tries as it takes. no due dates. keys never enter the model prompt.
+
+## levels (adopted from drafts/agy-review/LEVELS.md, 2026-09-18)
+
+every pack names a **level** — the last skill the reader must already have. a level is not an age or a school name, except where law draws a hard floor.
+
+| level | the reader can already |
+|---|---|
+| read | decode English sentences on a page |
+| count | add, subtract, multiply, divide, name place |
+| algebra | use a letter for an unknown and undo a step |
+| hs | read a secondary-school page; no algebra assumed |
+| undergrad | walk a secondary-school science or proof course |
+| grad | read a research paper in the field |
+
+chapters inside one pack may carry `[level: …]` tags and rise through the bands. **grad content is welcome where it is feasible** — a named model, a formal statement, a door to the primary literature — but it never displaces the plain-English intuition that opens the chapter. Greene/Feynman order holds at every level.
+
+**the age floor is 13.** nothing in The Stacks targets a reader under 13; younger profiles stay on Studio family mode (Socratic, local Hands). social media and platform-health material carries `floor_age: 13` — high-school-level treatment is correct and responsible for this subject; it is a legal line (COPPA), not a developmental judgement.
+
+a pack's front matter carries `level:` and, where a hard floor applies, `floor_age:`. living packs adopt tags incrementally; the nightly audit reports packs without a level tag.

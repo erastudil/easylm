@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import DOMPurify from 'isomorphic-dompurify';
 import { generatePlotSvg, PlotOptions } from '../engine/plot';
 import { downloadBlob, sanitizeFilename } from '../engine/export';
 
@@ -47,7 +48,8 @@ export const GraphModal: React.FC<GraphModalProps> = ({
 
   const svgOutput = useMemo(() => {
     try {
-      return generatePlotSvg(plotOptions);
+      const rawSvg = generatePlotSvg(plotOptions);
+      return DOMPurify.sanitize(rawSvg, { USE_PROFILES: { svg: true } });
     } catch {
       return '<svg><text x="20" y="20" fill="red">Invalid function</text></svg>';
     }

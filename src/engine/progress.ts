@@ -338,8 +338,9 @@ export function adjustSchedule(p: Progress, today: string): Progress {
     const course = getCourse(courseId);
     if (!course) continue;
     const lessons = allLessonIds(course);
+    const lessonMap = new Map(course.units.flatMap(u => u.lessons).map(l => [l.id, l]));
     const remaining = lessons.filter(lid => {
-      const loc = course.units.flatMap(u => u.lessons).find(l => l.id === lid);
+      const loc = lessonMap.get(lid);
       if (!loc) return false;
       return loc.items.some(id => !p.completed[id]);
     });

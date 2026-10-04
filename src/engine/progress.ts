@@ -352,8 +352,8 @@ export function adjustSchedule(p: Progress, today: string): Progress {
 
 export function suggestedToday(p: Progress, today: string): string[] {
   const out: string[] = [];
-  for (const [lessonId, day] of Object.entries(p.schedule)) {
-    if (day <= today) out.push(lessonId);
+  for (const lessonId in p.schedule) {
+    if (p.schedule[lessonId] <= today) out.push(lessonId);
   }
   return out.filter(lid => {
     for (const courseId of p.enrolled) {

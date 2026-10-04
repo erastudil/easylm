@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import DOMPurify from 'isomorphic-dompurify';
 import { STACKS_PACKS, StackPack } from '../data/stacks_compiled';
 import { splitChapters, extractDoors, StackChapter } from '../engine/stacks';
 import {
@@ -2012,7 +2013,8 @@ function GraphTool({
 
   const svgOutput = useMemo(() => {
     try {
-      return generatePlotSvg(plotOptions);
+      const rawSvg = generatePlotSvg(plotOptions);
+      return DOMPurify.sanitize(rawSvg, { USE_PROFILES: { svg: true } });
     } catch {
       return '<svg><text x="20" y="20" fill="red">Invalid function expression</text></svg>';
     }

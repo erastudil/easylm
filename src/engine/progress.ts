@@ -337,14 +337,10 @@ export function adjustSchedule(p: Progress, today: string): Progress {
   for (const courseId of p.enrolled) {
     const course = getCourse(courseId);
     if (!course) continue;
-    const lessons = allLessonIds(course);
-    const remaining = lessons.filter(lid => {
-      const loc = course.units.flatMap(u => u.lessons).find(l => l.id === lid);
-      if (!loc) return false;
-      return loc.items.some(id => !p.completed[id]);
-    });
-    remaining.forEach((lid, i) => {
-      schedule[lid] = addDays(today, i);
+    const courseLessons = course.units.flatMap(u => u.lessons);
+    const remaining = courseLessons.filter(l => l.items.some(id => !p.completed[id]));
+    remaining.forEach((l, i) => {
+      schedule[l.id] = addDays(today, i);
     });
   }
   return { ...p, schedule };

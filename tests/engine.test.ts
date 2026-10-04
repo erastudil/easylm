@@ -700,31 +700,80 @@ describe('renderMarkdownSafe', () => {
   });
 
   describe('math', () => {
-describe('execMath', () => {
-  it('evaluates the empty-canvas chip', () => {
-    const res = execMath('sqrt(144) * (50 + 2)');
-    expect(res.ok).toBe(true);
-    expect(res.result).toBe('624');
-  });
+    describe('execMath', () => {
+      it('evaluates the empty-canvas chip', () => {
+        const res = execMath('sqrt(144) * (50 + 2)');
+        expect(res.ok).toBe(true);
+        expect(res.result).toBe('624');
+      });
 
-  it('accepts scientific notation', () => {
-    const res = execMath('1e10');
-    expect(res.ok).toBe(true);
-    expect(Number(res.result)).toBe(1e10);
-  });
+      it('accepts scientific notation', () => {
+        const res = execMath('1e10');
+        expect(res.ok).toBe(true);
+        expect(Number(res.result)).toBe(1e10);
+      });
 
-  it('nests sqrt', () => {
-    const res = execMath('sqrt(sqrt(16))');
-    expect(res.ok).toBe(true);
-    expect(Number(res.result)).toBe(2);
-  });
+      it('nests sqrt', () => {
+        const res = execMath('sqrt(sqrt(16))');
+        expect(res.ok).toBe(true);
+        expect(Number(res.result)).toBe(2);
+      });
 
-  it('rejects constructor / proto / eval', () => {
-    expect(execMath('constructor').ok).toBe(false);
-    expect(execMath('__proto__').ok).toBe(false);
-    expect(execMath('eval(1)').ok).toBe(false);
-  });
-});
+      it('rejects constructor / proto / eval', () => {
+        expect(execMath('constructor').ok).toBe(false);
+        expect(execMath('__proto__').ok).toBe(false);
+        expect(execMath('eval(1)').ok).toBe(false);
+      });
+
+      it('evaluates basic operators', () => {
+        expect(execMath('1 + 2').result).toBe('3');
+        expect(execMath('5 - 3').result).toBe('2');
+        expect(execMath('4 * 5').result).toBe('20');
+        expect(execMath('10 / 2').result).toBe('5');
+        expect(execMath('2 ^ 3').result).toBe('8');
+        expect(execMath('2 ** 3').result).toBe('8');
+        expect(execMath('10 / 2 + 5 * 2').result).toBe('15');
+      });
+
+      it('evaluates unary operators', () => {
+        expect(execMath('-5').result).toBe('-5');
+        expect(execMath('+5').result).toBe('5');
+        expect(execMath('-(5 + 5)').result).toBe('-10');
+        expect(execMath('-(-5)').result).toBe('5');
+        expect(execMath('+-5').result).toBe('-5');
+      });
+
+      it('evaluates math constants', () => {
+        expect(Number(execMath('pi').result)).toBeCloseTo(Math.PI);
+        expect(Number(execMath('e').result)).toBeCloseTo(Math.E);
+        expect(Number(execMath('tau').result)).toBeCloseTo(Math.PI * 2);
+      });
+
+      it('evaluates math functions', () => {
+        expect(execMath('abs(-5)').result).toBe('5');
+        expect(Number(execMath('sin(0)').result)).toBeCloseTo(0);
+        expect(Number(execMath('cos(0)').result)).toBeCloseTo(1);
+        expect(execMath('pow(2, 3)').result).toBe('8');
+        expect(execMath('max(10, 20)').result).toBe('20');
+        expect(execMath('min(10, 20)').result).toBe('10');
+        expect(execMath('floor(3.9)').result).toBe('3');
+        expect(execMath('ceil(3.1)').result).toBe('4');
+        expect(execMath('round(3.5)').result).toBe('4');
+      });
+
+      it('handles error cases', () => {
+        expect(execMath('').ok).toBe(false); // empty
+        expect(execMath('   ').ok).toBe(false); // empty
+        expect(execMath('10 / 0').ok).toBe(false); // division by zero
+        expect(execMath('sin 0').ok).toBe(false); // func without parens
+        expect(execMath('pow(2)').ok).toBe(false); // wrong arity
+        expect(execMath('(2 + 2').ok).toBe(false); // missing closing paren
+        expect(execMath('2 + 2)').ok).toBe(false); // unexpected trailing input
+        expect(execMath('invalidIdentifier').ok).toBe(false);
+        expect(execMath('2 $ 2').ok).toBe(false); // prohibited character
+        expect(execMath('a'.repeat(401)).ok).toBe(false); // too long
+      });
+    });
   });
 
   describe('origin', () => {

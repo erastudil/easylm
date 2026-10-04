@@ -37,14 +37,25 @@ export function allItemIds(course: CoursePack): string[] {
   return ids;
 }
 
+// cache structure: Map<courseId, Map<lessonId, { course, unit, lesson }>>
+const lessonCache = new Map<string, Map<string, ReturnType<typeof getCourse> extends undefined ? never : { course: NonNullable<ReturnType<typeof getCourse>>, unit: NonNullable<ReturnType<typeof getCourse>>['units'][number], lesson: NonNullable<ReturnType<typeof getCourse>>['units'][number]['lessons'][number] }>>();
+
 export function lessonById(courseId: string, lessonId: string) {
   const course = getCourse(courseId);
   if (!course) return null;
-  for (const unit of course.units) {
-    const lesson = unit.lessons.find(l => l.id === lessonId);
-    if (lesson) return { course, unit, lesson };
+
+  let courseMap = lessonCache.get(courseId);
+  if (!courseMap) {
+    courseMap = new Map();
+    for (const unit of course.units) {
+      for (const lesson of unit.lessons) {
+        courseMap.set(lesson.id, { course, unit, lesson });
+      }
+    }
+    lessonCache.set(courseId, courseMap);
   }
-  return null;
+
+  return courseMap.get(lessonId) || null;
 }
 
 export function chapterExists(stackSlug: string, chapter: string): boolean {

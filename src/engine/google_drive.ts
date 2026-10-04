@@ -338,7 +338,10 @@ export async function restoreFromGoogleDrive(
 
     // Merge sessions
     const existing = loadAllSessions();
-    const existingIds = new Set(existing.map(s => s.id));
+    const existingIds = new Set<string>();
+    for (const s of existing) {
+      existingIds.add(s.id);
+    }
     const merged = [...existing];
     let newCount = 0;
 

@@ -301,13 +301,39 @@ export const KID_MODE_EXCLUDED_MODELS: ReadonlySet<string> = new Set(['SmolLM2-3
 /** Model a kid profile uses in place of any model outside the kid allowlist. */
 export const KID_MODE_MODEL_ID = 'Llama-3.2-1B-Instruct-q4f16_1-MLC';
 
-/** Kid allowlist: curated picker models minus KID_MODE_EXCLUDED_MODELS. Custom Hugging Face ids stay off it. */
+/**
+ * Kid allowlist, by explicit model id. A kid profile runs these models and only these.
+ * The set is the kid-eligible picker at d0dff43 (PR #4): the curated list minus SmolLM2 360M.
+ * Bonsai-2-27B-MLC was on that list and left the catalog in 56ad2fe, so it stays off.
+ * A model joins this list after it passes the Kid Safe A/B/C evidence; every other id,
+ * including curated models added later, fine-tuned adapters and custom Hugging Face ids,
+ * stays on adult profiles.
+ */
+export const KID_ALLOWED_MODEL_ID_LIST = [
+  'Qwen2.5-3B-Instruct-q4f16_1-MLC',
+  'Llama-3.2-3B-Instruct-q4f16_1-MLC',
+  'DeepSeek-R1-Distill-Qwen-7B-q4f16_1-MLC',
+  'Phi-3.5-mini-instruct-q4f16_1-MLC',
+  'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',
+  'DeepSeek-R1-Distill-Qwen-1.5B-q4f16_1-MLC',
+  'Llama-3.2-1B-Instruct-q4f16_1-MLC',
+  'SmolLM2-1.7B-Instruct-q4f16_1-MLC',
+  'gemma-2-2b-it-q4f16_1-MLC',
+  'gemma-2-9b-it-q4f16_1-MLC',
+  'Qwen2.5-7B-Instruct-q4f16_1-MLC',
+  'Llama-3.1-8B-Instruct-q4f16_1-MLC',
+  'Mistral-7B-Instruct-v0.3-q4f16_1-MLC',
+  'Qwen2.5-Coder-7B-Instruct-q4f16_1-MLC'
+] as const;
+
 export const KID_ALLOWED_MODEL_IDS: ReadonlySet<string> = new Set(
-  [...CURATED_MODEL_IDS].filter(id => !KID_MODE_EXCLUDED_MODELS.has(id))
+  KID_ALLOWED_MODEL_ID_LIST.filter(id => CURATED_MODEL_IDS.has(id) && !KID_MODE_EXCLUDED_MODELS.has(id))
 );
 
 export function isModelAllowedForKid(modelId: string): boolean {
-  return KID_ALLOWED_MODEL_IDS.has(modelId);
+  if (!KID_ALLOWED_MODEL_IDS.has(modelId)) return false;
+  const option = AVAILABLE_MODELS.find(m => m.id === modelId);
+  return !!option && !option.isFineTuned;
 }
 
 // Load-path guard: set by the app whenever the active profile changes.
@@ -329,16 +355,23 @@ export function modelsForProfile(kidMode: boolean): ModelOption[] {
   return kidMode ? AVAILABLE_MODELS.filter(m => isModelAllowedForKid(m.id)) : AVAILABLE_MODELS;
 }
 
+/** Kid step-down skips every id outside the kid allowlist (SmolLM2 360M included). */
+function kidStepDownExclusions(): ReadonlySet<string> {
+  const ids = new Set(KID_MODE_EXCLUDED_MODELS);
+  for (const m of AVAILABLE_MODELS) if (!isModelAllowedForKid(m.id)) ids.add(m.id);
+  return ids;
+}
+
 /**
  * Model to select after a load was interrupted (tab killed mid-load).
- * In Kid mode the step-down skips KID_MODE_EXCLUDED_MODELS; when nothing else fits,
+ * In Kid mode the step-down stays on the kid allowlist; when nothing else fits,
  * it returns undefined so the app keeps the current model with auto-load off.
  */
 export function crashStepDownModel(
   interruptedId: string,
   opts: { maxMB?: number; kidMode?: boolean } = {}
 ): string | undefined {
-  return nextSmallerModel(interruptedId, opts.maxMB, opts.kidMode ? KID_MODE_EXCLUDED_MODELS : undefined);
+  return nextSmallerModel(interruptedId, opts.maxMB, opts.kidMode ? kidStepDownExclusions() : undefined);
 }
 
 // Crash-loop breaker: a tab killed mid-load (iOS memory limit) leaves this key behind.

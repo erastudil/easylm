@@ -207,6 +207,34 @@
     ]
   },
   {
+    "slug": "media",
+    "dewey": "302.23",
+    "title": "Media, Social Platforms & Information Disorders",
+    "category": "Media Studies & Communication",
+    "level": "hs",
+    "floor_age": 13,
+    "keywords": [
+      "social media",
+      "feed",
+      "algorithm",
+      "recommender",
+      "attention",
+      "engagement",
+      "misinformation",
+      "disinformation",
+      "malinformation",
+      "filter bubble",
+      "echo chamber",
+      "virality",
+      "influencer",
+      "deepfake",
+      "moderation",
+      "privacy",
+      "lateral reading",
+      "prebunking"
+    ]
+  },
+  {
     "slug": "civics",
     "dewey": "320",
     "title": "Civics & Political Science",

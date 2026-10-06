@@ -5,7 +5,6 @@ status: living · undergrad · foundational-textbook
 home: "stacks/business/"
 related:
   - "../finance/"
-  - "../ops_5s_kaizen/"
   - "../law/"
   - "../civics/"
   - "../computing/"

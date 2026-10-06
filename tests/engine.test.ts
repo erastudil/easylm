@@ -1209,7 +1209,7 @@ const REQUIRED = [
   'religion', 'sociology', 'civics', 'finance', 'law', 'language', 'math',
   'astronomy', 'physics', 'chemistry', 'earth_sciences', 'security', 'trades', 'biology', 'health',
   'engineering', 'agriculture', 'business', 'art', 'music', 'literature',
-  'poetry', 'history', 'geography'
+  'poetry', 'history', 'geography', 'media'
 ];
 
 describe('The Stacks library', () => {
@@ -1217,8 +1217,8 @@ describe('The Stacks library', () => {
     const slugs = STACKS_PACKS.map(p => p.slug);
     expect(slugs.sort()).toEqual([...REQUIRED].sort());
     const stats = stacksStats();
-    expect(stats.packs).toBe(31);
-    expect(stats.textbooks).toBe(31);
+    expect(stats.packs).toBe(32);
+    expect(stats.textbooks).toBe(32);
     expect(stats.doors).toBeGreaterThan(200);
   });
 

@@ -12,6 +12,8 @@ export interface StackPack {
   dewey: string;
   title: string;
   category: string;
+  level?: string;
+  floor_age?: number;
   keywords: string[];
   textbook: string;
   links: string;

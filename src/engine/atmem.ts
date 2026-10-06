@@ -700,14 +700,42 @@ export function calculateAtomRelevance(atom: AtMemAtom, queryTokens: string[]): 
   const atomTokens = tokenizeText(atom.text);
   if (atomTokens.length === 0) return 0.0;
 
-  let matches = 0;
-  for (const qt of queryTokens) {
-    for (const at of atomTokens) {
-      if (at === qt) {
-        matches += 2.0;
-      } else if (at.startsWith(qt) || qt.startsWith(at)) {
-        matches += 1.0;
+  interface TrieNode {
+    c: { [key: string]: TrieNode };
+    n: number;
+    d: number;
+  }
+
+  const root: TrieNode = { c: {}, n: 0, d: 0 };
+  for (let k = 0; k < atomTokens.length; k++) {
+    const at = atomTokens[k];
+    let node = root;
+    for (let j = 0; j < at.length; j++) {
+      const char = at[j];
+      let child = node.c[char];
+      if (!child) {
+        child = { c: {}, n: 0, d: 0 };
+        node.c[char] = child;
       }
+      node = child;
+      node.d += 1;
+    }
+    node.n += 1;
+  }
+
+  let matches = 0;
+  for (let q = 0; q < queryTokens.length; q++) {
+    const qt = queryTokens[q];
+    let node: TrieNode | undefined = root;
+    for (let j = 0; j < qt.length; j++) {
+      if (node.n > 0) matches += node.n * 1.0;
+      node = node.c[qt[j]];
+      if (!node) break;
+    }
+    if (node) {
+      if (node.n > 0) matches += node.n * 2.0;
+      const prefixCount = node.d - node.n;
+      matches += prefixCount * 1.0;
     }
   }
 

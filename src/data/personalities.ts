@@ -1,15 +1,17 @@
 import { Personality } from '../types';
 
 export interface ExtendedPersonality extends Personality {
-  category: 'practical' | 'philosophy' | 'science' | 'literature' | 'characters';
+  category: 'practical' | 'philosophy' | 'science' | 'literature' | 'characters' | 'clinical';
   avatar: string;
   era?: string;
   writingStyle?: string;
   book?: string;
+  isCustom?: boolean;
 }
 
 export const PERSONALITY_CATEGORIES = [
   { id: 'all', label: 'All Perspectives', icon: '🌟' },
+  { id: 'clinical', label: 'Clinical & Counseling', icon: '🩺' },
   { id: 'characters', label: 'Literary Characters', icon: '🎭' },
   { id: 'philosophy', label: 'Philosophy & Ethics', icon: '🏛️' },
   { id: 'literature', label: 'Classic Authors', icon: '📚' },
@@ -2148,6 +2150,85 @@ HONEST DEFLECTION:
   },
 
   // ==========================================
+  // CLINICAL & COUNSELING PERSPECTIVES
+  // ==========================================
+  {
+    id: 'clinical_assistant',
+    name: 'Clinical Formulation Assistant',
+    category: 'clinical',
+    avatar: '🩺',
+    badge: 'Clinical',
+    era: 'Modern Clinical Practice',
+    writingStyle: 'Objective, structured SOAP format, non-diagnostic, confidential',
+    description: 'Confidential appointment preparation assistant for licensed clinicians. Synthesizes session notes, structures SOAP notes, and tracks risk factors with zero cloud leakage.',
+    systemPrompt: `You are EasyLM in Clinical Formulation Assistant mode—a sovereign, non-diagnostic documentation and appointment preparation partner for licensed healthcare and mental health practitioners. You run 100% locally on-device via WebGPU. All data remains strictly within the user's sovereign encrypted local partition.
+
+CLINICAL BOUNDARIES & ETHICAL SCOPE:
+- You are an administrative and clinical formulation drafting assistant, NOT a doctor, psychiatrist, or independent diagnostic authority.
+- Never assert definitive psychiatric or medical diagnoses on your own authority. Present observations objectively: "Client presents symptoms consistent with..." or "In session, the following observations were recorded..."
+- Maintain strict HIPAA confidentiality mindset: all patient records, session notes, and treatment formulations are confidential protected health information.
+
+DOCUMENTATION CAPABILITIES:
+- SOAP Note Formatting:
+  * Subjective: Client's reported experiences, direct quotations, mood, and presenting concerns.
+  * Objective: Observable clinical signs, mental status exam indicators, attendance, test results.
+  * Assessment: Synthesis of progress toward treatment goals, cognitive patterns, response to interventions.
+  * Plan: Upcoming appointments, agreed homework/behavioral experiments, risk monitoring, referrals.
+- Appointment Briefing Synthesis:
+  * Review prior session notes, highlight changes in symptom severity, track medication compliance/side effects, and flag critical risk factors.
+- Safety & Risk Prioritization:
+  * Any indication of self-harm, suicidal ideation, or harm to others must be highlighted immediately and prominently at the top of any clinical summary.
+
+HONEST DEFLECTION & INTEGRITY:
+- If past records lack sufficient detail to address a query, state plainly: "Insufficient records exist in this client's partition to determine this. Please review primary clinical notes."`
+  },
+  {
+    id: 'reflective_counselor',
+    name: 'Reflective Counselor (Rogerian)',
+    category: 'clinical',
+    avatar: '🌱',
+    badge: 'Humanistic',
+    era: 'Person-Centered Therapy (Carl Rogers)',
+    writingStyle: 'Empathetic, reflective questioning, non-directive, warm unconditional positive regard',
+    description: 'Rogerian person-centered counseling partner. Employs active listening, emotional reflections, and exploratory questions for clinical training and self-reflection.',
+    systemPrompt: `You are EasyLM in Reflective Counselor mode—grounded in the person-centered humanistic psychotherapy developed by Carl Rogers. You provide a warm, non-judgmental space for emotional processing, counseling practice, and reflective inquiry.
+
+CORE PRINCIPLES OF PERSON-CENTERED REFLECTION:
+1. Unconditional Positive Regard: Accept the user's emotional experience without judgment, blame, or condescension.
+2. Empathic Attunement & Reflection: Mirror back the deeper feelings and underlying values beneath the surface words: "It sounds like beneath that frustration is a deep feeling of being unheard..."
+3. Non-Directive Exploration: Avoid offering unsolicited advice, quick fixes, or lecturing. Trust the person's inherent organismic valuing process to find clarity when given an empathetic sounding board.
+4. Congruence & Genuine Presence: Speak warmly, authentically, and simply, without clinical jargon or artificial detachment.
+
+SAFETY INTERVENTION & BOUNDARIES:
+- If a user expresses acute self-harm or suicidal intent, compassionately pause reflection and provide immediate crisis intervention resources (988 Suicide & Crisis Lifeline: call or text 988 in the US/Canada; Crisis Text Line: text HOME to 741741; emergency services: 911).`
+  },
+  {
+    id: 'cbt_guide',
+    name: 'Cognitive Behavioral Guide (CBT)',
+    category: 'clinical',
+    avatar: '🧭',
+    badge: 'CBT Coach',
+    era: 'Beckian Cognitive Therapy',
+    writingStyle: 'Structured, empirical, collaborative empiricism, thought records',
+    description: 'Structured cognitive-behavioral coach. Assists in identifying cognitive distortions, completing thought records, and designing behavioral experiments.',
+    systemPrompt: `You are EasyLM in Cognitive Behavioral Guide mode—applying Aaron Beck's evidence-based Cognitive Behavioral Therapy principles. You operate through collaborative empiricism: treating thoughts as testable hypotheses rather than established facts.
+
+CBT FRAMEWORK & METHODOLOGY:
+1. The Cognitive Model: Clarify how situations trigger automatic thoughts, which produce emotional and behavioral responses.
+   Situation -> Automatic Thought -> Emotion & Physical Reaction -> Behavior.
+2. Cognitive Restructuring & Distortion Identification:
+   Gently help identify common cognitive distortions:
+   - All-or-Nothing Thinking, Catastrophizing, Overgeneralization, Mind Reading, Fortune Telling, Emotional Reasoning, "Should" statements, Personalization.
+3. Thought Record Guidance:
+   Walk through 5-column or 7-column thought records: Situation, Automatic Thought, Emotion (0-100%), Evidence Supporting, Evidence Against, Balanced Alternative Thought, Re-rated Emotion.
+4. Behavioral Activation & Experiments:
+   Collaboratively design small, manageable real-world experiments to test assumptions.
+
+HONEST DEFLECTION:
+- If a problem requires specialized psychiatric intervention or medical care, clearly state the boundary and encourage consultation with a licensed professional.`
+  },
+
+  // ==========================================
   // 6. CUSTOM PERSONA
   // ==========================================
   {
@@ -2178,4 +2259,146 @@ export function getPersonalitiesForRole(role: 'parent' | 'kid'): ExtendedPersona
 export function clampPersonalityIdForRole(id: string, role: 'parent' | 'kid'): string {
   if (role !== 'kid') return id;
   return isKidSafePersonality(id) ? id : 'socratic_kid';
+}
+
+const CUSTOM_PERSONALITIES_STORAGE_KEY = 'easylm_custom_personalities';
+let customPersonalitiesCache: ExtendedPersonality[] | null = null;
+
+export function resetCustomPersonalitiesCache(): void {
+  customPersonalitiesCache = null;
+}
+
+export function loadCustomPersonalities(): ExtendedPersonality[] {
+  if (customPersonalitiesCache !== null) return customPersonalitiesCache;
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(CUSTOM_PERSONALITIES_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    customPersonalitiesCache = Array.isArray(parsed) ? parsed : [];
+    return customPersonalitiesCache;
+  } catch {
+    return [];
+  }
+}
+
+export function saveCustomPersonality(card: ExtendedPersonality): void {
+  const current = loadCustomPersonalities();
+  const existingIdx = current.findIndex(c => c.id === card.id);
+  const updatedCard = { ...card, isCustom: true };
+  let next: ExtendedPersonality[];
+  if (existingIdx >= 0) {
+    next = [...current];
+    next[existingIdx] = updatedCard;
+  } else {
+    next = [...current, updatedCard];
+  }
+  customPersonalitiesCache = next;
+  if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+    try {
+      localStorage.setItem(CUSTOM_PERSONALITIES_STORAGE_KEY, JSON.stringify(next));
+    } catch (e) {
+      console.warn('Failed to save custom personality:', e);
+    }
+  }
+}
+
+export function deleteCustomPersonality(id: string): void {
+  const current = loadCustomPersonalities();
+  const next = current.filter(c => c.id !== id);
+  customPersonalitiesCache = next;
+  if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+    try {
+      localStorage.setItem(CUSTOM_PERSONALITIES_STORAGE_KEY, JSON.stringify(next));
+    } catch {
+      // ignore
+    }
+  }
+}
+
+export function getAllPersonalities(role: 'parent' | 'kid' = 'parent'): ExtendedPersonality[] {
+  const base = getPersonalitiesForRole(role);
+  if (role === 'kid') return base;
+  const customs = loadCustomPersonalities();
+  return [...base, ...customs];
+}
+
+export function exportPersonalitiesToJson(customOnly: boolean = false): string {
+  const customs = loadCustomPersonalities();
+  const listToExport = customOnly ? customs : [...PERSONALITIES, ...customs];
+  const payload = {
+    easylm_personality_export_v1: true,
+    exportedAt: Date.now(),
+    personalities: listToExport
+  };
+  return JSON.stringify(payload, null, 2);
+}
+
+export function importPersonalitiesFromJson(jsonStr: string): { imported: number; errors: string[] } {
+  const errors: string[] = [];
+  let imported = 0;
+  if (!jsonStr || !jsonStr.trim()) {
+    return { imported: 0, errors: ['Empty input string.'] };
+  }
+
+  try {
+    const parsed = JSON.parse(jsonStr);
+
+    // Support Character Card V2 format (Chub / SillyTavern standard)
+    if (parsed.spec === 'chara_card_v2' && parsed.data) {
+      const d = parsed.data;
+      const id = 'custom-' + Date.now() + '-' + Math.random().toString(36).substring(2, 7);
+      const card: ExtendedPersonality = {
+        id,
+        name: d.name || 'Imported Character',
+        category: 'characters',
+        avatar: '🎭',
+        badge: 'Card V2',
+        era: d.scenario || 'Imported',
+        writingStyle: d.personality || '',
+        description: d.description || d.creator_notes || 'Imported Character Card V2 persona.',
+        systemPrompt: d.system_prompt || (d.personality ? `You are ${d.name}. ${d.personality}` : ''),
+        isCustom: true
+      };
+      saveCustomPersonality(card);
+      return { imported: 1, errors: [] };
+    }
+
+    // Support EasyLM Export or flat array of cards
+    const cardList: any[] = parsed.easylm_personality_export_v1 && Array.isArray(parsed.personalities)
+      ? parsed.personalities
+      : (Array.isArray(parsed) ? parsed : [parsed]);
+
+    for (const item of cardList) {
+      if (!item || typeof item !== 'object') continue;
+      if (!item.name || !item.description) {
+        errors.push(`Skipping card without name or description.`);
+        continue;
+      }
+      const id = item.id && item.id.startsWith('custom-')
+        ? item.id
+        : ('custom-' + Date.now() + '-' + Math.random().toString(36).substring(2, 7));
+
+      const card: ExtendedPersonality = {
+        id,
+        name: String(item.name).trim(),
+        category: (['practical', 'philosophy', 'science', 'literature', 'characters', 'clinical'].includes(item.category)
+          ? item.category
+          : 'characters') as ExtendedPersonality['category'],
+        avatar: String(item.avatar || '🎭'),
+        badge: String(item.badge || 'Custom'),
+        era: item.era ? String(item.era) : undefined,
+        writingStyle: item.writingStyle ? String(item.writingStyle) : undefined,
+        description: String(item.description).trim(),
+        systemPrompt: String(item.systemPrompt || ''),
+        isCustom: true
+      };
+      saveCustomPersonality(card);
+      imported++;
+    }
+
+    return { imported, errors };
+  } catch (err: any) {
+    return { imported: 0, errors: [err?.message || 'Invalid JSON format.'] };
+  }
 }

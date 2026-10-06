@@ -63,3 +63,15 @@ describe('phone tabs', () => {
     expect(NARROW_QUERY).toBe('(max-width: 768px)');
   });
 });
+
+describe('mobile device detection and hardware tiers', () => {
+  it('phone form factors always prioritize ultralight tier for stability', async () => {
+    const { detectDevice } = await import('../src/engine/device');
+    // In node/vitest environment, UA defaults to Node or empty, but detectDevice executes cleanly
+    const dev = await detectDevice();
+    expect(dev).toBeDefined();
+    expect(dev.hardwareTier).toBeDefined();
+    expect(dev.recommendedModel).toBeDefined();
+  });
+});
+

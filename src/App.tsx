@@ -19,7 +19,12 @@ import {
   isEngineReady,
   resetWebGPUAndCaches,
   getGpuFence,
-  clearGpuFence
+  clearGpuFence,
+  crashStepDownModel,
+  modelForProfile,
+  isModelAllowedForKid,
+  setEngineKidMode,
+  takeInterruptedLoad
 } from './engine/webllm';
 import { dispatchTool, SYSTEM_TOOLS_PROMPT, SYSTEM_TOOLS_PROMPT_KID } from './engine/tools';
 import {
@@ -39,10 +44,11 @@ import { HelpModal } from './components/HelpModal';
 import { SupportModal } from './components/SupportModal';
 import { FeedbackModal } from './components/FeedbackModal';
 import { EASYLM_GUIDE_PROMPT_CONTEXT } from './data/help_guide';
-import { detectDevice, DeviceInfo } from './engine/device';
+import { detectDevice, deviceInfoForProfile, DeviceInfo, fitsIOSBudget, IOS_MODEL_BUDGET_MB } from './engine/device';
 import { createWelcomeMessage, WELCOME_TOOLBOX_CONTENT } from './data/welcome';
 import { CORE_INTERACTION_PROTOCOLS, CORE_INTERACTION_PROTOCOLS_COMPACT, CORE_INTERACTION_PROTOCOLS_KID } from './data/protocols';
 import { GpuRestartModal } from './components/GpuRestartModal';
+import { HardwareRecommendationModal } from './components/HardwareRecommendationModal';
 import {
   UserProfile,
   AttachedDoc,
@@ -189,6 +195,10 @@ export const App: React.FC = () => {
   const [studioOpen, setStudioOpen] = useState(false);
   const [studioTarget, setStudioTarget] = useState<StudioTarget | null>(null);
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
+  const [hardwareModalOpen, setHardwareModalOpen] = useState(false);
+  const [showHardwarePrompt, setShowHardwarePrompt] = useState<boolean>(() => {
+    return localStorage.getItem('easylm_show_hardware_prompt') !== 'false';
+  });
 
   // In-app navigation stack for back/forward traversal across Learn, Studio & History
   interface NavState {
@@ -311,6 +321,12 @@ export const App: React.FC = () => {
 
   // Family Mode, Profiles, Parental Controls, and Sovereign Memory
   const [currentProfile, setCurrentProfile] = useState<UserProfile>(() => getActiveProfile());
+  // Kid profile: model picker, selection, recommendation and load stay on the kid allowlist.
+  const kidMode = currentProfile.role === 'kid';
+  useEffect(() => {
+    setEngineKidMode(kidMode);
+  }, [kidMode]);
+  const profileDeviceInfo = deviceInfo ? deviceInfoForProfile(deviceInfo, kidMode) : deviceInfo;
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [parentalModalOpen, setParentalModalOpen] = useState(false);
   const [parentalModalMode, setParentalModalMode] = useState<'verify' | 'setup'>('verify');
@@ -326,8 +342,9 @@ export const App: React.FC = () => {
       try { localStorage.removeItem('easylm_selected_model'); } catch {}
       return DEFAULT_MODEL_ID;
     }
-    if (saved && AVAILABLE_MODELS.some(m => m.id === saved)) return saved;
-    return DEFAULT_MODEL_ID;
+    const kidAtBoot = getActiveProfile().role === 'kid';
+    if (saved && AVAILABLE_MODELS.some(m => m.id === saved)) return modelForProfile(saved, kidAtBoot);
+    return modelForProfile(DEFAULT_MODEL_ID, kidAtBoot);
   });
   const [modelModalOpen, setModelModalOpen] = useState<boolean>(false);
   const [isModelReady, setIsModelReady] = useState<boolean>(() => isEngineReady());
@@ -338,6 +355,7 @@ export const App: React.FC = () => {
 
   const handleSelectModel = (id: string) => {
     if (!AVAILABLE_MODELS.some(m => m.id === id)) return;
+    if (kidMode && !isModelAllowedForKid(id)) return;
     if (id !== selectedModel) {
       setIsModelReady(false);
     }
@@ -359,7 +377,7 @@ export const App: React.FC = () => {
   const [gpuRestartOpen, setGpuRestartOpen] = useState(false);
 
   const handleLoadModel = async (targetModel?: string) => {
-    const modelToLoad = targetModel || selectedModel;
+    const modelToLoad = modelForProfile(targetModel || selectedModel, currentProfile.role === 'kid');
     clearGpuFence();
     setIsGenerating(true);
     setLoadErrorToast(null);
@@ -439,6 +457,36 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleHardwareConfirmLoad = (remember: boolean) => {
+    if (remember) {
+      localStorage.setItem('easylm_show_hardware_prompt', 'false');
+      localStorage.setItem('easylm_auto_load_model', 'true');
+      setShowHardwarePrompt(false);
+    }
+    setHardwareModalOpen(false);
+    handleLoadModel(profileDeviceInfo?.recommendedModel);
+  };
+
+  const handleHardwareDecline = (remember: boolean) => {
+    if (remember) {
+      localStorage.setItem('easylm_show_hardware_prompt', 'false');
+      localStorage.setItem('easylm_auto_load_model', 'false');
+      setShowHardwarePrompt(false);
+    }
+    setHardwareModalOpen(false);
+  };
+
+  const handleToggleHardwarePrompt = () => {
+    const nextVal = !showHardwarePrompt;
+    setShowHardwarePrompt(nextVal);
+    if (nextVal) {
+      localStorage.removeItem('easylm_show_hardware_prompt');
+      localStorage.removeItem('easylm_auto_load_model');
+    } else {
+      localStorage.setItem('easylm_show_hardware_prompt', 'false');
+    }
+  };
+
   const handleRequestPinVerify = (onSuccess: () => void) => {
     setPendingPinAction(() => onSuccess);
     setParentalModalMode('verify');
@@ -464,10 +512,15 @@ export const App: React.FC = () => {
     setSelectedPersonality(clampPersonalityIdForRole(nextId, newProfile.role));
   };
 
-  // Kid role: adult gallery voices must never remain selected
+  // Kid role: adult gallery voices and models outside the kid allowlist must never remain selected
   useEffect(() => {
     if (currentProfile.role === 'kid') {
       setSelectedPersonality(prev => clampPersonalityIdForRole(prev, 'kid'));
+      setSelectedModel(prev => {
+        const next = modelForProfile(prev, true);
+        if (next !== prev) setIsModelReady(false);
+        return next;
+      });
     }
   }, [currentProfile.role]);
 
@@ -489,22 +542,67 @@ export const App: React.FC = () => {
 
   // 1. Initial boot: detect device hardware & load sessions
   useEffect(() => {
-    detectDevice().then(dev => {
+    const kidAtBoot = getActiveProfile().role === 'kid';
+    setEngineKidMode(kidAtBoot);
+    detectDevice({ kidMode: kidAtBoot }).then(detected => {
+      const dev = { ...detected };
+      const modelLabel = (id: string) => AVAILABLE_MODELS.find(m => m.id === id)?.label || id;
+      // A load that never finished on the last visit (tab killed mid-load): step down one size.
+      const interrupted = takeInterruptedLoad();
+      // Kid mode: the step-down skips models that failed the Kid Safe checks (SmolLM2 360M).
+      const smaller = interrupted
+        ? crashStepDownModel(interrupted, {
+            maxMB: dev.isIOS ? IOS_MODEL_BUDGET_MB : undefined,
+            kidMode: kidAtBoot
+          })
+        : undefined;
+      if (smaller) dev.recommendedModel = smaller;
+
       setDeviceInfo(dev);
       setWebGpuAvailable(dev.hasWebGPU);
       const savedModel = localStorage.getItem('easylm_selected_model');
       if (savedModel === 'Bonsai-2-27B-MLC') {
         try { localStorage.removeItem('easylm_selected_model'); } catch {}
-        setSelectedModel(DEFAULT_MODEL_ID);
+        setSelectedModel(dev.recommendedModel || DEFAULT_MODEL_ID);
       } else if (savedModel && !AVAILABLE_MODELS.some(m => m.id === savedModel)) {
         try { localStorage.removeItem('easylm_selected_model'); } catch {}
         setSelectedModel(dev.recommendedModel || DEFAULT_MODEL_ID);
       } else if (!savedModel && dev.recommendedModel) {
         setSelectedModel(dev.recommendedModel);
+      } else if (kidAtBoot && savedModel && !isModelAllowedForKid(savedModel)) {
+        // Saved model is outside the kid allowlist: this session uses the kid model; the saved choice stays for adults.
+        setSelectedModel(modelForProfile(savedModel, true));
+      } else if (savedModel && (smaller || (dev.isIOS && !fitsIOSBudget(savedModel)))) {
+        setSelectedModel(dev.recommendedModel);
+        try { localStorage.setItem('easylm_selected_model', dev.recommendedModel); } catch {}
       }
       const savedLimit = localStorage.getItem('easylm_context_limit');
       if (!savedLimit && dev.recommendedContextLimit) {
         setContextLimit(dev.recommendedContextLimit);
+      } else if (dev.isIOS && savedLimit && parseInt(savedLimit, 10) > dev.recommendedContextLimit) {
+        setContextLimit(dev.recommendedContextLimit);
+      }
+
+      if (interrupted) {
+        try { localStorage.setItem('easylm_auto_load_model', 'false'); } catch {}
+        setLoadErrorToast({
+          message: smaller
+            ? `${modelLabel(interrupted)} stopped loading last time. ${modelLabel(smaller)} is selected and uses less memory. Tap Load when ready.`
+            : `${modelLabel(interrupted)} stopped loading last time. Tap Load to try again.`,
+          modelId: smaller || interrupted,
+          isGPUOrCache: false
+        });
+        return;
+      }
+
+      // Hardware detected: prompt to load recommended model weights unless remembered otherwise.
+      // Phones and tablets never auto-load at boot; the user taps Load.
+      const showPromptPref = localStorage.getItem('easylm_show_hardware_prompt');
+      const autoLoad = localStorage.getItem('easylm_auto_load_model');
+      if (showPromptPref !== 'false') {
+        setHardwareModalOpen(true);
+      } else if (autoLoad === 'true' && !dev.isMobile) {
+        handleLoadModel(dev.recommendedModel);
       }
     });
 
@@ -871,7 +969,7 @@ export const App: React.FC = () => {
       // Start initial stream
       const result = await streamChatCompletion(
         turnBudget.messages,
-        selectedModel,
+        modelForProfile(selectedModel, kidSafe),
         temperature,
         turnBudget.maxTokens,
         (delta) => {
@@ -981,7 +1079,7 @@ export const App: React.FC = () => {
           });
           const finalResult = await streamChatCompletion(
             followBudget.messages,
-            selectedModel,
+            modelForProfile(selectedModel, kidSafe),
             temperature,
             followBudget.maxTokens,
             (delta) => {
@@ -1163,7 +1261,16 @@ export const App: React.FC = () => {
   if (narrow) {
     return (
       <div
-        style={{ height: '100dvh', maxHeight: '100dvh', width: '100vw', maxWidth: '100vw', overflow: 'hidden', backgroundColor: '#000000' }}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          height: 'var(--vv-height, 100dvh)',
+          maxHeight: 'var(--vv-height, 100dvh)',
+          width: '100vw',
+          maxWidth: '100vw',
+          overflow: 'hidden',
+          backgroundColor: '#000000'
+        }}
         onDragOver={(e) => { e.preventDefault(); setIsDraggingFile(true); }}
         onDragLeave={() => setIsDraggingFile(false)}
         onDrop={handleDrop}
@@ -1280,6 +1387,17 @@ export const App: React.FC = () => {
         <SupportModal isOpen={supportOpen} onClose={() => setSupportOpen(false)} />
         <FeedbackModal isOpen={feedbackModalOpen} onClose={() => setFeedbackModalOpen(false)} activeModel={currentModelLabel} />
         <GpuRestartModal isOpen={gpuRestartOpen} onClose={() => setGpuRestartOpen(false)} />
+        <HardwareRecommendationModal
+          isOpen={hardwareModalOpen}
+          onClose={() => setHardwareModalOpen(false)}
+          deviceInfo={profileDeviceInfo}
+          onConfirmLoad={handleHardwareConfirmLoad}
+          onDecline={handleHardwareDecline}
+          onOpenSettings={() => {
+            setSettingsTab('engine');
+            setSettingsOpen(true);
+          }}
+        />
         <SettingsModal
           isOpen={settingsOpen}
           onClose={() => setSettingsOpen(false)}
@@ -1292,7 +1410,9 @@ export const App: React.FC = () => {
           onChangeSearxngUrl={handleUpdateSearxng}
           showWelcomeMessage={showWelcomeMessage}
           onToggleWelcomeMessage={handleToggleWelcomeMessage}
-          deviceInfo={deviceInfo}
+          showHardwarePrompt={showHardwarePrompt}
+          onToggleHardwarePrompt={handleToggleHardwarePrompt}
+          deviceInfo={profileDeviceInfo}
           onOpenModelModal={() => setModelModalOpen(true)}
           onOpenProfiles={() => setProfileModalOpen(true)}
           onOpenWelcomeGuide={() => setWelcomeModalOpen(true)}
@@ -1309,10 +1429,11 @@ export const App: React.FC = () => {
           onClose={() => setModelModalOpen(false)}
           selectedModel={selectedModel}
           onSelectModel={handleSelectModel}
-          deviceInfo={deviceInfo}
+          deviceInfo={profileDeviceInfo}
           isModelReady={isModelReady}
           onLoadModel={handleLoadModel}
           modelProgress={modelProgress}
+          kidMode={kidMode}
         />
         <WelcomeModal
           isOpen={welcomeModalOpen}
@@ -1846,6 +1967,19 @@ export const App: React.FC = () => {
         onClose={() => setGpuRestartOpen(false)}
       />
 
+      {/* Hardware Detected & Recommended Model Load Modal */}
+      <HardwareRecommendationModal
+        isOpen={hardwareModalOpen}
+        onClose={() => setHardwareModalOpen(false)}
+        deviceInfo={profileDeviceInfo}
+        onConfirmLoad={handleHardwareConfirmLoad}
+        onDecline={handleHardwareDecline}
+        onOpenSettings={() => {
+          setSettingsTab('engine');
+          setSettingsOpen(true);
+        }}
+      />
+
       {/* Settings Modal */}
       <SettingsModal
         isOpen={settingsOpen}
@@ -1859,7 +1993,9 @@ export const App: React.FC = () => {
         onChangeSearxngUrl={handleUpdateSearxng}
         showWelcomeMessage={showWelcomeMessage}
         onToggleWelcomeMessage={handleToggleWelcomeMessage}
-        deviceInfo={deviceInfo}
+        showHardwarePrompt={showHardwarePrompt}
+        onToggleHardwarePrompt={handleToggleHardwarePrompt}
+        deviceInfo={profileDeviceInfo}
         onOpenModelModal={() => setModelModalOpen(true)}
         onOpenProfiles={() => setProfileModalOpen(true)}
         onOpenWelcomeGuide={() => setWelcomeModalOpen(true)}
@@ -1888,10 +2024,11 @@ export const App: React.FC = () => {
         onClose={() => setModelModalOpen(false)}
         selectedModel={selectedModel}
         onSelectModel={handleSelectModel}
-        deviceInfo={deviceInfo}
+        deviceInfo={profileDeviceInfo}
         isModelReady={isModelReady}
         onLoadModel={handleLoadModel}
         modelProgress={modelProgress}
+        kidMode={kidMode}
       />
 
       {/* Welcome & Toolbox Guide Popup Modal */}

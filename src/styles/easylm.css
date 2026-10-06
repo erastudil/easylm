@@ -593,6 +593,29 @@ html, body {
     max-width: 100% !important;
     width: 100% !important;
   }
+
+  /* Prevent iOS Safari input auto-zoom */
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+
+  /* Smooth touch scrolling and overscroll confinement */
+  .messages-scroll-area,
+  .phone-sheet-list,
+  .more-view,
+  .learn-body,
+  .studio-body,
+  .modal-sheet,
+  .card-panel {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+  }
+
+  /* Touch ergonomics and tap highlights */
+  button, .btn-pill, .phone-tab, .more-row {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
 }
 
 @media (min-width: 769px) {
@@ -608,7 +631,7 @@ html, body {
   flex-direction: column;
   height: 100dvh;
   height: var(--vv-height, 100dvh);
-  max-height: 100dvh;
+  max-height: var(--vv-height, 100dvh);
   width: 100%;
   overflow: hidden;
   background: #000000;
@@ -642,12 +665,12 @@ html, body {
   flex-shrink: 0;
   border-top: 1px solid rgba(139, 92, 246, 0.35);
   background: #07070b;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 6px);
 }
 
 .phone-tab {
   flex: 1 1 25%;
-  min-height: 44px;
+  min-height: 48px;
   min-width: 0;
   border: none;
   background: transparent;
@@ -655,6 +678,8 @@ html, body {
   font-family: var(--font-mono);
   font-size: 0.82rem;
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .phone-tab-on {
@@ -1125,12 +1150,14 @@ html, body {
     align-items: stretch !important;
     justify-content: stretch !important;
   }
-  .modal-overlay > div {
+  .modal-overlay > div,
+  .modal-overlay .card-panel {
     width: 100% !important;
     max-width: 100% !important;
     height: 100% !important;
     max-height: 100% !important;
     border-radius: 0 !important;
+    padding: 0.85rem 0.75rem !important;
   }
   .chat-pane-compact .messages-scroll-area {
     padding: 0.65rem 0.6rem 0.5rem !important;
@@ -1141,6 +1168,126 @@ html, body {
   .phone-shell-kb .prompt-wrapper {
     padding-bottom: 0.35rem !important;
   }
+  .math-box,
+  .math-box-expr {
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    word-break: break-word !important;
+  }
+  .katex-display {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Prompt Processing Animation ("Is it working?" Visual Feedback) */
+@keyframes dotBounce {
+  0%, 80%, 100% {
+    transform: translateY(0);
+    opacity: 0.35;
+  }
+  40% {
+    transform: translateY(-5px);
+    opacity: 1;
+  }
+}
+
+@keyframes shimmerWave {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulseBorderGlow {
+  0%, 100% {
+    border-color: rgba(139, 92, 246, 0.3);
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.12);
+  }
+  50% {
+    border-color: rgba(139, 92, 246, 0.7);
+    box-shadow: 0 0 22px rgba(139, 92, 246, 0.35);
+  }
+}
+
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.processing-bubble {
+  background: #0d0d15 !important;
+  border: 1px solid rgba(139, 92, 246, 0.35) !important;
+  animation: pulseBorderGlow 2.2s infinite ease-in-out;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.processing-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.processing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #8b5cf6;
+  display: inline-block;
+  animation: dotBounce 1.4s infinite ease-in-out both;
+}
+
+.processing-dot.dot-1 {
+  animation-delay: -0.32s;
+}
+
+.processing-dot.dot-2 {
+  animation-delay: -0.16s;
+}
+
+.processing-dot.dot-3 {
+  animation-delay: 0s;
+}
+
+.processing-shimmer-line {
+  width: 100%;
+  height: 2px;
+  border-radius: 1px;
+  background: linear-gradient(90deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.8), rgba(52, 211, 153, 0.8), rgba(139, 92, 246, 0.1));
+  background-size: 200% 100%;
+  animation: shimmerWave 2s infinite linear;
+}
+
+.processing-pulse-track {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: #c4b5fd;
+}
+
+.processing-pulse-bar {
+  width: 36px;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #8b5cf6, #34d399, #8b5cf6);
+  background-size: 200% 100%;
+  animation: shimmerWave 1.6s infinite linear;
+}
+
+.streaming-cursor {
+  display: inline-block;
+  color: #8b5cf6;
+  font-weight: bold;
+  margin-left: 2px;
+  animation: cursorBlink 0.85s infinite;
 }
 
 

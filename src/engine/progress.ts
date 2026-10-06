@@ -338,8 +338,9 @@ export function adjustSchedule(p: Progress, today: string): Progress {
     const course = getCourse(courseId);
     if (!course) continue;
     const lessons = allLessonIds(course);
+    const lessonMap = new Map(course.units.flatMap(u => u.lessons).map(l => [l.id, l]));
     const remaining = lessons.filter(lid => {
-      const loc = course.units.flatMap(u => u.lessons).find(l => l.id === lid);
+      const loc = lessonMap.get(lid);
       if (!loc) return false;
       return loc.items.some(id => !p.completed[id]);
     });
@@ -352,8 +353,8 @@ export function adjustSchedule(p: Progress, today: string): Progress {
 
 export function suggestedToday(p: Progress, today: string): string[] {
   const out: string[] = [];
-  for (const [lessonId, day] of Object.entries(p.schedule)) {
-    if (day <= today) out.push(lessonId);
+  for (const lessonId in p.schedule) {
+    if (p.schedule[lessonId] <= today) out.push(lessonId);
   }
   return out.filter(lid => {
     for (const courseId of p.enrolled) {

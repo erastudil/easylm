@@ -12,7 +12,9 @@ import {
   estimateTokens,
   MIN_COMPLETION,
   SAFETY_MARGIN,
-  shouldRetryEngineInit
+  shouldRetryEngineInit,
+  stepDownContextWindow,
+  getOomFallbackModel
 } from '../src/engine/context_budget';
 import { PERSONALITIES } from '../src/data/personalities';
 import { CORE_INTERACTION_PROTOCOLS, CORE_INTERACTION_PROTOCOLS_COMPACT } from '../src/data/protocols';
@@ -118,9 +120,24 @@ describe('context budget', () => {
     expect(shouldRetryEngineInit('disposed', 2, null)).toBe(false);
   });
 
-  it('picks the restart command for chrome, brave, and edge', () => {
+  it('picks the sovereign restart command for chrome, brave, zen, and refuses edge', () => {
     expect(browserRestartCommand('Mozilla/5.0 Chrome/120', false)).toBe('chrome://restart');
     expect(browserRestartCommand('Mozilla/5.0 Chrome/120', true)).toBe('brave://restart');
-    expect(browserRestartCommand('Mozilla/5.0 Edg/120', false)).toBe('edge://restart');
+    expect(browserRestartCommand('Mozilla/5.0 Zen/1.0', false)).toBe('about:restart');
+    expect(browserRestartCommand('Mozilla/5.0 Firefox/120', false)).toBe('about:restart');
+    // Edge is never recommended; falls back to chromium/sovereign restart
+    expect(browserRestartCommand('Mozilla/5.0 Edg/120', false)).toBe('chrome://restart');
+  });
+
+  it('provides progressive context window step-down and OOM fallback model', () => {
+    expect(stepDownContextWindow(32768)).toBe(16384);
+    expect(stepDownContextWindow(16384)).toBe(8192);
+    expect(stepDownContextWindow(8192)).toBe(4096);
+    expect(stepDownContextWindow(4096)).toBe(2048);
+    expect(stepDownContextWindow(2048)).toBe(1024);
+    expect(stepDownContextWindow(1024)).toBe(512);
+
+    expect(getOomFallbackModel('DeepSeek-R1-Distill-Qwen-7B-q4f16_1-MLC')).toBe('Qwen2.5-1.5B-Instruct-q4f16_1-MLC');
+    expect(getOomFallbackModel('Qwen2.5-1.5B-Instruct-q4f16_1-MLC')).toBe('Llama-3.2-1B-Instruct-q4f16_1-MLC');
   });
 });

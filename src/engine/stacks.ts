@@ -1,6 +1,6 @@
-import { STACKS_PACKS, StackPack } from '../data/stacks_compiled';
+import { STACKS_PACKS, StackPack, StackUnit } from '../data/stacks_compiled';
 
-export type { StackPack };
+export type { StackPack, StackUnit };
 
 export interface StackChapter {
   heading: string;
@@ -342,10 +342,70 @@ export function execStacks(query: string): string {
   return blocks.join('\n\n');
 }
 
-export function stacksStats(): { packs: number; textbooks: number; doors: number } {
+export function execStacksUnits(query: string, limit = 5): StackUnit[] {
+  const terms = tokenize(query);
+  if (terms.length === 0) return [];
+  const lower = query.toLowerCase();
+
+  const candidates: { unit: StackUnit; score: number }[] = [];
+  for (const pack of STACKS_PACKS) {
+    if (!pack.units) continue;
+    const bonus = packBonus(pack, terms);
+    for (const unit of pack.units) {
+      let score = bonus;
+      const topLower = unit.topic.toLowerCase();
+      const comLower = unit.comment.toLowerCase();
+      if (topLower === lower) score += 60;
+      else if (topLower.includes(lower)) score += 30;
+
+      for (const t of terms) {
+        if (topLower === t) score += 20;
+        else if (topLower.includes(t)) score += 8;
+        if (comLower.includes(t)) score += 3;
+      }
+      if (score > 0) candidates.push({ unit, score });
+    }
+  }
+  candidates.sort((a, b) => b.score - a.score);
+  return candidates.slice(0, limit).map(c => c.unit);
+}
+
+export function execStacksAtomic(query: string): string {
+  const units = execStacksUnits(query, 4);
+  if (units.length === 0) {
+    return execStacks(query);
+  }
+
+  const byPack: Record<string, StackUnit[]> = {};
+  for (const u of units) {
+    if (!byPack[u.slug]) byPack[u.slug] = [];
+    byPack[u.slug].push(u);
+  }
+
+  const blocks: string[] = [];
+  for (const [slug, packUnits] of Object.entries(byPack)) {
+    const pack = STACKS_PACKS.find(p => p.slug === slug);
+    const dewey = pack?.dewey || packUnits[0].dewey;
+    const title = pack?.title || slug;
+    const lines = packUnits.map(u => `• ${u.topic} : ${u.comment}`);
+    blocks.push(`[Dewey ${dewey} · ${title}]\n${lines.join('\n')}`);
+
+    if (pack) {
+      const doors = extractDoors(pack.links).slice(0, 3);
+      if (doors.length > 0) {
+        blocks.push(`Official doors (${slug}):\n` + doors.map(d => `- ${d}`).join('\n'));
+      }
+    }
+  }
+
+  return blocks.join('\n\n');
+}
+
+export function stacksStats(): { packs: number; textbooks: number; doors: number; units: number } {
   return {
     packs: STACKS_PACKS.length,
     textbooks: STACKS_PACKS.filter(p => p.textbook.includes('\n## ')).length,
-    doors: STACKS_PACKS.reduce((n, p) => n + extractDoors(p.links).length, 0)
+    doors: STACKS_PACKS.reduce((n, p) => n + extractDoors(p.links).length, 0),
+    units: STACKS_PACKS.reduce((n, p) => n + (p.units?.length || 0), 0)
   };
 }

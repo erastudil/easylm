@@ -236,11 +236,25 @@ Mental illness does not arise from a single isolated defect. It reflects an intr
 Developed by Aaron Beck, CBT is the most empirically supported psychotherapeutic intervention. It posits that psychological suffering is mediated not by events themselves, but by our cognitive interpretations of those events:
 $$\text{Triggering Event} \to \text{Automatic Thought} \to \text{Emotional & Behavioral Reaction}$$
 
-- **Cognitive Restructuring:** Identifying and systematically testing cognitive distortions:
+- **Cognitive Restructuring**: Identifying and systematically testing cognitive distortions:
   - *Catastrophizing:* Assuming the worst conceivable disaster will inevitably occur.
   - *All-or-Nothing Thinking:* Viewing outcomes in rigid black-and-white absolutes.
   - *Mind Reading:* Assuming others harbor negative thoughts about you without evidence.
 - Patients are taught to treat automatic negative thoughts as testable hypotheses rather than objective facts, using behavioral experiments to verify reality.
+
+### 10.3 Clinical Ethics, Confidentiality & Documentation Standards
+
+- **Privileged Communication**: Legal doctrine protecting confidential disclosures made by clients to licensed psychotherapists from forced disclosure in judicial proceedings.
+- **Duty to Warn and Protect**: The legal and ethical exception established in Tarasoff v. Regents of the University of California (1976), obligating clinicians to breach confidentiality to protect an identifiable third party from imminent threat of severe physical harm.
+- **HIPAA Privacy and Security Standards**: Federal standards under 45 CFR Part 160 and Part 164 establishing mandatory administrative, physical, and technical safeguards, including AES encryption and access audit logs for electronic protected health information.
+- **SOAP Note Framework**: Standardized clinical documentation architecture separating Subjective client statements, Objective clinical observations, Assessment of progress, and Plan for ongoing intervention.
+
+### 10.4 Humanistic & Person-Centered Psychotherapy
+
+- **Carl Rogers**: Founder of person-centered psychotherapy, establishing that therapeutic growth requires therapist congruence, unconditional positive regard, and accurate empathic understanding.
+- **Unconditional Positive Regard**: Non-possessive warmth and total acceptance of the client's emotional experience without judgment, criticism, or diagnostic reduction.
+- **Accurate Empathic Understanding**: The therapist's ability to sense the client's private subjective world as if it were their own, without losing the essential boundary between self and other.
+- **Motivational Interviewing**: Directive client-centered counseling framework developed by William Miller and Stephen Rollnick for resolving ambivalence and eliciting autonomous internal motivation for change.
 
 ---
 

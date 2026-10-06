@@ -184,14 +184,47 @@ export function shouldRetryEngineInit(
 ): boolean {
   if (attempt >= 2) return false;
   if (fence === 'process_dead' || fence === 'lost') return false;
-  if (kind === 'gpu_process_dead' || kind === 'device_lost' || kind === 'oom') return false;
+  if (kind === 'gpu_process_dead' || kind === 'device_lost') return false;
+  // On OOM, allow 1 retry if context window can step down or fallback model used
+  if (kind === 'oom') return attempt === 0;
   return kind === 'disposed';
 }
 
+/**
+ * Progressive context window step-down upon memory pressure / OOM.
+ * Halves or steps down context window to relieve WebGPU KV cache allocation.
+ */
+export function stepDownContextWindow(currentWindow: number): number {
+  const w = Math.max(256, currentWindow || 4096);
+  if (w >= 32768) return 16384;
+  if (w >= 16384) return 8192;
+  if (w >= 8192) return 4096;
+  if (w >= 4096) return 2048;
+  if (w >= 2048) return 1024;
+  return 512;
+}
+
+export const ULTRALIGHT_FALLBACK_MODEL = 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC';
+
+/**
+ * Returns a lightweight model ID for automatic OOM fallback
+ */
+export function getOomFallbackModel(currentModelId?: string): string {
+  if (currentModelId === ULTRALIGHT_FALLBACK_MODEL) {
+    return 'Llama-3.2-1B-Instruct-q4f16_1-MLC';
+  }
+  return ULTRALIGHT_FALLBACK_MODEL;
+}
+
+/**
+ * Sovereign browser restart command.
+ * Default: Brave (brave://restart), Zen/Firefox fallback (about:restart), Chromium (chrome://restart).
+ * Microsoft Edge is never suggested.
+ */
 export function browserRestartCommand(userAgent?: string, hasBrave?: boolean): string {
   const ua = userAgent || (typeof navigator !== 'undefined' ? navigator.userAgent : '');
   const brave = hasBrave ?? (typeof navigator !== 'undefined' && !!(navigator as { brave?: unknown }).brave);
   if (brave || /brave/i.test(ua)) return 'brave://restart';
-  if (/edg\//i.test(ua)) return 'edge://restart';
+  if (/zen|firefox|fxios/i.test(ua)) return 'about:restart';
   return 'chrome://restart';
 }

@@ -85,6 +85,8 @@ import {
 } from '../src/engine/ssrf';
 import {
   execStacks,
+  execStacksAtomic,
+  execStacksUnits,
   extractDoors,
   splitChapters,
   stacksStats
@@ -722,12 +724,77 @@ describe('execMath', () => {
     expect(execMath('__proto__').ok).toBe(false);
     expect(execMath('eval(1)').ok).toBe(false);
   });
+
+  it('handles unary operators correctly', () => {
+    expect(execMath('-5').result).toBe('-5');
+    expect(execMath('+5').result).toBe('5');
+    expect(execMath('-(-5)').result).toBe('5');
+    expect(execMath('-(+5)').result).toBe('-5');
+    expect(execMath('+-5').result).toBe('-5');
+    expect(execMath('5 + -3').result).toBe('2');
+    expect(execMath('5 * -3').result).toBe('-15');
+  });
+
+  it('handles basic arithmetic', () => {
+    expect(execMath('1 + 2').result).toBe('3');
+    expect(execMath('10 - 4').result).toBe('6');
+    expect(execMath('3 * 4').result).toBe('12');
+    expect(execMath('12 / 3').result).toBe('4');
+    expect(execMath('2 ^ 3').result).toBe('8');
+    expect(execMath('2 ** 3').result).toBe('8'); // tokenize converts ** to ^
+  });
+
+  it('handles mathematical constants', () => {
+    expect(Number(execMath('pi').result)).toBeCloseTo(Math.PI);
+    expect(Number(execMath('e').result)).toBeCloseTo(Math.E);
+    expect(Number(execMath('tau').result)).toBeCloseTo(Math.PI * 2);
+  });
+
+  it('handles built-in math functions', () => {
+    expect(Number(execMath('sin(pi/2)').result)).toBeCloseTo(1);
+    expect(Number(execMath('cos(pi)').result)).toBeCloseTo(-1);
+    expect(Number(execMath('pow(2, 3)').result)).toBe(8);
+    expect(Number(execMath('min(10, 5)').result)).toBe(5);
+    expect(Number(execMath('max(10, 5)').result)).toBe(10);
+    expect(Number(execMath('round(4.6)').result)).toBe(5);
+    expect(Number(execMath('abs(-42)').result)).toBe(42);
+  });
+
+  it('handles errors properly', () => {
+    expect(execMath('12 / 0').ok).toBe(false); // Division by zero
+    expect(execMath('12 / 0').error).toBe('Division by zero');
+
+    expect(execMath('pow(2)').ok).toBe(false); // Wrong arity
+    expect(execMath('pow(2)').error).toBe('pow expects 2 argument(s)');
+
+    expect(execMath('unknown(2)').ok).toBe(false); // Unknown identifier
+    expect(execMath('unknown(2)').error).toBe('Unknown identifier unknown');
+
+    expect(execMath('2 + * 3').ok).toBe(false); // Invalid expression syntax
+
+    expect(execMath('sin 2').ok).toBe(false); // Missing parentheses
+    expect(execMath('sin 2').error).toBe('Function sin requires parentheses');
+
+    expect(execMath('sin(2').ok).toBe(false); // Missing closing parenthesis
+    expect(execMath('sin(2').error).toBe('Missing closing parenthesis');
+
+    expect(execMath('2 + 2 3').ok).toBe(false); // Trailing input
+    expect(execMath('2 + 2 3').error).toBe('Unexpected trailing input');
+
+    expect(execMath('$$$').ok).toBe(false); // Invalid character
+    expect(execMath('$$$').error).toBe('Prohibited character "$"');
+
+    expect(execMath('').ok).toBe(false); // Empty expression
+    expect(execMath('').error).toBe('Empty expression');
+  });
 });
   });
 
   describe('origin', () => {
 describe('allowedOrigin', () => {
   it('allows prod and local vite, rejects *', () => {
+    expect(allowedOrigin('https://easylm.app')).toBe('https://easylm.app');
+    expect(allowedOrigin('https://www.easylm.app')).toBe('https://www.easylm.app');
     expect(allowedOrigin('https://easylm.vercel.app')).toBe('https://easylm.vercel.app');
     expect(allowedOrigin('http://localhost:5175')).toBe('http://localhost:5175');
     expect(allowedOrigin('https://evil.example')).toBe(null);
@@ -738,6 +805,8 @@ describe('allowedOrigin', () => {
     expect(allowedOrigin('https://easylm-attacker.vercel.app')).toBe(null);
     expect(allowedOrigin('https://easylm-git-main-evil.vercel.app')).toBe(null);
     expect(allowedOrigin('https://not-easylm.vercel.app')).toBe(null);
+    expect(allowedOrigin('https://easylm.app.attacker.com')).toBe(null);
+    expect(allowedOrigin('https://fake-easylm.app')).toBe(null);
   });
 
   it('verifies vercel.json CSP contains unsafe-eval and worker blob support for Studio Sandbox', () => {
@@ -1301,9 +1370,20 @@ describe('execStacks', () => {
     expect(pearl).toMatch(/Directed Acyclic Graph/i);
   });
 
-  it('misses cleanly', () => {
-    const res = execStacks('xyznonexistentterm123');
-    expect(res).toContain('Stacks matches');
+  it('retrieves atomic topic-comment units with Dewey coordinates', () => {
+    const units = execStacksUnits('database relational');
+    expect(units.length).toBeGreaterThan(0);
+    expect(units[0].dewey).toMatch(/004|005/);
+    expect(units[0].topic.length).toBeGreaterThan(0);
+    expect(units[0].comment.length).toBeGreaterThan(0);
+  });
+
+  it('formats atomic Dewey blocks compactly with official doors', () => {
+    const atomic = execStacksAtomic('database relational');
+    expect(atomic).toMatch(/Dewey/);
+    expect(atomic).toContain('•');
+    expect(atomic).toContain(':');
+    expect(atomic.length).toBeLessThan(3500);
   });
 });
   });

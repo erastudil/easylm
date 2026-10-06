@@ -15,9 +15,9 @@ Do not file public GitHub issues for SSRF, XSS, or auth bypasses until we have a
 
 ## Deploy
 
-GitHub push does not alias this project. After a patch: `npx vercel --prod` from this tree. Prove the live JS hash on `https://easylm.vercel.app` before calling it shipped.
+GitHub push does not alias this project. After a patch: `npx vercel --prod` from this tree. Prove the live JS hash on `https://easylm.app` before calling it shipped.
 
 ## Scope
 
-In scope: `https://easylm.vercel.app`, this repository, `/api/*`.
+In scope: `https://easylm.app`, `https://www.easylm.app`, `https://easylm.vercel.app`, this repository, `/api/*`.
 Out of scope: model weight hosts, third-party search instances you configure, social-engineering the PIN off a shared computer.

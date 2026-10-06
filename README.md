@@ -1,9 +1,9 @@
 # EasyLM
 
 **Free, zero-install local intelligence in your browser.**  
-WebGPU inference running directly on your machine's GPU. The official application stays free forever.
+WebGPU inference running directly on your machine's GPU. The official application stays free forever at [easylm.app](https://easylm.app).
 
-[![Deploy with Vercel](https://vercel.com/button)](https://easylm.vercel.app)
+[![Deploy with Vercel](https://vercel.com/button)](https://easylm.app)
 
 Copyright (C) 2026 Humans and AI. GNU AGPL-3.0 or later. This program comes with ABSOLUTELY NO WARRANTY.
 

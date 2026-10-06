@@ -14,6 +14,9 @@ export function useKeyboardOpen(thresholdPx: number = KEYBOARD_COVER_PX): boolea
       setOpen(covered);
       document.documentElement.style.setProperty('--vv-height', `${Math.round(vv.height)}px`);
       document.documentElement.style.setProperty('--vv-offset-top', `${Math.round(vv.offsetTop)}px`);
+      if (window.scrollY > 0) {
+        window.scrollTo(0, 0);
+      }
     };
 
     sync();

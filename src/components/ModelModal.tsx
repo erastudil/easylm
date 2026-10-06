@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ModelOption } from '../types';
-import { AVAILABLE_MODELS, registerCustomHFModel, ProgressStatus, resetWebGPUAndCaches } from '../engine/webllm';
-import { DeviceInfo } from '../engine/device';
+import { modelsForProfile, registerCustomHFModel, ProgressStatus, resetWebGPUAndCaches, getModelVramMB } from '../engine/webllm';
+import { DeviceInfo, fitsIOSBudget } from '../engine/device';
 
 interface ModelModalProps {
   isOpen: boolean;
@@ -12,6 +12,8 @@ interface ModelModalProps {
   isModelReady?: boolean;
   onLoadModel?: (id: string) => void;
   modelProgress?: ProgressStatus | null;
+  /** Kid profile active: the picker lists kid-allowed models only. */
+  kidMode?: boolean;
 }
 
 export const ModelModal: React.FC<ModelModalProps> = ({
@@ -22,7 +24,8 @@ export const ModelModal: React.FC<ModelModalProps> = ({
   deviceInfo,
   isModelReady,
   onLoadModel,
-  modelProgress
+  modelProgress,
+  kidMode = false
 }) => {
   const [activeTab, setActiveTab] = useState<'all' | '4gb' | '8gb' | '16gb' | 'hf'>('all');
   const [hfQuery, setHfQuery] = useState('');
@@ -47,7 +50,8 @@ export const ModelModal: React.FC<ModelModalProps> = ({
 
   if (!isOpen) return null;
 
-  const filteredModels = AVAILABLE_MODELS.filter(m => {
+  const pickerModels = modelsForProfile(kidMode);
+  const filteredModels = pickerModels.filter(m => {
     if (activeTab === 'all') return true;
     if (activeTab === '4gb') return m.vramTier === '4gb';
     if (activeTab === '8gb') return m.vramTier === '8gb';
@@ -81,13 +85,15 @@ export const ModelModal: React.FC<ModelModalProps> = ({
   };
 
   const handleSelectCustomHfModel = (repoId: string) => {
+    if (kidMode) return;
     const modelId = repoId.split('/')[1] || repoId;
-    registerCustomHFModel({
+    const registered = registerCustomHFModel({
       model: `https://huggingface.co/${repoId}`,
       model_id: modelId,
       model_lib: `https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/${modelId}_cs1k-webgpu.wasm`,
       vram_required_MB: 4000
-    });
+    }, kidMode);
+    if (!registered) return;
     onSelectModel(modelId);
     if (onLoadModel) onLoadModel(modelId);
     onClose();
@@ -190,7 +196,7 @@ export const ModelModal: React.FC<ModelModalProps> = ({
                 border: '1px solid rgba(16, 185, 129, 0.3)',
                 fontWeight: 600
               }}>
-                Recommended: {deviceInfo?.recommendedModel ? (AVAILABLE_MODELS.find(m => m.id === deviceInfo.recommendedModel)?.label || deviceInfo.recommendedModel) : 'Qwen 2.5 3B'}
+                Recommended: {deviceInfo?.recommendedModel ? (pickerModels.find(m => m.id === deviceInfo.recommendedModel)?.label || deviceInfo.recommendedModel) : 'Qwen 2.5 3B'}
               </span>
             </div>
             {cacheNotice && (
@@ -204,12 +210,12 @@ export const ModelModal: React.FC<ModelModalProps> = ({
         {/* Filter Tabs */}
         <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginBottom: '0.85rem', flexShrink: 0 }}>
           {[
-            { id: 'all', label: 'All Models', count: AVAILABLE_MODELS.length },
-            { id: '8gb', label: '6GB–8GB (Standard / Laptops)', count: AVAILABLE_MODELS.filter(m => m.vramTier === '8gb').length },
-            { id: '4gb', label: '4GB (Ultralight / Mobile)', count: AVAILABLE_MODELS.filter(m => m.vramTier === '4gb').length },
-            { id: '16gb', label: '8GB–16GB (High Performance)', count: AVAILABLE_MODELS.filter(m => m.vramTier === '16gb').length },
-            { id: 'hf', label: '🤗 Search Hugging Face', count: undefined }
-          ].map(tab => (
+            { id: 'all', label: 'All Models', count: pickerModels.length },
+            { id: '8gb', label: 'Standard', count: pickerModels.filter(m => m.vramTier === '8gb').length },
+            { id: '4gb', label: 'Ultralight', count: pickerModels.filter(m => m.vramTier === '4gb').length },
+            { id: '16gb', label: 'High Performance', count: pickerModels.filter(m => m.vramTier === '16gb').length },
+            { id: 'hf', label: 'Hugging Face', count: undefined }
+          ].filter(tab => !(kidMode && tab.id === 'hf')).map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
@@ -220,17 +226,23 @@ export const ModelModal: React.FC<ModelModalProps> = ({
                 backgroundColor: activeTab === tab.id ? 'rgba(139, 92, 246, 0.25)' : '#111118',
                 borderColor: activeTab === tab.id ? '#8b5cf6' : 'rgba(139, 92, 246, 0.2)',
                 color: activeTab === tab.id ? '#ffffff' : '#a1a1aa',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.3rem'
               }}
             >
-              {tab.label} {tab.count !== undefined ? `(${tab.count})` : ''}
+              <span>{tab.label}</span>
+              {tab.count !== undefined && (
+                <span style={{ fontSize: '0.68rem', opacity: 0.75 }}>{tab.count}</span>
+              )}
             </button>
           ))}
         </div>
 
         {/* Content Area */}
         <div style={{ flex: 1, overflowY: 'auto', paddingRight: '0.25rem' }}>
-          {activeTab === 'hf' ? (
+          {activeTab === 'hf' && !kidMode ? (
             /* Hugging Face Explorer */
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <div style={{
@@ -333,16 +345,21 @@ export const ModelModal: React.FC<ModelModalProps> = ({
               {filteredModels.map(m => {
                 const isSelected = selectedModel === m.id;
                 const isCurrentlyReady = isSelected && isModelReady;
+                const isIOS = !!deviceInfo?.isIOS;
+                const tooLargeForIOS = isIOS && !fitsIOSBudget(m.id);
+                const vramGB = ((getModelVramMB(m.id) ?? m.sizeMB) / 1000).toFixed(1);
                 return (
                   <div
                     key={m.id}
-                    onClick={() => onSelectModel(m.id)}
+                    onClick={() => { if (!tooLargeForIOS) onSelectModel(m.id); }}
+                    aria-disabled={tooLargeForIOS || undefined}
                     style={{
+                      opacity: tooLargeForIOS ? 0.5 : 1,
                       padding: '0.85rem',
                       backgroundColor: isSelected ? 'rgba(139, 92, 246, 0.12)' : '#111118',
                       border: isSelected ? '1.5px solid #8b5cf6' : '1px solid rgba(139, 92, 246, 0.2)',
                       borderRadius: '10px',
-                      cursor: 'pointer',
+                      cursor: tooLargeForIOS ? 'not-allowed' : 'pointer',
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'space-between',
@@ -364,7 +381,12 @@ export const ModelModal: React.FC<ModelModalProps> = ({
                           {m.vramEst}
                         </span>
 
-                        <div style={{ display: 'flex', gap: '0.25rem' }}>
+                        <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
+                          {isIOS && !tooLargeForIOS && (
+                            <span style={{ fontSize: '0.64rem', padding: '0.1rem 0.35rem', borderRadius: '4px', backgroundColor: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', fontWeight: 600 }}>
+                              {deviceInfo?.isTablet ? 'Fits iPad' : 'Fits iPhone'}
+                            </span>
+                          )}
                           {m.isDefault && (
                             <span style={{ fontSize: '0.64rem', padding: '0.1rem 0.35rem', borderRadius: '4px', backgroundColor: 'rgba(234, 179, 8, 0.15)', color: '#fde047', fontWeight: 600 }}>
                               Default
@@ -405,7 +427,11 @@ export const ModelModal: React.FC<ModelModalProps> = ({
                         Download: ~{(m.sizeMB / 1024).toFixed(1)} GB
                       </span>
 
-                      {isSelected ? (
+                      {tooLargeForIOS ? (
+                        <span style={{ color: '#a1a1aa', fontWeight: 500, textAlign: 'right' }}>
+                          Needs a laptop or desktop GPU ({vramGB} GB)
+                        </span>
+                      ) : isSelected ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                           {isCurrentlyReady ? (
                             <span style={{ color: '#10b981', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>

@@ -58,13 +58,14 @@ The top navigation bar gives you real-time visibility and control over the local
     summary: 'How much VRAM does your device have, and which model is your sweet spot?',
     content: `### Choosing the Right Model for Your Machine
 
-Think of your graphics card's Video RAM (VRAM) like a workbench. A 3-billion parameter model needs about 2.2 gigabytes of bench space to lay out its billions of numbers. If you try to fit an oversized model onto a small bench, your browser tab can run out of memory.
+Think of your graphics card's Video RAM (VRAM) like a workbench. A 3-billion parameter model needs about 2.5 gigabytes of bench space to lay out its billions of numbers. If you try to fit an oversized model onto a small bench, your browser tab can run out of memory.
 
 Here is the simple, real-world breakdown:
 
 | GPU / Hardware Tier | Typical Devices | Recommended Models | Why It Fits |
 | :--- | :--- | :--- | :--- |
-| **4GB (Ultralight)** | Phones, tablets, older laptops, Intel UHD iGPU | **Qwen 2.5 1.5B**, **SmolLM2 1.7B**, **DeepSeek-R1 1.5B** | Tiny footprint (~1.4 GB VRAM). Snappy and impossible to crash. |
+| **iPhone / iPad** | iOS Safari | **Llama 3.2 1B**, **SmolLM2 360M** | Fits iPhone: under 1 GB VRAM. |
+| **4GB (Ultralight)** | Android phones, older laptops, Intel UHD iGPU | **Qwen 2.5 1.5B**, **SmolLM2 1.7B**, **DeepSeek-R1 1.5B** | Small footprint (~1.6–1.8 GB VRAM). Snappy on 4GB cards. |
 | **6GB–8GB (Standard)** | Modern laptops (Intel Iris Xe, Radeon 780M, RTX 3050/4050, Apple M1/M2) | **Qwen 2.5 3B (Default)**, **Llama 3.2 3B**, **Phi-3.5 3.8B** | **The sweet spot.** Qwen 3B is light work on an 8GB card—fast, articulate, and highly capable. |
 | **8GB–16GB (High Performance)** | Gaming laptops, desktops with RTX 3060/4060/4070, Apple M Pro | **Bonsai 2 27B**, **Gemma 2 9B**, **Qwen 2.5 7B**, **Mistral 7B**, **DeepSeek-R1 7B** | Bonsai 2 delivers compressed 27B capability in ~6.8 GB VRAM. Gemma 9B runs comfortably without straining the card. |
 | **16GB–32GB (Workstation)** | High-end PCs with RTX 3090/4080/4090, Apple M Max/Ultra | **Qwen 2.5 14B**, large context 8B/9B models | Massive context window (8k–16k tokens) with plenty of breathing room. |

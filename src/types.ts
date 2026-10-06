@@ -42,6 +42,11 @@ export interface ModelOption {
   isDefault?: boolean;
   isRecommended?: boolean;
   description?: string;
+  isFineTuned?: boolean;
+  adapterRepo?: string;
+  adapterId?: string;
+  adapterUrl?: string;
+  baseModelId?: string;
 }
 
 export interface Personality {

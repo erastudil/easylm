@@ -41,9 +41,9 @@ l'histoire événementielle : The rapid, episodic churn of politics, battles, tr
 
 material analysis : Testing the physical medium parchment vs. paper, watermark identification, chemical spectroscopy of inks and pigments, radiocarbon dating of organic substrates. // door https://openstax.org/details/books/world-history-volume-1 // ref 3.1 external criticism authenticity & provenance
 
-eyewitness proximity : Was the author an actual direct witness, or were they reporting third-hand gossip recorded years later?. // door https://openstax.org/details/books/world-history-volume-1 // ref 3.2 internal criticism credibility & hermeneutics
+eyewitness proximity : the author an actual direct witness, or were they reporting third-hand gossip recorded years later?. // door https://openstax.org/details/books/world-history-volume-1 // ref 3.2 internal criticism credibility & hermeneutics
 
-audience and purpose : Was the text intended for private self-reflection a secret diary, public propaganda a royal inscription, or legal accountability a municipal court record?. // door https://openstax.org/details/books/world-history-volume-1 // ref 3.2 internal criticism credibility & hermeneutics
+audience and purpose : the text intended for private self-reflection a secret diary, public propaganda a royal inscription, or legal accountability a municipal court record?. // door https://openstax.org/details/books/world-history-volume-1 // ref 3.2 internal criticism credibility & hermeneutics
 
 the julian calendar : Assumed a solar year length of exactly 365.25 days adding a leap year every four years. The true tropical solar year is approximately 365.2422 days, causing the Julian calendar to drift out of sync with astronomical solstices and equinoxes at a rate of approximately 1 day every 128 years. // door https://openstax.org/details/books/world-history-volume-1 // ref 4.1 calendars and astronomical time
 

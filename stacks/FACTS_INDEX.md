@@ -5,9 +5,9 @@ definitions, laws, theorems, and constants mirrored directly from textbook refer
 
 ## Summary Metrics
 
-- **Total Subjects**: 31 academic stacks (001 through 910)
-- **Total Verified Facts**: 1,572 units
-- **Total Citation Doors & References**: 1,572 asides
+- **Total Subjects**: 32 academic stacks (001 through 910)
+- **Total Verified Facts**: 1,615 units
+- **Total Citation Doors & References**: 1,615 asides
 - **Dialect**: Strict Progen Iron (`topic = comment.` and `topic : comment.`)
 - **Storage Engine**: Zero-rent SQLite with WAL mode, Dewey indexes, and FTS5 full-text triggers
 - **Linter Status**: 0 errors, 0 warnings across all files
@@ -22,10 +22,11 @@ definitions, laws, theorems, and constants mirrored directly from textbook refer
 | `005.8` | [`security`](security/FACTS.md) | Information Security & Cryptography | 84 | [https://csrc.nist.gov/](https://csrc.nist.gov/) |
 | `006` | [`ai_ml`](ai_ml/FACTS.md) | Artificial Intelligence & Machine Learning | 40 | [https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/](https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/) |
 | `100` | [`philosophy`](philosophy/FACTS.md) | Philosophy, Logic & Epistemology | 85 | [https://plato.stanford.edu/entries/argument/](https://plato.stanford.edu/entries/argument/) |
-| `150` | [`psychology`](psychology/FACTS.md) | Psychology & Cognitive Science | 42 | [https://www.ncbi.nlm.nih.gov/books/NBK538339/](https://www.ncbi.nlm.nih.gov/books/NBK538339/) |
+| `150` | [`psychology`](psychology/FACTS.md) | Psychology & Cognitive Science | 50 | [https://www.ncbi.nlm.nih.gov/books/NBK538339/](https://www.ncbi.nlm.nih.gov/books/NBK538339/) |
 | `181` | [`tao_te_ching`](tao_te_ching/FACTS.md) | Tao Te Ching (道德經) — Lao Tzu | 28 | [https://ctext.org/dao-de-jing](https://ctext.org/dao-de-jing) |
 | `200` | [`religion`](religion/FACTS.md) | Comparative Religion & Mythology | 37 | [https://plato.stanford.edu/entries/philosophy-religion/](https://plato.stanford.edu/entries/philosophy-religion/) |
 | `300` | [`sociology`](sociology/FACTS.md) | Sociology & Cultural Anthropology | 48 | [https://plato.stanford.edu/entries/durkheim/](https://plato.stanford.edu/entries/durkheim/) |
+| `302.23` | [`media`](media/FACTS.md) | Media, Social Platforms & Information Disorders | 35 | [https://www.ftc.gov/](https://www.ftc.gov/) |
 | `320` | [`civics`](civics/FACTS.md) | Civics & Political Science | 71 | [https://www.archives.gov/founding-docs/constitution](https://www.archives.gov/founding-docs/constitution) |
 | `330` | [`finance`](finance/FACTS.md) | Finance & Macroeconomics | 51 | [https://www.sec.gov/](https://www.sec.gov/) |
 | `340` | [`law`](law/FACTS.md) | Law & Jurisprudence | 68 | [https://www.law.cornell.edu/wex/common_law](https://www.law.cornell.edu/wex/common_law) |

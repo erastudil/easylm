@@ -27,7 +27,7 @@ export const ThoughtDrawer: React.FC<ThoughtDrawerProps> = ({ thinking, duration
           {durationSec ? (
             <span className="text-xs text-zinc-500">({durationSec}s)</span>
           ) : (
-            <span className="text-xs text-purple-400 animate-pulse">(thinking...)</span>
+            <span className="text-xs text-purple-400 animate-pulse font-semibold">(reasoning in progress...)</span>
           )}
           <span className="text-xs text-zinc-500">~{tokenEst} tokens</span>
           {isLoopCapped && (

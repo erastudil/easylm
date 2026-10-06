@@ -32,13 +32,43 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
     }
   },
   {
-    model: 'https://huggingface.co/prism-ml/Ternary-Bonsai-2-27B-gguf',
-    model_id: 'Bonsai-2-27B-MLC',
-    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen2-7B-Instruct-q4f16_1_cs1k-webgpu.wasm',
+    model: 'https://huggingface.co/mlc-ai/gemma-3-12b-it-q4f16_1-MLC',
+    model_id: 'gemma-3-12b-it-q4f16_1-MLC',
+    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/gemma-2-9b-it-q4f16_1_cs1k-webgpu.wasm',
     low_resource_required: false,
-    vram_required_MB: 6800,
+    vram_required_MB: 8500,
     overrides: {
-      context_window_size: 32768
+      context_window_size: 8192
+    }
+  },
+  {
+    model: 'https://huggingface.co/Bluebarrels/easylm-hands-qwen2.5-0.5b',
+    model_id: 'easylm-hands-qwen2.5-0.5b',
+    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen2-0.5B-Instruct-q4f16_1_cs1k-webgpu.wasm',
+    low_resource_required: true,
+    vram_required_MB: 850,
+    overrides: {
+      context_window_size: 4096
+    }
+  },
+  {
+    model: 'https://huggingface.co/Bluebarrels/easylm-hands-qwen2.5-3b',
+    model_id: 'easylm-hands-qwen2.5-3b',
+    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen2.5-3B-Instruct-q4f16_1_cs1k-webgpu.wasm',
+    low_resource_required: true,
+    vram_required_MB: 2600,
+    overrides: {
+      context_window_size: 4096
+    }
+  },
+  {
+    model: 'https://huggingface.co/Bluebarrels/alice-emap-adapter',
+    model_id: 'alice-emap-adapter-qwen2.5-3b',
+    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen2.5-3B-Instruct-q4f16_1_cs1k-webgpu.wasm',
+    low_resource_required: true,
+    vram_required_MB: 2600,
+    overrides: {
+      context_window_size: 4096
     }
   }
 ];
@@ -147,13 +177,13 @@ export const AVAILABLE_MODELS: ModelOption[] = [
 
   // 8GB - 16GB Tier (High Performance / Power Workstations)
   {
-    id: 'Bonsai-2-27B-MLC',
-    label: 'Bonsai 2 27B',
-    sizeMB: 5950,
-    vramEst: vramLabel('Bonsai-2-27B-MLC'),
+    id: 'gemma-3-12b-it-q4f16_1-MLC',
+    label: 'Gemma 3 12B Thinking',
+    sizeMB: 7200,
+    vramEst: vramLabel('gemma-3-12b-it-q4f16_1-MLC'),
     vramTier: '16gb',
     isReasoning: true,
-    description: 'PrismML ternary 27B intelligence compressed to ~5.9GB. Large reasoning model for ~12GB+ VRAM discrete GPUs.'
+    description: 'Google Gemma 3 deep reasoning model with extended chain of thought for 12GB+ GPUs.'
   },
   {
     id: 'gemma-2-9b-it-q4f16_1-MLC',
@@ -195,6 +225,47 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     vramTier: '16gb',
     isCoding: true,
     description: 'Specialized coding powerhouse. Program synthesis, debugging, and systems architecture.'
+  },
+
+  // Fine-Tuned LoRA Adapters (Specialized Domain Intelligence)
+  {
+    id: 'easylm-hands-qwen2.5-0.5b',
+    label: 'EasyLM Hands Qwen 0.5B',
+    sizeMB: 380,
+    vramEst: vramLabel('easylm-hands-qwen2.5-0.5b'),
+    vramTier: '4gb',
+    isFineTuned: true,
+    baseModelId: 'Qwen2.5-0.5B-Instruct-q4f16_1-MLC',
+    adapterRepo: 'Bluebarrels/easylm-hands-qwen2.5-0.5b',
+    adapterId: 'hands-qwen2.5-0.5b',
+    adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-hands-qwen2.5-0.5b',
+    description: 'Fine-tuned Hands tool-use adapter on Qwen 2.5 0.5B. Ultralight agentic execution.'
+  },
+  {
+    id: 'easylm-hands-qwen2.5-3b',
+    label: 'EasyLM Hands Qwen 3B',
+    sizeMB: 1950,
+    vramEst: vramLabel('easylm-hands-qwen2.5-3b'),
+    vramTier: '8gb',
+    isFineTuned: true,
+    baseModelId: 'Qwen2.5-3B-Instruct-q4f16_1-MLC',
+    adapterRepo: 'Bluebarrels/easylm-hands-qwen2.5-3b',
+    adapterId: 'hands-qwen2.5-3b',
+    adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-hands-qwen2.5-3b',
+    description: 'Fine-tuned Hands tool-use adapter on Qwen 2.5 3B. High precision tool calling and workflows.'
+  },
+  {
+    id: 'alice-emap-adapter-qwen2.5-3b',
+    label: 'Alice EMap Adapter 3B',
+    sizeMB: 1950,
+    vramEst: vramLabel('alice-emap-adapter-qwen2.5-3b'),
+    vramTier: '8gb',
+    isFineTuned: true,
+    baseModelId: 'Qwen2.5-3B-Instruct-q4f16_1-MLC',
+    adapterRepo: 'Bluebarrels/alice-emap-adapter',
+    adapterId: 'alice-emap-3b',
+    adapterUrl: 'https://huggingface.co/Bluebarrels/alice-emap-adapter',
+    description: 'Fine-tuned Alice EMap episodic cognitive memory adapter on Qwen 2.5 3B.'
   }
 ];
 
@@ -211,7 +282,7 @@ export function nextSmallerModel(modelId: string, maxMB?: number, exclude?: Read
   const current = getModelVramMB(modelId) ?? Infinity;
   let best: { id: string; mb: number } | undefined;
   for (const m of AVAILABLE_MODELS) {
-    if (m.isReasoning || m.isCoding || m.id === modelId) continue;
+    if (m.isReasoning || m.isCoding || m.isFineTuned || m.id === modelId) continue;
     if (exclude?.has(m.id)) continue;
     const mb = getModelVramMB(m.id);
     if (mb === undefined || mb >= current) continue;

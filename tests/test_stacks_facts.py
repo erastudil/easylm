@@ -38,9 +38,9 @@ class TestStacksFacts(unittest.TestCase):
         cls.progen_db = REPO_ROOT / "progen" / "data" / "stacks_facts.db"
         cls.packs_meta = json.loads((cls.stacks_dir / "PACKS.json").read_text(encoding="utf-8"))
 
-    def test_all_31_subjects_have_facts_md(self):
+    def test_all_32_subjects_have_facts_md(self):
         """Every subject pack in PACKS.json must contain a non-empty FACTS.md."""
-        self.assertEqual(len(self.packs_meta), 31)
+        self.assertEqual(len(self.packs_meta), 32)
         for p in self.packs_meta:
             slug = p["slug"]
             facts_file = self.stacks_dir / slug / "FACTS.md"
@@ -99,7 +99,7 @@ class TestStacksFacts(unittest.TestCase):
 
         cur.execute("SELECT COUNT(DISTINCT dewey_code) as dewey_count FROM units;")
         dewey_count = cur.fetchone()["dewey_count"]
-        self.assertEqual(dewey_count, 31, f"Expected 31 Dewey classes in units, found {dewey_count}")
+        self.assertEqual(dewey_count, 32, f"Expected 32 Dewey classes in units, found {dewey_count}")
 
         cur.execute("SELECT COUNT(*) as unclassified FROM units WHERE dewey_code IS NULL;")
         unclassified = cur.fetchone()["unclassified"]

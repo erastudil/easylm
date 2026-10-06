@@ -386,3 +386,169 @@ LAW_FACTS = [
         door="https://www.law.cornell.edu/wex/exclusionary_rule", kind="definition"
     ),
 ]
+
+
+MEDIA_FACTS = [
+    Fact(
+        topic="attention economics",
+        comment="commercial framework where human attention is the scarce commodity monetized through targeted advertising.",
+        dewey="302.23", slug="media", chapter="chapter 1.1",
+        door="https://www.ftc.gov/", kind="definition"
+    ),
+    Fact(
+        topic="variable ratio schedule",
+        comment="behavioral reinforcement pattern delivering rewards at unpredictable intervals producing durable engagement.",
+        dewey="302.23", slug="media", chapter="chapter 1.2",
+        door="https://www.apa.org/", kind="definition"
+    ),
+    Fact(
+        topic="pull to refresh mechanism",
+        comment="user interface gesture modeling a slot machine lever arm triggering intermittent reward evaluation.",
+        dewey="302.23", slug="media", chapter="chapter 1.2",
+        door="https://www.apa.org/", kind="definition"
+    ),
+    Fact(
+        topic="lateral reading",
+        comment="verification technique opening new browser tabs to assess source provenance before examining content.",
+        dewey="302.23", slug="media", chapter="chapter 2.1",
+        door="https://www.pewresearch.org/", kind="definition"
+    ),
+    Fact(
+        topic="information disorder taxonomy",
+        comment="classification of false communication into misinformation, disinformation, and malinformation.",
+        dewey="302.23", slug="media", chapter="chapter 2.3",
+        door="https://www.nature.com/", kind="definition"
+    ),
+    Fact(
+        topic="misinformation",
+        comment="inaccurate information created or shared without malicious intent to deceive.",
+        dewey="302.23", slug="media", chapter="chapter 2.3",
+        door="https://www.nature.com/", kind="definition"
+    ),
+    Fact(
+        topic="disinformation",
+        comment="false or manipulated content deliberately created and disseminated to deceive or cause harm.",
+        dewey="302.23", slug="media", chapter="chapter 2.3",
+        door="https://www.nature.com/", kind="definition"
+    ),
+    Fact(
+        topic="malinformation",
+        comment="genuine information shared with deliberate intent to cause harm or breach confidentiality.",
+        dewey="302.23", slug="media", chapter="chapter 2.3",
+        door="https://www.nature.com/", kind="definition"
+    ),
+    Fact(
+        topic="behavioral targeting",
+        comment="advertising practice tracking user actions across sites to construct predictive affinity profiles.",
+        dewey="302.23", slug="media", chapter="chapter 3.1",
+        door="https://www.ftc.gov/", kind="definition"
+    ),
+    Fact(
+        topic="data broker ecosystem",
+        comment="commercial market aggregating consumer personal data from public records and app telemetry.",
+        dewey="302.23", slug="media", chapter="chapter 3.2",
+        door="https://www.ftc.gov/", kind="definition"
+    ),
+    Fact(
+        topic="adolescent mental health advisory",
+        comment="public health alert warning of social media risks to adolescent developmental wellbeing.",
+        dewey="302.23", slug="media", chapter="chapter 4.1",
+        door="https://www.hhs.gov/"
+    ),
+    Fact(
+        topic="social comparison mechanism",
+        comment="psychological process evaluating personal worth against curated peer highlights on feeds.",
+        dewey="302.23", slug="media", chapter="chapter 4.2",
+        door="https://www.apa.org/", kind="definition"
+    ),
+    Fact(
+        topic="homophily in networks",
+        comment="structural tendency of social graph nodes to form edges preferentially with similar nodes.",
+        dewey="302.23", slug="media", chapter="chapter 5.1",
+        door="https://www.nature.com/", kind="definition"
+    ),
+    Fact(
+        topic="network clustering",
+        comment="graph density where neighbors of a node maintain high probability of mutual interconnection.",
+        dewey="302.23", slug="media", chapter="chapter 5.1",
+        door="https://www.nature.com/", kind="definition"
+    ),
+    Fact(
+        topic="filter bubble",
+        comment="algorithmic recommender bias narrowing exposure to content reinforcing past engagement patterns.",
+        dewey="302.23", slug="media", chapter="chapter 5.2",
+        door="https://digital-strategy.ec.europa.eu/", kind="definition"
+    ),
+    Fact(
+        topic="echo chamber",
+        comment="sociological network structure where homophilic social ties repeatedly reinforce existing beliefs.",
+        dewey="302.23", slug="media", chapter="chapter 5.2",
+        door="https://www.pewresearch.org/", kind="definition"
+    ),
+    Fact(
+        topic="falsehood spread advantage",
+        comment="vosoughi finding that false rumors spread farther and faster than true news due to novelty.",
+        dewey="302.23", slug="media", chapter="chapter 6.1",
+        door="https://www.nature.com/"
+    ),
+    Fact(
+        topic="illusory truth effect",
+        comment="cognitive bias where repeated exposure increases perceived truth value of statements.",
+        dewey="302.23", slug="media", chapter="chapter 6.2",
+        door="https://www.apa.org/", kind="definition"
+    ),
+    Fact(
+        topic="prebunking",
+        comment="psychological inoculation technique teaching recognition of manipulation tactics before exposure occurs.",
+        dewey="302.23", slug="media", chapter="chapter 6.3",
+        door="https://www.nature.com/", kind="definition"
+    ),
+    Fact(
+        topic="collaborative filtering",
+        comment="recommender algorithm predicting item affinity from latent user-item interaction matrix factors.",
+        dewey="302.23", slug="media", chapter="chapter 7.1",
+        door="https://digital-strategy.ec.europa.eu/", kind="definition"
+    ),
+    Fact(
+        topic="independent cascade model",
+        comment="stochastic information diffusion model where activated nodes get one attempt to activate neighbors.",
+        dewey="302.23", slug="media", chapter="chapter 8.1",
+        door="https://www.nature.com/", kind="definition"
+    ),
+    Fact(
+        topic="linear threshold model",
+        comment="diffusion model where nodes activate once weighted fraction of active neighbors crosses threshold.",
+        dewey="302.23", slug="media", chapter="chapter 8.1",
+        door="https://www.nature.com/", kind="definition"
+    ),
+    Fact(
+        topic="bounded confidence opinion model",
+        comment="dynamical system where agents update beliefs only toward peers within difference epsilon.",
+        dewey="302.23", slug="media", chapter="chapter 8.3",
+        door="https://www.nature.com/", kind="definition"
+    ),
+    Fact(
+        topic="communications decency act section 230",
+        comment="federal statute shielding internet platforms from publisher liability for user content.",
+        dewey="302.23", slug="media", chapter="chapter 9.1",
+        door="https://www.congress.gov/"
+    ),
+    Fact(
+        topic="eu digital services act",
+        comment="comprehensive european regulation imposing systemic risk assessment and researcher data access duties.",
+        dewey="302.23", slug="media", chapter="chapter 9.1",
+        door="https://digital-strategy.ec.europa.eu/", kind="definition"
+    ),
+    Fact(
+        topic="children online privacy protection act",
+        comment="federal statute restricting personal data collection from children under age thirteen.",
+        dewey="302.23", slug="media", chapter="chapter 9.2",
+        door="https://www.ftc.gov/", kind="definition"
+    ),
+    Fact(
+        topic="age appropriate design code",
+        comment="regulatory framework enforcing high privacy defaults and protective design for minors.",
+        dewey="302.23", slug="media", chapter="chapter 9.2",
+        door="https://ico.org.uk/"
+    ),
+]

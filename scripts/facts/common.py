@@ -29,6 +29,7 @@ class Fact:
         
         # Clean comment: no parens, normalize spaces, replace colons to avoid packed topics, end with period
         comment_clean = re.sub(r"[()]", "", self.comment).strip()
+        comment_clean = re.sub(r"^(?:is|are|was|were)\s+", "", comment_clean, flags=re.I).strip()
         comment_clean = re.sub(r":\s*", " - ", comment_clean)
         comment_clean = re.sub(r"\bleverage\b", "yield", comment_clean, flags=re.I)
         comment_clean = re.sub(r"\brobust\b", "durable", comment_clean, flags=re.I)

@@ -27,7 +27,7 @@ export const ModelModal: React.FC<ModelModalProps> = ({
   modelProgress,
   kidMode = false
 }) => {
-  const [activeTab, setActiveTab] = useState<'all' | '4gb' | '8gb' | '16gb' | 'hf'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | '4gb' | '8gb' | '16gb' | 'finetuned' | 'hf'>('all');
   const [hfQuery, setHfQuery] = useState('');
   const [hfResults, setHfResults] = useState<Array<{ id: string; downloads?: number; likes?: number }>>([]);
   const [hfLoading, setHfLoading] = useState(false);
@@ -56,6 +56,7 @@ export const ModelModal: React.FC<ModelModalProps> = ({
     if (activeTab === '4gb') return m.vramTier === '4gb';
     if (activeTab === '8gb') return m.vramTier === '8gb';
     if (activeTab === '16gb') return m.vramTier === '16gb';
+    if (activeTab === 'finetuned') return !!m.isFineTuned;
     return true;
   });
 
@@ -214,6 +215,7 @@ export const ModelModal: React.FC<ModelModalProps> = ({
             { id: '8gb', label: 'Standard', count: pickerModels.filter(m => m.vramTier === '8gb').length },
             { id: '4gb', label: 'Ultralight', count: pickerModels.filter(m => m.vramTier === '4gb').length },
             { id: '16gb', label: 'High Performance', count: pickerModels.filter(m => m.vramTier === '16gb').length },
+            { id: 'finetuned', label: 'Fine-Tuned', count: pickerModels.filter(m => m.isFineTuned).length },
             { id: 'hf', label: 'Hugging Face', count: undefined }
           ].filter(tab => !(kidMode && tab.id === 'hf')).map(tab => (
             <button
@@ -407,6 +409,11 @@ export const ModelModal: React.FC<ModelModalProps> = ({
                               💻 Code
                             </span>
                           )}
+                          {m.isFineTuned && (
+                            <span style={{ fontSize: '0.64rem', padding: '0.1rem 0.35rem', borderRadius: '4px', backgroundColor: 'rgba(245, 158, 11, 0.2)', color: '#fbbf24', fontWeight: 600 }}>
+                              🎯 LoRA
+                            </span>
+                          )}
                         </div>
                       </div>
 
@@ -481,7 +488,7 @@ export const ModelModal: React.FC<ModelModalProps> = ({
           flexShrink: 0
         }}>
           <div style={{ fontSize: '0.74rem', color: '#71717a', maxWidth: '520px' }}>
-            💡 <strong>Guideline:</strong> Qwen 2.5 3B is the recommended default workhorse for all systems. Bonsai 2 is an optional heavy reasoning model for ~12GB+ VRAM cards.
+            💡 <strong>Guideline:</strong> Qwen 2.5 3B is the recommended default workhorse for all systems. Gemma 3 12B Thinking is an optional deep reasoning model for ~12GB+ VRAM cards.
           </div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             {onLoadModel && (

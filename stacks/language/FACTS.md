@@ -53,17 +53,17 @@ write the form you actually have : spelling, capitalization, morphology. A decli
 
 read the whole entry : part of speech, numbered senses, examples, usage labels dated, slang, technical, offensive. // door https://www.unicode.org/standard/standard.html // ref 8.1 method lookup
 
-false friends : are lookalikes across languages with different meanings. They are a translation hazard ch 9. // door https://www.unicode.org/standard/standard.html // ref 8.2 what not to do folk etymology
+false friends : lookalikes across languages with different meanings. They are a translation hazard ch 9. // door https://www.unicode.org/standard/standard.html // ref 8.2 what not to do folk etymology
 
 acronym lore : posh as a steamship ticket, and cousins is almost always false. If an acronym origin is real, a dictionary will say so. // door https://www.unicode.org/standard/standard.html // ref 8.2 what not to do folk etymology
 
-oldest meaning owns us : is a fallacy. Etymology does not police today's sense. Fetch the usage note, then decide for this register. History is not a warrant. // door https://www.unicode.org/standard/standard.html // ref 8.2 what not to do folk etymology
+oldest meaning owns us : a fallacy. Etymology does not police today's sense. Fetch the usage note, then decide for this register. History is not a warrant. // door https://www.unicode.org/standard/standard.html // ref 8.2 what not to do folk etymology
 
 sense inventories differ : a source word with four senses is not four copies of one target word. // door https://www.unicode.org/standard/standard.html // ref 9.1 why word-swap fails
 
 grammar differs : a language that marks evidentiality, honorifics, or dual number forces the translator to add or drop distinctions English does not mark. // door https://www.unicode.org/standard/standard.html // ref 9.1 why word-swap fails
 
-collocation and idiom : are not compositional ch 2.5. kick the bucket word-swapped is a kick and a bucket. // door https://www.unicode.org/standard/standard.html // ref 9.1 why word-swap fails
+collocation and idiom : not compositional ch 2.5. kick the bucket word-swapped is a kick and a bucket. // door https://www.unicode.org/standard/standard.html // ref 9.1 why word-swap fails
 
 register and speech act : ch 2.6, ch 7. A polite formula swapped literally becomes rude or comic. // door https://www.unicode.org/standard/standard.html // ref 9.1 why word-swap fails
 

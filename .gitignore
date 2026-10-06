@@ -12,3 +12,6 @@ src/data/warehouse_compiled.ts
 __pycache__/
 *.pyc
 
+# Artifacts & Caches
+output/
+.pytest_cache/

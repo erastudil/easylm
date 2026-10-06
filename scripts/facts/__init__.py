@@ -9,7 +9,7 @@ from typing import Dict, List, Tuple
 from .common import Fact
 from .facts_000_computing import METHODS_FACTS, COMPUTING_FACTS, SOFTWARE_FACTS, SECURITY_FACTS, AI_ML_FACTS
 from .facts_100_philosophy import PHILOSOPHY_FACTS, PSYCHOLOGY_FACTS, TAO_TE_CHING_FACTS, RELIGION_FACTS
-from .facts_300_social import SOCIOLOGY_FACTS, CIVICS_FACTS, FINANCE_FACTS, LAW_FACTS
+from .facts_300_social import SOCIOLOGY_FACTS, CIVICS_FACTS, FINANCE_FACTS, LAW_FACTS, MEDIA_FACTS
 from .facts_400_language_math import LANGUAGE_FACTS, MATH_FACTS
 from .facts_500_physical_sciences import ASTRONOMY_FACTS, PHYSICS_FACTS, CHEMISTRY_FACTS, EARTH_SCIENCES_FACTS, BIOLOGY_FACTS
 from .facts_600_applied_sciences import HEALTH_FACTS, ENGINEERING_FACTS, AGRICULTURE_FACTS, BUSINESS_FACTS, TRADES_FACTS
@@ -26,6 +26,7 @@ CURATED_PACKS: Dict[str, List[Fact]] = {
     "tao_te_ching": TAO_TE_CHING_FACTS,
     "religion": RELIGION_FACTS,
     "sociology": SOCIOLOGY_FACTS,
+    "media": MEDIA_FACTS,
     "civics": CIVICS_FACTS,
     "finance": FINANCE_FACTS,
     "law": LAW_FACTS,
@@ -68,6 +69,8 @@ def clean_text_for_progen(topic: str, comment: str) -> Tuple[str, str]:
     com = re.sub(r"\\text\{([^}]+)\}", r"\1", com).strip()
     com = re.sub(r"\\implies", "yields", com).strip()
     com = re.sub(r"\\rightarrow", "leads to", com).strip()
+    com = re.sub(r"^(?:is|are|was|were)\s+", "", com, flags=re.I).strip()
+    com = re.sub(r"^(?:Was the|Were the)\s+", "examines whether the ", com, flags=re.I).strip()
     com = re.sub(r"\s+", " ", com).strip()
     if not com.endswith("."):
         com += "."

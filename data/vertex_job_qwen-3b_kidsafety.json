@@ -1,0 +1,28 @@
+{
+  "workerPoolSpecs": [
+    {
+      "machineSpec": {
+        "machineType": "a2-highgpu-1g",
+        "acceleratorType": "NVIDIA_TESLA_A100",
+        "acceleratorCount": 1
+      },
+      "replicaCount": 1,
+      "containerSpec": {
+        "imageUri": "us-docker.pkg.dev/vertex-ai/training/pytorch-gpu.2-4.py310:latest",
+        "command": [
+          "/bin/bash",
+          "-c"
+        ],
+        "args": [
+          "pip install --upgrade pip && pip install python-json-logger 'transformers<5.0.0' peft 'trl<0.13.0' datasets accelerate bitsandbytes && mkdir -p ./data ./output && gcloud storage cp gs://bastion-510306-vault/easylm/data/*.jsonl ./data/ && gcloud storage cp gs://bastion-510306-vault/easylm/scripts/train_adapters_gcloud.py . && python3 train_adapters_gcloud.py --base-model qwen-3b --adapter kidsafety --data-dir ./data --output-dir ./output --epochs 3 --batch-size 2 --grad-accum 8 --lr 1.5e-4 --max-seq-len 2048 --lora-r 16 --lora-alpha 32 --gradient-checkpointing && gcloud storage cp -r ./output/* gs://cloud-ai-platform-a75ae046-b3be-4949-bb56-de35a075764f/models/qwen-3b/adapters/kidsafety/"
+        ]
+      }
+    }
+  ],
+  "scheduling": {
+    "strategy": "SPOT"
+  },
+  "baseOutputDirectory": {
+    "outputUriPrefix": "gs://cloud-ai-platform-a75ae046-b3be-4949-bb56-de35a075764f/jobs/kidsafety-qwen-3b"
+  }
+}

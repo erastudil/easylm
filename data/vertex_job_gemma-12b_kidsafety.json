@@ -1,0 +1,28 @@
+{
+  "displayName": "easylm-lora-kidsafety-gemma-12b",
+  "jobSpec": {
+    "workerPoolSpecs": [
+      {
+        "machineSpec": {
+          "machineType": "a2-highgpu-1g",
+          "acceleratorType": "NVIDIA_TESLA_A100",
+          "acceleratorCount": 1
+        },
+        "replicaCount": 1,
+        "containerSpec": {
+          "imageUri": "us-docker.pkg.dev/vertex-ai/training/pytorch-gpu.2-4.py311:latest",
+          "command": [
+            "/bin/bash",
+            "-c"
+          ],
+          "args": [
+            "pip install --upgrade pip && pip install transformers peft trl datasets accelerate bitsandbytes && python3 -m train_adapters_gcloud --base-model gemma-12b --adapter kidsafety --data-dir gs://bastion-510306-vault/easylm/data --output-dir gs://cloud-ai-platform-a75ae046-b3be-4949-bb56-de35a075764f/models/gemma-12b/adapters/kidsafety --epochs 3 --batch-size 4 --grad-accum 4 --lr 2e-4 --lora-r 16 --lora-alpha 32"
+          ]
+        }
+      }
+    ],
+    "baseOutputDirectory": {
+      "outputUriPrefix": "gs://cloud-ai-platform-a75ae046-b3be-4949-bb56-de35a075764f/jobs/kidsafety-gemma-12b"
+    }
+  }
+}

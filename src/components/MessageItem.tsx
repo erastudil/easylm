@@ -59,6 +59,18 @@ export const MessageItem: React.FC<MessageItemProps> = ({ message, streaming, on
           />
         )}
 
+        {/* Live reasoning status indicator during in-flight thinking before content arrives */}
+        {!isUser && !message.content && message.thinking && streaming && (
+          <div className="thought-live-indicator flex items-center gap-2 py-2 px-3 my-2 rounded-lg bg-purple-950/20 border border-purple-800/30 text-xs text-purple-300 font-mono">
+            <span className="inline-block w-2 h-2 rounded-full bg-purple-400 animate-ping"></span>
+            <span className="font-semibold text-purple-200">Reasoning in progress...</span>
+            <span className="text-purple-400/80 truncate max-w-[280px]">
+              {message.thinking.split(/\r?\n/).filter(Boolean).pop() || 'Thinking...'}
+            </span>
+            <span className="text-zinc-500 ml-auto">~{Math.ceil(message.thinking.length / 4)} tokens</span>
+          </div>
+        )}
+
         {/* Markdown Content rendering */}
         {isUser ? (
           <div className="whitespace-pre-wrap leading-relaxed">

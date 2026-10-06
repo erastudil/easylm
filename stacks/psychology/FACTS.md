@@ -81,6 +81,22 @@ openness to experience : Intellectual curiosity, aesthetic sensitivity, imaginat
 
 cognitive restructuring : Identifying and systematically testing cognitive distortions - . // door https://plato.stanford.edu/entries/cognitive-science/ // ref 10.2 cognitive behavioral therapy cbt
 
+privileged communication : Legal doctrine protecting confidential disclosures made by clients to licensed psychotherapists from forced disclosure in judicial proceedings. // door https://en.wikipedia.org/wiki/Wilhelm_Wundt // ref 10.3 clinical ethics, confidentiality & documentation standards
+
+duty to warn and protect : The legal and ethical exception established in Tarasoff v. Regents of the University of California 1976, obligating clinicians to breach confidentiality to protect an identifiable third party from imminent threat of severe physical harm. // door https://en.wikipedia.org/wiki/Wilhelm_Wundt // ref 10.3 clinical ethics, confidentiality & documentation standards
+
+hipaa privacy and security standards : Federal standards under 45 CFR Part 160 and Part 164 establishing mandatory administrative, physical, and technical safeguards, including AES encryption and access audit logs for electronic protected health information. // door https://en.wikipedia.org/wiki/Wilhelm_Wundt // ref 10.3 clinical ethics, confidentiality & documentation standards
+
+soap note framework : Standardized clinical documentation architecture separating Subjective client statements, Objective clinical observations, Assessment of progress, and Plan for ongoing intervention. // door https://en.wikipedia.org/wiki/Wilhelm_Wundt // ref 10.3 clinical ethics, confidentiality & documentation standards
+
+carl rogers : Founder of person-centered psychotherapy, establishing that therapeutic growth requires therapist congruence, unconditional positive regard, and accurate empathic understanding. // door https://en.wikipedia.org/wiki/Wilhelm_Wundt // ref 10.4 humanistic & person-centered psychotherapy
+
+unconditional positive regard : Non-possessive warmth and total acceptance of the client's emotional experience without judgment, criticism, or diagnostic reduction. // door https://en.wikipedia.org/wiki/Wilhelm_Wundt // ref 10.4 humanistic & person-centered psychotherapy
+
+accurate empathic understanding : The therapist's ability to sense the client's private subjective world as if it were their own, without losing the essential boundary between self and other. // door https://en.wikipedia.org/wiki/Wilhelm_Wundt // ref 10.4 humanistic & person-centered psychotherapy
+
+motivational interviewing : Directive client-centered counseling framework developed by William Miller and Stephen Rollnick for resolving ambivalence and eliciting autonomous internal motivation for change. // door https://en.wikipedia.org/wiki/Wilhelm_Wundt // ref 10.4 humanistic & person-centered psychotherapy
+
 the fundamental attribution error : When observing someone else cut us off in traffic, we attribute their behavior to an intrinsic character flaw "they are a reckless, selfish jerk". When we cut someone off, we attribute our behavior to external situational pressures "I was late to a medical appointment". // door https://en.wikipedia.org/wiki/Wilhelm_Wundt // ref 11.1 fundamental attribution error & self-serving bias
 
 confirmation bias : The instinctive tendency to notice, search for, and remember evidence that confirms our pre-existing beliefs, while ignoring or rationalizing away disconfirming facts. // door https://en.wikipedia.org/wiki/Wilhelm_Wundt // ref 11.1 fundamental attribution error & self-serving bias

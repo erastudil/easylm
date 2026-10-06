@@ -1964,20 +1964,44 @@ describe('ZCABS Canary Nonce Engine', () => {
       }
     });
 
-    it('registers Bonsai 2 in AVAILABLE_MODELS and CUSTOM_MODEL_RECORDS', () => {
-      const bonsai = AVAILABLE_MODELS.find(m => m.id === 'Bonsai-2-27B-MLC');
-      expect(bonsai).toBeDefined();
-      expect(bonsai?.label).toBe('Bonsai 2 27B');
-      expect(bonsai?.vramTier).toBe('16gb');
-      expect(bonsai?.isReasoning).toBe(true);
-      expect(ALLOWED_MODEL_IDS.has('Bonsai-2-27B-MLC')).toBe(true);
+    it('registers Gemma 3 12B Thinking in AVAILABLE_MODELS and excludes Bonsai 2', () => {
+      const gemma12b = AVAILABLE_MODELS.find(m => m.id === 'gemma-3-12b-it-q4f16_1-MLC');
+      expect(gemma12b).toBeDefined();
+      expect(gemma12b?.label).toBe('Gemma 3 12B Thinking');
+      expect(gemma12b?.vramTier).toBe('16gb');
+      expect(gemma12b?.isReasoning).toBe(true);
+      expect(ALLOWED_MODEL_IDS.has('gemma-3-12b-it-q4f16_1-MLC')).toBe(true);
 
-      const customRec = CUSTOM_MODEL_RECORDS.find(m => m.model_id === 'Bonsai-2-27B-MLC');
+      const customRec = CUSTOM_MODEL_RECORDS.find(m => m.model_id === 'gemma-3-12b-it-q4f16_1-MLC');
       expect(customRec).toBeDefined();
+
+      const bonsai = AVAILABLE_MODELS.find(m => m.id === 'Bonsai-2-27B-MLC');
+      expect(bonsai).toBeUndefined();
+
 
       const qwen3b = AVAILABLE_MODELS.find(m => m.id === 'Qwen2.5-3B-Instruct-q4f16_1-MLC');
       expect(qwen3b?.isDefault).toBe(true);
       expect(qwen3b?.isRecommended).toBe(true);
+    });
+
+    it('registers finetuned adapter models in AVAILABLE_MODELS and CUSTOM_MODEL_RECORDS', () => {
+      const adapterIds = [
+        'easylm-hands-qwen2.5-0.5b',
+        'easylm-hands-qwen2.5-3b',
+        'alice-emap-adapter-qwen2.5-3b'
+      ];
+
+      for (const id of adapterIds) {
+        const m = AVAILABLE_MODELS.find(x => x.id === id);
+        expect(m).toBeDefined();
+        expect(m?.isFineTuned).toBe(true);
+        expect(m?.adapterRepo).toBeDefined();
+        expect(ALLOWED_MODEL_IDS.has(id)).toBe(true);
+
+        const customRec = CUSTOM_MODEL_RECORDS.find(x => x.model_id === id);
+        expect(customRec).toBeDefined();
+        expect(customRec?.low_resource_required).toBe(true);
+      }
     });
 
     it('detectDevice recommends Qwen 2.5 3B as default workhorse for discrete GPUs', async () => {

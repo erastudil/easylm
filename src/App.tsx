@@ -907,7 +907,7 @@ export const App: React.FC = () => {
         executedTools.push({
           tool: 'alice',
           query: trimmed,
-          result: `${driven.act} · ${driven.route}\n${driven.text}`,
+          result: `${driven.act} · ${driven.route}\n\n${driven.text}`,
           durationMs: 0,
           isError: false
         });

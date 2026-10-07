@@ -112,7 +112,6 @@ export function drawSvg(prompt: string): string {
     ? `<text x="160" y="250" text-anchor="middle" font-family="sans-serif" font-size="20" fill="#1c1c1c">${safe}</text>`
     : '';
   return [
-    '<?xml version="1.0" encoding="UTF-8"?>',
     '<svg xmlns="http://www.w3.org/2000/svg" width="320" height="280" viewBox="0 0 320 280">',
     '<rect width="320" height="280" fill="#fbfbfb"/>',
     shape,

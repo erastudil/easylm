@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { aliceDrive } from '../src/engine/alice_drive';
+import { renderMarkdownSafe } from '../src/engine/markdown';
 import { PERSONALITIES } from '../src/data/personalities';
 
 describe('alice drive', () => {
@@ -35,6 +36,10 @@ describe('alice drive', () => {
     expect(hit?.route).toBe('SENSE');
     expect(hit?.text).toContain('<circle');
     expect(hit?.text).toContain('#c0392b');
+    const html = renderMarkdownSafe(`${hit?.act} · ${hit?.route}\n\n${hit?.text || ''}`);
+    expect(html).toContain('<circle');
+    expect(html).toContain('#c0392b');
+    expect(html.toLowerCase()).not.toContain('<script');
   });
 
   it('cites whisper for a speech library question', () => {

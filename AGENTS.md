@@ -1,7 +1,7 @@
 ---
 title: "easylm — dir law"
 summary: "browser WebGPU gift. AGPL. $0. local. The Stacks + Studio."
-last_updated: "2026-09-18"
+last_updated: "2026-10-06"
 status: living · easylm
 ---
 
@@ -31,3 +31,10 @@ GitHub `erastudil/easylm` is SoT. this tree is the working copy.
 ## refuse
 
 homework farms as sources. vendoring NC bodies (MIT OCW) into git. cloud gradebooks. deadline shame. horizontal scroll bars. button parentheticals.
+
+## Cursor Cloud specific instructions
+
+- Dev server: `npm run dev` compiles stacks and courses, then Vite. The port is **5175** (`vite.config.ts`). Pass `--host 0.0.0.0` so a browser outside the VM can open the tab.
+- Gate: `npm test`. CI uses Node 20 (`.github/workflows/test.yml`). Node 22 on the default image passes that suite.
+- `npx tsc --noEmit` and `npm run build` fail on current main. `StackPack` has no `level` (`src/data/stacks_compiled.ts`). `src/services/atmem_scorer.ts` imports `MemoryAtom` and `ScoredAtom`, which `src/types` does not export. CI runs `npm test`.
+- Compiling stacks turns `\r\n` inside `src/data/stacks_compiled.ts` string literals into `\n`. After `npm test` or `npm run dev`, that file shows up in `git status`. `git restore src/data/stacks_compiled.ts` when the only change is the compile.

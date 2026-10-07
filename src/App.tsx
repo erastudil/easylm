@@ -33,6 +33,7 @@ import {
   classifyWebGpuFailure,
   MIN_COMPLETION
 } from './engine/context_budget';
+import { aliceDrive } from './engine/alice_drive';
 import { clockQueryOf, mathExpressionOf, stacksQueryOf, unitConversionOf } from './engine/preflight';
 import { Sidebar } from './components/Sidebar';
 import { SettingsModal } from './components/SettingsModal';
@@ -900,12 +901,29 @@ export const App: React.FC = () => {
       executedTools.push(toolRes);
     }
 
+    if (executedTools.length === 0 && !extendedThinking) {
+      const driven = aliceDrive(trimmed);
+      if (driven) {
+        executedTools.push({
+          tool: 'alice',
+          query: trimmed,
+          result: `${driven.act} · ${driven.route}\n${driven.text}`,
+          durationMs: 0,
+          isError: false
+        });
+      }
+    }
+
     // Prepare assistant response message placeholder
     const assistantMsgId = 'asst-' + Date.now();
     const assistantPlaceholder: Message = {
       id: assistantMsgId,
       role: 'assistant',
-      content: executedTools.length > 0 ? `I've calculated that using in-app tools:\n\n${executedTools[0].result}` : '',
+      content: executedTools.length === 0
+        ? ''
+        : executedTools[0].tool === 'alice'
+          ? executedTools[0].result
+          : `I've calculated that using in-app tools:\n\n${executedTools[0].result}`,
       toolsUsed: executedTools,
       timestamp: Date.now()
     };

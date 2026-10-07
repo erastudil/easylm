@@ -75,6 +75,7 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
 
 /** VRAM figure from web-llm's model record (prebuiltAppConfig or CUSTOM_MODEL_RECORDS), in MB. */
 export function getModelVramMB(modelId: string): number | undefined {
+  if (modelId === 'alice' || modelId === 'alice-mind') return 0;
   const rec =
     CUSTOM_MODEL_RECORDS.find(m => m.model_id === modelId) ||
     prebuiltAppConfig.model_list.find(m => m.model_id === modelId);
@@ -87,6 +88,17 @@ function vramLabel(modelId: string): string {
 }
 
 export const AVAILABLE_MODELS: ModelOption[] = [
+  // Cognitive Mind Tier (In-Browser Graph & Reasoning / Zero GPU requirement)
+  {
+    id: 'alice',
+    label: 'Alice Cognitive Mind',
+    sizeMB: 5,
+    vramEst: vramLabel('alice'),
+    vramTier: '4gb',
+    isRecommended: true,
+    description: 'Deterministic cognitive engine. Cited, verifiable answers from the sovereign stacks.'
+  },
+
   // 6GB - 8GB Tier (Standard / Laptops / 8GB GPU — The Workhorses)
   {
     id: 'Qwen2.5-3B-Instruct-q4f16_1-MLC',
@@ -282,7 +294,7 @@ export function nextSmallerModel(modelId: string, maxMB?: number, exclude?: Read
   const current = getModelVramMB(modelId) ?? Infinity;
   let best: { id: string; mb: number } | undefined;
   for (const m of AVAILABLE_MODELS) {
-    if (m.isReasoning || m.isCoding || m.isFineTuned || m.id === modelId) continue;
+    if (m.isReasoning || m.isCoding || m.isFineTuned || m.id === modelId || m.id === 'alice') continue;
     if (exclude?.has(m.id)) continue;
     const mb = getModelVramMB(m.id);
     if (mb === undefined || mb >= current) continue;

@@ -26,6 +26,7 @@ import {
   setEngineKidMode,
   takeInterruptedLoad
 } from './engine/webllm';
+import { isMindModel, streamMindCompletion, getOrInitMind } from './engine/mind';
 import { dispatchTool, SYSTEM_TOOLS_PROMPT, SYSTEM_TOOLS_PROMPT_KID } from './engine/tools';
 import {
   assembleSystemEnvelope,
@@ -382,9 +383,15 @@ export const App: React.FC = () => {
     setIsGenerating(true);
     setLoadErrorToast(null);
     try {
-      await getOrInitEngine(modelToLoad, (prog) => {
-        setModelProgress(prog);
-      }, contextLimit);
+      if (isMindModel(modelToLoad)) {
+        await getOrInitMind((prog) => {
+          setModelProgress(prog);
+        });
+      } else {
+        await getOrInitEngine(modelToLoad, (prog) => {
+          setModelProgress(prog);
+        }, contextLimit);
+      }
       setIsModelReady(true);
       setSelectedModel(modelToLoad);
     } catch (err: any) {
@@ -967,29 +974,53 @@ export const App: React.FC = () => {
       }
 
       // Start initial stream
-      const result = await streamChatCompletion(
-        turnBudget.messages,
-        modelForProfile(selectedModel, kidSafe),
-        temperature,
-        turnBudget.maxTokens,
-        (delta) => {
-          currentStreamed += delta;
-          const { displayContent, inFlightThinking } = parseStreamedTokens(currentStreamed);
-          // In-flight token update - clean display text and live thinking trace
-          setSessions(prev => prev.map(s => {
-            if (s.id !== activeSession.id) return s;
-            const msgs = [...updatedMessages];
-            msgs.push({
-              ...assistantPlaceholder,
-              content: displayContent,
-              thinking: inFlightThinking
-            });
-            return { ...s, messages: msgs };
-          }));
-        },
-        (prog) => setModelProgress(prog),
-        contextLimit
-      );
+      const result = isMindModel(selectedModel)
+        ? await streamMindCompletion(
+            turnBudget.messages,
+            selectedModel,
+            temperature,
+            turnBudget.maxTokens,
+            (delta) => {
+              currentStreamed += delta;
+              const { displayContent, inFlightThinking } = parseStreamedTokens(currentStreamed);
+              // In-flight token update - clean display text and live thinking trace
+              setSessions(prev => prev.map(s => {
+                if (s.id !== activeSession.id) return s;
+                const msgs = [...updatedMessages];
+                msgs.push({
+                  ...assistantPlaceholder,
+                  content: displayContent,
+                  thinking: inFlightThinking
+                });
+                return { ...s, messages: msgs };
+              }));
+            },
+            (prog) => setModelProgress(prog),
+            contextLimit
+          )
+        : await streamChatCompletion(
+            turnBudget.messages,
+            modelForProfile(selectedModel, kidSafe),
+            temperature,
+            turnBudget.maxTokens,
+            (delta) => {
+              currentStreamed += delta;
+              const { displayContent, inFlightThinking } = parseStreamedTokens(currentStreamed);
+              // In-flight token update - clean display text and live thinking trace
+              setSessions(prev => prev.map(s => {
+                if (s.id !== activeSession.id) return s;
+                const msgs = [...updatedMessages];
+                msgs.push({
+                  ...assistantPlaceholder,
+                  content: displayContent,
+                  thinking: inFlightThinking
+                });
+                return { ...s, messages: msgs };
+              }));
+            },
+            (prog) => setModelProgress(prog),
+            contextLimit
+          );
       setIsModelReady(true);
 
       // Check if model emitted a tool call in any supported format
@@ -1077,29 +1108,53 @@ export const App: React.FC = () => {
             extendedThinking,
             isReasoning: isReasoningModel
           });
-          const finalResult = await streamChatCompletion(
-            followBudget.messages,
-            modelForProfile(selectedModel, kidSafe),
-            temperature,
-            followBudget.maxTokens,
-            (delta) => {
-              followUpStreamed += delta;
-              const { displayContent, inFlightThinking } = parseStreamedTokens(followUpStreamed);
-              setSessions(prev => prev.map(s => {
-                if (s.id !== activeSession.id) return s;
-                const msgs = [...updatedMessages];
-                msgs.push({
-                  ...assistantPlaceholder,
-                  content: displayContent,
-                  thinking: inFlightThinking || result.thinking,
-                  toolsUsed: executedTools
-                });
-                return { ...s, messages: msgs };
-              }));
-            },
-            (prog) => setModelProgress(prog),
-            contextLimit
-          );
+          const finalResult = isMindModel(selectedModel)
+            ? await streamMindCompletion(
+                followBudget.messages,
+                selectedModel,
+                temperature,
+                followBudget.maxTokens,
+                (delta) => {
+                  followUpStreamed += delta;
+                  const { displayContent, inFlightThinking } = parseStreamedTokens(followUpStreamed);
+                  setSessions(prev => prev.map(s => {
+                    if (s.id !== activeSession.id) return s;
+                    const msgs = [...updatedMessages];
+                    msgs.push({
+                      ...assistantPlaceholder,
+                      content: displayContent,
+                      thinking: inFlightThinking || result.thinking,
+                      toolsUsed: executedTools
+                    });
+                    return { ...s, messages: msgs };
+                  }));
+                },
+                (prog) => setModelProgress(prog),
+                contextLimit
+              )
+            : await streamChatCompletion(
+                followBudget.messages,
+                modelForProfile(selectedModel, kidSafe),
+                temperature,
+                followBudget.maxTokens,
+                (delta) => {
+                  followUpStreamed += delta;
+                  const { displayContent, inFlightThinking } = parseStreamedTokens(followUpStreamed);
+                  setSessions(prev => prev.map(s => {
+                    if (s.id !== activeSession.id) return s;
+                    const msgs = [...updatedMessages];
+                    msgs.push({
+                      ...assistantPlaceholder,
+                      content: displayContent,
+                      thinking: inFlightThinking || result.thinking,
+                      toolsUsed: executedTools
+                    });
+                    return { ...s, messages: msgs };
+                  }));
+                },
+                (prog) => setModelProgress(prog),
+                contextLimit
+              );
           setIsModelReady(true);
 
           const finalAssistantMsg: Message = {

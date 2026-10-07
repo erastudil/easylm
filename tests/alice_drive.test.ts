@@ -22,6 +22,33 @@ describe('alice drive', () => {
     expect(aliceDrive('who won the 1998 world series')).toBeNull();
   });
 
+  it('cites a swarm command and does not launch it', () => {
+    const hit = aliceDrive('summon a swarm to review the lattice');
+    expect(hit?.route).toBe('ORCHESTRATE');
+    expect(hit?.text).toContain('hydra swarm');
+    expect(hit?.text).toContain('architect,coder,auditor');
+    expect(hit?.text).toContain('review the lattice');
+  });
+
+  it('draws a red circle as svg', () => {
+    const hit = aliceDrive('draw a red circle');
+    expect(hit?.route).toBe('SENSE');
+    expect(hit?.text).toContain('<circle');
+    expect(hit?.text).toContain('#c0392b');
+  });
+
+  it('cites whisper for a speech library question', () => {
+    const hit = aliceDrive('what library transcribes speech');
+    expect(hit?.source).toBe('oss:whisper');
+    expect(hit?.text).toContain('ffprobe');
+  });
+
+  it('cites playwright for a public page and does not fetch it', () => {
+    const hit = aliceDrive('look at https://example.com/docs');
+    expect(hit?.source).toBe('oss:playwright');
+    expect(hit?.text).toContain('playwright open https://example.com/docs');
+  });
+
   it('ships the generic voices', () => {
     for (const id of ['coder', 'researcher', 'chat', 'writer']) {
       expect(PERSONALITIES.some(voice => voice.id === id)).toBe(true);

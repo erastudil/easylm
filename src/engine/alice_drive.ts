@@ -4,10 +4,11 @@
  */
 
 import { STACK_FACTS, StackFact } from '../data/stack_facts';
+import { drawSvg, readPrompt, searchKnowledge } from './alice_read';
 
 export interface AliceDriveResult {
   act: 'say' | 'cite';
-  route: 'RETRIEVE';
+  route: 'RETRIEVE' | 'ORCHESTRATE' | 'SENSE';
   source: string;
   text: string;
 }
@@ -96,17 +97,57 @@ function citeFact(query: string): StackFact | null {
   return best ? best.card : null;
 }
 
-export function aliceDrive(query: string): AliceDriveResult | null {
+export function aliceDrive(query: string, personality = 'chat'): AliceDriveResult | null {
+  const reading = readPrompt(query, personality);
+  if (reading.frame === 'swarm' || reading.frame === 'agent' || reading.frame === 'serve' || reading.frame === 'mcp') {
+    return {
+      act: 'cite',
+      route: 'ORCHESTRATE',
+      source: `hydra:${reading.frame}`,
+      text: `${reading.command}\nRun that command yourself. This page does not launch a paid swarm or a frontier agent.`
+    };
+  }
+  if (reading.frame === 'browse') {
+    return {
+      act: 'cite',
+      route: 'ORCHESTRATE',
+      source: 'oss:playwright',
+      text: `${reading.command}\nPlaywright opens that public page from Hydra or the Alice session. This page does not fetch it.`
+    };
+  }
+  if (reading.frame === 'draw') {
+    return {
+      act: 'say',
+      route: 'SENSE',
+      source: 'tool:draw',
+      text: drawSvg(query)
+    };
+  }
+
   const feature = featureHit(query);
   if (feature) return feature;
 
   const card = citeFact(query);
+  if (card) {
+    const door = card.door ? ` Door: ${card.door}` : '';
+    return {
+      act: 'cite',
+      route: 'RETRIEVE',
+      source: `stack:${card.slug}:${card.topic}`,
+      text: `${card.topic}: ${card.comment} [Dewey ${card.dewey} · ${card.title}]${door}`
+    };
+  }
+
+  return aliceKnowledge(query);
+}
+
+export function aliceKnowledge(query: string): AliceDriveResult | null {
+  const card = searchKnowledge(query);
   if (!card) return null;
-  const door = card.door ? ` Door: ${card.door}` : '';
   return {
     act: 'cite',
     route: 'RETRIEVE',
-    source: `stack:${card.slug}:${card.topic}`,
-    text: `${card.topic}: ${card.comment} [Dewey ${card.dewey} · ${card.title}]${door}`
+    source: card.card_id,
+    text: `${card.topic}: ${card.comment}`
   };
 }

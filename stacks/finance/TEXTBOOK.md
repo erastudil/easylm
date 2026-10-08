@@ -248,7 +248,7 @@ A negative Cash Conversion Cycle (e.g., Amazon, Dell) means the business collect
 
 ## 4. Time Value of Money & Cash Flow Mathematics
 
-The core axiom of financial mathematics: **A dollar received today is worth more than a dollar received in the future** due to its earning potential (opportunity cost of capital, inflation, and risk).
+The core axiom of financial mathematics : **A dollar received today is worth more than a dollar received in the future** due to its earning potential [opportunity cost of capital, inflation, and risk].
 
 ### 4.1 Discrete and Continuous Compounding
 
@@ -759,3 +759,14 @@ When analyzing any financial situation, contract, or problem, execute this stand
 
 Finance connects present decisions to future outcomes through the discipline of accounting and the mathematics of valuation. Verify the identity, name the rate, evaluate discounted cash flows, and ground every claim in verifiable real economic value.
 
+finance_analysis : Finance & Macroeconomics.
+
+first principles : Time value of money, where a dollar today is worth more than a dollar tomorrow due to potential earnings.
+
+feynman analogy : Imagine a tree that grows apples, where each apple represents a unit of currency, and the tree's growth rate represents the interest rate, illustrating how money can grow over time.
+
+formal law : Net Present Value formula, NPV = Σ^t), where CFt is the cash flow at time t, r is the discount rate, and t is the time period, calculates the present value of future cash flows.
+
+worked check : Step 1, define the variables: CFt = $100, r = 5%, t = 5 years, step 2, apply the NPV formula: NPV = $100 /^1 + $100 /^2 + ... + $100 /^5, step 3, claim: the NPV of the cash flows is approximately $432.95, step 4, numerical verification: using a financial calculator or software, the NPV is indeed $432.95.
+
+official door : Https://www.sec.gov/investor/pubs/bond.htm, official documentation from the US Securities and Exchange Commission on bonds and fixed income securities, providing a primary source for understanding bond valuation and risk assessment in finance.

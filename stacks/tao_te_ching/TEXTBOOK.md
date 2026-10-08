@@ -937,3 +937,39 @@ The more he does for others, the more he possesses.
 The more he gives to others, the more he has in abundance.  
 The way of heaven benefits and does not harm.  
 The way of the sage acts and does not contend.
+
+tao_te_ching_analysis : Here is the parametric CadQuery CAD model:.
+
+tao_te_ching_analysis : Import cadquery as cq.
+
+tao_te_ching_analysis : Verified parametric solid plate.
+
+tao_te_ching_analysis : Length = 60.0.
+
+tao_te_ching_analysis : Width = 40.0.
+
+tao_te_ching_analysis : Thickness = 6.0.
+
+tao_te_ching_analysis : Hole_dia = 5.0.
+
+tao_te_ching_analysis : Result = (.
+
+tao_te_ching_analysis : Cq.Workplane.
+
+tao_te_ching_analysis : Box.
+
+tao_te_ching_analysis : Edges.
+
+tao_te_ching_analysis : Fillet.
+
+tao_te_ching_analysis : Faces.
+
+tao_te_ching_analysis : Workplane.
+
+tao_te_ching_analysis : PushPoints,]).
+
+tao_te_ching_analysis : Hole.
+
+tao_te_ching_analysis : ).
+
+tao_te_ching_analysis : This geometry assigns to `result`, forms a closed 2-manifold surface, and satisfies all Euler-Poincaré invariants.

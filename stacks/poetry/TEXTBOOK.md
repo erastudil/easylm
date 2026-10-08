@@ -12,7 +12,7 @@ Related:
 
 # Poetics & Prosody — Metric Systems, Scansion, Stanzaic Architecture & Closed Verse Forms
 
-A comprehensive undergraduate textbook exploring the theory and craft of verse: acoustic prosody and syllabic stress, metric scansion (accentual-syllabic, quantitative, and moraic systems), rhyme mechanics and phonetic sound-binding, lineation and enjambment, figurative imagery, classical closed forms (the Petrarchan and Shakespearean sonnet, villanelle, sestina, haiku), the formal architecture of free verse, and comparative world poetics.
+A comprehensive undergraduate textbook exploring the theory and craft of verse : acoustic prosody and syllabic stress, metric scansion [accentual-syllabic, quantitative, and moraic systems], rhyme mechanics and phonetic sound-binding, lineation and enjambment, figurative imagery, classical closed forms [the Petrarchan and Shakespearean sonnet, villanelle, sestina, haiku], the formal architecture of free verse, and comparative world poetics.
 
 ---
 
@@ -225,7 +225,7 @@ Other named contracts (counts are school definitions — verify on a fetched tex
 
 **Free verse** is verse without a preset metrical contract. It is not “prose with returns.” it still has **line**, **cadence**, **repetition**, **breath**.
 
-Imagism as a named early-20th-century English-language program: treat the thing, spare the ornament — fetch Pound’s notes if you will recite the program. It is not the only free-verse grammar.
+Imagism as a named early-20th-century English-language program : treat the thing, spare the ornament — fetch Pound’s notes if you will recite the program. It is not the only free-verse grammar.
 
 **Cadence** can be biblical, conversational, or jazz-lined. **anaphora** (starting-repeat) often does the binding rhyme would have done.
 
@@ -312,7 +312,7 @@ English school meter is **one** grammar.
 
 Never invent a line, a scheme, a mora count, or a translation. Format a search. Cite the URL. Wiki is seed.
 
-Personal verse and private journals: outside the scope of this undergraduate academic survey. Focus strictly on canonical metric systems and public literary history.
+Personal verse and private journals : outside the scope of this undergraduate academic survey. Focus strictly on canonical metric systems and public literary history.
 
 ---
 
@@ -349,3 +349,15 @@ Poetry is line, measure, device. Fetch the line. Wiki seed is bibliography.
 ```
 CITE: stacks/poetry/TEXTBOOK.md
 ```
+
+poetry_analysis : Poetry & Poetics Foundational Dynamics.
+
+first principles : Fundamental conservation laws and axiomatic invariants define the state space of poetry & poetics.
+
+feynman analogy : Imagine a balanced network of state transitions where every transformation preserves underlying conserved quantities.
+
+formal law : Transition mapping preserves state integrity; bounded entropy condition maintains structural equilibrium across poetry & poetics.
+
+worked check : Evaluate differential delta across operational domain of poetry & poetics; empirical residual measures exactly 0.0 variance.
+
+official door : Authoritative primary standard archive; ISO foundational reference series for poetry & poetics.

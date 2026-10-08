@@ -269,7 +269,7 @@ describe('AtMem Engine', () => {
 
   describe('course', () => {
 describe('wave 1 courses', () => {
-  it('ships seven complete walks', () => {
+  it('ships eight complete walks', () => {
     const ids = COURSE_PACKS.map(c => c.id).sort();
     expect(ids).toEqual([
       'biology-2e-1',
@@ -278,9 +278,10 @@ describe('wave 1 courses', () => {
       'health-physio-1',
       'math-calc-1',
       'methods-inquiry-1',
+      'philosophy-foundations-1',
       'physics-college-1'
     ].sort());
-    expect(listCourses().length).toBe(7);
+    expect(listCourses().length).toBe(8);
   });
 
   it('each course has ≥8 units, a quiz per unit, midterm, final, 2 essays, 1 project', () => {
@@ -1964,7 +1965,7 @@ describe('ZCABS Canary Nonce Engine', () => {
       }
     });
 
-    it('registers Gemma 3 12B Thinking in AVAILABLE_MODELS and excludes Bonsai 2', () => {
+    it('registers Gemma 3 12B Thinking and Bonsai 2 27B in AVAILABLE_MODELS', () => {
       const gemma12b = AVAILABLE_MODELS.find(m => m.id === 'gemma-3-12b-it-q4f16_1-MLC');
       expect(gemma12b).toBeDefined();
       expect(gemma12b?.label).toBe('Gemma 3 12B Thinking');
@@ -1976,12 +1977,38 @@ describe('ZCABS Canary Nonce Engine', () => {
       expect(customRec).toBeDefined();
 
       const bonsai = AVAILABLE_MODELS.find(m => m.id === 'Bonsai-2-27B-MLC');
-      expect(bonsai).toBeUndefined();
+      expect(bonsai).toBeDefined();
+      expect(bonsai?.label).toBe('Bonsai 2 27B');
+      expect(bonsai?.vramTier).toBe('16gb');
+      expect(bonsai?.isReasoning).toBe(true);
+      expect(ALLOWED_MODEL_IDS.has('Bonsai-2-27B-MLC')).toBe(true);
 
+      const bonsaiRec = CUSTOM_MODEL_RECORDS.find(m => m.model_id === 'Bonsai-2-27B-MLC');
+      expect(bonsaiRec).toBeDefined();
 
       const qwen3b = AVAILABLE_MODELS.find(m => m.id === 'Qwen2.5-3B-Instruct-q4f16_1-MLC');
       expect(qwen3b?.isDefault).toBe(true);
       expect(qwen3b?.isRecommended).toBe(true);
+    });
+
+    it('registers Gemma 4 multimodal models in AVAILABLE_MODELS and CUSTOM_MODEL_RECORDS', () => {
+      const gemma4Models = [
+        { id: 'gemma-4-E2B-it-q4f16_1-MLC', label: 'Gemma 4 E2B Instruct', tier: '4gb' },
+        { id: 'gemma-4-E4B-it-q4f16_1-MLC', label: 'Gemma 4 E4B Thinking', tier: '4gb' },
+        { id: 'gemma-4-12b-it-q4f16_1-MLC', label: 'Gemma 4 12B Thinking', tier: '16gb' }
+      ];
+
+      for (const gm of gemma4Models) {
+        const m = AVAILABLE_MODELS.find(x => x.id === gm.id);
+        expect(m).toBeDefined();
+        expect(m?.label).toBe(gm.label);
+        expect(m?.vramTier).toBe(gm.tier);
+        expect(m?.isReasoning).toBe(true);
+        expect(ALLOWED_MODEL_IDS.has(gm.id)).toBe(true);
+
+        const rec = CUSTOM_MODEL_RECORDS.find(x => x.model_id === gm.id);
+        expect(rec).toBeDefined();
+      }
     });
 
     it('registers finetuned adapter models in AVAILABLE_MODELS and CUSTOM_MODEL_RECORDS', () => {

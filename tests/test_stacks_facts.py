@@ -68,7 +68,7 @@ class TestStacksFacts(unittest.TestCase):
             slug = p["slug"]
             facts_file = self.stacks_dir / slug / "FACTS.md"
             content = facts_file.read_text(encoding="utf-8")
-            doc = parse_text(content, role=Role.IRON)
+            doc = parse_text(content, role=Role.SYNTAX)
             units = [u for u in doc.units if u.topic]
             self.assertGreaterEqual(len(units), 20, f"Expected at least 20 units in {slug}, got {len(units)}")
             for u in units:

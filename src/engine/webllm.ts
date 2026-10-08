@@ -42,6 +42,46 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
     }
   },
   {
+    model: 'https://huggingface.co/welcoma/gemma-4-E2B-it-q4f16_1-MLC',
+    model_id: 'gemma-4-E2B-it-q4f16_1-MLC',
+    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/gemma-2-2b-it-q4f16_1_cs1k-webgpu.wasm',
+    low_resource_required: true,
+    vram_required_MB: 1650,
+    overrides: {
+      context_window_size: 4096
+    }
+  },
+  {
+    model: 'https://huggingface.co/google/gemma-4-E4B-it',
+    model_id: 'gemma-4-E4B-it-q4f16_1-MLC',
+    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/gemma-2-2b-it-q4f16_1_cs1k-webgpu.wasm',
+    low_resource_required: true,
+    vram_required_MB: 3200,
+    overrides: {
+      context_window_size: 8192
+    }
+  },
+  {
+    model: 'https://huggingface.co/google/gemma-4-12B-it',
+    model_id: 'gemma-4-12b-it-q4f16_1-MLC',
+    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/gemma-2-9b-it-q4f16_1_cs1k-webgpu.wasm',
+    low_resource_required: false,
+    vram_required_MB: 8200,
+    overrides: {
+      context_window_size: 16384
+    }
+  },
+  {
+    model: 'https://huggingface.co/prism-ml/Ternary-Bonsai-2-27B-gguf',
+    model_id: 'Bonsai-2-27B-MLC',
+    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen2-7B-Instruct-q4f16_1_cs1k-webgpu.wasm',
+    low_resource_required: false,
+    vram_required_MB: 6800,
+    overrides: {
+      context_window_size: 16384
+    }
+  },
+  {
     model: 'https://huggingface.co/Bluebarrels/easylm-hands-qwen2.5-0.5b',
     model_id: 'easylm-hands-qwen2.5-0.5b',
     model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen2-0.5B-Instruct-q4f16_1_cs1k-webgpu.wasm',
@@ -138,6 +178,24 @@ export const AVAILABLE_MODELS: ModelOption[] = [
 
   // 4GB Tier (Ultralight / Mobile / Laptops with iGPU)
   {
+    id: 'gemma-4-E2B-it-q4f16_1-MLC',
+    label: 'Gemma 4 E2B Instruct',
+    sizeMB: 1200,
+    vramEst: vramLabel('gemma-4-E2B-it-q4f16_1-MLC'),
+    vramTier: '4gb',
+    isReasoning: true,
+    description: "Google Gemma 4 multimodal model with configurable Thinking Mode and native audio support."
+  },
+  {
+    id: 'gemma-4-E4B-it-q4f16_1-MLC',
+    label: 'Gemma 4 E4B Thinking',
+    sizeMB: 2400,
+    vramEst: vramLabel('gemma-4-E4B-it-q4f16_1-MLC'),
+    vramTier: '4gb',
+    isReasoning: true,
+    description: "Google Gemma 4 dense reasoning model with native Thinking Mode for 4GB VRAM devices."
+  },
+  {
     id: 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',
     label: 'Qwen 2.5 1.5B Instruct',
     sizeMB: 1100,
@@ -188,6 +246,24 @@ export const AVAILABLE_MODELS: ModelOption[] = [
   },
 
   // 8GB - 16GB Tier (High Performance / Power Workstations)
+  {
+    id: 'Bonsai-2-27B-MLC',
+    label: 'Bonsai 2 27B',
+    sizeMB: 5950,
+    vramEst: vramLabel('Bonsai-2-27B-MLC'),
+    vramTier: '16gb',
+    isReasoning: true,
+    description: 'PrismML ternary 27B intelligence compressed to ~5.9GB weights. 16GB VRAM top-end sovereign synthesis model.'
+  },
+  {
+    id: 'gemma-4-12b-it-q4f16_1-MLC',
+    label: 'Gemma 4 12B Thinking',
+    sizeMB: 7100,
+    vramEst: vramLabel('gemma-4-12b-it-q4f16_1-MLC'),
+    vramTier: '16gb',
+    isReasoning: true,
+    description: 'Google Gemma 4 flagship 12B multimodal reasoning model with extended Thinking Mode and 256K context.'
+  },
   {
     id: 'gemma-3-12b-it-q4f16_1-MLC',
     label: 'Gemma 3 12B Thinking',

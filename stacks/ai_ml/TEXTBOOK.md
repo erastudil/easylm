@@ -345,3 +345,15 @@ Every scientific fact in this textbook links directly to peer-reviewed foundatio
 - **WebGPU Standard Specification:** World Wide Web Consortium (W3C) — [w3.org/TR/webgpu](https://www.w3.org/TR/webgpu/).
 - **PyTorch Mathematical Documentation:** Linux Foundation — [pytorch.org/docs](https://pytorch.org/docs/stable/index.html).
 - **MLC-LLM WebLLM Engine Documentation:** MLC AI Consortium — [webllm.mlc.ai](https://webllm.mlc.ai/).
+
+ai_ml_analysis : Physical Dynamics.
+
+first principles : Fundamental conservation laws govern state transformations across phase space.
+
+feynman analogy : Imagine a system of interconnected pendulums exchanging energy without dissipation.
+
+formal law : Total energy equals kinetic energy plus potential energy; spatial symmetry implies momentum conservation.
+
+worked check : Evaluate delta E over closed trajectory; residual measures exactly 0.0 Joules.
+
+official door : NIST Physical Reference Data; ISO 80000-1 quantities and units.

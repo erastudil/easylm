@@ -91,7 +91,7 @@ just-in-time & kanban : Pull-based scheduling where parts are produced only when
 
 physical evidence : Packaging quality, physical store environment, digital UI glass. // door https://www.sba.gov/ // ref 10.2 the extended marketing mix 7 ps
 
-separate the people from the problem : Be soft on the people, hard on the problem. // door https://www.sba.gov/ // ref 11.2 principled negotiation fisher & ury / harvard negotiation project
+separate the people from the problem : Soft on the people, hard on the problem. // door https://www.sba.gov/ // ref 11.2 principled negotiation fisher & ury / harvard negotiation project
 
 focus on interests, not positions : Positions are what parties say they want; interests are the underlying needs, desires, and fears driving those demands. // door https://www.sba.gov/ // ref 11.2 principled negotiation fisher & ury / harvard negotiation project
 

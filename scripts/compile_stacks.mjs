@@ -73,6 +73,8 @@ const body =
   '  title: string;\n' +
   '  category: string;\n' +
   '  keywords: string[];\n' +
+  '  level?: string;\n' +
+  '  floor_age?: number;\n' +
   '  textbook: string;\n' +
   '  links: string;\n' +
   '  units?: StackUnit[];\n' +

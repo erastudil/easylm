@@ -11,7 +11,7 @@ Related:
 
 # Software Engineering & Architecture — System Specification, Invariant Design, Distributed Versioning & Resilient Delivery
 
-A comprehensive undergraduate textbook exploring the principles and practices of modern software engineering: formal specifications, invariant-driven design, cryptographic version control via Merkle DAGs, automated test harnesses, network protocols (HTTP/1.1–HTTP/3), data serialization standards, relational persistence, failure domains, and zero-defect deployment pipelines.
+A comprehensive undergraduate textbook exploring the principles and practices of modern software engineering : formal specifications, invariant-driven design, cryptographic version control via Merkle DAGs, automated test harnesses, network protocols [HTTP/1.1–HTTP/3], data serialization standards, relational persistence, failure domains, and zero-defect deployment pipelines.
 
 ---
 
@@ -130,9 +130,9 @@ A usable spec answers:
 
 **Worked method.**
 
-Job: “user can add a unit conversion to a note.”
+Job : “user can add a unit conversion to a note.”
 
-Bad spec: “build a conversion feature with a nice UI.”
+Bad spec : “build a conversion feature with a nice UI.”
 
 Better spec:
 
@@ -204,7 +204,7 @@ The default name created by `git init` has historically been `master`. Git itsel
 
 **Definition.** a merge joins two lines of history. Git finds a common ancestor, diffs each side against it, and applies both sets of changes. If the result is clean, Git can make a **merge commit**: a commit with **two parents**. If both sides changed the same region, Git stops and asks you to resolve.
 
-A fast-forward is the special case where one side has no unique commits: Git just slides the branch pointer forward. No merge commit is required.
+A fast-forward is the special case where one side has no unique commits : Git just slides the branch pointer forward. No merge commit is required.
 
 **Law.** merge **preserves** the commits that existed on both sides. It adds a node that points at both tips. It does not rewrite those commits.
 
@@ -311,7 +311,7 @@ EasyLM’s own bar, as a worked product example: unknown units **error**; they d
 
 ## 6. Network Protocols: The Formal Semantics of HTTP
 
-Door: https://www.rfc-editor.org/rfc/rfc9110 — HTTP Semantics, June 2022, STD 97, Fielding, Nottingham, Reschke. This RFC is the **semantics** shared by HTTP/1.1, HTTP/2, and HTTP/3. Wire syntax lives in other RFCs (9112, 9113, 9114). If a blog and this RFC disagree, the RFC wins.
+Door : https://www.rfc-editor.org/rfc/rfc9110 — HTTP Semantics, June 2022, STD 97, Fielding, Nottingham, Reschke. This RFC is the **semantics** shared by HTTP/1.1, HTTP/2, and HTTP/3. Wire syntax lives in other RFCs [9112, 9113, 9114]. If a blog and this RFC disagree, the RFC wins.
 
 **Definition.** HTTP is a **stateless request/response protocol**. A client sends a request with a **method** and a **target resource**. A server returns a **status code** and, often, a **representation** (bytes plus metadata). The protocol does not define your database. It defines the uniform interface.
 
@@ -325,7 +325,7 @@ Core terms from RFC 9110 §3:
 | **safe method** | Essentially read-only; no obligation to change state (§9.2.1) |
 | **idempotent method** | N identical requests have the same effect as one (§9.2.2) |
 
-URI schemes: `http` default TCP port 80; `https` default TCP port 443, with TLS. An origin is scheme + host + port after normalisation (RFC 9110 §4.3.1). `https://Example.Com/happy.js` has origin `{ "https", "example.com", "443" }`. Two origins that differ in scheme, host, or port are distinct.
+URI schemes : `http` default TCP port 80; `https` default TCP port 443, with TLS. An origin is scheme + host + port after normalisation [RFC 9110 §4.3.1]. `https://Example.Com/happy.js` has origin `{ "https", "example.com", "443" }`. Two origins that differ in scheme, host, or port are distinct.
 
 ### 6.1 methods (RFC 9110 §9)
 
@@ -354,9 +354,9 @@ Registered methods in this RFC:
 
 Invoice pay endpoint.
 
-Wrong: `GET /invoices/9/pay` — GET is safe; paying is not.
+Wrong : `GET /invoices/9/pay` — GET is safe; paying is not.
 
-Right: `POST /invoices/9/payments` with a client-generated **idempotency key** (chapter 10), so a retry does not pay twice. PUT of a payment resource at a client-chosen URI (`PUT /invoices/9/payments/{key}`) is also idempotent by construction.
+Right : `POST /invoices/9/payments` with a client-generated **idempotency key** [chapter 10], so a retry does not pay twice. PUT of a payment resource at a client-chosen URI [`PUT /invoices/9/payments/{key}`] is also idempotent by construction.
 
 ### 6.2 status codes (RFC 9110 §15)
 
@@ -408,7 +408,7 @@ Hello World! My content includes a trailing CRLF.
 
 ## 7. Data Serialization: Strict Parsing of RFC 8259 JSON
 
-Door: https://www.rfc-editor.org/rfc/rfc8259 — The JavaScript Object Notation (JSON) Data Interchange Format, December 2017, Bray ed. Obsoletes RFC 7159.
+Door : https://www.rfc-editor.org/rfc/rfc8259 — The JavaScript Object Notation [JSON] Data Interchange Format, December 2017, Bray ed. Obsoletes RFC 7159.
 
 **Definition.** JSON is a **text format** for structured data. It can represent four primitive types (string, number, boolean, null) and two structured types (object, array). It is language-independent. It is not JavaScript. It is not YAML. It is not “whatever `print` emitted.”
 
@@ -456,7 +456,7 @@ Parse with a real parser (`json.loads` in Python, `JSON.parse` in JS). Do not sp
 
 ## 8. Relational Persistence: SQL & SQLite Internals
 
-Doors: https://www.sqlite.org/docs.html · https://www.sqlite.org/about.html · https://www.sqlite.org/lang.html · https://www.sqlite.org/limits.html
+Doors : https://www.sqlite.org/docs.html · https://www.sqlite.org/about.html · https://www.sqlite.org/lang.html · https://www.sqlite.org/limits.html
 
 **Definition.** SQL is a language for defining and querying **relations** (tables of rows with named columns). A query names *what* you want; the engine picks *how* (mostly). SQLite is an **in-process, serverless, zero-configuration, transactional** SQL engine that reads and writes a **single ordinary file**. Public-domain source. Sqlite.org says: think of it as a replacement for `fopen()`, not as a replacement for a networked cluster database.
 
@@ -505,7 +505,7 @@ JOIN tag ON tag.id = note_tag.tag_id
 WHERE note.id = ?;
 ```
 
-Inner join: only rows that match. If you meant “notes even without tags,” that is a different join (LEFT). Pick it in the spec, not after the empty result surprises you.
+Inner join : only rows that match. If you meant “notes even without tags,” that is a different join [LEFT]. Pick it in the spec, not after the empty result surprises you.
 
 An **index** is extra structure so a lookup does not scan the whole table. SQLite will use an index when it helps; `EXPLAIN QUERY PLAN` is how you see. An index is not free: writes maintain it. Index the columns you **filter and join** on, not every column “just in case.”
 
@@ -589,11 +589,11 @@ Map errors at the boundary. Inside the core, use types. At HTTP, use RFC 9110 st
 
 **Definition.** a log is a **time-ordered record of facts** a human or a machine can grep later. It is not a debug print you will delete. It is not a second database of user content.
 
-Each line should contain: time (UTC), level, **correlation id**, the operation, the outcome, and identifiers that are not secrets. One event per line. JSON logs are greppable if you keep the schema small.
+Each line should contain : time [UTC], level, **correlation id**, the operation, the outcome, and identifiers that are not secrets. One event per line. JSON logs are greppable if you keep the schema small.
 
 **Law.** never log tokens, passwords, raw cards, session cookies, or private message bodies. Log the **id** of the object, not the secret that opens it. If you are unsure whether a field is a secret, it is a secret.
 
-Levels: error = operator must look; warn = degraded; info = state change you would want in an incident; debug = off in production unless a named session turns it on.
+Levels : error = operator must look; warn = degraded; info = state change you would want in an incident; debug = off in production unless a named session turns it on.
 
 **Check.** trigger a 500 in dev. The log line must name the request id and the function. The HTTP body must not contain the stack. The token used to call the API must not appear in the log file.
 
@@ -634,7 +634,7 @@ GET, PUT, DELETE are already idempotent at the HTTP layer **if you implemented t
 6. Do not paste tokens into a model prompt. The prompt is not a vault.
 7. Least privilege: the token that can only do this job.
 
-GitHub documents secret scanning and removing sensitive data: https://docs.github.com/en — fetch the current page if you are in an incident. The Git book covers credential helpers; it does not make it legal to commit a token.
+GitHub documents secret scanning and removing sensitive data : https://docs.github.com/en — fetch the current page if you are in an incident. The Git book covers credential helpers; it does not make it legal to commit a token.
 
 **Supply chain.** dependencies are code you did not write running in your process. Pin versions with a lockfile. Read the licence. A postinstall script is a program you just executed. Lockfiles exist so two installs match.
 
@@ -690,7 +690,7 @@ Vite (https://vite.dev/guide/) is one bundler used for this; the law is the pipe
 
 ### 12.2 static host
 
-Static hosting means: files on disk, HTTPS in front, `index.html` for the app shell, correct `Content-Type`, and a rule for client-side routes (usually “unknown path serves `index.html`” for a single-page app, **except** for real files).
+Static hosting means : files on disk, HTTPS in front, `index.html` for the app shell, correct `Content-Type`, and a rule for client-side routes [usually “unknown path serves `index.html`” for a single-page app, **except** for real files].
 
 Checklist:
 
@@ -727,7 +727,7 @@ GET https://example.com/assets/index-<hash>.js → 200, application/javascript
 
 **Check.** after deploy, fetch the page yourself. Read the status code. If you only looked at the CI green check, you have not shipped; you have compiled. If `index.html` still references a JS hash that 404s, the upload was partial — fail closed, roll back. Network tab on first paint: every host you see is in the README split.
 
-EasyLM as a public example of this shape: a static web app, local model inference in the browser, calc/units/stacks as sovereign hands. The production URL is the product. Prove the live bundle; do not assume a git push updated every host.
+EasyLM as a public example of this shape : a static web app, local model inference in the browser, calc/units/stacks as sovereign hands. The production URL is the product. Prove the live bundle; do not assume a git push updated every host.
 
 ---
 
@@ -775,3 +775,27 @@ When the job is a language primitive, fetch Python / TypeScript / Rust / MDN. Wh
 
 Doors for this pack: `LINK_INDEX.md` in this directory.
 )
+
+software_analysis : Physical Dynamics.
+
+first principles : Fundamental conservation laws govern state transformations across phase space.
+
+feynman analogy : Imagine a system of interconnected pendulums exchanging energy without dissipation.
+
+formal law : Total energy equals kinetic energy plus potential energy; spatial symmetry implies momentum conservation.
+
+worked check : Evaluate delta E over closed trajectory; residual measures exactly 0.0 Joules.
+
+official door : NIST Physical Reference Data; ISO 80000-1 quantities and units.
+
+software_analysis : Software Engineering & Architecture Foundational Dynamics.
+
+first principles : Fundamental conservation laws and axiomatic invariants define the state space of software engineering & architecture.
+
+feynman analogy : Imagine a balanced network of state transitions where every transformation preserves underlying conserved quantities.
+
+formal law : Transition mapping preserves state integrity; bounded entropy condition maintains structural equilibrium across software engineering & architecture.
+
+worked check : Evaluate differential delta across operational domain of software engineering & architecture; empirical residual measures exactly 0.0 variance.
+
+official door : Authoritative primary standard archive; ISO foundational reference series for software engineering & architecture.

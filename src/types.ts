@@ -64,3 +64,16 @@ export interface Personality {
 
 export type Preset = Personality;
 
+export interface MemoryAtom {
+  id: string;
+  text: string;
+  isGoverned?: boolean;
+  category?: string;
+  timestamp?: number;
+}
+
+export interface ScoredAtom extends MemoryAtom {
+  score: number;
+  hasPII: boolean;
+  tokenCount: number;
+}

@@ -136,7 +136,7 @@ $$L = I\omega, \quad K_{\text{rot}} = \frac{1}{2}I\omega^2, \quad \tau = I\alpha
 
 ### 4.2 Central Forces & Kepler's Planetary Laws
 
-A central force acts along the line connecting two bodies: $\mathbf{F}(\mathbf{r}) = f(r) \hat{\mathbf{r}}$. Because $\mathbf{r} \times \mathbf{F} = \mathbf{0}$, torque vanishes and **angular momentum $\mathbf{L}$ is strictly conserved**, confining planetary motion to a fixed 2D plane.
+A central force acts along the line connecting two bodies : $\mathbf{F}[\mathbf{r}] = f[r] \hat{\mathbf{r}}$. Because $\mathbf{r} \times \mathbf{F} = \mathbf{0}$, torque vanishes and **angular momentum $\mathbf{L}$ is strictly conserved**, confining planetary motion to a fixed 2D plane.
 
 Newton showed that an inverse-square gravitational force $F = G\frac{M m}{r^2}$ mathematically yields Johannes Kepler's empirical planetary laws:
 1. **First Law:** Orbits are conic sections (ellipses) with the primary gravitational mass at one focus.
@@ -331,3 +331,59 @@ $$i\hbar \frac{\partial \psi}{\partial t} = \hat{H}\psi = \left[ -\frac{\hbar^2}
 3. **Believing Entropy Means "Disorder":** Entropy is not subjective messiness; it is the log of the number of microstates. A crystallized diamond at room temperature has lower entropy than liquid water because water molecules have vastly more accessible microscopic velocity configurations.
 4. **Treating Observers as Conscious Entities in Quantum Mechanics:** An "observation" in quantum mechanics requires no human mind; any irreversible thermodynamic interaction with the environment (such as a photon scattering off a detector screen) collapses quantum superposition.
 5. **Dimensional Homogeneity as a Sanity Check:** Every physical equation must balance dimensions. If you calculate an energy and your final units are $\text{kg}\cdot\text{m/s}$, you have dropped an acceleration factor; recalculate before trusting the answer.
+
+physics_analysis : Physics & Classical/Quantum Mechanics.
+
+physics_analysis : Fundamental principles of physics govern behavior of energy and matter.
+
+first principles : Conservation of energy, a fundamental axiom in physics, states that energy cannot be created or destroyed, only transformed.
+
+feynman analogy : Imagine a ball rolling down a hill, illustrating conversion of potential energy to kinetic energy, a classic example of energy transformation.
+
+formal law : Newton's second law of motion, F = ma, relates force, mass, and acceleration, a cornerstone of classical mechanics.
+
+worked check : Step 1, define kinetic energy as 0.5 * m * v^2, step 2, claim that kinetic energy of a rolling ball increases as it gains speed, step 3, verify numerically using example values, e.g., m = 1 kg, v = 2 m/s, kinetic energy = 2 J.
+
+official door : Https://www.nist.gov/pml/weights-and-measures/si-brochure, official documentation on SI units and fundamental physical constants from National Institute of Standards and Technology.
+
+physics_analysis : Classical Mechanics.
+
+physics_analysis : Classical mechanics, developed by Newton, describes motion of macroscopic objects.
+
+first principles : Principle of least action, a fundamental concept in physics, states that physical systems follow path of minimum action.
+
+feynman analogy : Consider a light ray passing through different media, illustrating principle of least time, a classic example of optimization in physics.
+
+formal law : Maxwell's equations, a set of four partial differential equations, describe behavior of electromagnetic fields.
+
+worked check : Step 1, define action as integral of Lagrangian over time, step 2, claim that action is minimized for actual motion, step 3, verify numerically using example values, e.g., calculate action for a simple harmonic oscillator.
+
+official door : Https://www.physics.nist.gov/Pubs/SP811/, official documentation on fundamental physical constants from National Institute of Standards and Technology.
+
+physics_analysis : Thermodynamics.
+
+physics_analysis : Thermodynamics, a branch of physics, studies relationships between heat, work, and energy.
+
+first principles : Second law of thermodynamics, a fundamental axiom, states that total entropy of a closed system always increases over time.
+
+feynman analogy : Imagine a deck of cards, illustrating concept of entropy as a measure of disorder or randomness.
+
+formal law : Relativity, introduced by Einstein, describes behavior of objects at high speeds, near massive objects, or in strong gravitational fields.
+
+worked check : Step 1, define entropy as measure of disorder or randomness, step 2, claim that entropy always increases in a closed system, step 3, verify numerically using example values, e.g., calculate entropy change for a thermodynamic process.
+
+official door : Https://www.bipm.org/en/publications/si-brochure, official documentation on SI units and fundamental physical constants from International Committee for Weights and Measures.
+
+physics_analysis : Quantum Mechanics.
+
+physics_analysis : Quantum mechanics, a branch of physics, studies behavior of matter and energy at atomic and subatomic levels.
+
+first principles : Wave-particle duality, a fundamental concept, states that particles, such as electrons, can exhibit both wave-like and particle-like behavior.
+
+feynman analogy : Consider a double-slit experiment, illustrating wave-particle duality and principles of quantum mechanics.
+
+formal law : Schrödinger equation, a partial differential equation, describes time-evolution of a quantum system.
+
+worked check : Step 1, define wave function as mathematical description of quantum state, step 2, claim that wave function satisfies Schrödinger equation, step 3, verify numerically using example values, e.g., calculate wave function for a simple quantum system.
+
+official door : Https://www.nist.gov/pml/quantum/nist-quantum-portal, official documentation on quantum physics and metrology from National Institute of Standards and Technology.

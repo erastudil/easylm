@@ -323,3 +323,8 @@ methods_analysis : Official door to the scientific method is the National Scienc
 methods_analysis : The NSF provides funding and support for scientific research and education, and its guidelines reflect the principles of the scientific method.
 
 methods_analysis : These guidelines emphasize the importance of empirical evidence, skepticism, and objectivity in scientific inquiry, and provide a framework for conducting rigorous and reliable scientific research.
+
+- **Popper falsifiability criterion**: scientific demarcation requires hypotheses structurally permit empirical refutation.
+- **Duhem-Quine underdetermination thesis**: isolated hypotheses resist definitive falsification due to reliance on background assumptions.
+- **Bayesian belief updating**: formal probabilistic framework adjusts prior convictions strictly according to incoming empirical evidence.
+

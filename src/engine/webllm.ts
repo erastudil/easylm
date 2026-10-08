@@ -392,8 +392,22 @@ export function takeInterruptedLoad(): string | null {
 export const EASYLM_APP_CONFIG: AppConfig = {
   ...prebuiltAppConfig,
   model_list: [
-    ...prebuiltAppConfig.model_list.filter(m => ALLOWED_MODEL_IDS.has(m.model_id)),
-    ...CUSTOM_MODEL_RECORDS
+    ...CUSTOM_MODEL_RECORDS.map(m => ({
+      ...m,
+      overrides: {
+        sliding_window_size: -1,
+        ...m.overrides
+      }
+    })),
+    ...prebuiltAppConfig.model_list
+      .filter(m => ALLOWED_MODEL_IDS.has(m.model_id))
+      .map(m => ({
+        ...m,
+        overrides: {
+          sliding_window_size: -1,
+          ...m.overrides
+        }
+      }))
   ]
 };
 
@@ -905,7 +919,7 @@ export async function getOrInitEngine(
       if (contextWindowSize && contextWindowSize !== currentContextLimit) {
         currentContextLimit = targetContext;
         try {
-          await activeEngine.reload(modelId, { context_window_size: targetContext });
+          await activeEngine.reload(modelId, { context_window_size: targetContext, sliding_window_size: -1 });
           if (!isEngineAlive(activeEngine, modelId)) {
             throw new Error('Engine reload left pipeline uninitialized');
           }
@@ -962,7 +976,8 @@ export async function getOrInitEngine(
             }
           },
           {
-            context_window_size: targetContext
+            context_window_size: targetContext,
+            sliding_window_size: -1
           }
         );
       } catch (firstErr: any) {
@@ -998,7 +1013,8 @@ export async function getOrInitEngine(
               }
             },
             {
-              context_window_size: targetContext
+              context_window_size: targetContext,
+            sliding_window_size: -1
             }
           );
         } else {

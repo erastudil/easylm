@@ -799,3 +799,10 @@ formal law : Transition mapping preserves state integrity; bounded entropy condi
 worked check : Evaluate differential delta across operational domain of software engineering & architecture; empirical residual measures exactly 0.0 variance.
 
 official door : Authoritative primary standard archive; ISO foundational reference series for software engineering & architecture.
+
+- **Paxos consensus**: distributed protocol guarantees agreed state among unreliable networked nodes.
+- **Raft log consensus**: understandable replication algorithm elects leader and maintains sequential commit history.
+- **vector clocks**: logical timestamp mechanism tracks partial ordering of events in asynchronous distributed systems.
+- **Byzantine fault tolerance**: network resilience threshold allows system operation despite arbitrary or malicious node failures.
+- **linearizability**: strict consistency model dictates operations appear instantaneous to all external observers.
+

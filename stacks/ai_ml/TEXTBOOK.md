@@ -357,3 +357,11 @@ formal law : Total energy equals kinetic energy plus potential energy; spatial s
 worked check : Evaluate delta E over closed trajectory; residual measures exactly 0.0 Joules.
 
 official door : NIST Physical Reference Data; ISO 80000-1 quantities and units.
+
+- **speculative decoding**: acceleration technique drafts multiple tokens via small model and verifies simultaneously via large target model.
+- **continuous batching**: dynamic scheduling engine processes incoming requests at iteration level rather than batch level.
+- **KV cache compression**: quantization and pruning reduce memory footprint of stored key-value tensors during long context generation.
+- **FlashAttention-3**: optimized hardware-aware attention algorithm minimizes memory reads and writes via SRAM tiling.
+- **RoPE embeddings**: rotary positional embeddings inject relative sequence position via rotation matrix applied to query and key vectors.
+- **sliding window attention**: bounded context window restricts self-attention to fixed local token range and reduces quadratic complexity.
+

@@ -116,7 +116,7 @@ export const KNOWLEDGE: KnowledgeCard[] = [
       "studio",
       "atmem"
     ],
-    "comment": "EasyLM is the browser app at easylm.app. Inference is WebGPU on the device. The default weight is Qwen 2.5 3B Instruct. Stacks, math, and the clock run before a weight download when the prompt matches them. Studio reads, writes, edits code, graphs, and draws. AtMem keeps typed notes inside about 256 tokens. Kid-safe mode lives here, not in Hydra."
+    "comment": "EasyLM is the browser app at easylm.app. Inference is WebGPU on the device. The default weight is Gemma 4 E4B Thinking. Stacks, math, and the clock run before a weight download when the prompt matches them. Studio reads, writes, edits code, graphs, and draws. AtMem keeps typed notes inside about 256 tokens. Kid-safe mode lives here, not in Hydra."
   },
   {
     "card_id": "house:alice",

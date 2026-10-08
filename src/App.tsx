@@ -1238,7 +1238,7 @@ export const App: React.FC = () => {
       const errorHint = isBudget
         ? `\n\nThis turn does not fit the context window. Raise context in Settings or shorten the prompt.`
         : isOOM
-        ? `\n\nGPU ran out of memory for this model. Switch to Qwen 2.5 1.5B in Settings.`
+        ? `\n\nGPU ran out of memory for this model. Switch to Gemma 4 E2B in Settings.`
         : isGPUProcessDead
         ? `\n\nWebGPU cannot see the GPU. Copy the restart command in the dialog. Save unsaved work first — tabs reload.`
         : isCorruptCache
@@ -1298,7 +1298,7 @@ export const App: React.FC = () => {
     reader.readAsText(file);
   };
 
-  const currentModelLabel = AVAILABLE_MODELS.find(m => m.id === selectedModel)?.label || 'Qwen 2.5 3B';
+  const currentModelLabel = AVAILABLE_MODELS.find(m => m.id === selectedModel)?.label || 'Gemma 4 E4B Thinking';
   const currentPersonality = PERSONALITIES.find(p => p.id === clampPersonalityIdForRole(selectedPersonality, currentProfile.role)) || PERSONALITIES.find(p => p.id === 'socratic_kid') || PERSONALITIES[0];
 
   const chatPane = (

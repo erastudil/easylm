@@ -1,18 +1,18 @@
 ---
 title: "easylm tests — dir law"
-summary: "test suite home for easyLM. unit, integration, invariant, and security fence verification."
-last_updated: "2026-09-14"
+summary: "single-grip deterministic verification home for easyLM per ponytail wu wei."
+last_updated: "2026-10-08"
 status: canon · easylm tests
 ---
 
 # tests
 
-dedicated living home for all EasyLM tests per 5S law.  
+dedicated living home for EasyLM verification per 5S law and ponytail wu wei.  
 tests never live inside `src/`. `src/` stays pure shipping application code.
 
 ## rules
 
-1. **one test home** : all unit, regression, invariant, and preflight tests live here under `tests/`.
-2. **test command** : `npm test` runs `vitest run` targeting `tests/**/*.test.ts`.
-3. **import paths** : imports point explicitly to `../src/engine/...`, `../src/data/...`, `../src/types`, and `../src/shell/...` for phone-tab helpers.
-4. **fences** : tests verify SSRF whitelists, PIN hashing, kidsafe filters, CSP headers, and math sandbox isolation.
+1. **single grip verification** : consolidated deterministic verification executed via `node scripts/verify.mjs` and `verify.ps1`.
+2. **zero fake tests** : synthetic mocks asserting mocked return values denote zero truth value; banned universally; verification requires real runnable execution gates.
+3. **ponytail wu wei** : consolidate verification into single-grip deterministic runner; eliminate sprawling mock catalogs and multi-file test suites.
+4. **truth gate** : software either executes successfully with exit code 0 against real interfaces or software rejected from main branch.

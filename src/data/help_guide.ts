@@ -30,7 +30,7 @@ That is EasyLM. It brings open-weight language models directly into your web bro
 The top navigation bar gives you real-time visibility and control over the local neural engine:
 
 1. **Model Selector Button**:
-   - Displays the currently selected model (such as *Qwen 2.5 3B*).
+   - Displays the currently selected model (such as *Gemma 4 E4B Thinking*).
    - Clicking it opens the **Model & VRAM Menu**, where you can browse models organized by graphics memory tier (from lightweight 4GB models for phones and laptops up to 16GB–32GB powerhouses), or search Hugging Face for community WebLLM models.
 2. **Engine Status Light**:
    - 🔴 **Red ("Not Ready")**: The model has not yet been loaded into graphics memory.
@@ -58,19 +58,19 @@ The top navigation bar gives you real-time visibility and control over the local
     summary: 'How much VRAM does your device have, and which model is your sweet spot?',
     content: `### Choosing the Right Model for Your Machine
 
-Think of your graphics card's Video RAM (VRAM) like a workbench. A 3-billion parameter model needs about 2.5 gigabytes of bench space to lay out its billions of numbers. If you try to fit an oversized model onto a small bench, your browser tab can run out of memory.
+Think of your graphics card's Video RAM (VRAM) like a workbench. A 4-billion parameter model needs about 3.2 gigabytes of bench space to lay out its billions of numbers. If you try to fit an oversized model onto a small bench, your browser tab can run out of memory.
 
 Here is the simple, real-world breakdown:
 
 | GPU / Hardware Tier | Typical Devices | Recommended Models | Why It Fits |
 | :--- | :--- | :--- | :--- |
-| **iPhone / iPad** | iOS Safari | **Llama 3.2 1B**, **SmolLM2 360M** | Fits iPhone: under 1 GB VRAM. |
-| **4GB (Ultralight)** | Android phones, older laptops, Intel UHD iGPU | **Qwen 2.5 1.5B**, **SmolLM2 1.7B**, **DeepSeek-R1 1.5B** | Small footprint (~1.6–1.8 GB VRAM). Snappy on 4GB cards. |
-| **6GB–8GB (Standard)** | Modern laptops (Intel Iris Xe, Radeon 780M, RTX 3050/4050, Apple M1/M2) | **Qwen 2.5 3B (Default)**, **Llama 3.2 3B**, **Phi-3.5 3.8B** | **The sweet spot.** Qwen 3B is light work on an 8GB card—fast, articulate, and highly capable. |
-| **8GB–16GB (High Performance)** | Gaming laptops, desktops with RTX 3060/4060/4070, Apple M Pro | **Gemma 3 12B**, **Gemma 2 9B**, **Qwen 2.5 7B**, **Mistral 7B**, **DeepSeek-R1 7B** | Gemma 3 12B Thinking delivers deep reasoning in ~8.5 GB VRAM. Gemma 9B runs comfortably without straining the card. |
-| **16GB–32GB (Workstation)** | High-end PCs with RTX 3090/4080/4090, Apple M Max/Ultra | **Qwen 2.5 14B**, large context 8B/9B models | Massive context window (8k–16k tokens) with plenty of breathing room. |
+| **iPhone / iPad** | iOS Safari | **Gemma 4 E2B Instruct** | Fits iPhone: low memory footprint. |
+| **4GB (Ultralight)** | Android phones, older laptops, Intel UHD iGPU | **Gemma 4 E2B Instruct**, **Gemma 4 E4B Thinking** | Small footprint (~1.6–3.2 GB VRAM). Snappy on mobile/iGPU. |
+| **6GB–8GB (Standard)** | Modern laptops (Intel Iris Xe, Radeon 780M, RTX 3050/4050, Apple M1/M2) | **Gemma 4 E4B Thinking (Default)**, **Qwen 3 4B Instruct**, **DeepSeek V4 Distill 9B** | **The sweet spot.** Gemma 4 E4B is light work on an 8GB card—fast, articulate, and highly capable. |
+| **8GB–16GB (High Performance)** | Gaming laptops, desktops with RTX 3060/4060/4070, Apple M Pro | **Gemma 4 12B Thinking**, **Gemma 4 26B A4B MoE**, **Bonsai 2 27B** | Gemma 4 12B Thinking delivers deep reasoning in ~8.2 GB VRAM. |
+| **16GB–32GB (Workstation)** | High-end PCs with RTX 3090/4080/4090, Apple M Max/Ultra | **Bonsai 2 27B**, **Gemma 4 26B A4B MoE** | Massive context window with plenty of breathing room. |
 
-*Rule of Thumb: If in doubt, stick with **Qwen 2.5 3B**. It is fast, accurate, and gentle on your battery and fans.*`
+*Rule of Thumb: If in doubt, stick with **Gemma 4 E4B Thinking**. It is fast, accurate, and gentle on your battery and fans.*`
   },
   {
     id: 'tools',
@@ -203,7 +203,7 @@ Tone & Demeanor:
 - Epistemic Integrity: When you do not know a fact or cannot verify it, say so with warmth and honesty. Never invent citations.
 
 Core Features:
-- WebGPU Local Inference: Running Qwen 2.5 3B (default), DeepSeek-R1 (reasoning), or lightweight models.
+- WebGPU Local Inference: Running Gemma 4 E4B Thinking (default), DeepSeek V4 Distill 9B (reasoning), or lightweight models.
 - Deterministic Hands: Calculator (calc), unit converter (units), world clock (datetime), local academic library (stacks), and Studio status (studio).
 - Zero Remote MCP Overhead: Core tools run in-process within the browser sandbox with microsecond execution, zero listening ports, zero daemon crashes, and complete offline immunity.
 - Honest Boundaries: Optional network tools (weather, search, exchange, dictionary) only send lookups when Hands are enabled.

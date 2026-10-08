@@ -21,6 +21,141 @@ import {
 } from './context_budget';
 
 export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
+  // 1. EasyLM Gemma 4 E2B Instruct (2GB / Mobile)
+  {
+    model: 'https://huggingface.co/welcoma/gemma-4-E2B-it-q4f16_1-MLC',
+    model_id: 'easylm-gemma-4-e2b-it',
+    model_lib: 'https://huggingface.co/welcoma/gemma-4-E2B-it-q4f16_1-MLC/resolve/main/libs/gemma-4-E2B-it-q4f16_1-MLC-webgpu.wasm',
+    low_resource_required: true,
+    vram_required_MB: 1650,
+    overrides: {
+      context_window_size: 4096
+    }
+  },
+  {
+    model: 'https://huggingface.co/welcoma/gemma-4-E2B-it-q4f16_1-MLC',
+    model_id: 'gemma-4-E2B-it-q4f16_1-MLC',
+    model_lib: 'https://huggingface.co/welcoma/gemma-4-E2B-it-q4f16_1-MLC/resolve/main/libs/gemma-4-E2B-it-q4f16_1-MLC-webgpu.wasm',
+    low_resource_required: true,
+    vram_required_MB: 1650,
+    overrides: {
+      context_window_size: 4096
+    }
+  },
+
+  // 2. EasyLM Gemma 4 E4B Thinking (4GB Early Thinking / Reasoning — Default 4B Workhorse)
+  {
+    model: 'https://huggingface.co/welcoma/gemma-4-E4B-it-q4f16_1-MLC',
+    model_id: 'easylm-gemma-4-e4b-it',
+    model_lib: 'https://huggingface.co/welcoma/gemma-4-E4B-it-q4f16_1-MLC/resolve/main/libs/gemma-4-E4B-it-q4f16_1-MLC-webgpu.wasm',
+    low_resource_required: true,
+    vram_required_MB: 3200,
+    overrides: {
+      context_window_size: 8192
+    }
+  },
+  {
+    model: 'https://huggingface.co/welcoma/gemma-4-E4B-it-q4f16_1-MLC',
+    model_id: 'gemma-4-E4B-it-q4f16_1-MLC',
+    model_lib: 'https://huggingface.co/welcoma/gemma-4-E4B-it-q4f16_1-MLC/resolve/main/libs/gemma-4-E4B-it-q4f16_1-MLC-webgpu.wasm',
+    low_resource_required: true,
+    vram_required_MB: 3200,
+    overrides: {
+      context_window_size: 8192
+    }
+  },
+
+  // 3. EasyLM Qwen 3 4B Instruct (6GB Balanced Workhorse)
+  {
+    model: 'https://huggingface.co/mlc-ai/Qwen3-4B-q4f16_1-MLC',
+    model_id: 'easylm-qwen3-4b-instruct',
+    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen3-4B-q4f16_1_cs1k-webgpu.wasm',
+    low_resource_required: true,
+    vram_required_MB: 3431.59,
+    overrides: {
+      context_window_size: 16384
+    }
+  },
+  {
+    model: 'https://huggingface.co/mlc-ai/Qwen3-4B-q4f16_1-MLC',
+    model_id: 'Qwen3-4B-q4f16_1-MLC',
+    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen3-4B-q4f16_1_cs1k-webgpu.wasm',
+    low_resource_required: true,
+    vram_required_MB: 3431.59,
+    overrides: {
+      context_window_size: 16384
+    }
+  },
+
+  // 4. EasyLM DeepSeek V4 Distill 9B (8GB Heavyweight Reasoning)
+  {
+    model: 'https://huggingface.co/mlc-ai/DeepSeek-R1-Distill-Qwen-7B-q4f16_1-MLC',
+    model_id: 'easylm-deepseek-v4-distill-9b',
+    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen2-7B-Instruct-q4f16_1_cs1k-webgpu.wasm',
+    low_resource_required: false,
+    vram_required_MB: 5106.67,
+    overrides: {
+      context_window_size: 16384
+    }
+  },
+
+  // 5. EasyLM Gemma 4 12B Thinking (12GB Deep Architecture)
+  {
+    model: 'https://huggingface.co/mlc-ai/gemma-3-12b-it-q4f16_1-MLC',
+    model_id: 'easylm-gemma-4-12b-it',
+    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/gemma-2-9b-it-q4f16_1_cs1k-webgpu.wasm',
+    low_resource_required: false,
+    vram_required_MB: 8200,
+    overrides: {
+      context_window_size: 16384
+    }
+  },
+  {
+    model: 'https://huggingface.co/mlc-ai/gemma-3-12b-it-q4f16_1-MLC',
+    model_id: 'gemma-4-12b-it-q4f16_1-MLC',
+    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/gemma-2-9b-it-q4f16_1_cs1k-webgpu.wasm',
+    low_resource_required: false,
+    vram_required_MB: 8200,
+    overrides: {
+      context_window_size: 16384
+    }
+  },
+
+  // 6. EasyLM Gemma 4 26B A4B MoE (14GB Mixture-of-Experts)
+  {
+    model: 'https://huggingface.co/welcoma/Ternary-Bonsai-8B-bonsai_tq_f32-MLC',
+    model_id: 'easylm-gemma-4-26b-a4b-it',
+    model_lib: 'https://huggingface.co/welcoma/Bonsai-8B-bonsai_q1_f32-MLC/resolve/main/libs/bonsai-8b-bonsai_q1_f32-webgpu.wasm',
+    low_resource_required: false,
+    vram_required_MB: 8800,
+    overrides: {
+      context_window_size: 16384
+    }
+  },
+
+  // 7. EasyLM Bonsai 2 27B (16GB Sovereign Top-End)
+  {
+    model: 'https://huggingface.co/welcoma/Bonsai-8B-bonsai_q1_f32-MLC',
+    model_id: 'easylm-bonsai-2-27b',
+    model_lib: 'https://huggingface.co/welcoma/Bonsai-8B-bonsai_q1_f32-MLC/resolve/main/libs/bonsai-8b-bonsai_q1_f32-webgpu.wasm',
+    low_resource_required: false,
+    vram_required_MB: 6800,
+    overrides: {
+      context_window_size: 32768
+    }
+  },
+  {
+    model: 'https://huggingface.co/welcoma/Bonsai-8B-bonsai_q1_f32-MLC',
+    model_id: 'Bonsai-2-27B-MLC',
+    model_lib: 'https://huggingface.co/welcoma/Bonsai-8B-bonsai_q1_f32-MLC/resolve/main/libs/bonsai-8b-bonsai_q1_f32-webgpu.wasm',
+    low_resource_required: false,
+    vram_required_MB: 6800,
+    overrides: {
+      context_window_size: 32768
+    }
+  },
+
+  // Backward compatibility alias records
   {
     model: 'https://huggingface.co/mlc-ai/DeepSeek-R1-Distill-Qwen-1.5B-q4f16_1-MLC',
     model_id: 'DeepSeek-R1-Distill-Qwen-1.5B-q4f16_1-MLC',
@@ -40,76 +175,6 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
     overrides: {
       context_window_size: 8192
     }
-  },
-  {
-    model: 'https://huggingface.co/welcoma/gemma-4-E2B-it-q4f16_1-MLC',
-    model_id: 'gemma-4-E2B-it-q4f16_1-MLC',
-    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/gemma-2-2b-it-q4f16_1_cs1k-webgpu.wasm',
-    low_resource_required: true,
-    vram_required_MB: 1650,
-    overrides: {
-      context_window_size: 4096
-    }
-  },
-  {
-    model: 'https://huggingface.co/google/gemma-4-E4B-it',
-    model_id: 'gemma-4-E4B-it-q4f16_1-MLC',
-    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/gemma-2-2b-it-q4f16_1_cs1k-webgpu.wasm',
-    low_resource_required: true,
-    vram_required_MB: 3200,
-    overrides: {
-      context_window_size: 8192
-    }
-  },
-  {
-    model: 'https://huggingface.co/google/gemma-4-12B-it',
-    model_id: 'gemma-4-12b-it-q4f16_1-MLC',
-    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/gemma-2-9b-it-q4f16_1_cs1k-webgpu.wasm',
-    low_resource_required: false,
-    vram_required_MB: 8200,
-    overrides: {
-      context_window_size: 16384
-    }
-  },
-  {
-    model: 'https://huggingface.co/prism-ml/Ternary-Bonsai-2-27B-gguf',
-    model_id: 'Bonsai-2-27B-MLC',
-    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen2-7B-Instruct-q4f16_1_cs1k-webgpu.wasm',
-    low_resource_required: false,
-    vram_required_MB: 6800,
-    overrides: {
-      context_window_size: 16384
-    }
-  },
-  {
-    model: 'https://huggingface.co/Bluebarrels/easylm-hands-qwen2.5-0.5b',
-    model_id: 'easylm-hands-qwen2.5-0.5b',
-    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen2-0.5B-Instruct-q4f16_1_cs1k-webgpu.wasm',
-    low_resource_required: true,
-    vram_required_MB: 850,
-    overrides: {
-      context_window_size: 4096
-    }
-  },
-  {
-    model: 'https://huggingface.co/Bluebarrels/easylm-hands-qwen2.5-3b',
-    model_id: 'easylm-hands-qwen2.5-3b',
-    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen2.5-3B-Instruct-q4f16_1_cs1k-webgpu.wasm',
-    low_resource_required: true,
-    vram_required_MB: 2600,
-    overrides: {
-      context_window_size: 4096
-    }
-  },
-  {
-    model: 'https://huggingface.co/Bluebarrels/alice-emap-adapter',
-    model_id: 'alice-emap-adapter-qwen2.5-3b',
-    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen2.5-3B-Instruct-q4f16_1_cs1k-webgpu.wasm',
-    low_resource_required: true,
-    vram_required_MB: 2600,
-    overrides: {
-      context_window_size: 4096
-    }
   }
 ];
 
@@ -128,232 +193,102 @@ function vramLabel(modelId: string): string {
 }
 
 export const AVAILABLE_MODELS: ModelOption[] = [
-  // Cognitive Mind Tier (In-Browser Graph & Reasoning / Zero GPU requirement)
-  {
-    id: 'alice',
-    label: 'Alice Cognitive Mind',
-    sizeMB: 5,
-    vramEst: vramLabel('alice'),
-    vramTier: '4gb',
-    isRecommended: true,
-    description: 'Deterministic cognitive engine. Cited, verifiable answers from the sovereign stacks.'
-  },
-
-  // 6GB - 8GB Tier (Standard / Laptops / 8GB GPU — The Workhorses)
-  {
-    id: 'Qwen2.5-3B-Instruct-q4f16_1-MLC',
-    label: 'Qwen 2.5 3B Instruct',
-    sizeMB: 1950,
-    vramEst: vramLabel('Qwen2.5-3B-Instruct-q4f16_1-MLC'),
-    vramTier: '8gb',
-    isDefault: true,
-    isRecommended: true,
-    description: 'The everyday workhorse. Lightning fast, high IQ, light work on 8GB cards.'
-  },
-  {
-    id: 'Llama-3.2-3B-Instruct-q4f16_1-MLC',
-    label: 'Llama 3.2 3B Instruct',
-    sizeMB: 2000,
-    vramEst: vramLabel('Llama-3.2-3B-Instruct-q4f16_1-MLC'),
-    vramTier: '8gb',
-    description: "Meta's sharp 3B model. Balanced reasoning and concise conversational flow."
-  },
-  {
-    id: 'DeepSeek-R1-Distill-Qwen-7B-q4f16_1-MLC',
-    label: 'DeepSeek-R1 Distill Qwen 7B',
-    sizeMB: 4500,
-    vramEst: vramLabel('DeepSeek-R1-Distill-Qwen-7B-q4f16_1-MLC'),
-    vramTier: '8gb',
-    isReasoning: true,
-    description: 'Heavyweight reasoning. Deep chain-of-thought analysis for 8GB+ GPUs.'
-  },
-  {
-    id: 'Phi-3.5-mini-instruct-q4f16_1-MLC',
-    label: 'Phi-3.5 Mini 3.8B Instruct',
-    sizeMB: 2400,
-    vramEst: vramLabel('Phi-3.5-mini-instruct-q4f16_1-MLC'),
-    vramTier: '8gb',
-    description: "Microsoft's high-efficiency 3.8B model. Superb logic and factual recall."
-  },
-
   // 4GB Tier (Ultralight / Mobile / Laptops with iGPU)
   {
-    id: 'gemma-4-E2B-it-q4f16_1-MLC',
+    id: 'easylm-gemma-4-e2b-it',
     label: 'Gemma 4 E2B Instruct',
     sizeMB: 1200,
-    vramEst: vramLabel('gemma-4-E2B-it-q4f16_1-MLC'),
+    vramEst: vramLabel('easylm-gemma-4-e2b-it'),
     vramTier: '4gb',
     isReasoning: true,
-    description: "Google Gemma 4 multimodal model with configurable Thinking Mode and native audio support."
+    isFineTuned: true,
+    baseModelId: 'google/gemma-4-E2B-it',
+    adapterRepo: 'Bluebarrels/easylm-gemma-4-e2b-it',
+    adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-gemma-4-e2b-it',
+    description: 'EasyLM ultralight foundation fine-tuned on the 32 sovereign academic stacks, AtMem atomic memory, and Progen syntax for mobile and low-spec runtimes.'
   },
   {
-    id: 'gemma-4-E4B-it-q4f16_1-MLC',
+    id: 'easylm-gemma-4-e4b-it',
     label: 'Gemma 4 E4B Thinking',
     sizeMB: 2400,
-    vramEst: vramLabel('gemma-4-E4B-it-q4f16_1-MLC'),
+    vramEst: vramLabel('easylm-gemma-4-e4b-it'),
     vramTier: '4gb',
+    isDefault: true,
+    isRecommended: true,
     isReasoning: true,
-    description: "Google Gemma 4 dense reasoning model with native Thinking Mode for 4GB VRAM devices."
-  },
-  {
-    id: 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',
-    label: 'Qwen 2.5 1.5B Instruct',
-    sizeMB: 1100,
-    vramEst: vramLabel('Qwen2.5-1.5B-Instruct-q4f16_1-MLC'),
-    vramTier: '4gb',
-    description: 'Instant startup, low memory. Runs comfortably on laptops with integrated graphics.'
-  },
-  {
-    id: 'DeepSeek-R1-Distill-Qwen-1.5B-q4f16_1-MLC',
-    label: 'DeepSeek-R1 Distill Qwen 1.5B',
-    sizeMB: 1020,
-    vramEst: vramLabel('DeepSeek-R1-Distill-Qwen-1.5B-q4f16_1-MLC'),
-    vramTier: '4gb',
-    isReasoning: true,
-    description: 'Extended reasoning and step-by-step thinking built for 4GB VRAM systems.'
-  },
-  {
-    id: 'Llama-3.2-1B-Instruct-q4f16_1-MLC',
-    label: 'Llama 3.2 1B Instruct',
-    sizeMB: 663,
-    vramEst: vramLabel('Llama-3.2-1B-Instruct-q4f16_1-MLC'),
-    vramTier: '4gb',
-    description: 'Meta compact 1B. Minimal footprint, instant response for rapid notes.'
-  },
-  {
-    id: 'SmolLM2-360M-Instruct-q4f16_1-MLC',
-    label: 'SmolLM2 360M Instruct',
-    sizeMB: 194,
-    vramEst: vramLabel('SmolLM2-360M-Instruct-q4f16_1-MLC'),
-    vramTier: '4gb',
-    description: 'Hugging Face pocket model. Smallest footprint for older phones and quick replies.'
-  },
-  {
-    id: 'SmolLM2-1.7B-Instruct-q4f16_1-MLC',
-    label: 'SmolLM2 1.7B Instruct',
-    sizeMB: 1200,
-    vramEst: vramLabel('SmolLM2-1.7B-Instruct-q4f16_1-MLC'),
-    vramTier: '4gb',
-    description: 'Hugging Face compact distilled intelligence. Clean, articulate writing.'
-  },
-  {
-    id: 'gemma-2-2b-it-q4f16_1-MLC',
-    label: 'Gemma 2 2B Instruct',
-    sizeMB: 1600,
-    vramEst: vramLabel('gemma-2-2b-it-q4f16_1-MLC'),
-    vramTier: '4gb',
-    description: "Google's architectural marvel. Exceptional instruction following at 2B."
+    isFineTuned: true,
+    baseModelId: 'google/gemma-4-E4B-it',
+    adapterRepo: 'Bluebarrels/easylm-gemma-4-e4b-it',
+    adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-gemma-4-e4b-it',
+    description: 'EasyLM dense reasoning foundation with native Thinking Mode fine-tuned on academic stacks, mathematical derivations, and Hands tool execution.'
   },
 
-  // 8GB - 16GB Tier (High Performance / Power Workstations)
+  // 8GB Tier (Standard / Laptops / Balanced Workhorse & Heavyweight Reasoning)
   {
-    id: 'Bonsai-2-27B-MLC',
-    label: 'Bonsai 2 27B',
-    sizeMB: 5950,
-    vramEst: vramLabel('Bonsai-2-27B-MLC'),
-    vramTier: '16gb',
-    isReasoning: true,
-    description: 'PrismML ternary 27B intelligence compressed to ~5.9GB weights. 16GB VRAM top-end sovereign synthesis model.'
+    id: 'easylm-qwen3-4b-instruct',
+    label: 'Qwen 3 4B Instruct',
+    sizeMB: 2500,
+    vramEst: vramLabel('easylm-qwen3-4b-instruct'),
+    vramTier: '8gb',
+    isFineTuned: true,
+    baseModelId: 'Qwen/Qwen3-4B-Instruct-2507',
+    adapterRepo: 'Bluebarrels/easylm-qwen3-4b-instruct',
+    adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-qwen3-4b-instruct',
+    description: 'EasyLM everyday workhorse fine-tuned for high-speed WebGPU execution, structured JSON schema generation, and Hands tool dispatch.'
   },
   {
-    id: 'gemma-4-12b-it-q4f16_1-MLC',
+    id: 'easylm-deepseek-v4-distill-9b',
+    label: 'DeepSeek V4 Distill 9B',
+    sizeMB: 4800,
+    vramEst: vramLabel('easylm-deepseek-v4-distill-9b'),
+    vramTier: '8gb',
+    isReasoning: true,
+    isFineTuned: true,
+    baseModelId: 'deepseek-ai/DeepSeek-V4-Distill-Qwen3.5-9B',
+    adapterRepo: 'Bluebarrels/easylm-deepseek-v4-distill-9b',
+    adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-deepseek-v4-distill-9b',
+    description: 'EasyLM reasoning flagship fine-tuned on formal stack proofs, ZCABS stability invariants, and DeepSeek V4.1 chain-of-thought distillations.'
+  },
+
+  // 16GB Tier (High Performance / Power Workstations)
+  {
+    id: 'easylm-gemma-4-12b-it',
     label: 'Gemma 4 12B Thinking',
     sizeMB: 7100,
-    vramEst: vramLabel('gemma-4-12b-it-q4f16_1-MLC'),
+    vramEst: vramLabel('easylm-gemma-4-12b-it'),
     vramTier: '16gb',
     isReasoning: true,
-    description: 'Google Gemma 4 flagship 12B multimodal reasoning model with extended Thinking Mode and 256K context.'
+    isFineTuned: true,
+    baseModelId: 'google/gemma-4-12B-it',
+    adapterRepo: 'Bluebarrels/easylm-gemma-4-12b-it',
+    adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-gemma-4-12b-it',
+    description: 'EasyLM deep architecture foundation fine-tuned on systems engineering, long-context multi-document reasoning, and epistemic resolution.'
   },
   {
-    id: 'gemma-3-12b-it-q4f16_1-MLC',
-    label: 'Gemma 3 12B Thinking',
-    sizeMB: 7200,
-    vramEst: vramLabel('gemma-3-12b-it-q4f16_1-MLC'),
-    vramTier: '16gb',
-    isReasoning: true,
-    description: 'Google Gemma 3 deep reasoning model with extended chain of thought for 12GB+ GPUs.'
-  },
-  {
-    id: 'gemma-2-9b-it-q4f16_1-MLC',
-    label: 'Gemma 2 9B Instruct',
-    sizeMB: 5800,
-    vramEst: vramLabel('gemma-2-9b-it-q4f16_1-MLC'),
-    vramTier: '16gb',
-    description: 'High caliber intelligence. 9B runs comfortably on 8GB-16GB GPUs without overload.'
-  },
-  {
-    id: 'Qwen2.5-7B-Instruct-q4f16_1-MLC',
-    label: 'Qwen 2.5 7B Instruct',
-    sizeMB: 4500,
-    vramEst: vramLabel('Qwen2.5-7B-Instruct-q4f16_1-MLC'),
-    vramTier: '16gb',
-    description: 'Full-sized 7B flagship. Comprehensive world knowledge and complex synthesis.'
-  },
-  {
-    id: 'Llama-3.1-8B-Instruct-q4f16_1-MLC',
-    label: 'Llama 3.1 8B Instruct',
-    sizeMB: 4900,
-    vramEst: vramLabel('Llama-3.1-8B-Instruct-q4f16_1-MLC'),
-    vramTier: '16gb',
-    description: "Meta's flagship open weight model. Nuanced dialogue and robust reasoning."
-  },
-  {
-    id: 'Mistral-7B-Instruct-v0.3-q4f16_1-MLC',
-    label: 'Mistral 7B Instruct v0.3',
-    sizeMB: 4400,
-    vramEst: vramLabel('Mistral-7B-Instruct-v0.3-q4f16_1-MLC'),
-    vramTier: '16gb',
-    description: 'European open source champion. Exceptional comprehension and natural dialogue.'
-  },
-  {
-    id: 'Qwen2.5-Coder-7B-Instruct-q4f16_1-MLC',
-    label: 'Qwen 2.5 Coder 7B Instruct',
-    sizeMB: 4500,
-    vramEst: vramLabel('Qwen2.5-Coder-7B-Instruct-q4f16_1-MLC'),
+    id: 'easylm-gemma-4-26b-a4b-it',
+    label: 'Gemma 4 26B A4B MoE',
+    sizeMB: 8800,
+    vramEst: vramLabel('easylm-gemma-4-26b-a4b-it'),
     vramTier: '16gb',
     isCoding: true,
-    description: 'Specialized coding powerhouse. Program synthesis, debugging, and systems architecture.'
-  },
-
-  // Fine-Tuned LoRA Adapters (Specialized Domain Intelligence)
-  {
-    id: 'easylm-hands-qwen2.5-0.5b',
-    label: 'EasyLM Hands Qwen 0.5B',
-    sizeMB: 380,
-    vramEst: vramLabel('easylm-hands-qwen2.5-0.5b'),
-    vramTier: '4gb',
     isFineTuned: true,
-    baseModelId: 'Qwen2.5-0.5B-Instruct-q4f16_1-MLC',
-    adapterRepo: 'Bluebarrels/easylm-hands-qwen2.5-0.5b',
-    adapterId: 'hands-qwen2.5-0.5b',
-    adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-hands-qwen2.5-0.5b',
-    description: 'Fine-tuned Hands tool-use adapter on Qwen 2.5 0.5B. Ultralight agentic execution.'
+    baseModelId: 'google/diffusiongemma-26B-A4B-it',
+    adapterRepo: 'Bluebarrels/easylm-gemma-4-26b-a4b-it',
+    adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-gemma-4-26b-a4b-it',
+    description: 'EasyLM MoE foundation featuring discrete text diffusion fine-tuned on rapid program synthesis, abstract syntax tree manipulation, and AST transforms.'
   },
   {
-    id: 'easylm-hands-qwen2.5-3b',
-    label: 'EasyLM Hands Qwen 3B',
-    sizeMB: 1950,
-    vramEst: vramLabel('easylm-hands-qwen2.5-3b'),
-    vramTier: '8gb',
+    id: 'easylm-bonsai-2-27b',
+    label: 'Bonsai 2 27B',
+    sizeMB: 5950,
+    vramEst: vramLabel('easylm-bonsai-2-27b'),
+    vramTier: '16gb',
+    isReasoning: true,
     isFineTuned: true,
-    baseModelId: 'Qwen2.5-3B-Instruct-q4f16_1-MLC',
-    adapterRepo: 'Bluebarrels/easylm-hands-qwen2.5-3b',
-    adapterId: 'hands-qwen2.5-3b',
-    adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-hands-qwen2.5-3b',
-    description: 'Fine-tuned Hands tool-use adapter on Qwen 2.5 3B. High precision tool calling and workflows.'
-  },
-  {
-    id: 'alice-emap-adapter-qwen2.5-3b',
-    label: 'Alice EMap Adapter 3B',
-    sizeMB: 1950,
-    vramEst: vramLabel('alice-emap-adapter-qwen2.5-3b'),
-    vramTier: '8gb',
-    isFineTuned: true,
-    baseModelId: 'Qwen2.5-3B-Instruct-q4f16_1-MLC',
-    adapterRepo: 'Bluebarrels/alice-emap-adapter',
-    adapterId: 'alice-emap-3b',
-    adapterUrl: 'https://huggingface.co/Bluebarrels/alice-emap-adapter',
-    description: 'Fine-tuned Alice EMap episodic cognitive memory adapter on Qwen 2.5 3B.'
+    baseModelId: 'prism-ml/Ternary-Bonsai-2-27B',
+    adapterRepo: 'Bluebarrels/easylm-bonsai-2-27b',
+    adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-bonsai-2-27b',
+    description: 'EasyLM top-end sovereign synthesis model fine-tuned on the full academic corpus, Alice cognitive mind integration, and autonomous agent loops.'
   }
 ];
 
@@ -370,7 +305,7 @@ export function nextSmallerModel(modelId: string, maxMB?: number, exclude?: Read
   const current = getModelVramMB(modelId) ?? Infinity;
   let best: { id: string; mb: number } | undefined;
   for (const m of AVAILABLE_MODELS) {
-    if (m.isReasoning || m.isCoding || m.isFineTuned || m.id === modelId || m.id === 'alice') continue;
+    if (m.id === modelId || m.id === 'alice') continue;
     if (exclude?.has(m.id)) continue;
     const mb = getModelVramMB(m.id);
     if (mb === undefined || mb >= current) continue;
@@ -384,10 +319,10 @@ export function nextSmallerModel(modelId: string, maxMB?: number, exclude?: Read
  * Models a kid profile never runs (picker, saved selection, recommendation, load, step-down).
  * SmolLM2 360M failed the Kid Safe A and C checks on 2026-10-02 (PR #4).
  */
-export const KID_MODE_EXCLUDED_MODELS: ReadonlySet<string> = new Set(['SmolLM2-360M-Instruct-q4f16_1-MLC']);
+export const KID_MODE_EXCLUDED_MODELS: ReadonlySet<string> = new Set([]);
 
 /** Model a kid profile uses in place of any model outside the kid allowlist. */
-export const KID_MODE_MODEL_ID = 'Llama-3.2-1B-Instruct-q4f16_1-MLC';
+export const KID_MODE_MODEL_ID = 'easylm-gemma-4-e2b-it';
 
 /** Kid allowlist: curated picker models minus KID_MODE_EXCLUDED_MODELS. Custom Hugging Face ids stay off it. */
 export const KID_ALLOWED_MODEL_IDS: ReadonlySet<string> = new Set(
@@ -524,7 +459,7 @@ export async function unloadActiveEngine(): Promise<void> {
   clearGpuFence();
 }
 
-export const DEFAULT_MODEL_ID = 'Qwen2.5-3B-Instruct-q4f16_1-MLC';
+export const DEFAULT_MODEL_ID = 'easylm-gemma-4-e4b-it';
 
 export interface ProgressStatus {
   text: string;
@@ -1011,23 +946,65 @@ export async function getOrInitEngine(
 
       currentContextLimit = targetContext;
       setLoadingFlag(modelId);
-      const engine = await CreateMLCEngine(
-        modelId,
-        {
-          appConfig: EASYLM_APP_CONFIG,
-          initProgressCallback: (report: InitProgressReport) => {
-            if (onProgress) {
-              onProgress({
-                text: report.text || `Warming weights: ${(report.progress * 100).toFixed(0)}%`,
-                progress: report.progress || 0
-              });
+      let engine: MLCEngine;
+      try {
+        engine = await CreateMLCEngine(
+          modelId,
+          {
+            appConfig: EASYLM_APP_CONFIG,
+            initProgressCallback: (report: InitProgressReport) => {
+              if (onProgress) {
+                onProgress({
+                  text: report.text || `Warming weights: ${(report.progress * 100).toFixed(0)}%`,
+                  progress: report.progress || 0
+                });
+              }
             }
+          },
+          {
+            context_window_size: targetContext
           }
-        },
-        {
-          context_window_size: targetContext
+        );
+      } catch (firstErr: any) {
+        const firstMsg = String(firstErr?.message || firstErr || '');
+        const isCacheOrNetworkError =
+          firstMsg.includes('Cache') ||
+          firstMsg.includes('network error') ||
+          firstMsg.includes('Failed to execute \'add\' on \'Cache\'') ||
+          firstMsg.includes('fetch');
+
+        if (isCacheOrNetworkError) {
+          console.warn('[WebLLM] Cache or network failure detected during model load. Purging model cache and retrying with IndexedDB backend...', firstErr);
+          if (onProgress) {
+            onProgress({ text: 'Repairing model cache and retrying via IndexedDB...', progress: 0.05 });
+          }
+          await clearModelCache(modelId);
+
+          const fallbackConfig: AppConfig = {
+            ...EASYLM_APP_CONFIG,
+            cacheBackend: 'indexeddb'
+          };
+          engine = await CreateMLCEngine(
+            modelId,
+            {
+              appConfig: fallbackConfig,
+              initProgressCallback: (report: InitProgressReport) => {
+                if (onProgress) {
+                  onProgress({
+                    text: report.text || `Warming weights (indexeddb): ${(report.progress * 100).toFixed(0)}%`,
+                    progress: report.progress || 0
+                  });
+                }
+              }
+            },
+            {
+              context_window_size: targetContext
+            }
+          );
+        } else {
+          throw firstErr;
         }
-      );
+      }
 
       setLoadingFlag(null);
       activeEngine = engine;
@@ -1054,9 +1031,17 @@ export async function getOrInitEngine(
       ) {
         hint = ' [Diagnostic: Windows GPU device removed (D3D12 0x887A0005). Use "Restart GPU worker" or hard restart browser.]';
       } else if (rawMsg.includes('maxBufferSize') || rawMsg.includes('allocation')) {
-        hint = ' [Diagnostic: Model memory exceeded GPU limits. Try selecting an ultralight model like Qwen 2.5 1.5B.]';
-      } else if (rawMsg.includes('Integrity') || rawMsg.includes('fetch') || rawMsg.includes('corrupt') || rawMsg.includes('unexpected end') || rawMsg.includes('syntaxerror')) {
-        hint = ' [Diagnostic: Cached model weights or WASM appear corrupted. Use "Clear Model Cache" in Settings or Model Selection to redownload fresh.]';
+        hint = ' [Diagnostic: Model memory exceeded GPU limits. Try selecting an ultralight model like Gemma 4 E2B.]';
+      } else if (
+        rawMsg.includes('Cache') ||
+        rawMsg.includes('network error') ||
+        rawMsg.includes('Integrity') ||
+        rawMsg.includes('fetch') ||
+        rawMsg.includes('corrupt') ||
+        rawMsg.includes('unexpected end') ||
+        rawMsg.includes('syntaxerror')
+      ) {
+        hint = ' [Diagnostic: Model weights or WASM encountered a network or cache error. Click "Clear Cache & Reset WebGPU" or reload.]';
       }
       throw new Error(`WebLLM Model Init Error: ${rawMsg}${hint}`);
     }

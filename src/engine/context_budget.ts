@@ -204,15 +204,12 @@ export function stepDownContextWindow(currentWindow: number): number {
   return 512;
 }
 
-export const ULTRALIGHT_FALLBACK_MODEL = 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC';
+export const ULTRALIGHT_FALLBACK_MODEL = 'easylm-gemma-4-e2b-it';
 
 /**
  * Returns a lightweight model ID for automatic OOM fallback
  */
-export function getOomFallbackModel(currentModelId?: string): string {
-  if (currentModelId === ULTRALIGHT_FALLBACK_MODEL) {
-    return 'Llama-3.2-1B-Instruct-q4f16_1-MLC';
-  }
+export function getOomFallbackModel(_currentModelId?: string): string {
   return ULTRALIGHT_FALLBACK_MODEL;
 }
 

@@ -23,7 +23,7 @@ export const HardwareRecommendationModal: React.FC<HardwareRecommendationModalPr
 
   if (!isOpen) return null;
 
-  const recModelId = deviceInfo?.recommendedModel || 'Qwen2.5-3B-Instruct-q4f16_1-MLC';
+  const recModelId = deviceInfo?.recommendedModel || 'easylm-gemma-4-e4b-it';
   const recModel = AVAILABLE_MODELS.find((m) => m.id === recModelId) || AVAILABLE_MODELS[0];
 
   const handleYes = () => {

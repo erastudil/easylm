@@ -12,7 +12,8 @@
     "pretest": "node scripts/compile_stacks.mjs && node scripts/compile_courses.mjs",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "verify": "node scripts/verify.mjs",
+    "test": "node scripts/verify.mjs"
   },
   "dependencies": {
     "@fontsource/cascadia-code": "^5.3.0",

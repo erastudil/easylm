@@ -15,6 +15,7 @@ import {
   stopGeneration,
   ProgressStatus,
   AVAILABLE_MODELS,
+  findModelOption,
   getOrInitEngine,
   isEngineReady,
   resetWebGPUAndCaches,
@@ -340,11 +341,11 @@ export const App: React.FC = () => {
   // Model & Personality Configuration
   const [selectedModel, setSelectedModel] = useState<string>(() => {
     const saved = localStorage.getItem('easylm_selected_model');
+    const kidAtBoot = getActiveProfile().role === 'kid';
     if (saved === 'Bonsai-2-27B-MLC') {
       try { localStorage.removeItem('easylm_selected_model'); } catch {}
-      return DEFAULT_MODEL_ID;
+      return modelForProfile(DEFAULT_MODEL_ID, kidAtBoot);
     }
-    const kidAtBoot = getActiveProfile().role === 'kid';
     if (saved && AVAILABLE_MODELS.some(m => m.id === saved)) return modelForProfile(saved, kidAtBoot);
     return modelForProfile(DEFAULT_MODEL_ID, kidAtBoot);
   });
@@ -356,8 +357,7 @@ export const App: React.FC = () => {
   });
 
   const handleSelectModel = (id: string) => {
-    if (!AVAILABLE_MODELS.some(m => m.id === id)) return;
-    if (kidMode && !isModelAllowedForKid(id)) return;
+    if (kidMode ? !isModelAllowedForKid(id) : !AVAILABLE_MODELS.some(m => m.id === id)) return;
     if (id !== selectedModel) {
       setIsModelReady(false);
     }
@@ -554,7 +554,7 @@ export const App: React.FC = () => {
     setEngineKidMode(kidAtBoot);
     detectDevice({ kidMode: kidAtBoot }).then(detected => {
       const dev = { ...detected };
-      const modelLabel = (id: string) => AVAILABLE_MODELS.find(m => m.id === id)?.label || id;
+      const modelLabel = (id: string) => findModelOption(id)?.label || id;
       // A load that never finished on the last visit (tab killed mid-load): step down one size.
       const interrupted = takeInterruptedLoad();
       // Kid mode: the step-down skips models that failed the Kid Safe checks (SmolLM2 360M).
@@ -572,7 +572,7 @@ export const App: React.FC = () => {
       if (savedModel === 'Bonsai-2-27B-MLC') {
         try { localStorage.removeItem('easylm_selected_model'); } catch {}
         setSelectedModel(dev.recommendedModel || DEFAULT_MODEL_ID);
-      } else if (savedModel && !AVAILABLE_MODELS.some(m => m.id === savedModel)) {
+      } else if (savedModel && !AVAILABLE_MODELS.some(m => m.id === savedModel) && !(kidAtBoot && isModelAllowedForKid(savedModel))) {
         try { localStorage.removeItem('easylm_selected_model'); } catch {}
         setSelectedModel(dev.recommendedModel || DEFAULT_MODEL_ID);
       } else if (!savedModel && dev.recommendedModel) {
@@ -1298,7 +1298,7 @@ export const App: React.FC = () => {
     reader.readAsText(file);
   };
 
-  const currentModelLabel = AVAILABLE_MODELS.find(m => m.id === selectedModel)?.label || 'Gemma 4 E4B Thinking';
+  const currentModelLabel = findModelOption(selectedModel)?.label || 'Gemma 4 E4B Thinking';
   const currentPersonality = PERSONALITIES.find(p => p.id === clampPersonalityIdForRole(selectedPersonality, currentProfile.role)) || PERSONALITIES.find(p => p.id === 'socratic_kid') || PERSONALITIES[0];
 
   const chatPane = (

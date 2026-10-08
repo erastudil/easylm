@@ -51,12 +51,15 @@ export const ModelModal: React.FC<ModelModalProps> = ({
   if (!isOpen) return null;
 
   const pickerModels = modelsForProfile(kidMode);
+  // Kid profiles see the kid allowlist tabs only: Fine-Tuned and Hugging Face stay on adult profiles.
+  const tab = kidMode && (activeTab === 'finetuned' || activeTab === 'hf') ? 'all' : activeTab;
   const filteredModels = pickerModels.filter(m => {
-    if (activeTab === 'all') return true;
-    if (activeTab === '4gb') return m.vramTier === '4gb';
-    if (activeTab === '8gb') return m.vramTier === '8gb';
-    if (activeTab === '16gb') return m.vramTier === '16gb';
-    if (activeTab === 'finetuned') return !!m.isFineTuned;
+    if (kidMode && m.isFineTuned) return false;
+    if (tab === 'all') return true;
+    if (tab === '4gb') return m.vramTier === '4gb';
+    if (tab === '8gb') return m.vramTier === '8gb';
+    if (tab === '16gb') return m.vramTier === '16gb';
+    if (tab === 'finetuned') return !!m.isFineTuned;
     return true;
   });
 
@@ -217,26 +220,26 @@ export const ModelModal: React.FC<ModelModalProps> = ({
             { id: '16gb', label: 'High Performance', count: pickerModels.filter(m => m.vramTier === '16gb').length },
             { id: 'finetuned', label: 'Fine-Tuned', count: pickerModels.filter(m => m.isFineTuned).length },
             { id: 'hf', label: 'Hugging Face', count: undefined }
-          ].filter(tab => !(kidMode && tab.id === 'hf')).map(tab => (
+          ].filter(t => !(kidMode && (t.id === 'hf' || t.id === 'finetuned'))).map(t => (
             <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
+              key={t.id}
+              onClick={() => setActiveTab(t.id as any)}
               className="btn-pill"
               style={{
                 fontSize: '0.75rem',
                 padding: '0.3rem 0.75rem',
-                backgroundColor: activeTab === tab.id ? 'rgba(139, 92, 246, 0.25)' : '#111118',
-                borderColor: activeTab === tab.id ? '#8b5cf6' : 'rgba(139, 92, 246, 0.2)',
-                color: activeTab === tab.id ? '#ffffff' : '#a1a1aa',
+                backgroundColor: tab === t.id ? 'rgba(139, 92, 246, 0.25)' : '#111118',
+                borderColor: tab === t.id ? '#8b5cf6' : 'rgba(139, 92, 246, 0.2)',
+                color: tab === t.id ? '#ffffff' : '#a1a1aa',
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.3rem'
               }}
             >
-              <span>{tab.label}</span>
-              {tab.count !== undefined && (
-                <span style={{ fontSize: '0.68rem', opacity: 0.75 }}>{tab.count}</span>
+              <span>{t.label}</span>
+              {t.count !== undefined && (
+                <span style={{ fontSize: '0.68rem', opacity: 0.75 }}>{t.count}</span>
               )}
             </button>
           ))}
@@ -244,7 +247,7 @@ export const ModelModal: React.FC<ModelModalProps> = ({
 
         {/* Content Area */}
         <div style={{ flex: 1, overflowY: 'auto', paddingRight: '0.25rem' }}>
-          {activeTab === 'hf' && !kidMode ? (
+          {tab === 'hf' && !kidMode ? (
             /* Hugging Face Explorer */
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <div style={{
@@ -488,7 +491,9 @@ export const ModelModal: React.FC<ModelModalProps> = ({
           flexShrink: 0
         }}>
           <div style={{ fontSize: '0.74rem', color: '#71717a', maxWidth: '520px' }}>
-            💡 <strong>Guideline:</strong> Gemma 4 E4B Thinking is the recommended default workhorse for all systems. Gemma 4 12B Thinking is an optional deep reasoning model for ~12GB+ VRAM cards.
+            💡 <strong>Guideline:</strong> {kidMode
+              ? 'Llama 3.2 1B Instruct is the model for kid profiles.'
+              : 'Gemma 4 E4B Thinking is the recommended default workhorse for all systems. Gemma 4 12B Thinking is an optional deep reasoning model for ~12GB+ VRAM cards.'}
           </div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             {onLoadModel && (

@@ -13,13 +13,13 @@ function assert(condition, message) {
   }
 }
 
-console.log('==> [1/4] Running prebuild compilation (Stacks and Courses)...');
+console.log('==> [1/5] Running prebuild compilation (Stacks and Courses)...');
 execSync('node scripts/compile_stacks.mjs', { cwd: ROOT, stdio: 'inherit' });
 execSync('node scripts/compile_courses.mjs', { cwd: ROOT, stdio: 'inherit' });
 assert(existsSync(resolve(ROOT, 'src/data/stacks_compiled.ts')), 'stacks_compiled.ts must exist');
 assert(existsSync(resolve(ROOT, 'src/data/courses_compiled.ts')), 'courses_compiled.ts must exist');
 
-console.log('==> [2/4] Verifying model selection and cache invariants...');
+console.log('==> [2/5] Verifying model selection and cache invariants...');
 const webllmContent = readFileSync(resolve(ROOT, 'src/engine/webllm.ts'), 'utf8');
 
 // 1. Invariant: DEFAULT_MODEL_ID is the 4B Gemma fine-tune
@@ -84,7 +84,7 @@ assert(cspHeader.includes('https://*.cdn.hf.co'), 'vercel.json CSP must include 
 assert(cspHeader.includes('https://*.aws.cdn.hf.co'), 'vercel.json CSP must include https://*.aws.cdn.hf.co');
 assert(cspHeader.includes('https://cdn-lfs.hf.co'), 'vercel.json CSP must include https://cdn-lfs.hf.co');
 
-console.log('==> [3/4] Verifying device recommendations...');
+console.log('==> [3/5] Verifying device recommendations...');
 const deviceContent = readFileSync(resolve(ROOT, 'src/engine/device.ts'), 'utf8');
 assert(
   deviceContent.includes("let recommendedModel = 'easylm-gemma-4-e4b-it';"),
@@ -95,7 +95,10 @@ assert(
   "IOS_RECOMMENDED_MODEL must be 'easylm-gemma-4-e2b-it'"
 );
 
-console.log('==> [4/4] Verifying TypeScript and Vite production bundle (npm run build)...');
+console.log('==> [4/5] Running kid allowlist tests (tests/kid_models.test.ts)...');
+execSync('npx vitest run tests/kid_models.test.ts', { cwd: ROOT, stdio: 'inherit' });
+
+console.log('==> [5/5] Verifying TypeScript and Vite production bundle (npm run build)...');
 execSync('npm run build', { cwd: ROOT, stdio: 'inherit' });
 
 console.log('\n[PASS] All EasyLM invariants and production build verified green.');

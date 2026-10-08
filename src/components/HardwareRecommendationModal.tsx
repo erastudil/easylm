@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { DeviceInfo } from '../engine/device';
-import { AVAILABLE_MODELS } from '../engine/webllm';
+import { AVAILABLE_MODELS, findModelOption } from '../engine/webllm';
 
 export interface HardwareRecommendationModalProps {
   isOpen: boolean;
@@ -24,7 +24,7 @@ export const HardwareRecommendationModal: React.FC<HardwareRecommendationModalPr
   if (!isOpen) return null;
 
   const recModelId = deviceInfo?.recommendedModel || 'easylm-gemma-4-e4b-it';
-  const recModel = AVAILABLE_MODELS.find((m) => m.id === recModelId) || AVAILABLE_MODELS[0];
+  const recModel = findModelOption(recModelId) || AVAILABLE_MODELS[0];
 
   const handleYes = () => {
     onConfirmLoad(rememberSelection);

@@ -301,10 +301,15 @@ export const CURATED_MODEL_IDS: ReadonlySet<string> = new Set(AVAILABLE_MODELS.m
  * Largest general model that is smaller than `modelId` (by vram_required_MB),
  * optionally capped at `maxMB`. Reasoning and coding specialists are skipped.
  */
-export function nextSmallerModel(modelId: string, maxMB?: number, exclude?: ReadonlySet<string>): string | undefined {
+export function nextSmallerModel(
+  modelId: string,
+  maxMB?: number,
+  exclude?: ReadonlySet<string>,
+  candidates: readonly ModelOption[] = AVAILABLE_MODELS
+): string | undefined {
   const current = getModelVramMB(modelId) ?? Infinity;
   let best: { id: string; mb: number } | undefined;
-  for (const m of AVAILABLE_MODELS) {
+  for (const m of candidates) {
     if (m.id === modelId || m.id === 'alice') continue;
     if (exclude?.has(m.id)) continue;
     const mb = getModelVramMB(m.id);
@@ -319,18 +324,75 @@ export function nextSmallerModel(modelId: string, maxMB?: number, exclude?: Read
  * Models a kid profile never runs (picker, saved selection, recommendation, load, step-down).
  * SmolLM2 360M failed the Kid Safe A and C checks on 2026-10-02 (PR #4).
  */
-export const KID_MODE_EXCLUDED_MODELS: ReadonlySet<string> = new Set([]);
+export const KID_MODE_EXCLUDED_MODELS: ReadonlySet<string> = new Set(['SmolLM2-360M-Instruct-q4f16_1-MLC']);
 
 /** Model a kid profile uses in place of any model outside the kid allowlist. */
-export const KID_MODE_MODEL_ID = 'easylm-gemma-4-e2b-it';
+export const KID_MODE_MODEL_ID = 'Llama-3.2-1B-Instruct-q4f16_1-MLC';
 
-/** Kid allowlist: curated picker models minus KID_MODE_EXCLUDED_MODELS. Custom Hugging Face ids stay off it. */
+/**
+ * Kid-only picker records. Llama 3.2 1B Instruct runs from web-llm's prebuilt record and
+ * appears on kid profiles; adult profiles use AVAILABLE_MODELS.
+ */
+export const KID_MODEL_OPTIONS: ModelOption[] = [
+  {
+    id: 'Llama-3.2-1B-Instruct-q4f16_1-MLC',
+    label: 'Llama 3.2 1B Instruct',
+    sizeMB: 663,
+    vramEst: vramLabel('Llama-3.2-1B-Instruct-q4f16_1-MLC'),
+    vramTier: '4gb',
+    description: 'Meta compact 1B. The kid profile model, checked with Kid Safe A/B/C.'
+  }
+];
+
+/** Every model a kid profile can be offered: the curated catalog plus the kid-only records. */
+const KID_CATALOG: readonly ModelOption[] = [
+  ...AVAILABLE_MODELS,
+  ...KID_MODEL_OPTIONS.filter(k => !CURATED_MODEL_IDS.has(k.id))
+];
+
+/**
+ * Kid allowlist, by explicit model id. A kid profile runs these models and only these.
+ * Llama 3.2 1B Instruct is the one model with Kid Safe A/B/C evidence on file (PR #4).
+ * The remaining ids are grandfathered from PR #4 and queued for Kid Safe A/B/C runs,
+ * 7-8B models first; each one counts while it is in the catalog.
+ * A new model joins this list after it passes Kid Safe A/B/C. Fine-tuned models,
+ * adapters and custom Hugging Face ids stay on adult profiles.
+ */
+export const KID_ALLOWED_MODEL_ID_LIST = [
+  'Llama-3.2-1B-Instruct-q4f16_1-MLC',
+  'Qwen2.5-3B-Instruct-q4f16_1-MLC',
+  'Llama-3.2-3B-Instruct-q4f16_1-MLC',
+  'DeepSeek-R1-Distill-Qwen-7B-q4f16_1-MLC',
+  'Phi-3.5-mini-instruct-q4f16_1-MLC',
+  'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',
+  'DeepSeek-R1-Distill-Qwen-1.5B-q4f16_1-MLC',
+  'SmolLM2-1.7B-Instruct-q4f16_1-MLC',
+  'gemma-2-2b-it-q4f16_1-MLC',
+  'gemma-2-9b-it-q4f16_1-MLC',
+  'Qwen2.5-7B-Instruct-q4f16_1-MLC',
+  'Llama-3.1-8B-Instruct-q4f16_1-MLC',
+  'Mistral-7B-Instruct-v0.3-q4f16_1-MLC',
+  'Qwen2.5-Coder-7B-Instruct-q4f16_1-MLC'
+] as const;
+
+function isKidEligibleRecord(m: ModelOption): boolean {
+  return !m.isFineTuned && !m.adapterRepo && !m.baseModelId;
+}
+
 export const KID_ALLOWED_MODEL_IDS: ReadonlySet<string> = new Set(
-  [...CURATED_MODEL_IDS].filter(id => !KID_MODE_EXCLUDED_MODELS.has(id))
+  KID_ALLOWED_MODEL_ID_LIST.filter(id => {
+    const option = KID_CATALOG.find(m => m.id === id);
+    return !!option && isKidEligibleRecord(option) && !KID_MODE_EXCLUDED_MODELS.has(id);
+  })
 );
 
 export function isModelAllowedForKid(modelId: string): boolean {
   return KID_ALLOWED_MODEL_IDS.has(modelId);
+}
+
+/** Picker record for any id in the curated catalog or the kid-only records. */
+export function findModelOption(modelId: string): ModelOption | undefined {
+  return KID_CATALOG.find(m => m.id === modelId);
 }
 
 // Load-path guard: set by the app whenever the active profile changes.
@@ -349,19 +411,21 @@ export function modelForProfile(modelId: string, kidMode: boolean): string {
 
 /** Picker list for the active profile. */
 export function modelsForProfile(kidMode: boolean): ModelOption[] {
-  return kidMode ? AVAILABLE_MODELS.filter(m => isModelAllowedForKid(m.id)) : AVAILABLE_MODELS;
+  return kidMode ? KID_CATALOG.filter(m => isModelAllowedForKid(m.id)) : AVAILABLE_MODELS;
 }
 
 /**
  * Model to select after a load was interrupted (tab killed mid-load).
- * In Kid mode the step-down skips KID_MODE_EXCLUDED_MODELS; when nothing else fits,
+ * In Kid mode the step-down stays on the kid allowlist; when nothing else fits,
  * it returns undefined so the app keeps the current model with auto-load off.
  */
 export function crashStepDownModel(
   interruptedId: string,
   opts: { maxMB?: number; kidMode?: boolean } = {}
 ): string | undefined {
-  return nextSmallerModel(interruptedId, opts.maxMB, opts.kidMode ? KID_MODE_EXCLUDED_MODELS : undefined);
+  return opts.kidMode
+    ? nextSmallerModel(interruptedId, opts.maxMB, undefined, modelsForProfile(true))
+    : nextSmallerModel(interruptedId, opts.maxMB);
 }
 
 // Crash-loop breaker: a tab killed mid-load (iOS memory limit) leaves this key behind.
@@ -392,7 +456,7 @@ export function takeInterruptedLoad(): string | null {
 export const EASYLM_APP_CONFIG: AppConfig = {
   ...prebuiltAppConfig,
   model_list: [
-    ...prebuiltAppConfig.model_list.filter(m => ALLOWED_MODEL_IDS.has(m.model_id)),
+    ...prebuiltAppConfig.model_list.filter(m => ALLOWED_MODEL_IDS.has(m.model_id) || KID_ALLOWED_MODEL_IDS.has(m.model_id)),
     ...CUSTOM_MODEL_RECORDS
   ]
 };
@@ -890,7 +954,7 @@ export async function getOrInitEngine(
   if (!isWebGPUSupported()) {
     throw new Error('WebGPU is not supported or not enabled in this browser. Please use Chrome, Edge, or enable WebGPU.');
   }
-  if (!ALLOWED_MODEL_IDS.has(modelId) || (engineKidMode && !isModelAllowedForKid(modelId))) {
+  if (engineKidMode ? !isModelAllowedForKid(modelId) : !ALLOWED_MODEL_IDS.has(modelId)) {
     throw new Error('That model is not offered in this EasyLM build.');
   }
   if (gpuFence === 'process_dead') {

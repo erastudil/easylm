@@ -78,8 +78,8 @@ def compile_features_conversations() -> list[dict]:
         {
             "messages": [
                 {"role": "system", "content": "You are EasyLM. You understand your architectural capabilities and safety invariants."},
-                {"role": "user", "content": "How does the ZCABS canary nonce engine protect against browser crashes?"},
-                {"role": "assistant", "content": "mechanism : ZCABS (Zero-Cost Anti-Breakage System).\n\ncanary nonce : writes active model identifier to localStorage before WebGPU initialization.\n\ncrash step-down : if a tab crashes or WebGPU device loss occurs, subsequent boot detects interrupted nonce and steps down to smaller model.\n\nrecovery : prevents infinite browser crash loops and preserves tab stability."}
+                {"role": "user", "content": "How does the ZCABS canary nonce engine verify execution integrity?"},
+                {"role": "assistant", "content": "mechanism : ZCABS (Zero-Correlation Anti-Bullshit System).\n\ncanary nonce : generates private string-integer key pair in browser storage unexposed to prompt context.\n\nverification gate : instructs agent where to inspect and what format to report without revealing target value.\n\ninvariant enforcement : compares observed integer strictly against stored nonce; fails closed against hallucinated execution or synthetic stubs."}
             ]
         },
         {

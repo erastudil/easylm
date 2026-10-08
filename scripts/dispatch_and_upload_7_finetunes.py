@@ -149,7 +149,7 @@ Hey, here are the base models we used, and here is what we trained them on:
 
 This adapter was trained on the official EasyLM sovereign instruction-tuning corpus:
 1. **32 Sovereign Academic Stacks**: Mathematics, physics, chemistry, biology, computing, software engineering, law, philosophy, history, and economics structured in Progen topic:comment dialect.
-2. **EasyLM Core Features**: AtMem (local zero-vector IndexedDB atomic memory), ZCABS (Zero-Cost Anti-Breakage canary nonce system), and Anti-Loop Protection.
+2. **EasyLM Core Features**: AtMem (local zero-vector IndexedDB atomic memory), ZCABS (Zero-Correlation Anti-Bullshit canary nonce system), and Anti-Loop Protection.
 3. **Hands Tool Execution**: Structured tool-calling for live web search, Python calculation, bash terminal commands, and Alice Cognitive Mind epistemic queries.
 4. **Hardware Adaptation**: Client-side context budgeting, mobile memory fences (<1GB iOS budget), and Kid Safe boundary guardrails.
 

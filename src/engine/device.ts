@@ -16,9 +16,9 @@ export function isMobileDevice(nav: Partial<Navigator> | undefined = typeof navi
 }
 
 /** iOS Safari ends a tab somewhere around 1.5-3 GB; models above this budget are kept off iPhone/iPad. */
-export const IOS_MODEL_BUDGET_MB = 1024;
-export const IOS_RECOMMENDED_MODEL = 'Llama-3.2-1B-Instruct-q4f16_1-MLC';
-export const IOS_FALLBACK_MODEL = 'SmolLM2-360M-Instruct-q4f16_1-MLC';
+export const IOS_MODEL_BUDGET_MB = 2048;
+export const IOS_RECOMMENDED_MODEL = 'easylm-gemma-4-e2b-it';
+export const IOS_FALLBACK_MODEL = 'easylm-gemma-4-e2b-it';
 export const IOS_CONTEXT_LIMIT = 4096;
 
 export function fitsIOSBudget(modelId: string): boolean {
@@ -74,7 +74,7 @@ async function detectDeviceAnyProfile(): Promise<DeviceInfo> {
       isAndroid,
       hasWebGPU: false,
       osName: isIOS ? 'iOS' : isAndroid ? 'Android' : 'Desktop',
-      recommendedModel: isIOS ? IOS_RECOMMENDED_MODEL : 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',
+      recommendedModel: isIOS ? IOS_RECOMMENDED_MODEL : 'easylm-gemma-4-e2b-it',
       hardwareTier: isIOS ? 'mobile' : 'ultralight',
       recommendedContextLimit: isIOS ? IOS_CONTEXT_LIMIT : 8192
     };
@@ -225,15 +225,14 @@ async function detectDeviceUnsafe(): Promise<DeviceInfo> {
     }
   }
 
-  // Model recommendation (VRAM from web-llm prebuiltAppConfig vram_required_MB):
-  // - Mobile (iOS) -> Llama 3.2 1B (~879 MB), SmolLM2 360M (~376 MB) as fallback (adult profiles; kid profiles stay on 1B)
-  // - Ultralight -> Qwen 2.5 1.5B (~1.6 GB VRAM)
-  // - Standard / High Performance / Workstation -> Qwen 2.5 3B (~2.5 GB VRAM) — stable everyday workhorse
-  let recommendedModel = 'Qwen2.5-3B-Instruct-q4f16_1-MLC';
+  // Model recommendation (VRAM from web-llm prebuiltAppConfig or CUSTOM_MODEL_RECORDS):
+  // - Mobile (iOS) / Ultralight -> Gemma 4 E2B Instruct (~1.65 GB VRAM)
+  // - Standard / High Performance / Workstation -> Gemma 4 E4B Thinking (~3.2 GB VRAM) — default 4B workhorse
+  let recommendedModel = 'easylm-gemma-4-e4b-it';
   if (hardwareTier === 'mobile') {
     recommendedModel = fitsIOSBudget(IOS_RECOMMENDED_MODEL) ? IOS_RECOMMENDED_MODEL : IOS_FALLBACK_MODEL;
   } else if (hardwareTier === 'ultralight') {
-    recommendedModel = 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC';
+    recommendedModel = 'easylm-gemma-4-e2b-it';
   }
 
   return {

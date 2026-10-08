@@ -92,10 +92,10 @@ export function renderMarkdownSafe(raw: string): string {
 
   // 5. Sanitize HTML allowing MathML and KaTeX markup & styles
   return DOMPurify.sanitize(html, {
-    USE_PROFILES: { html: true, mathMl: true },
+    USE_PROFILES: { html: true, mathMl: true, svg: true },
     ADD_TAGS: ['annotation', 'semantics'],
     ADD_ATTR: ['aria-hidden'],
-    FORBID_TAGS: ['script', 'iframe', 'object', 'embed', 'form', 'link', 'meta', 'base'],
+    FORBID_TAGS: ['script', 'iframe', 'object', 'embed', 'form', 'link', 'meta', 'base', 'use', 'foreignObject'],
     FORBID_ATTR: [
       'onerror',
       'onload',

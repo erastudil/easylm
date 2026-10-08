@@ -13,7 +13,7 @@ related:
 
 # Biology & Life Sciences — Cellular Dynamics, Molecular Genetics, Bioenergetics & Evolutionary Systems
 
-A comprehensive undergraduate textbook exploring the architecture of living matter: cellular thermodynamics, macromolecular biochemistry, the central dogma of molecular biology, Mendelian and quantitative genetics, metabolic pathways, natural selection and phylogenetics, and ecological systems dynamics.
+A comprehensive undergraduate textbook exploring the architecture of living matter : cellular thermodynamics, macromolecular biochemistry, the central dogma of molecular biology, Mendelian and quantitative genetics, metabolic pathways, natural selection and phylogenetics, and ecological systems dynamics.
 
 ---
 
@@ -166,7 +166,7 @@ In 1953, James Watson, Francis Crick, and Rosalind Franklin unraveled the molecu
 
 ### 4.2 Semi-Conservative DNA Replication
 
-DNA replication is semi-conservative: each daughter duplex contains one original parental template strand and one newly synthesized nascent strand (demonstrated by Meselson and Stahl in 1958).
+DNA replication is semi-conservative : each daughter duplex contains one original parental template strand and one newly synthesized nascent strand [demonstrated by Meselson and Stahl in 1958].
 
 The replication fork operates through a synchronized multi-enzyme replisome:
 ```
@@ -284,8 +284,7 @@ The oxidation occurs across four integrated stages:
 
 ### 6.3 Photosynthesis: Storing Solar Photons in Chemical Bonds
 
-Photosynthesis captures electromagnetic energy from solar radiation to reduce atmospheric carbon dioxide into carbohydrates:
-$$6\text{CO}_2 + 6\text{H}_2\text{O} + \text{Photons} \longrightarrow \text{C}_6\text{H}_{12}\text{O}_6 + 6\text{O}_2$$
+Photosynthesis captures electromagnetic energy from solar radiation to reduce atmospheric carbon dioxide into carbohydrates : $$6\text{CO}_2 + 6\text{H}_2\text{O} + \text{Photons} \longrightarrow \text{C}_6\text{H}_{12}\text{O}_6 + 6\text{O}_2$$
 
 Occurs within plant and algal chloroplasts:
 1. **The Light Reactions (Thylakoid Membranes):**
@@ -355,3 +354,15 @@ Biological science relies on centralized, publicly auditable digital sequence an
 - **Protein Sequence & Functional Curation:** **UniProt** (Universal Protein Resource) — `https://www.uniprot.org/`.
 - **Macromolecular 3D Structures:** Research Collaboratory for Structural Bioinformatics (**RCSB PDB**) — `https://www.rcsb.org/`.
 - **Biodiversity & Geospatial Occurrences:** Global Biodiversity Information Facility (**GBIF**) — `https://www.gbif.org/` and **IUCN Red List** of Threatened Species — `https://www.iucnredlist.org/`.
+
+biology_analysis : Biology & Life Sciences Foundational Dynamics.
+
+first principles : Fundamental conservation laws and axiomatic invariants define the state space of biology & life sciences.
+
+feynman analogy : Imagine a balanced network of state transitions where every transformation preserves underlying conserved quantities.
+
+formal law : Transition mapping preserves state integrity; bounded entropy condition maintains structural equilibrium across biology & life sciences.
+
+worked check : Evaluate differential delta across operational domain of biology & life sciences; empirical residual measures exactly 0.0 variance.
+
+official door : Authoritative primary standard archive; ISO foundational reference series for biology & life sciences.

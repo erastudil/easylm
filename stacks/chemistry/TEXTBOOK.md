@@ -11,13 +11,13 @@ related:
 
 # Chemistry & Molecular Systems — Atomic Architecture, Chemical Bonding, Thermodynamics & Reaction Dynamics
 
-A comprehensive undergraduate textbook exploring the transformation of matter: quantum mechanical atomic orbitals, periodic trends, chemical bonding and molecular geometry, stoichiometry and the mole concept, thermodynamics ($\Delta H, \Delta S, \Delta G$), reaction kinetics and catalysis, dynamic chemical equilibrium, acid-base systems, electrochemistry, and organic reaction mechanisms.
+A comprehensive undergraduate textbook exploring the transformation of matter : quantum mechanical atomic orbitals, periodic trends, chemical bonding and molecular geometry, stoichiometry and the mole concept, thermodynamics [$\Delta H, \Delta S, \Delta G$], reaction kinetics and catalysis, dynamic chemical equilibrium, acid-base systems, electrochemistry, and organic reaction mechanisms.
 
 ---
 
 ## 0. Syllabus & Structural Map
 
-As Richard Feynman famously observed, if all scientific knowledge were lost in a cataclysm and only one sentence survived, the most profound truth would be: *all things are made of atoms—little particles that move around in perpetual motion, attracting each other when slightly separated, but repelling upon being squeezed together.* 
+As Richard Feynman famously observed, if all scientific knowledge were lost in a cataclysm and only one sentence survived, the most profound truth would be: *all things are made of atoms—little particles that move around in perpetual motion, attracting each other when slightly separated, but repelling upon being squeezed together.*
 
 Chemistry is the science of that interaction. It is the physics of the electron cloud. Every property of matter—the transparency of glass, the sweetness of sugar, the explosive energy of rocket fuel, and the folding of life-giving enzymes—emerges from the electrostatic forces between atomic nuclei and valence electrons seeking lowest-energy configurations.
 
@@ -127,7 +127,7 @@ The layout of the Periodic Table mirrors the quantum filling of subshells. Acros
 
 ### 3.1 The Mole as the Macroscopic-to-Microscopic Bridge
 
-Because individual atoms have masses on the order of $10^{-24}$ grams, chemical experiments cannot weigh single molecules. The **mole** (symbol: $\text{mol}$) is the SI base unit of amount of substance. 
+Because individual atoms have masses on the order of $10^{-24}$ grams, chemical experiments cannot weigh single molecules. The **mole** (symbol: $\text{mol}$) is the SI base unit of amount of substance.
 
 By international definition (SI Redefinition of 2019), exactly one mole contains:
 $$N_A = 6.02214076 \times 10^{23} \text{ elementary entities}$$
@@ -217,8 +217,7 @@ The bulk physical properties of liquids and solids (boiling point, vapor pressur
 
 ### 5.1 Balancing Chemical Equations
 
-A chemical equation represents the reorganization of atomic bonds:
-$$a\text{A} + b\text{B} \longrightarrow c\text{C} + d\text{D}$$
+A chemical equation represents the reorganization of atomic bonds : $$a\text{A} + b\text{B} \longrightarrow c\text{C} + d\text{D}$$
 
 Mass conservation requires that for every chemical element, the sum of atoms on the reactant side equals the sum on the product side.
 
@@ -289,7 +288,7 @@ Chemical reactions absorb or release thermal energy:
 
 ### 7.2 Entropy ($\Delta S$) and Gibbs Free Energy ($\Delta G$)
 
-The Second Law of Thermodynamics dictates that spontaneous processes must increase total universal entropy: $\Delta S_{\text{universe}} = \Delta S_{\text{system}} + \Delta S_{\text{surroundings}} > 0$.
+The Second Law of Thermodynamics dictates that spontaneous processes must increase total universal entropy : $\Delta S_{\text{universe}} = \Delta S_{\text{system}} + \Delta S_{\text{surroundings}} > 0$.
 
 At constant temperature and pressure, the criterion for chemical spontaneity is the **Gibbs Free Energy** $G = H - TS$:
 $$\Delta G = \Delta H - T\Delta S$$
@@ -328,8 +327,7 @@ At equilibrium, molecular transformations continue ceaselessly at the microscopi
 
 ### 8.2 The Equilibrium Constant ($K$) and Mass Action
 
-For a general reversible reaction:
-$$a\text{A} + b\text{B} \rightleftharpoons c\text{C} + d\text{D}$$
+For a general reversible reaction : $$a\text{A} + b\text{B} \rightleftharpoons c\text{C} + d\text{D}$$
 
 The **Law of Mass Action** defines the equilibrium constant:
 $$K_c = \frac{[\text{C}]^c [\text{D}]^d}{[\text{A}]^a [\text{B}]^b}$$
@@ -380,7 +378,7 @@ $$\text{pH} + \text{pOH} = \text{pK}_w = 14.00 \quad (\text{at } 25^\circ\text{C
 
 ### 9.3 Weak Acids, Weak Bases and ICE Calculations
 
-Strong acids ($\text{HCl}, \text{HBr}, \text{HI}, \text{HNO}_3, \text{HClO}_4, \text{H}_2\text{SO}_4$) dissociate completely in water ($[\text{H}^+] = c_0$). 
+Strong acids ($\text{HCl}, \text{HBr}, \text{HI}, \text{HNO}_3, \text{HClO}_4, \text{H}_2\text{SO}_4$) dissociate completely in water ($[\text{H}^+] = c_0$).
 
 Weak acids dissociate partially, governed by the acid dissociation constant $K_a$:
 $$\text{HA}(aq) + \text{H}_2\text{O}(l) \rightleftharpoons \text{H}_3\text{O}^+(aq) + \text{A}^-(aq), \quad K_a = \frac{[\text{H}_3\text{O}^+][\text{A}^-]}{[\text{HA}]}$$
@@ -504,3 +502,73 @@ Chemical manipulation demands strict empirical adherence to verified toxicology 
   - Fundamental Physical Constants: **NIST CODATA** (`https://physics.nist.gov/cuu/Constants/`).
   - Standard Atomic Weights: **IUPAC CIAAW** (`https://www.ciaaw.org/`).
   - Chemical Structure and Toxicology: **NIH PubChem** (`https://pubchem.ncbi.nlm.nih.gov/`) and **NIOSH Pocket Guide** (`https://www.cdc.gov/niosh/npg/`).
+
+chemistry_analysis : Chemistry & Molecular Systems.
+
+chemistry_analysis : Fundamental concept of chemistry revolves around mole, bond, periodic, stoichiometry, acid, redox.
+
+first principles : Law of conservation of mass, stating matter cannot be created or destroyed.
+
+feynman analogy : Imagine LEGO blocks, where atoms are blocks, bonds are connections, molecules are structures.
+
+formal law : Avogadro's hypothesis, stating equal volumes of gases at same temperature, pressure contain equal number of molecules.
+
+worked check : Calculate number of moles in 1 liter of oxygen gas at standard temperature, pressure using ideal gas law, PV = nRT, where n is number of moles.
+
+official door : Https://pubs.acs.org/doi/abs/10.1021/ed077p1475, American Chemical Society, Journal of Chemical Education.
+
+chemistry_analysis : Atomic Structure.
+
+chemistry_analysis : Protons, neutrons, electrons, nucleus, electron shells, orbitals, periodic table.
+
+first principles : Wave-particle duality, describing behavior of electrons.
+
+feynman analogy : Picture electrons as planets orbiting nucleus, with orbitals as paths.
+
+formal law : Schrödinger equation, describing quantum mechanics of electrons.
+
+worked check : Calculate energy of electron in 1s orbital of hydrogen atom using Schrödinger equation, E = -13.6 eV.
+
+official door : Https://physics.nist.gov/PhysRefData/ASD/levels_form.html, National Institute of Standards, Atomic Spectra Database.
+
+chemistry_analysis : Chemical Bonding.
+
+chemistry_analysis : Covalent, ionic, metallic, bond length, bond energy, Lewis structures.
+
+first principles : Electrostatic attraction, repulsion between charged particles.
+
+feynman analogy : Imagine magnets, where opposite charges attract, like charges repel.
+
+formal law : Coulomb's law, describing electrostatic force between charged particles.
+
+worked check : Calculate bond energy of hydrogen molecule using Coulomb's law, E = -4.5 eV.
+
+official door : Https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6123285/, National Center for Biotechnology Information, Journal of Chemical Education.
+
+chemistry_analysis : Stoichiometry.
+
+chemistry_analysis : Mole ratios, limiting reactants, percent yield, empirical formulas.
+
+first principles : Law of conservation of mass, stating matter cannot be created or destroyed.
+
+feynman analogy : Picture chemical reactions as recipes, where ingredients are reactants, products are dishes.
+
+formal law : Stoichiometric equation, describing mole ratios of reactants, products.
+
+worked check : Calculate percent yield of product in chemical reaction using stoichiometric equation, % yield = * 100.
+
+official door : Https://www.acs.org/content/acs/en/education/students/college/faculty/chemistry-education-research.html, American Chemical Society, Chemistry Education Research.
+
+chemistry_analysis : Acids, Bases, Redox.
+
+chemistry_analysis : Arrhenius, Bronsted-Lowry, Lewis, acid dissociation, redox reactions.
+
+first principles : Proton transfer, electron transfer, describing acid-base, redox reactions.
+
+feynman analogy : Imagine protons as balls, electrons as marbles, where acid-base reactions involve proton transfer, redox reactions involve electron transfer.
+
+formal law : Arrhenius equation, describing acid dissociation, Ka = [H+][A-] / [HA].
+
+worked check : Calculate pH of acidic solution using Arrhenius equation, pH = -log[H+].
+
+official door : Https://www.nap.edu/read/11902/chapter/6, National Academy of Sciences, Chemistry in the National Science Education Standards.

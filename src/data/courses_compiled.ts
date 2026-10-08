@@ -1360,6 +1360,195 @@ export const COURSE_PACKS: CoursePack[] = [
         ]
       }
     ]
+  },
+  {
+    "id": "philosophy-foundations-1",
+    "stack": "philosophy",
+    "dewey": "100",
+    "title": "Philosophy I: Foundations, Logic, Epistemology & Systems Dialectics",
+    "level": "undergrad",
+    "hours": 40,
+    "license": {
+      "spdx": "AGPL-3.0-or-later",
+      "attribution": "EasyLM The Stacks · philosophy textbook. Doors: Stanford Encyclopedia of Philosophy (SEP), Early Modern Texts.",
+      "sourceUrl": "https://plato.stanford.edu/"
+    },
+    "units": [
+      {
+        "id": "u1",
+        "title": "Argument Structure & Demarcation",
+        "lessons": [
+          {
+            "id": "philosophy-foundations-1-u1-l",
+            "title": "Argument Structure & Demarcation",
+            "reading": {
+              "stack": "philosophy",
+              "chapter": "1. Nature of Philosophical Inquiry"
+            },
+            "doors": [
+              "https://plato.stanford.edu/"
+            ],
+            "items": [
+              "philosophy-foundations-1-u1-read",
+              "philosophy-foundations-1-u1-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u2",
+        "title": "Empiricism & Hume Induction",
+        "lessons": [
+          {
+            "id": "philosophy-foundations-1-u2-l",
+            "title": "Empiricism & Hume Induction",
+            "reading": {
+              "stack": "philosophy",
+              "chapter": "2. Essential Philosophical Distinctions"
+            },
+            "doors": [
+              "https://plato.stanford.edu/",
+              "https://www.earlymoderntexts.com/"
+            ],
+            "items": [
+              "philosophy-foundations-1-u2-read",
+              "philosophy-foundations-1-u2-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u3",
+        "title": "Deductive Logic & Fallacies",
+        "lessons": [
+          {
+            "id": "philosophy-foundations-1-u3-l",
+            "title": "Deductive Logic & Fallacies",
+            "reading": {
+              "stack": "philosophy",
+              "chapter": "3. Formal Logic & Deductive Systems"
+            },
+            "doors": [
+              "https://plato.stanford.edu/"
+            ],
+            "items": [
+              "philosophy-foundations-1-u3-read",
+              "philosophy-foundations-1-u3-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u4",
+        "title": "Epistemology & The Gettier Problem",
+        "lessons": [
+          {
+            "id": "philosophy-foundations-1-u4-l",
+            "title": "Epistemology & The Gettier Problem",
+            "reading": {
+              "stack": "philosophy",
+              "chapter": "5. Epistemology & Theory of Knowledge"
+            },
+            "doors": [
+              "https://plato.stanford.edu/"
+            ],
+            "items": [
+              "philosophy-foundations-1-u4-read",
+              "philosophy-foundations-1-u4-quiz",
+              "phil-midterm"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u5",
+        "title": "Philosophy of Science & Falsification",
+        "lessons": [
+          {
+            "id": "philosophy-foundations-1-u5-l",
+            "title": "Philosophy of Science & Falsification",
+            "reading": {
+              "stack": "philosophy",
+              "chapter": "6. Philosophy of Science & Scientific Epistemology"
+            },
+            "doors": [
+              "https://plato.stanford.edu/"
+            ],
+            "items": [
+              "philosophy-foundations-1-u5-read",
+              "philosophy-foundations-1-u5-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u6",
+        "title": "Logical Atomism & Tractatus",
+        "lessons": [
+          {
+            "id": "philosophy-foundations-1-u6-l",
+            "title": "Logical Atomism & Tractatus",
+            "reading": {
+              "stack": "philosophy",
+              "chapter": "9. Philosophy of Language & Meaning"
+            },
+            "doors": [
+              "https://plato.stanford.edu/"
+            ],
+            "items": [
+              "philosophy-foundations-1-u6-read",
+              "philosophy-foundations-1-u6-quiz",
+              "phil-essay-1"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u7",
+        "title": "Moral Philosophy & Kantian Ethics",
+        "lessons": [
+          {
+            "id": "philosophy-foundations-1-u7-l",
+            "title": "Moral Philosophy & Kantian Ethics",
+            "reading": {
+              "stack": "philosophy",
+              "chapter": "10. Moral Philosophy & Normative Ethics"
+            },
+            "doors": [
+              "https://plato.stanford.edu/"
+            ],
+            "items": [
+              "philosophy-foundations-1-u7-read",
+              "philosophy-foundations-1-u7-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u8",
+        "title": "Lean Systems Epistemology & Invariants",
+        "lessons": [
+          {
+            "id": "philosophy-foundations-1-u8-l",
+            "title": "Lean Systems Epistemology & Invariants",
+            "reading": {
+              "stack": "philosophy",
+              "chapter": "14. Dialectical Method & Problem-Solving Protocols"
+            },
+            "doors": [
+              "https://plato.stanford.edu/"
+            ],
+            "items": [
+              "philosophy-foundations-1-u8-read",
+              "philosophy-foundations-1-u8-quiz",
+              "phil-essay-2",
+              "phil-lean-project",
+              "phil-final"
+            ]
+          }
+        ]
+      }
+    ]
   }
 ];
 
@@ -6951,5 +7140,868 @@ export const PUBLIC_ITEMS: Record<string, PublicItem> = {
       }
     ],
     "suggestedMinutes": 50
+  },
+  "philosophy-foundations-1-u1-read": {
+    "id": "philosophy-foundations-1-u1-read",
+    "kind": "reading",
+    "lessonId": "philosophy-foundations-1-u1-l",
+    "prompt": "Read: 1. Nature of Philosophical Inquiry",
+    "source": {
+      "work": "Stanford Encyclopedia of Philosophy (SEP)",
+      "loc": "argument"
+    },
+    "questions": []
+  },
+  "philosophy-foundations-1-u1-quiz": {
+    "id": "philosophy-foundations-1-u1-quiz",
+    "kind": "quiz",
+    "lessonId": "philosophy-foundations-1-u1-l",
+    "prompt": "Practice until every item is right. Tries are not a mark.",
+    "source": {
+      "work": "Stanford Encyclopedia of Philosophy (SEP)",
+      "loc": "argument"
+    },
+    "questions": [
+      {
+        "id": "phil-u1-q1",
+        "prompt": "In philosophical logic, an argument is defined as:",
+        "qtype": "mc",
+        "choices": [
+          "a set of declarative premises offered in support of a stated conclusion",
+          "a loud verbal disagreement between two adversaries",
+          "an ungrounded personal preference",
+          "a rhetorical device designed to deceive"
+        ],
+        "hint": "Deductive definition of an argument."
+      },
+      {
+        "id": "phil-u1-q2",
+        "prompt": "An argument is deductively valid if and only if:",
+        "qtype": "mc",
+        "choices": [
+          "it is impossible for the conclusion to be false if all premises are true",
+          "all of its premises are factually true in the actual world",
+          "the conclusion sounds persuasive to the audience",
+          "the author holds an accredited academic degree"
+        ],
+        "hint": "Structural validity condition."
+      },
+      {
+        "id": "phil-u1-q3",
+        "prompt": "A valid deductive argument whose premises are all factually true is termed ____.",
+        "qtype": "short",
+        "hint": "Sound. Type sound"
+      },
+      {
+        "id": "phil-u1-q4",
+        "prompt": "The dialectical method developed by Socrates, Plato, and Hegel proceeds through:",
+        "qtype": "mc",
+        "choices": [
+          "thesis, antithesis, and synthetic resolution",
+          "dogmatic assertion without counterexamples",
+          "appeals to popular consensus",
+          "suppression of opposing hypotheses"
+        ],
+        "hint": "Dialectical triad."
+      },
+      {
+        "id": "phil-u1-q5",
+        "prompt": "How many truth values exist in classical propositional calculus (bivalence)?",
+        "qtype": "numeric",
+        "hint": "Two truth values: True and False."
+      }
+    ]
+  },
+  "philosophy-foundations-1-u2-read": {
+    "id": "philosophy-foundations-1-u2-read",
+    "kind": "reading",
+    "lessonId": "philosophy-foundations-1-u2-l",
+    "prompt": "Read: 2. Essential Philosophical Distinctions",
+    "source": {
+      "work": "John Locke · David Hume · SEP",
+      "loc": "empiricism"
+    },
+    "questions": []
+  },
+  "philosophy-foundations-1-u2-quiz": {
+    "id": "philosophy-foundations-1-u2-quiz",
+    "kind": "quiz",
+    "lessonId": "philosophy-foundations-1-u2-l",
+    "prompt": "Practice until every item is right. Tries are not a mark.",
+    "source": {
+      "work": "John Locke · David Hume · SEP",
+      "loc": "empiricism"
+    },
+    "questions": [
+      {
+        "id": "phil-u2-q1",
+        "prompt": "John Locke proposed that the newborn mind is a blank slate or ____ rasa.",
+        "qtype": "short",
+        "hint": "Tabula rasa. Type tabula"
+      },
+      {
+        "id": "phil-u2-q2",
+        "prompt": "Hume Fork bifurcates all objects of human inquiry into:",
+        "qtype": "mc",
+        "choices": [
+          "Relations of Ideas and Matters of Fact",
+          "Good and Evil",
+          "Physical and Spiritual",
+          "Formal and Informal fallacies"
+        ],
+        "hint": "Hume epistemological division."
+      },
+      {
+        "id": "phil-u2-q3",
+        "prompt": "David Hume argued that our belief in causal necessity is grounded in:",
+        "qtype": "mc",
+        "choices": [
+          "habit and observed constant conjunction in past experience",
+          "a priori mathematical deduction",
+          "direct perception of physical force",
+          "innate ideas implanted at birth"
+        ],
+        "hint": "Skeptical critique of causation."
+      },
+      {
+        "id": "phil-u2-q4",
+        "prompt": "Knowledge justified independently of sensory experience is termed a ____.",
+        "qtype": "short",
+        "hint": "A priori. Type priori"
+      },
+      {
+        "id": "phil-u2-q5",
+        "prompt": "According to Hume, why cannot the principle of induction be proven by experience?",
+        "qtype": "mc",
+        "choices": [
+          "the argument is circular: it presupposes the future will resemble the past",
+          "experience provides too many counterexamples",
+          "mathematical logic disproves induction",
+          "human perception is an optical illusion"
+        ],
+        "hint": "The problem of induction."
+      }
+    ]
+  },
+  "philosophy-foundations-1-u3-read": {
+    "id": "philosophy-foundations-1-u3-read",
+    "kind": "reading",
+    "lessonId": "philosophy-foundations-1-u3-l",
+    "prompt": "Read: 3. Formal Logic & Deductive Systems",
+    "source": {
+      "work": "Classical Propositional Logic · SEP",
+      "loc": "logic-classical"
+    },
+    "questions": []
+  },
+  "philosophy-foundations-1-u3-quiz": {
+    "id": "philosophy-foundations-1-u3-quiz",
+    "kind": "quiz",
+    "lessonId": "philosophy-foundations-1-u3-l",
+    "prompt": "Practice until every item is right. Tries are not a mark.",
+    "source": {
+      "work": "Classical Propositional Logic · SEP",
+      "loc": "logic-classical"
+    },
+    "questions": [
+      {
+        "id": "phil-u3-q1",
+        "prompt": "Modus Ponens is the valid inference rule of the form:",
+        "qtype": "mc",
+        "choices": [
+          "If P then Q; P; therefore Q",
+          "If P then Q; Q; therefore P",
+          "If P then Q; not P; therefore not Q",
+          "P or Q; P; therefore not Q"
+        ],
+        "hint": "Affirming the antecedent."
+      },
+      {
+        "id": "phil-u3-q2",
+        "prompt": "The formal fallacy of inferring P from (P -> Q) and Q is called:",
+        "qtype": "mc",
+        "choices": [
+          "affirming the consequent",
+          "denying the antecedent",
+          "modus tollens",
+          "hypothetical syllogism"
+        ],
+        "hint": "Formal fallacy of consequent affirmation."
+      },
+      {
+        "id": "phil-u3-q3",
+        "prompt": "The valid inference rule stating that if P implies Q and Q is false, then P is false is Modus ____.",
+        "qtype": "short",
+        "hint": "Modus Tollens. Type Tollens"
+      },
+      {
+        "id": "phil-u3-q4",
+        "prompt": "In propositional logic, if P is True and Q is False, the conditional (P -> Q) evaluates to:",
+        "qtype": "mc",
+        "choices": [
+          "False",
+          "True",
+          "Indeterminate",
+          "Contradictory"
+        ],
+        "hint": "Material implication truth table."
+      },
+      {
+        "id": "phil-u3-q5",
+        "prompt": "Kurt Godel First Incompleteness Theorem demonstrates that:",
+        "qtype": "mc",
+        "choices": [
+          "any consistent formal axiomatic system capable of arithmetic contains unprovable true statements",
+          "classical logic is inconsistent",
+          "mathematics cannot be modeled on computers",
+          "all truth is subjective"
+        ],
+        "hint": "Limitative theorem in formal logic."
+      }
+    ]
+  },
+  "philosophy-foundations-1-u4-read": {
+    "id": "philosophy-foundations-1-u4-read",
+    "kind": "reading",
+    "lessonId": "philosophy-foundations-1-u4-l",
+    "prompt": "Read: 5. Epistemology & Theory of Knowledge",
+    "source": {
+      "work": "Edmund Gettier · Analysis of Knowledge · SEP",
+      "loc": "knowledge-analysis"
+    },
+    "questions": []
+  },
+  "philosophy-foundations-1-u4-quiz": {
+    "id": "philosophy-foundations-1-u4-quiz",
+    "kind": "quiz",
+    "lessonId": "philosophy-foundations-1-u4-l",
+    "prompt": "Practice until every item is right. Tries are not a mark.",
+    "source": {
+      "work": "Edmund Gettier · Analysis of Knowledge · SEP",
+      "loc": "knowledge-analysis"
+    },
+    "questions": [
+      {
+        "id": "phil-u4-q1",
+        "prompt": "The classical tripartite definition analyzes propositional knowledge as:",
+        "qtype": "mc",
+        "choices": [
+          "Justified True Belief (JTB)",
+          "True Faith without doubt",
+          "Empirical Measurement alone",
+          "Coherent opinion backed by consensus"
+        ],
+        "hint": "Classical JTB definition."
+      },
+      {
+        "id": "phil-u4-q2",
+        "prompt": "Edmund Gettier 1963 paper demonstrated that Justified True Belief is:",
+        "qtype": "mc",
+        "choices": [
+          "not sufficient for knowledge due to epistemic luck",
+          "not necessary for knowledge",
+          "fundamentally incoherent",
+          "identical to mathematical certainty"
+        ],
+        "hint": "The Gettier counterexamples."
+      },
+      {
+        "id": "phil-u4-q3",
+        "prompt": "Agrippa Trilemma demonstrates that all justification chains terminate in infinite regress, dogmatism, or ____ reasoning.",
+        "qtype": "short",
+        "hint": "Circular. Type circular"
+      },
+      {
+        "id": "phil-u4-q4",
+        "prompt": "Epistemological Foundationalism holds that knowledge justification:",
+        "qtype": "mc",
+        "choices": [
+          "terminates in properly basic beliefs requiring no further justification",
+          "is an infinite non-repeating chain of reasons",
+          "consists solely of social agreement",
+          "is an illusion produced by language games"
+        ],
+        "hint": "Foundationalist epistemic architecture."
+      },
+      {
+        "id": "phil-u4-q5",
+        "prompt": "How many conditions comprise the classical Justified True Belief (JTB) definition of knowledge?",
+        "qtype": "numeric",
+        "hint": "Three conditions: Justification, Truth, Belief."
+      }
+    ]
+  },
+  "phil-midterm": {
+    "id": "phil-midterm",
+    "kind": "exam",
+    "lessonId": "philosophy-foundations-1-u4-l",
+    "prompt": "Midterm Examination: Philosophical Logic, Epistemology & Scientific Method. Soft timer only — a suggested sitting, not a cutoff. As many sittings as it takes.",
+    "source": {
+      "work": "SEP · Stanford Encyclopedia of Philosophy",
+      "loc": "midterm"
+    },
+    "questions": [
+      {
+        "id": "phil-mid-q1",
+        "prompt": "Valid argument with all true premises is",
+        "qtype": "short",
+        "hint": null
+      },
+      {
+        "id": "phil-mid-q2",
+        "prompt": "Locke blank slate: tabula",
+        "qtype": "short",
+        "hint": null
+      },
+      {
+        "id": "phil-mid-q3",
+        "prompt": "Affirming the consequent is a",
+        "qtype": "mc",
+        "choices": [
+          "formal fallacy",
+          "valid deductive rule"
+        ],
+        "hint": null
+      },
+      {
+        "id": "phil-mid-q4",
+        "prompt": "If P then Q; not Q; therefore not P is Modus",
+        "qtype": "short",
+        "hint": null
+      },
+      {
+        "id": "phil-mid-q5",
+        "prompt": "Gettier demonstrated JTB is",
+        "qtype": "mc",
+        "choices": [
+          "not sufficient for knowledge",
+          "always false"
+        ],
+        "hint": null
+      },
+      {
+        "id": "phil-mid-q6",
+        "prompt": "Knowledge independent of sensory experience is a",
+        "qtype": "short",
+        "hint": null
+      },
+      {
+        "id": "phil-mid-q7",
+        "prompt": "Agrippa trilemma terminates in regress, circularity, or",
+        "qtype": "mc",
+        "choices": [
+          "dogmatism",
+          "certainty"
+        ],
+        "hint": null
+      },
+      {
+        "id": "phil-mid-q8",
+        "prompt": "Number of truth values in classical bivalent logic",
+        "qtype": "numeric",
+        "hint": null
+      },
+      {
+        "id": "phil-mid-q9",
+        "prompt": "Relations of Ideas denial entails",
+        "qtype": "mc",
+        "choices": [
+          "a contradiction",
+          "a physical accident"
+        ],
+        "hint": null
+      },
+      {
+        "id": "phil-mid-q10",
+        "prompt": "Hume fork divides relations of ideas and matters of",
+        "qtype": "short",
+        "hint": null
+      }
+    ],
+    "suggestedMinutes": 45
+  },
+  "philosophy-foundations-1-u5-read": {
+    "id": "philosophy-foundations-1-u5-read",
+    "kind": "reading",
+    "lessonId": "philosophy-foundations-1-u5-l",
+    "prompt": "Read: 6. Philosophy of Science & Scientific Epistemology",
+    "source": {
+      "work": "Karl Popper · Thomas Kuhn · SEP",
+      "loc": "popper"
+    },
+    "questions": []
+  },
+  "philosophy-foundations-1-u5-quiz": {
+    "id": "philosophy-foundations-1-u5-quiz",
+    "kind": "quiz",
+    "lessonId": "philosophy-foundations-1-u5-l",
+    "prompt": "Practice until every item is right. Tries are not a mark.",
+    "source": {
+      "work": "Karl Popper · Thomas Kuhn · SEP",
+      "loc": "popper"
+    },
+    "questions": [
+      {
+        "id": "phil-u5-q1",
+        "prompt": "Karl Popper proposed that the demarcation criterion distinguishing science from pseudo-science is:",
+        "qtype": "mc",
+        "choices": [
+          "falsifiability: empirical vulnerability to decisive refutation",
+          "inductive verification by accumulating confirming instances",
+          "consensus of certified academic experts",
+          "mathematical elegance alone"
+        ],
+        "hint": "Popperian demarcation."
+      },
+      {
+        "id": "phil-u5-q2",
+        "prompt": "The Duhem-Quine thesis asserts that:",
+        "qtype": "mc",
+        "choices": [
+          "hypotheses cannot be tested in isolation, but only as part of an interconnected web of auxiliary assumptions",
+          "all scientific theories are equally true",
+          "experiments never provide empirical data",
+          "physics has reached its final state"
+        ],
+        "hint": "Holism of testing."
+      },
+      {
+        "id": "phil-u5-q3",
+        "prompt": "Thomas Kuhn termed the revolutionary transition between dominant scientific frameworks a ____ shift.",
+        "qtype": "short",
+        "hint": "Paradigm shift. Type paradigm"
+      },
+      {
+        "id": "phil-u5-q4",
+        "prompt": "The \"No Miracles Argument\" supports scientific realism by asserting that:",
+        "qtype": "mc",
+        "choices": [
+          "it would be a miracle if scientific theories were so predictive without being approximately true",
+          "miracles provide evidence for natural laws",
+          "science explains theological occurrences",
+          "unobservable entities cannot exist"
+        ],
+        "hint": "Realism vs instrumentalism."
+      },
+      {
+        "id": "phil-u5-q5",
+        "prompt": "Feynman concept of \"Cargo Cult Science\" demands that researchers:",
+        "qtype": "mc",
+        "choices": [
+          "actively document every flaw, caveat, and potential disconfirmation of their own hypotheses",
+          "rely on ceremonial equipment to impress peer reviewers",
+          "publish only positive findings that confirm prior theories",
+          "ignore anomalous experimental results"
+        ],
+        "hint": "Scientific integrity."
+      }
+    ]
+  },
+  "philosophy-foundations-1-u6-read": {
+    "id": "philosophy-foundations-1-u6-read",
+    "kind": "reading",
+    "lessonId": "philosophy-foundations-1-u6-l",
+    "prompt": "Read: 9. Philosophy of Language & Meaning",
+    "source": {
+      "work": "Ludwig Wittgenstein · Bertrand Russell · SEP",
+      "loc": "wittgenstein"
+    },
+    "questions": []
+  },
+  "philosophy-foundations-1-u6-quiz": {
+    "id": "philosophy-foundations-1-u6-quiz",
+    "kind": "quiz",
+    "lessonId": "philosophy-foundations-1-u6-l",
+    "prompt": "Practice until every item is right. Tries are not a mark.",
+    "source": {
+      "work": "Ludwig Wittgenstein · Bertrand Russell · SEP",
+      "loc": "wittgenstein"
+    },
+    "questions": [
+      {
+        "id": "phil-u6-q1",
+        "prompt": "The opening proposition of Ludwig Wittgenstein Tractatus Logico-Philosophicus states:",
+        "qtype": "mc",
+        "choices": [
+          "The world is all that is the case",
+          "In the beginning was the Word",
+          "I think, therefore I am",
+          "The unexamined life is not worth living"
+        ],
+        "hint": "Tractatus Proposition 1."
+      },
+      {
+        "id": "phil-u6-q2",
+        "prompt": "In the Tractatus Picture Theory of Meaning, a proposition represents reality by:",
+        "qtype": "mc",
+        "choices": [
+          "sharing an identical logical form with the depicted state of affairs",
+          "generating an emotional mood in the listener",
+          "copying the physical colors of objects",
+          "matching common dictionary definitions"
+        ],
+        "hint": "Picture Theory."
+      },
+      {
+        "id": "phil-u6-q3",
+        "prompt": "According to Wittgenstein, what cannot be said in declarative propositions manifests or ____ itself.",
+        "qtype": "short",
+        "hint": "Shows itself. Type shows"
+      },
+      {
+        "id": "phil-u6-q4",
+        "prompt": "What is Wittgenstein metaphor in Tractatus 6.54 for philosophical propositions?",
+        "qtype": "mc",
+        "choices": [
+          "a ladder to be thrown away after climbing up it",
+          "a fortress guarding against skepticism",
+          "a web spun by spiders",
+          "a mirror reflecting eternal forms"
+        ],
+        "hint": "The ladder metaphor."
+      },
+      {
+        "id": "phil-u6-q5",
+        "prompt": "The closing proposition of the Tractatus (Proposition 7) declares:",
+        "qtype": "mc",
+        "choices": [
+          "Whereof one cannot speak, thereof one must be silent",
+          "All men by nature desire to know",
+          "The world is an illusion of consciousness",
+          "Truth is the correspondence of thought with reality"
+        ],
+        "hint": "Proposition 7 on silence."
+      }
+    ]
+  },
+  "phil-essay-1": {
+    "id": "phil-essay-1",
+    "kind": "essay",
+    "lessonId": "philosophy-foundations-1-u6-l",
+    "prompt": "Contrast Ludwig Wittgenstein Picture Theory of Meaning in the Tractatus with his later concept of Language Games in Philosophical Investigations. Explain the shift from truth-conditional logical atomism to pragmatic contextual rule-following.",
+    "source": {
+      "work": "Ludwig Wittgenstein · SEP",
+      "loc": "essay-1"
+    },
+    "questions": [],
+    "rubric": [
+      {
+        "id": "claim",
+        "criterion": "States a clear claim",
+        "max": 1
+      },
+      {
+        "id": "door",
+        "criterion": "Cites a stack chapter or official door",
+        "max": 1
+      },
+      {
+        "id": "check",
+        "criterion": "Shows a check, worked example, or honest limit",
+        "max": 1
+      }
+    ]
+  },
+  "philosophy-foundations-1-u7-read": {
+    "id": "philosophy-foundations-1-u7-read",
+    "kind": "reading",
+    "lessonId": "philosophy-foundations-1-u7-l",
+    "prompt": "Read: 10. Moral Philosophy & Normative Ethics",
+    "source": {
+      "work": "Immanuel Kant · Groundwork · SEP",
+      "loc": "ethics-deontological"
+    },
+    "questions": []
+  },
+  "philosophy-foundations-1-u7-quiz": {
+    "id": "philosophy-foundations-1-u7-quiz",
+    "kind": "quiz",
+    "lessonId": "philosophy-foundations-1-u7-l",
+    "prompt": "Practice until every item is right. Tries are not a mark.",
+    "source": {
+      "work": "Immanuel Kant · Groundwork · SEP",
+      "loc": "ethics-deontological"
+    },
+    "questions": [
+      {
+        "id": "phil-u7-q1",
+        "prompt": "Immanuel Kant Categorical Imperative commands that moral agents:",
+        "qtype": "mc",
+        "choices": [
+          "act only according to maxims they can at the same time will as universal laws",
+          "maximize the greatest happiness for the greatest number of beings",
+          "follow cultural traditions without deviation",
+          "seek personal self-interest and pleasure"
+        ],
+        "hint": "Formula of Universal Law."
+      },
+      {
+        "id": "phil-u7-q2",
+        "prompt": "The Formula of Humanity as an End asserts that one must treat humanity:",
+        "qtype": "mc",
+        "choices": [
+          "always at the same time as an end, never merely as a means",
+          "as an instrument to achieve collective wealth",
+          "as subordinate to economic efficiency",
+          "as identical to animal instincts"
+        ],
+        "hint": "Humanity formulation."
+      },
+      {
+        "id": "phil-u7-q3",
+        "prompt": "The principle asserting that an ethical ought cannot be derived from a descriptive is is Hume ____.",
+        "qtype": "short",
+        "hint": "Hume Law. Type Law"
+      },
+      {
+        "id": "phil-u7-q4",
+        "prompt": "Deontological moral theories judge actions primarily by:",
+        "qtype": "mc",
+        "choices": [
+          "their conformity to intrinsic duty and moral rules, independent of consequences",
+          "the net utility and aggregate happiness they generate",
+          "the physical pleasure experienced by the actor",
+          "the aesthetic beauty of the gesture"
+        ],
+        "hint": "Deontology vs consequentialism."
+      },
+      {
+        "id": "phil-u7-q5",
+        "prompt": "In John Rawls theory of justice, the \"Veil of Ignorance\" ensures fair societal principles by:",
+        "qtype": "mc",
+        "choices": [
+          "depriving deliberators of knowledge of their own social status, wealth, and natural talents",
+          "imposing total censorship on political debate",
+          "requiring all citizens to have equal income",
+          "enforcing hereditary rule"
+        ],
+        "hint": "Rawlsian original position."
+      }
+    ]
+  },
+  "philosophy-foundations-1-u8-read": {
+    "id": "philosophy-foundations-1-u8-read",
+    "kind": "reading",
+    "lessonId": "philosophy-foundations-1-u8-l",
+    "prompt": "Read: 14. Dialectical Method & Problem-Solving Protocols",
+    "source": {
+      "work": "Systems Dialectics · Lean Systems Engineering",
+      "loc": "lean-epistemology"
+    },
+    "questions": []
+  },
+  "philosophy-foundations-1-u8-quiz": {
+    "id": "philosophy-foundations-1-u8-quiz",
+    "kind": "quiz",
+    "lessonId": "philosophy-foundations-1-u8-l",
+    "prompt": "Practice until every item is right. Tries are not a mark.",
+    "source": {
+      "work": "Systems Dialectics · Lean Systems Engineering",
+      "loc": "lean-epistemology"
+    },
+    "questions": [
+      {
+        "id": "phil-u8-q1",
+        "prompt": "In Lean Systems Engineering, the principle of Jidoka (Autonomation) mandates:",
+        "qtype": "mc",
+        "choices": [
+          "stopping promotion and execution immediately when a defect is detected to prevent downstream contamination",
+          "ignoring small errors to meet shipping deadlines",
+          "hiding bugs behind warning banners",
+          "rewriting code without running automated tests"
+        ],
+        "hint": "Jidoka defect containment."
+      },
+      {
+        "id": "phil-u8-q2",
+        "prompt": "A Poka-Yoke design in systems architecture achieves mistake-proofing by:",
+        "qtype": "mc",
+        "choices": [
+          "enforcing structural typestates and constraints that make illegal states unrepresentable",
+          "posting advisory warning signs for operators",
+          "relying on model hallucination suppression",
+          "allowing invalid inputs with silent fallback"
+        ],
+        "hint": "Poka-Yoke fail-closed constraints."
+      },
+      {
+        "id": "phil-u8-q3",
+        "prompt": "The deterministic passing predicate required for empirical verification of code execution is exit code ____.",
+        "qtype": "short",
+        "hint": "Exit code zero. Type 0"
+      },
+      {
+        "id": "phil-u8-q4",
+        "prompt": "Under the epistemological principle of empirical reality invariant under preference:",
+        "qtype": "mc",
+        "choices": [
+          "unverified assertions carry zero truth value regardless of user desire or model confidence",
+          "positive thinking alters execution physics",
+          "opinions become facts if agreed upon by consensus",
+          "documentation replaces executable proof"
+        ],
+        "hint": "Empirical reality invariance."
+      },
+      {
+        "id": "phil-u8-q5",
+        "prompt": "The 5S methodology systematically reduces physical and digital entropy through:",
+        "qtype": "mc",
+        "choices": [
+          "Sort, Set in order, Shine, Standardize, and Sustain",
+          "Speed, Scale, Spend, Speculate, and Ship",
+          "Syntax, Semantics, Scaffolding, Staging, and Syncing",
+          "Start, Stop, Shift, Slow, and Sleep"
+        ],
+        "hint": "5S entropy reduction."
+      }
+    ]
+  },
+  "phil-essay-2": {
+    "id": "phil-essay-2",
+    "kind": "essay",
+    "lessonId": "philosophy-foundations-1-u8-l",
+    "prompt": "Analyze Immanuel Kant Categorical Imperative as a formal system invariant. Demonstrate how universalizability serves as a non-contradiction gate across distributed agents and execution systems.",
+    "source": {
+      "work": "Immanuel Kant · Systems Ethics · SEP",
+      "loc": "essay-2"
+    },
+    "questions": [],
+    "rubric": [
+      {
+        "id": "claim",
+        "criterion": "States a clear claim",
+        "max": 1
+      },
+      {
+        "id": "door",
+        "criterion": "Cites a stack chapter or official door",
+        "max": 1
+      },
+      {
+        "id": "check",
+        "criterion": "Shows a check, worked example, or honest limit",
+        "max": 1
+      }
+    ]
+  },
+  "phil-lean-project": {
+    "id": "phil-lean-project",
+    "kind": "project",
+    "lessonId": "philosophy-foundations-1-u8-l",
+    "prompt": "Conduct a comprehensive Lean Epistemological Audit of a computational workflow. Identify Muda (waste), map fail-closed Poka-Yoke typestates, design an Andon halt mechanism for defect detection, and prove completion with an exit code 0 test runner.",
+    "source": {
+      "work": "Lean Systems Engineering Specification",
+      "loc": "project"
+    },
+    "questions": [],
+    "rubric": [
+      {
+        "id": "claim",
+        "criterion": "States a clear claim",
+        "max": 1
+      },
+      {
+        "id": "door",
+        "criterion": "Cites a stack chapter or official door",
+        "max": 1
+      },
+      {
+        "id": "check",
+        "criterion": "Shows a check, worked example, or honest limit",
+        "max": 1
+      }
+    ],
+    "steps": [
+      "Identify process invariants and failure modes",
+      "Specify Poka-Yoke type constraints",
+      "Define Jidoka Andon trigger criteria",
+      "Implement deterministic verification test suite",
+      "Verify exit status 0 and document audit report"
+    ]
+  },
+  "phil-final": {
+    "id": "phil-final",
+    "kind": "exam",
+    "lessonId": "philosophy-foundations-1-u8-l",
+    "prompt": "Comprehensive Final Examination: Philosophy, Logic & Dialectical Architecture. Soft timer only — a suggested sitting, not a cutoff. As many sittings as it takes.",
+    "source": {
+      "work": "SEP · Stanford Encyclopedia of Philosophy · EasyLM The Stacks",
+      "loc": "final"
+    },
+    "questions": [
+      {
+        "id": "phil-fn-q1",
+        "prompt": "Deductively valid argument with true premises is",
+        "qtype": "short",
+        "hint": null
+      },
+      {
+        "id": "phil-fn-q2",
+        "prompt": "Locke mind blank slate at birth is tabula",
+        "qtype": "short",
+        "hint": null
+      },
+      {
+        "id": "phil-fn-q3",
+        "prompt": "If P then Q; not Q; therefore not P is Modus",
+        "qtype": "short",
+        "hint": null
+      },
+      {
+        "id": "phil-fn-q4",
+        "prompt": "Gettier problem proved JTB is",
+        "qtype": "mc",
+        "choices": [
+          "not sufficient for knowledge",
+          "always false"
+        ],
+        "hint": null
+      },
+      {
+        "id": "phil-fn-q5",
+        "prompt": "Popper demarcation criterion for science is",
+        "qtype": "short",
+        "hint": null
+      },
+      {
+        "id": "phil-fn-q6",
+        "prompt": "Wittgenstein Tractatus proposition 1: world is totality of",
+        "qtype": "mc",
+        "choices": [
+          "facts, not of things",
+          "material particles"
+        ],
+        "hint": null
+      },
+      {
+        "id": "phil-fn-q7",
+        "prompt": "Tractatus closing: whereof one cannot speak, thereof one must be",
+        "qtype": "short",
+        "hint": null
+      },
+      {
+        "id": "phil-fn-q8",
+        "prompt": "Kant categorical imperative commands acting on maxims that can be",
+        "qtype": "mc",
+        "choices": [
+          "universal laws",
+          "profitable outcomes"
+        ],
+        "hint": null
+      },
+      {
+        "id": "phil-fn-q9",
+        "prompt": "Lean principle halting line immediately on defect is",
+        "qtype": "short",
+        "hint": null
+      },
+      {
+        "id": "phil-fn-q10",
+        "prompt": "Passing exit code for deterministic verification gate",
+        "qtype": "numeric",
+        "hint": null
+      }
+    ],
+    "suggestedMinutes": 60
   }
 };

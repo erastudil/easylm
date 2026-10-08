@@ -1697,5 +1697,249 @@ export const ANSWER_KEYS: Record<string, AnswerKey> = {
   "h-fn-q10": {
     "qtype": "mc",
     "answer": "systematic reviews and meta-analyses of RCTs"
+  },
+  "phil-u1-q1": {
+    "qtype": "mc",
+    "answer": "a set of declarative premises offered in support of a stated conclusion"
+  },
+  "phil-u1-q2": {
+    "qtype": "mc",
+    "answer": "it is impossible for the conclusion to be false if all premises are true"
+  },
+  "phil-u1-q3": {
+    "qtype": "short",
+    "answer": "sound"
+  },
+  "phil-u1-q4": {
+    "qtype": "mc",
+    "answer": "thesis, antithesis, and synthetic resolution"
+  },
+  "phil-u1-q5": {
+    "qtype": "numeric",
+    "answer": 2,
+    "tolerance": 0.000001
+  },
+  "phil-u2-q1": {
+    "qtype": "short",
+    "answer": "tabula"
+  },
+  "phil-u2-q2": {
+    "qtype": "mc",
+    "answer": "Relations of Ideas and Matters of Fact"
+  },
+  "phil-u2-q3": {
+    "qtype": "mc",
+    "answer": "habit and observed constant conjunction in past experience"
+  },
+  "phil-u2-q4": {
+    "qtype": "short",
+    "answer": "priori"
+  },
+  "phil-u2-q5": {
+    "qtype": "mc",
+    "answer": "the argument is circular: it presupposes the future will resemble the past"
+  },
+  "phil-u3-q1": {
+    "qtype": "mc",
+    "answer": "If P then Q; P; therefore Q"
+  },
+  "phil-u3-q2": {
+    "qtype": "mc",
+    "answer": "affirming the consequent"
+  },
+  "phil-u3-q3": {
+    "qtype": "short",
+    "answer": "Tollens"
+  },
+  "phil-u3-q4": {
+    "qtype": "mc",
+    "answer": "False"
+  },
+  "phil-u3-q5": {
+    "qtype": "mc",
+    "answer": "any consistent formal axiomatic system capable of arithmetic contains unprovable true statements"
+  },
+  "phil-u4-q1": {
+    "qtype": "mc",
+    "answer": "Justified True Belief (JTB)"
+  },
+  "phil-u4-q2": {
+    "qtype": "mc",
+    "answer": "not sufficient for knowledge due to epistemic luck"
+  },
+  "phil-u4-q3": {
+    "qtype": "short",
+    "answer": "circular"
+  },
+  "phil-u4-q4": {
+    "qtype": "mc",
+    "answer": "terminates in properly basic beliefs requiring no further justification"
+  },
+  "phil-u4-q5": {
+    "qtype": "numeric",
+    "answer": 3,
+    "tolerance": 0.000001
+  },
+  "phil-mid-q1": {
+    "qtype": "short",
+    "answer": "sound"
+  },
+  "phil-mid-q2": {
+    "qtype": "short",
+    "answer": "rasa"
+  },
+  "phil-mid-q3": {
+    "qtype": "mc",
+    "answer": "formal fallacy"
+  },
+  "phil-mid-q4": {
+    "qtype": "short",
+    "answer": "Tollens"
+  },
+  "phil-mid-q5": {
+    "qtype": "mc",
+    "answer": "not sufficient for knowledge"
+  },
+  "phil-mid-q6": {
+    "qtype": "short",
+    "answer": "priori"
+  },
+  "phil-mid-q7": {
+    "qtype": "mc",
+    "answer": "dogmatism"
+  },
+  "phil-mid-q8": {
+    "qtype": "numeric",
+    "answer": 2,
+    "tolerance": 0.000001
+  },
+  "phil-mid-q9": {
+    "qtype": "mc",
+    "answer": "a contradiction"
+  },
+  "phil-mid-q10": {
+    "qtype": "short",
+    "answer": "fact"
+  },
+  "phil-u5-q1": {
+    "qtype": "mc",
+    "answer": "falsifiability: empirical vulnerability to decisive refutation"
+  },
+  "phil-u5-q2": {
+    "qtype": "mc",
+    "answer": "hypotheses cannot be tested in isolation, but only as part of an interconnected web of auxiliary assumptions"
+  },
+  "phil-u5-q3": {
+    "qtype": "short",
+    "answer": "paradigm"
+  },
+  "phil-u5-q4": {
+    "qtype": "mc",
+    "answer": "it would be a miracle if scientific theories were so predictive without being approximately true"
+  },
+  "phil-u5-q5": {
+    "qtype": "mc",
+    "answer": "actively document every flaw, caveat, and potential disconfirmation of their own hypotheses"
+  },
+  "phil-u6-q1": {
+    "qtype": "mc",
+    "answer": "The world is all that is the case"
+  },
+  "phil-u6-q2": {
+    "qtype": "mc",
+    "answer": "sharing an identical logical form with the depicted state of affairs"
+  },
+  "phil-u6-q3": {
+    "qtype": "short",
+    "answer": "shows"
+  },
+  "phil-u6-q4": {
+    "qtype": "mc",
+    "answer": "a ladder to be thrown away after climbing up it"
+  },
+  "phil-u6-q5": {
+    "qtype": "mc",
+    "answer": "Whereof one cannot speak, thereof one must be silent"
+  },
+  "phil-u7-q1": {
+    "qtype": "mc",
+    "answer": "act only according to maxims they can at the same time will as universal laws"
+  },
+  "phil-u7-q2": {
+    "qtype": "mc",
+    "answer": "always at the same time as an end, never merely as a means"
+  },
+  "phil-u7-q3": {
+    "qtype": "short",
+    "answer": "Law"
+  },
+  "phil-u7-q4": {
+    "qtype": "mc",
+    "answer": "their conformity to intrinsic duty and moral rules, independent of consequences"
+  },
+  "phil-u7-q5": {
+    "qtype": "mc",
+    "answer": "depriving deliberators of knowledge of their own social status, wealth, and natural talents"
+  },
+  "phil-u8-q1": {
+    "qtype": "mc",
+    "answer": "stopping promotion and execution immediately when a defect is detected to prevent downstream contamination"
+  },
+  "phil-u8-q2": {
+    "qtype": "mc",
+    "answer": "enforcing structural typestates and constraints that make illegal states unrepresentable"
+  },
+  "phil-u8-q3": {
+    "qtype": "short",
+    "answer": "0"
+  },
+  "phil-u8-q4": {
+    "qtype": "mc",
+    "answer": "unverified assertions carry zero truth value regardless of user desire or model confidence"
+  },
+  "phil-u8-q5": {
+    "qtype": "mc",
+    "answer": "Sort, Set in order, Shine, Standardize, and Sustain"
+  },
+  "phil-fn-q1": {
+    "qtype": "short",
+    "answer": "sound"
+  },
+  "phil-fn-q2": {
+    "qtype": "short",
+    "answer": "rasa"
+  },
+  "phil-fn-q3": {
+    "qtype": "short",
+    "answer": "Tollens"
+  },
+  "phil-fn-q4": {
+    "qtype": "mc",
+    "answer": "not sufficient for knowledge"
+  },
+  "phil-fn-q5": {
+    "qtype": "short",
+    "answer": "falsifiability"
+  },
+  "phil-fn-q6": {
+    "qtype": "mc",
+    "answer": "facts, not of things"
+  },
+  "phil-fn-q7": {
+    "qtype": "short",
+    "answer": "silent"
+  },
+  "phil-fn-q8": {
+    "qtype": "mc",
+    "answer": "universal laws"
+  },
+  "phil-fn-q9": {
+    "qtype": "short",
+    "answer": "jidoka"
+  },
+  "phil-fn-q10": {
+    "qtype": "numeric",
+    "answer": 0,
+    "tolerance": 0.000001
   }
 };

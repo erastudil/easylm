@@ -12,7 +12,7 @@ related:
 
 # Law & Jurisprudence — Legal Systems, Common Law Precedent, Statutory Construction & Procedural Justice
 
-A comprehensive undergraduate textbook exploring the architecture of legal systems and jurisprudence: the anatomy of legal authority, civil law codification versus common law stare decisis, canons of statutory construction, civil procedure and jurisdictional boundaries, constitutional due process, the elements of criminal culpability (actus reus and mens rea), the law of contracts and obligations, tort liability and negligence standards, property estates, intellectual property regimes, administrative rulemaking, and the IRAC analytical method.
+A comprehensive undergraduate textbook exploring the architecture of legal systems and jurisprudence : the anatomy of legal authority, civil law codification versus common law stare decisis, canons of statutory construction, civil procedure and jurisdictional boundaries, constitutional due process, the elements of criminal culpability [actus reus and mens rea], the law of contracts and obligations, tort liability and negligence standards, property estates, intellectual property regimes, administrative rulemaking, and the IRAC analytical method.
 
 ---
 
@@ -467,3 +467,23 @@ CITE: stacks/law/TEXTBOOK.md
 AUTHORITY: The Stacks Copyleft Academic Repositories
 LICENSING: GNU AGPL-3.0-or-later & The Open Covenant
 ```
+
+law_analysis : Law & Jurisprudence.
+
+first principles : Natural law theory, social contract theory, and the concept of justice form the foundation of law and jurisprudence.
+
+feynman analogy : Consider a complex system of interconnected gears, where each gear represents a legal principle, and the smooth operation of the system depends on the harmony between these gears, illustrating how laws interact and influence one another.
+
+formal law : The principle of stare decisis, which states that a court's decision in a case is binding on subsequent cases with similar facts and legal issues, can be represented as: P = P → P, where P is the probability of a successful appeal, P is the probability of a decision based on precedent, and P is the probability of a binding decision.
+
+law_analysis : Worked check :.
+
+first principles step : Identify the fundamental concept of due process, which ensures that individuals are treated fairly and have their rights protected.
+
+definition : Due process is defined as the legal requirement that individuals be provided with fair treatment and protection of their rights under the law.
+
+claim : The burden of proof in a court of law is a critical component of due process, as it ensures that the accused is presumed innocent until proven guilty.
+
+numerical verification : In a hypothetical case, if the probability of a guilty verdict is 0.8 and the probability of a not guilty verdict is 0.2, the burden of proof can be represented as: P / P = 0.8 / 0.2 = 4, indicating that the prosecution must provide four times more evidence than the defense to meet the burden of proof.
+
+official door : Https://www.law.cornell.edu/wex/due_process, which provides an overview of due process and its application in the US legal system, as well as links to relevant statutes, case law, and scholarly articles.

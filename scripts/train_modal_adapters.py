@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 # SPDX-License-Identifier: AGPL-3.0-or-later
 """EasyLM Serverless LoRA Adapter Trainer on Modal.
 
@@ -24,6 +24,13 @@ logger = logging.getLogger("train_modal_adapters")
 
 # Supported models across EasyLM tiers
 SUPPORTED_MODELS: Dict[str, str] = {
+    "gemma-4-e2b": "google/gemma-4-E2B-it",
+    "gemma-4-e4b": "google/gemma-4-E4B-it",
+    "qwen3-4b": "Qwen/Qwen3-4B-Instruct-2507",
+    "deepseek-v4-9b": "deepseek-ai/DeepSeek-V4-Distill-Qwen3.5-9B",
+    "gemma-4-12b": "google/gemma-4-12B-it",
+    "gemma-4-26b": "google/gemma-4-26B-A4B-it",
+    "bonsai-2-27b": "Qwen/Qwen3.8-27B",
     "qwen-0.5b": "Qwen/Qwen2.5-0.5B-Instruct",
     "qwen-1.5b": "Qwen/Qwen2.5-1.5B-Instruct",
     "qwen-3b": "Qwen/Qwen2.5-3B-Instruct",
@@ -33,6 +40,11 @@ SUPPORTED_MODELS: Dict[str, str] = {
 
 # Adapter dataset filenames
 ADAPTER_DATA_FILES: Dict[str, str] = {
+    "easylm": "adapter_easylm_master_chatml.jsonl",
+    "stacks": "adapter_stacks_chatml.jsonl",
+    "features": "adapter_features_chatml.jsonl",
+    "tools": "adapter_tools_chatml.jsonl",
+    "settings": "adapter_settings_chatml.jsonl",
     "hands": "adapter_hands_chatml.jsonl",
     "personalities": "adapter_personalities_chatml.jsonl",
     "security": "adapter_security_chatml.jsonl",

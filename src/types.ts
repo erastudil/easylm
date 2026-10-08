@@ -64,16 +64,16 @@ export interface Personality {
 
 export type Preset = Personality;
 
-/** Memory atom scored by services/atmem_scorer (BM25 relevance, governance first, PII flag). */
 export interface MemoryAtom {
   id: string;
   text: string;
   isGoverned?: boolean;
+  category?: string;
+  timestamp?: number;
 }
 
 export interface ScoredAtom extends MemoryAtom {
   score: number;
-  isGoverned: boolean;
   hasPII: boolean;
   tokenCount: number;
 }

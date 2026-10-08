@@ -255,3 +255,71 @@ A single study never settles a scientific question. Reliable knowledge requires 
 2. **Double-Checking the Negative Control:** If your assay or instrument yields a positive signal when exposed to plain distilled water, your experimental readings on actual samples are worthless.
 3. **Distinguishing Prediction from Post-Hoc Storytelling:** Fitting a polynomial curve to 100 historical data points is easy; predicting the 101st point in advance is the real test of a scientific model.
 4. **Transparent Failure Reporting:** Reporting when an experiment failed to produce an effect is just as valuable to humanity as reporting when it succeeded. It saves other researchers millions of dollars and years of wasted effort.
+
+methods_analysis : Scientific Method & Inquiry.
+
+methods_analysis : Method involves systematic observation, measurement, and experimentation to develop and test hypotheses.
+
+methods_analysis : Evidence consists of empirical data and observations that support or refute a hypothesis.
+
+methods_analysis : Hypothesis is a tentative explanation for a phenomenon, subject to testing and refinement.
+
+methods_analysis : Falsification is the process of testing a hypothesis to determine if it is false, a crucial aspect of the scientific method.
+
+methods_analysis : Error refers to the uncertainty or inaccuracy inherent in measurements and observations.
+
+methods_analysis : Experiment is a controlled test designed to validate or invalidate a hypothesis.
+
+methods_analysis : First Principles.
+
+methods_analysis : First principles of scientific inquiry include the principles of empiricism, skepticism, and objectivity, which form the foundation of the scientific method.
+
+methods_analysis : Empiricism emphasizes the importance of observation and experience in the development of scientific knowledge.
+
+methods_analysis : Skepticism involves questioning and testing assumptions, hypotheses, and theories to ensure their validity.
+
+methods_analysis : Objectivity requires that scientific inquiry be free from personal biases and prejudices.
+
+methods_analysis : Feynman Analogy.
+
+methods_analysis : Feynman analogy for the scientific method is a machine that takes in ideas and produces either a validated hypothesis or a falsified one, much like a quality control process in a factory.
+
+methods_analysis : In this analogy, the machine represents the scientific method, and the ideas represent the hypotheses to be tested.
+
+methods_analysis : The machine's output is either a validated hypothesis, which is then refined and built upon, or a falsified one, which is discarded or modified.
+
+methods_analysis : Formal Law.
+
+formal law of the scientific method can be represented by the following equation : H = f, where H is the hypothesis, O is the observation, E is the evidence, and f is the function that relates them.
+
+methods_analysis : This equation highlights the interplay between hypothesis, observation, and evidence in the scientific method.
+
+methods_analysis : It also emphasizes the importance of empirical evidence in supporting or refuting a hypothesis.
+
+methods_analysis : Worked Check.
+
+methods_analysis : Worked check of the scientific method involves the following steps:.
+
+methods_analysis : Define a problem or phenomenon to be studied.
+
+methods_analysis : Develop a hypothesis to explain the phenomenon.
+
+methods_analysis : Design an experiment to test the hypothesis.
+
+methods_analysis : Conduct the experiment and collect data.
+
+methods_analysis : Analyze the data and draw conclusions.
+
+methods_analysis : For example, suppose we want to test the hypothesis that a certain fertilizer increases crop yield.
+
+methods_analysis : We would design an experiment involving two groups of plants, one with the fertilizer and one without, and measure the yield of each group.
+
+methods_analysis : If the data show a significant increase in yield for the fertilized group, we would conclude that the hypothesis is supported.
+
+methods_analysis : Official Door.
+
+methods_analysis : Official door to the scientific method is the National Science Foundation's guidelines for scientific inquiry, which can be found at https://www.nsf.gov/.
+
+methods_analysis : The NSF provides funding and support for scientific research and education, and its guidelines reflect the principles of the scientific method.
+
+methods_analysis : These guidelines emphasize the importance of empirical evidence, skepticism, and objectivity in scientific inquiry, and provide a framework for conducting rigorous and reliable scientific research.

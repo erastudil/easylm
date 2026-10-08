@@ -369,3 +369,23 @@ To master collegiate mathematics, one must dismantle pervasive cognitive traps a
 2. **Devise a Plan:** Have you seen this problem before? Look at the unknown and try to recall a familiar theorem with the same or similar unknown. Solve an easier, related problem first (e.g. drop from 3 dimensions down to 2, or test $n = 1, 2, 3$).
 3. **Carry Out the Plan:** Check each step. Can you prove clearly that each algebraic or logical step is correct?
 4. **Look Back (Verify & Generalize):** Can you check the result? Can you derive the result differently? Can you see it at a glance? Can you use the result or method for some other problem?
+
+math_analysis : Mathematics & Analysis.
+
+first principles : Mathematical truths derived from basic axioms, such as Peano's axioms for arithmetic and Zermelo-Fraenkel axioms for set theory, form the foundation of mathematical reasoning and proof.
+
+feynman analogy : Consider a lever system where forces and distances are balanced, illustrating the concept of equilibrium, which is analogous to solving linear equations in algebra, where variables and constants are balanced to satisfy the equation.
+
+formal law : Bayes' theorem, a fundamental concept in probability theory, is expressed as P = P * P / P, where P is the posterior probability of event A given event B, and P, P, and P are the likelihood, prior probability of A, and prior probability of B, respectively.
+
+math_analysis : Worked check :.
+
+first principles step : Start with the definition of conditional probability, P = P / P.
+
+definition : Apply the definition of probability for events A and B, P = P * P.
+
+claim : Derive Bayes' theorem by substituting the definition of P into the formula for P, resulting in P = P * P / P.
+
+numerical verification : Given P = 0.8, P = 0.4, and P = 0.6, calculate P using Bayes' theorem to verify the claim, P = 0.8 * 0.4 / 0.6 = 0.5333.
+
+official door : Https://www.nist.gov/itl/mathematical-and-computational-sciences-division, the National Institute of Standards and Technology provides official documentation and standards for mathematical and computational sciences, including probability and statistics.

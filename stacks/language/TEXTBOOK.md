@@ -13,7 +13,7 @@ Related:
 
 # Linguistics & Language Systems — Phonology, Generative Syntax, Semantics, Pragmatics & Digital Encodings
 
-A comprehensive undergraduate textbook exploring the science of human language: articulatory and acoustic phonetics (IPA), phonological systems, morphological derivation and inflection, formal syntactic hierarchies and phrase-structure grammars, truth-conditional and lexical semantics, pragmatic speech-act theory, historical comparative linguistics, sociolinguistic variation, and computational text encodings (Unicode and UTF-8).
+A comprehensive undergraduate textbook exploring the science of human language : articulatory and acoustic phonetics [IPA], phonological systems, morphological derivation and inflection, formal syntactic hierarchies and phrase-structure grammars, truth-conditional and lexical semantics, pragmatic speech-act theory, historical comparative linguistics, sociolinguistic variation, and computational text encodings [Unicode and UTF-8].
 
 ---
 
@@ -68,7 +68,7 @@ Language is humanity's most extraordinary cognitive and symbolic technology. By 
 
 Right now, your eyes are scanning dark marks on a bright glass screen. Almost instantly, without conscious effort, your brain translates those optical shapes into sounds, concepts, mental images, and complex ideas.
 
-Or consider a three-year-old child: an infant sits in a room bathed in a continuous, unbroken stream of noisy acoustic sound waves. Adult speech has no pauses or spaces between words; on an oscilloscope, it looks like an unbroken undulating wave. Yet within three short years, without ever opening a textbook or receiving a formal grammar lesson, that child effortlessly segments that continuous acoustic stream into discrete words, decodes the invisible grammatical rules of their community, and begins uttering completely original sentences that have never been spoken before in human history.
+Or consider a three-year-old child : an infant sits in a room bathed in a continuous, unbroken stream of noisy acoustic sound waves. Adult speech has no pauses or spaces between words; on an oscilloscope, it looks like an unbroken undulating wave. Yet within three short years, without ever opening a textbook or receiving a formal grammar lesson, that child effortlessly segments that continuous acoustic stream into discrete words, decodes the invisible grammatical rules of their community, and begins uttering completely original sentences that have never been spoken before in human history.
 
 How is this possible?
 
@@ -116,7 +116,7 @@ School linguistics cuts the object so the job stays small. The cuts are **not** 
 | **semantics** | Conventional meaning | What does this form mean? |
 | **pragmatics** | Meaning in a situation | What is being done *here*? |
 
-Method: **name the cut**, then work inside it. A complaint that mixes "this vowel is ugly" (phonetics/aesthetics) with "this sentence is ungrammatical" (syntax) with "that was rude" (pragmatics) is three jobs.
+Method : **name the cut**, then work inside it. A complaint that mixes "this vowel is ugly" [phonetics/aesthetics] with "this sentence is ungrammatical" [syntax] with "that was rude" [pragmatics] is three jobs.
 
 ### 2.1 phonetics
 
@@ -346,7 +346,7 @@ Unicode defines three forms. They encode the **same** repertoire and convert wit
 | **UTF-16** | 16-bit units; supplementary characters as a **surrogate pair** | Java, Windows APIs as commonly described |
 | **UTF-32** | One 32-bit unit per code point | Some Unix internals, easy indexing by code point |
 
-W3C internationalization: **use UTF-8** for web content unless you have a special reason not to.
+W3C internationalization : **use UTF-8** for web content unless you have a special reason not to.
 
 A **UTF** (Unicode Transformation Format) is an algorithmic mapping from every Unicode code point **except surrogate code points** to a **unique** byte sequence. Round-trip is lossless. Reserved and unassigned code points still have mappings; that is required for round-trip.
 
@@ -382,7 +382,7 @@ There is **only one** valid way to encode a given character. Implementations **M
 
 UTF-8 has **no endianness**. A BOM in UTF-8 is **only** a signature that the file is UTF-8, not a byte-order switch. The UTF-8 BOM bytes are **EF BB BF** (Unicode BOM FAQ table). Some protocols (Unix `#!` scripts, protocols that require a given ASCII start) should **not** use a UTF-8 BOM.
 
-Unicode FAQ: where a BOM is used with UTF-8, it has **nothing to do with byte order**.
+Unicode FAQ : where a BOM is used with UTF-8, it has **nothing to do with byte order**.
 
 ### 5.6 BOM table (Unicode FAQ, fetched)
 
@@ -448,7 +448,7 @@ A **clause** has a **predicate** (usually a finite verb) and, in English declara
 
 **Run-on:** two independents jammed without coordination or a fit stop. A comma between independents with no coordinator is a **comma splice**. Both are clause-boundary failures.
 
-Method: **find the finite verbs. Draw the clause boundaries. Then punctuate.**
+Method : **find the finite verbs. Draw the clause boundaries. Then punctuate.**
 
 ### 6.2 subject, verb, object, complement
 
@@ -539,7 +539,7 @@ Figures that are **grammar in costume**:
 - **rhetorical question:** an interrogative doing an assertion.
 - **passive and nominalization:** hide or highlight agents.
 
-Literature pack: tropes (metaphor, irony) and close reading. This chapter: **do not call a grammatical failure a style.** fix the clause, then decide whether the fragment is a punch.
+Literature pack : tropes [metaphor, irony] and close reading. This chapter: **do not call a grammatical failure a style.** fix the clause, then decide whether the fragment is a punch.
 
 **Check:** who is to be moved. By which means. On which occasion. The literature pack if the object is a novel or a speech as art.
 
@@ -747,3 +747,15 @@ Language is a system with levels. Writing is a technology. Unicode encodes chara
 ```
 CITE: stacks/language/TEXTBOOK.md
 ```
+
+language fundamentals : Unpacking the Structure of Human Communication.
+
+first principles : Language acquisition relies on pattern recognition, governed by cognitive biases and environmental influences.
+
+feynman analogy : Language can be likened to a complex LEGO structure, where phonology provides the basic bricks, syntax the rules for combining them, semantics the meaning of the structures built, and grammar the overall blueprint for construction.
+
+formal law : According to Saussure's sign theory, the relationship between a signifier and its signified is arbitrary, yet governed by social convention, which can be represented as S = signifier + signified, where the relationship is mediated by cultural and historical contexts.
+
+worked check : Step 1, define the fundamental units of language; step 2, apply Saussure's sign theory to understand how these units convey meaning; step 3, claim that effective communication requires a balance between syntax, semantics, and phonology; step 4, numerical verification involves quantifying the complexity of language structures using metrics such as lexical density or syntactic complexity, demonstrating how these metrics correlate with communicative effectiveness.
+
+official door : For a comprehensive understanding of language standards and educational resources, visit https://www.nap.edu/read/13487/chapter/7, which provides access to the National Academy of Sciences' publications on language and linguistics education.

@@ -15,3 +15,6 @@ __pycache__/
 # Artifacts & Caches
 output/
 .pytest_cache/
+*.jsonl
+data/easylm_synthetic_stream*
+stacks/*.jsonl

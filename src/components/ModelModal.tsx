@@ -200,7 +200,7 @@ export const ModelModal: React.FC<ModelModalProps> = ({
                 border: '1px solid rgba(16, 185, 129, 0.3)',
                 fontWeight: 600
               }}>
-                Recommended: {deviceInfo?.recommendedModel ? (pickerModels.find(m => m.id === deviceInfo.recommendedModel)?.label || deviceInfo.recommendedModel) : 'Qwen 2.5 3B'}
+                Recommended: {deviceInfo?.recommendedModel ? (pickerModels.find(m => m.id === deviceInfo.recommendedModel)?.label || deviceInfo.recommendedModel) : 'Gemma 4 E4B Thinking'}
               </span>
             </div>
             {cacheNotice && (
@@ -491,7 +491,9 @@ export const ModelModal: React.FC<ModelModalProps> = ({
           flexShrink: 0
         }}>
           <div style={{ fontSize: '0.74rem', color: '#71717a', maxWidth: '520px' }}>
-            💡 <strong>Guideline:</strong> Qwen 2.5 3B is the recommended default workhorse for all systems.{!kidMode && ' Gemma 3 12B Thinking is an optional deep reasoning model for ~12GB+ VRAM cards.'}
+            💡 <strong>Guideline:</strong> {kidMode
+              ? 'Llama 3.2 1B Instruct is the model for kid profiles.'
+              : 'Gemma 4 E4B Thinking is the recommended default workhorse for all systems. Gemma 4 12B Thinking is an optional deep reasoning model for ~12GB+ VRAM cards.'}
           </div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             {onLoadModel && (

@@ -1250,4 +1250,185 @@ const health = build(
   ]
 );
 
-export const WAVE1 = [methods, math, physics, chemistry, biology, civics, health];
+
+const philosophy = build(
+  {
+    id: 'philosophy-foundations-1',
+    stack: 'philosophy',
+    dewey: '100',
+    title: 'Philosophy I: Foundations, Logic, Epistemology & Systems Dialectics',
+    level: 'undergrad',
+    hours: 40,
+    license: {
+      spdx: 'AGPL-3.0-or-later',
+      attribution: 'EasyLM The Stacks · philosophy textbook. Doors: Stanford Encyclopedia of Philosophy (SEP), Early Modern Texts.',
+      sourceUrl: 'https://plato.stanford.edu/'
+    }
+  },
+  [
+    {
+      id: 'u1',
+      title: 'Argument Structure & Demarcation',
+      chapter: '1. Nature of Philosophical Inquiry',
+      doors: ['https://plato.stanford.edu/'],
+      source: { work: 'Stanford Encyclopedia of Philosophy (SEP)', loc: 'argument' },
+      questions: [
+        mc('phil-u1-q1', 'In philosophical logic, an argument is defined as:', ['a set of declarative premises offered in support of a stated conclusion', 'a loud verbal disagreement between two adversaries', 'an ungrounded personal preference', 'a rhetorical device designed to deceive'], 0, 'Deductive definition of an argument.'),
+        mc('phil-u1-q2', 'An argument is deductively valid if and only if:', ['it is impossible for the conclusion to be false if all premises are true', 'all of its premises are factually true in the actual world', 'the conclusion sounds persuasive to the audience', 'the author holds an accredited academic degree'], 0, 'Structural validity condition.'),
+        sh('phil-u1-q3', 'A valid deductive argument whose premises are all factually true is termed ____.', 'sound', 'Sound. Type sound'),
+        mc('phil-u1-q4', 'The dialectical method developed by Socrates, Plato, and Hegel proceeds through:', ['thesis, antithesis, and synthetic resolution', 'dogmatic assertion without counterexamples', 'appeals to popular consensus', 'suppression of opposing hypotheses'], 0, 'Dialectical triad.'),
+        num('phil-u1-q5', 'How many truth values exist in classical propositional calculus (bivalence)?', 2, 'Two truth values: True and False.')
+      ]
+    },
+    {
+      id: 'u2',
+      title: 'Empiricism & Hume Induction',
+      chapter: '2. Essential Philosophical Distinctions',
+      doors: ['https://plato.stanford.edu/', 'https://www.earlymoderntexts.com/'],
+      source: { work: 'John Locke · David Hume · SEP', loc: 'empiricism' },
+      questions: [
+        sh('phil-u2-q1', 'John Locke proposed that the newborn mind is a blank slate or ____ rasa.', 'tabula', 'Tabula rasa. Type tabula'),
+        mc('phil-u2-q2', 'Hume Fork bifurcates all objects of human inquiry into:', ['Relations of Ideas and Matters of Fact', 'Good and Evil', 'Physical and Spiritual', 'Formal and Informal fallacies'], 0, 'Hume epistemological division.'),
+        mc('phil-u2-q3', 'David Hume argued that our belief in causal necessity is grounded in:', ['habit and observed constant conjunction in past experience', 'a priori mathematical deduction', 'direct perception of physical force', 'innate ideas implanted at birth'], 0, 'Skeptical critique of causation.'),
+        sh('phil-u2-q4', 'Knowledge justified independently of sensory experience is termed a ____.', 'priori', 'A priori. Type priori'),
+        mc('phil-u2-q5', 'According to Hume, why cannot the principle of induction be proven by experience?', ['the argument is circular: it presupposes the future will resemble the past', 'experience provides too many counterexamples', 'mathematical logic disproves induction', 'human perception is an optical illusion'], 0, 'The problem of induction.')
+      ]
+    },
+    {
+      id: 'u3',
+      title: 'Deductive Logic & Fallacies',
+      chapter: '3. Formal Logic & Deductive Systems',
+      doors: ['https://plato.stanford.edu/'],
+      source: { work: 'Classical Propositional Logic · SEP', loc: 'logic-classical' },
+      questions: [
+        mc('phil-u3-q1', 'Modus Ponens is the valid inference rule of the form:', ['If P then Q; P; therefore Q', 'If P then Q; Q; therefore P', 'If P then Q; not P; therefore not Q', 'P or Q; P; therefore not Q'], 0, 'Affirming the antecedent.'),
+        mc('phil-u3-q2', 'The formal fallacy of inferring P from (P -> Q) and Q is called:', ['affirming the consequent', 'denying the antecedent', 'modus tollens', 'hypothetical syllogism'], 0, 'Formal fallacy of consequent affirmation.'),
+        sh('phil-u3-q3', 'The valid inference rule stating that if P implies Q and Q is false, then P is false is Modus ____.', 'Tollens', 'Modus Tollens. Type Tollens'),
+        mc('phil-u3-q4', 'In propositional logic, if P is True and Q is False, the conditional (P -> Q) evaluates to:', ['False', 'True', 'Indeterminate', 'Contradictory'], 0, 'Material implication truth table.'),
+        mc('phil-u3-q5', 'Kurt Godel First Incompleteness Theorem demonstrates that:', ['any consistent formal axiomatic system capable of arithmetic contains unprovable true statements', 'classical logic is inconsistent', 'mathematics cannot be modeled on computers', 'all truth is subjective'], 0, 'Limitative theorem in formal logic.')
+      ]
+    },
+    {
+      id: 'u4',
+      title: 'Epistemology & The Gettier Problem',
+      chapter: '5. Epistemology & Theory of Knowledge',
+      doors: ['https://plato.stanford.edu/'],
+      source: { work: 'Edmund Gettier · Analysis of Knowledge · SEP', loc: 'knowledge-analysis' },
+      questions: [
+        mc('phil-u4-q1', 'The classical tripartite definition analyzes propositional knowledge as:', ['Justified True Belief (JTB)', 'True Faith without doubt', 'Empirical Measurement alone', 'Coherent opinion backed by consensus'], 0, 'Classical JTB definition.'),
+        mc('phil-u4-q2', 'Edmund Gettier 1963 paper demonstrated that Justified True Belief is:', ['not sufficient for knowledge due to epistemic luck', 'not necessary for knowledge', 'fundamentally incoherent', 'identical to mathematical certainty'], 0, 'The Gettier counterexamples.'),
+        sh('phil-u4-q3', 'Agrippa Trilemma demonstrates that all justification chains terminate in infinite regress, dogmatism, or ____ reasoning.', 'circular', 'Circular. Type circular'),
+        mc('phil-u4-q4', 'Epistemological Foundationalism holds that knowledge justification:', ['terminates in properly basic beliefs requiring no further justification', 'is an infinite non-repeating chain of reasons', 'consists solely of social agreement', 'is an illusion produced by language games'], 0, 'Foundationalist epistemic architecture.'),
+        num('phil-u4-q5', 'How many conditions comprise the classical Justified True Belief (JTB) definition of knowledge?', 3, 'Three conditions: Justification, Truth, Belief.')
+      ],
+      extras: [
+        exam('phil-midterm', '', 'Midterm Examination: Philosophical Logic, Epistemology & Scientific Method', [
+          sh('phil-mid-q1', 'Valid argument with all true premises is', 'sound', null),
+          sh('phil-mid-q2', 'Locke blank slate: tabula', 'rasa', null),
+          mc('phil-mid-q3', 'Affirming the consequent is a', ['formal fallacy', 'valid deductive rule'], 0, null),
+          sh('phil-mid-q4', 'If P then Q; not Q; therefore not P is Modus', 'Tollens', null),
+          mc('phil-mid-q5', 'Gettier demonstrated JTB is', ['not sufficient for knowledge', 'always false'], 0, null),
+          sh('phil-mid-q6', 'Knowledge independent of sensory experience is a', 'priori', null),
+          mc('phil-mid-q7', 'Agrippa trilemma terminates in regress, circularity, or', ['dogmatism', 'certainty'], 0, null),
+          num('phil-mid-q8', 'Number of truth values in classical bivalent logic', 2, null),
+          mc('phil-mid-q9', 'Relations of Ideas denial entails', ['a contradiction', 'a physical accident'], 0, null),
+          sh('phil-mid-q10', 'Hume fork divides relations of ideas and matters of', 'fact', null)
+        ], { work: 'SEP · Stanford Encyclopedia of Philosophy', loc: 'midterm' }, 45)
+      ]
+    },
+    {
+      id: 'u5',
+      title: 'Philosophy of Science & Falsification',
+      chapter: '6. Philosophy of Science & Scientific Epistemology',
+      doors: ['https://plato.stanford.edu/'],
+      source: { work: 'Karl Popper · Thomas Kuhn · SEP', loc: 'popper' },
+      questions: [
+        mc('phil-u5-q1', 'Karl Popper proposed that the demarcation criterion distinguishing science from pseudo-science is:', ['falsifiability: empirical vulnerability to decisive refutation', 'inductive verification by accumulating confirming instances', 'consensus of certified academic experts', 'mathematical elegance alone'], 0, 'Popperian demarcation.'),
+        mc('phil-u5-q2', 'The Duhem-Quine thesis asserts that:', ['hypotheses cannot be tested in isolation, but only as part of an interconnected web of auxiliary assumptions', 'all scientific theories are equally true', 'experiments never provide empirical data', 'physics has reached its final state'], 0, 'Holism of testing.'),
+        sh('phil-u5-q3', 'Thomas Kuhn termed the revolutionary transition between dominant scientific frameworks a ____ shift.', 'paradigm', 'Paradigm shift. Type paradigm'),
+        mc('phil-u5-q4', 'The "No Miracles Argument" supports scientific realism by asserting that:', ['it would be a miracle if scientific theories were so predictive without being approximately true', 'miracles provide evidence for natural laws', 'science explains theological occurrences', 'unobservable entities cannot exist'], 0, 'Realism vs instrumentalism.'),
+        mc('phil-u5-q5', 'Feynman concept of "Cargo Cult Science" demands that researchers:', ['actively document every flaw, caveat, and potential disconfirmation of their own hypotheses', 'rely on ceremonial equipment to impress peer reviewers', 'publish only positive findings that confirm prior theories', 'ignore anomalous experimental results'], 0, 'Scientific integrity.')
+      ]
+    },
+    {
+      id: 'u6',
+      title: 'Logical Atomism & Tractatus',
+      chapter: '9. Philosophy of Language & Meaning',
+      doors: ['https://plato.stanford.edu/'],
+      source: { work: 'Ludwig Wittgenstein · Bertrand Russell · SEP', loc: 'wittgenstein' },
+      questions: [
+        mc('phil-u6-q1', 'The opening proposition of Ludwig Wittgenstein Tractatus Logico-Philosophicus states:', ['The world is all that is the case', 'In the beginning was the Word', 'I think, therefore I am', 'The unexamined life is not worth living'], 0, 'Tractatus Proposition 1.'),
+        mc('phil-u6-q2', 'In the Tractatus Picture Theory of Meaning, a proposition represents reality by:', ['sharing an identical logical form with the depicted state of affairs', 'generating an emotional mood in the listener', 'copying the physical colors of objects', 'matching common dictionary definitions'], 0, 'Picture Theory.'),
+        sh('phil-u6-q3', 'According to Wittgenstein, what cannot be said in declarative propositions manifests or ____ itself.', 'shows', 'Shows itself. Type shows'),
+        mc('phil-u6-q4', 'What is Wittgenstein metaphor in Tractatus 6.54 for philosophical propositions?', ['a ladder to be thrown away after climbing up it', 'a fortress guarding against skepticism', 'a web spun by spiders', 'a mirror reflecting eternal forms'], 0, 'The ladder metaphor.'),
+        mc('phil-u6-q5', 'The closing proposition of the Tractatus (Proposition 7) declares:', ['Whereof one cannot speak, thereof one must be silent', 'All men by nature desire to know', 'The world is an illusion of consciousness', 'Truth is the correspondence of thought with reality'], 0, 'Proposition 7 on silence.')
+      ],
+      extras: [
+        essay(
+          'phil-essay-1',
+          '',
+          'Contrast Ludwig Wittgenstein Picture Theory of Meaning in the Tractatus with his later concept of Language Games in Philosophical Investigations. Explain the shift from truth-conditional logical atomism to pragmatic contextual rule-following.',
+          { work: 'Ludwig Wittgenstein · SEP', loc: 'essay-1' }
+        )
+      ]
+    },
+    {
+      id: 'u7',
+      title: 'Moral Philosophy & Kantian Ethics',
+      chapter: '10. Moral Philosophy & Normative Ethics',
+      doors: ['https://plato.stanford.edu/'],
+      source: { work: 'Immanuel Kant · Groundwork · SEP', loc: 'ethics-deontological' },
+      questions: [
+        mc('phil-u7-q1', 'Immanuel Kant Categorical Imperative commands that moral agents:', ['act only according to maxims they can at the same time will as universal laws', 'maximize the greatest happiness for the greatest number of beings', 'follow cultural traditions without deviation', 'seek personal self-interest and pleasure'], 0, 'Formula of Universal Law.'),
+        mc('phil-u7-q2', 'The Formula of Humanity as an End asserts that one must treat humanity:', ['always at the same time as an end, never merely as a means', 'as an instrument to achieve collective wealth', 'as subordinate to economic efficiency', 'as identical to animal instincts'], 0, 'Humanity formulation.'),
+        sh('phil-u7-q3', 'The principle asserting that an ethical ought cannot be derived from a descriptive is is Hume ____.', 'Law', 'Hume Law. Type Law'),
+        mc('phil-u7-q4', 'Deontological moral theories judge actions primarily by:', ['their conformity to intrinsic duty and moral rules, independent of consequences', 'the net utility and aggregate happiness they generate', 'the physical pleasure experienced by the actor', 'the aesthetic beauty of the gesture'], 0, 'Deontology vs consequentialism.'),
+        mc('phil-u7-q5', 'In John Rawls theory of justice, the "Veil of Ignorance" ensures fair societal principles by:', ['depriving deliberators of knowledge of their own social status, wealth, and natural talents', 'imposing total censorship on political debate', 'requiring all citizens to have equal income', 'enforcing hereditary rule'], 0, 'Rawlsian original position.')
+      ]
+    },
+    {
+      id: 'u8',
+      title: 'Lean Systems Epistemology & Invariants',
+      chapter: '14. Dialectical Method & Problem-Solving Protocols',
+      doors: ['https://plato.stanford.edu/'],
+      source: { work: 'Systems Dialectics · Lean Systems Engineering', loc: 'lean-epistemology' },
+      questions: [
+        mc('phil-u8-q1', 'In Lean Systems Engineering, the principle of Jidoka (Autonomation) mandates:', ['stopping promotion and execution immediately when a defect is detected to prevent downstream contamination', 'ignoring small errors to meet shipping deadlines', 'hiding bugs behind warning banners', 'rewriting code without running automated tests'], 0, 'Jidoka defect containment.'),
+        mc('phil-u8-q2', 'A Poka-Yoke design in systems architecture achieves mistake-proofing by:', ['enforcing structural typestates and constraints that make illegal states unrepresentable', 'posting advisory warning signs for operators', 'relying on model hallucination suppression', 'allowing invalid inputs with silent fallback'], 0, 'Poka-Yoke fail-closed constraints.'),
+        sh('phil-u8-q3', 'The deterministic passing predicate required for empirical verification of code execution is exit code ____.', '0', 'Exit code zero. Type 0'),
+        mc('phil-u8-q4', 'Under the epistemological principle of empirical reality invariant under preference:', ['unverified assertions carry zero truth value regardless of user desire or model confidence', 'positive thinking alters execution physics', 'opinions become facts if agreed upon by consensus', 'documentation replaces executable proof'], 0, 'Empirical reality invariance.'),
+        mc('phil-u8-q5', 'The 5S methodology systematically reduces physical and digital entropy through:', ['Sort, Set in order, Shine, Standardize, and Sustain', 'Speed, Scale, Spend, Speculate, and Ship', 'Syntax, Semantics, Scaffolding, Staging, and Syncing', 'Start, Stop, Shift, Slow, and Sleep'], 0, '5S entropy reduction.')
+      ],
+      extras: [
+        essay(
+          'phil-essay-2',
+          '',
+          'Analyze Immanuel Kant Categorical Imperative as a formal system invariant. Demonstrate how universalizability serves as a non-contradiction gate across distributed agents and execution systems.',
+          { work: 'Immanuel Kant · Systems Ethics · SEP', loc: 'essay-2' }
+        ),
+        project(
+          'phil-lean-project',
+          '',
+          'Conduct a comprehensive Lean Epistemological Audit of a computational workflow. Identify Muda (waste), map fail-closed Poka-Yoke typestates, design an Andon halt mechanism for defect detection, and prove completion with an exit code 0 test runner.',
+          ['Identify process invariants and failure modes', 'Specify Poka-Yoke type constraints', 'Define Jidoka Andon trigger criteria', 'Implement deterministic verification test suite', 'Verify exit status 0 and document audit report'],
+          { work: 'Lean Systems Engineering Specification', loc: 'project' }
+        ),
+        exam('phil-final', '', 'Comprehensive Final Examination: Philosophy, Logic & Dialectical Architecture', [
+          sh('phil-fn-q1', 'Deductively valid argument with true premises is', 'sound', null),
+          sh('phil-fn-q2', 'Locke mind blank slate at birth is tabula', 'rasa', null),
+          sh('phil-fn-q3', 'If P then Q; not Q; therefore not P is Modus', 'Tollens', null),
+          mc('phil-fn-q4', 'Gettier problem proved JTB is', ['not sufficient for knowledge', 'always false'], 0, null),
+          sh('phil-fn-q5', 'Popper demarcation criterion for science is', 'falsifiability', null),
+          mc('phil-fn-q6', 'Wittgenstein Tractatus proposition 1: world is totality of', ['facts, not of things', 'material particles'], 0, null),
+          sh('phil-fn-q7', 'Tractatus closing: whereof one cannot speak, thereof one must be', 'silent', null),
+          mc('phil-fn-q8', 'Kant categorical imperative commands acting on maxims that can be', ['universal laws', 'profitable outcomes'], 0, null),
+          sh('phil-fn-q9', 'Lean principle halting line immediately on defect is', 'jidoka', null),
+          num('phil-fn-q10', 'Passing exit code for deterministic verification gate', 0, null)
+        ], { work: 'SEP · Stanford Encyclopedia of Philosophy · EasyLM The Stacks', loc: 'final' }, 60)
+      ]
+    }
+  ]
+);
+
+export const WAVE1 = [methods, math, physics, chemistry, biology, civics, health, philosophy];
+

@@ -36,26 +36,15 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
-# Step 2: Automated unit & invariant test suite
-Write-Host "`n[2/4] Executing test suite (vitest run)..." -ForegroundColor Yellow
-$testOutput = & npx vitest run
-$testExit = $LASTEXITCODE
-
-if ($testExit -ne 0) {
-    Write-Host "`n[FATAL] Test suite FAILED (exit code $testExit)!" -ForegroundColor Red
+# Step 2: Single-grip deterministic verification gate (ponytail wu wei)
+Write-Host "`n[2/3] Executing deterministic verification gate (verify.ps1)..." -ForegroundColor Yellow
+& "$root\verify.ps1"
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "`n[FATAL] Verification gate FAILED (exit code $LASTEXITCODE)!" -ForegroundColor Red
     Write-Host "Deployment aborted cold. Client protection barrier intact." -ForegroundColor Red
     exit 1
 }
-Write-Host "[PASS] All unit and invariant tests passed green." -ForegroundColor Green
-
-# Step 3: TypeScript check & Vite production bundle
-Write-Host "`n[3/4] Verifying TypeScript and Vite production bundle (npm run build)..." -ForegroundColor Yellow
-& npm run build
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "[FATAL] Production build failed!" -ForegroundColor Red
-    exit 1
-}
-Write-Host "[PASS] TypeScript check and production bundle succeeded." -ForegroundColor Green
+Write-Host "[PASS] Single-grip verification gate passed green." -ForegroundColor Green
 
 # Step 4: Working tree audit and optional push
 Write-Host "`n[4/4] Inspecting git working tree..." -ForegroundColor Yellow

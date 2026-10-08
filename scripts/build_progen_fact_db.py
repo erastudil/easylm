@@ -89,7 +89,7 @@ def build_fact_database(
             total_lint_findings += len(findings)
 
         # Parse validation
-        doc = parse_text(content, role=Role.IRON)
+        doc = parse_text(content, role=Role.SYNTAX)
         valid_units = [u for u in doc.units if u.topic]
         if len(valid_units) != len(facts):
             raise ValueError(
@@ -195,7 +195,7 @@ def generate_facts_index_markdown(
         f"- **Total Subjects**: {len(subject_stats)} academic stacks (001 through 910)",
         f"- **Total Verified Facts**: {total_units:,} units",
         f"- **Total Citation Doors & References**: {total_asides:,} asides",
-        "- **Dialect**: Strict Progen Iron (`topic = comment.` and `topic : comment.`)",
+        "- **Dialect**: Strict Progen Syntax (`topic = comment.` and `topic : comment.`)",
         "- **Storage Engine**: Zero-rent SQLite with WAL mode, Dewey indexes, and FTS5 full-text triggers",
         "- **Linter Status**: 0 errors, 0 warnings across all files",
         "",

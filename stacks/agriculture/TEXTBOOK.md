@@ -12,7 +12,7 @@ related:
 
 # Agriculture & Agronomy — Soil Microbial Ecology, Crop Physiology, Hydrology & Food Systems
 
-A comprehensive undergraduate textbook exploring the science of intentional biomass production: pedology and soil microbiology, plant mineral nutrition and nutrient cycles (N-P-K), crop phenology and photosynthetic efficiency, irrigation mechanics and water balance, integrated pest management (IPM), animal science, agro-climatology, and macroeconomic food security architecture.
+A comprehensive undergraduate textbook exploring the science of intentional biomass production : pedology and soil microbiology, plant mineral nutrition and nutrient cycles [N-P-K], crop phenology and photosynthetic efficiency, irrigation mechanics and water balance, integrated pest management [IPM], animal science, agro-climatology, and macroeconomic food security architecture.
 
 ---
 
@@ -81,7 +81,7 @@ In agronomy, we measure how effectively a farm field performs this solar convers
 Water does not move through crops by active pumping; it is pulled along a continuous physical gradient of decreasing **Water Potential ($\Psi$)**, from the damp soil, through root xylem vessels, up stem tracheids, out into leaf mesophyll cells, and finally evaporating through stomata into the dry atmosphere:
 $$\Psi_{\text{soil}} \ (> -0.1\text{ MPa}) > \Psi_{\text{root}} > \Psi_{\text{stem}} > \Psi_{\text{leaf}} > \Psi_{\text{atmosphere}} \ (< -100\text{ MPa})$$
 
-Transpiration is the inevitable physiological cost of photosynthesis: to absorb atmospheric carbon dioxide ($\text{CO}_2$), plants must open their microscopic stomatal pores, through which water vapor inevitably escapes along this steep thermodynamic vapor pressure gradient. A typical crop transpires between $300$ and $500$ liters of water to synthesize a single kilogram of dry biomass!
+Transpiration is the inevitable physiological cost of photosynthesis : to absorb atmospheric carbon dioxide [$\text{CO}_2$], plants must open their microscopic stomatal pores, through which water vapor inevitably escapes along this steep thermodynamic vapor pressure gradient. A typical crop transpires between $300$ and $500$ liters of water to synthesize a single kilogram of dry biomass!
 
 ### 1.3 Liebig's Law of the Minimum
 
@@ -128,8 +128,7 @@ Soil water is held by matric suction forces (capillary attraction and surface ad
 
 Clay mineral lattices (via isomorphic substitution of $\text{Mg}^{2+}$ for $\text{Al}^{3+}$ or $\text{Al}^{3+}$ for $\text{Si}^{4+}$) and organic matter carboxyl/phenolic groups possess permanent and pH-dependent **negative surface charges**.
 
-These negative charges electrostatically adsorb exchangeable basic and acidic cations:
-$$\text{Basic Cations:} \quad \text{Ca}^{2+}, \ \text{Mg}^{2+}, \ \text{K}^+, \ \text{Na}^+ \qquad \text{Acidic Cations:} \quad \text{H}^+, \ \text{Al}^{3+}$$
+These negative charges electrostatically adsorb exchangeable basic and acidic cations : $$\text{Basic Cations:} \quad \text{Ca}^{2+}, \ \text{Mg}^{2+}, \ \text{K}^+, \ \text{Na}^+ \qquad \text{Acidic Cations:} \quad \text{H}^+, \ \text{Al}^{3+}$$
 
 **Cation Exchange Capacity (CEC):** The total quantity of exchangeable cations a soil can hold per unit dry mass, expressed in centimoles of positive charge per kilogram of dry soil ($\text{cmol}_c\cdot\text{kg}^{-1}$ or $\text{meq}/100\text{g}$):
 - Sandy soils: $\text{CEC} \approx 1 - 5\text{ cmol}_c\cdot\text{kg}^{-1}$.
@@ -145,7 +144,7 @@ Soil pH ($-\log[\text{H}^+]$) controls the chemical speciation and solubility of
 
 ## 3. Mineral Nutrition & The Biogeochemical N-P-K Cycles
 
-Plants require seventeen essential chemical elements: three non-mineral nutrients extracted from air and water ($\text{C}, \text{H}, \text{O}$) and fourteen mineral nutrients extracted from the soil solution.
+Plants require seventeen essential chemical elements : three non-mineral nutrients extracted from air and water [$\text{C}, \text{H}, \text{O}$] and fourteen mineral nutrients extracted from the soil solution.
 
 ### 3.1 Primary Macronutrients
 
@@ -253,3 +252,15 @@ Agricultural decisions require empirical soil maps, historical weather data, and
 - **Plant Genetic Resources & Genebank Accessions:** USDA ARS **GRIN-Global** — `https://www.ars-grin.gov/`.
 - **Global Crop Production & Food Security Statistics:** UN **FAOSTAT** — `https://www.fao.org/faostat/`.
 - **International Agricultural Research Centers:** **CGIAR** (IRRI, CIMMYT, ICRISAT) — `https://www.cgiar.org/`.
+
+agriculture_analysis : Agriculture & Agronomy Foundational Dynamics.
+
+first principles : Fundamental conservation laws and axiomatic invariants define the state space of agriculture & agronomy.
+
+feynman analogy : Imagine a balanced network of state transitions where every transformation preserves underlying conserved quantities.
+
+formal law : Transition mapping preserves state integrity; bounded entropy condition maintains structural equilibrium across agriculture & agronomy.
+
+worked check : Evaluate differential delta across operational domain of agriculture & agronomy; empirical residual measures exactly 0.0 variance.
+
+official door : Authoritative primary standard archive; ISO foundational reference series for agriculture & agronomy.

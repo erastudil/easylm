@@ -1,0 +1,192 @@
+{
+  "course": {
+    "id": "philosophy-foundations-1",
+    "stack": "philosophy",
+    "dewey": "100",
+    "title": "Philosophy I: Foundations, Logic, Epistemology & Systems Dialectics",
+    "level": "undergrad",
+    "hours": 40,
+    "license": {
+      "spdx": "AGPL-3.0-or-later",
+      "attribution": "EasyLM The Stacks · philosophy textbook. Doors: Stanford Encyclopedia of Philosophy (SEP), Early Modern Texts.",
+      "sourceUrl": "https://plato.stanford.edu/"
+    },
+    "units": [
+      {
+        "id": "u1",
+        "title": "Argument Structure & Demarcation",
+        "lessons": [
+          {
+            "id": "philosophy-foundations-1-u1-l",
+            "title": "Argument Structure & Demarcation",
+            "reading": {
+              "stack": "philosophy",
+              "chapter": "1. Nature of Philosophical Inquiry"
+            },
+            "doors": [
+              "https://plato.stanford.edu/"
+            ],
+            "items": [
+              "philosophy-foundations-1-u1-read",
+              "philosophy-foundations-1-u1-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u2",
+        "title": "Empiricism & Hume Induction",
+        "lessons": [
+          {
+            "id": "philosophy-foundations-1-u2-l",
+            "title": "Empiricism & Hume Induction",
+            "reading": {
+              "stack": "philosophy",
+              "chapter": "2. Essential Philosophical Distinctions"
+            },
+            "doors": [
+              "https://plato.stanford.edu/",
+              "https://www.earlymoderntexts.com/"
+            ],
+            "items": [
+              "philosophy-foundations-1-u2-read",
+              "philosophy-foundations-1-u2-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u3",
+        "title": "Deductive Logic & Fallacies",
+        "lessons": [
+          {
+            "id": "philosophy-foundations-1-u3-l",
+            "title": "Deductive Logic & Fallacies",
+            "reading": {
+              "stack": "philosophy",
+              "chapter": "3. Formal Logic & Deductive Systems"
+            },
+            "doors": [
+              "https://plato.stanford.edu/"
+            ],
+            "items": [
+              "philosophy-foundations-1-u3-read",
+              "philosophy-foundations-1-u3-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u4",
+        "title": "Epistemology & The Gettier Problem",
+        "lessons": [
+          {
+            "id": "philosophy-foundations-1-u4-l",
+            "title": "Epistemology & The Gettier Problem",
+            "reading": {
+              "stack": "philosophy",
+              "chapter": "5. Epistemology & Theory of Knowledge"
+            },
+            "doors": [
+              "https://plato.stanford.edu/"
+            ],
+            "items": [
+              "philosophy-foundations-1-u4-read",
+              "philosophy-foundations-1-u4-quiz",
+              "phil-midterm"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u5",
+        "title": "Philosophy of Science & Falsification",
+        "lessons": [
+          {
+            "id": "philosophy-foundations-1-u5-l",
+            "title": "Philosophy of Science & Falsification",
+            "reading": {
+              "stack": "philosophy",
+              "chapter": "6. Philosophy of Science & Scientific Epistemology"
+            },
+            "doors": [
+              "https://plato.stanford.edu/"
+            ],
+            "items": [
+              "philosophy-foundations-1-u5-read",
+              "philosophy-foundations-1-u5-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u6",
+        "title": "Logical Atomism & Tractatus",
+        "lessons": [
+          {
+            "id": "philosophy-foundations-1-u6-l",
+            "title": "Logical Atomism & Tractatus",
+            "reading": {
+              "stack": "philosophy",
+              "chapter": "9. Philosophy of Language & Meaning"
+            },
+            "doors": [
+              "https://plato.stanford.edu/"
+            ],
+            "items": [
+              "philosophy-foundations-1-u6-read",
+              "philosophy-foundations-1-u6-quiz",
+              "phil-essay-1"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u7",
+        "title": "Moral Philosophy & Kantian Ethics",
+        "lessons": [
+          {
+            "id": "philosophy-foundations-1-u7-l",
+            "title": "Moral Philosophy & Kantian Ethics",
+            "reading": {
+              "stack": "philosophy",
+              "chapter": "10. Moral Philosophy & Normative Ethics"
+            },
+            "doors": [
+              "https://plato.stanford.edu/"
+            ],
+            "items": [
+              "philosophy-foundations-1-u7-read",
+              "philosophy-foundations-1-u7-quiz"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "u8",
+        "title": "Lean Systems Epistemology & Invariants",
+        "lessons": [
+          {
+            "id": "philosophy-foundations-1-u8-l",
+            "title": "Lean Systems Epistemology & Invariants",
+            "reading": {
+              "stack": "philosophy",
+              "chapter": "14. Dialectical Method & Problem-Solving Protocols"
+            },
+            "doors": [
+              "https://plato.stanford.edu/"
+            ],
+            "items": [
+              "philosophy-foundations-1-u8-read",
+              "philosophy-foundations-1-u8-quiz",
+              "phil-essay-2",
+              "phil-lean-project",
+              "phil-final"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "itemCount": 21
+}

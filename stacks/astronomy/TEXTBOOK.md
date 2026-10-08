@@ -268,3 +268,15 @@ At $380,000$ years after the Big Bang ($z \approx 1100$), the universe cooled be
 2. **The Big Bang Was an Explosion in Space:** The Big Bang was not an explosion of matter expanding outward into pre-existing empty space. It was the rapid expansion of **space itself** everywhere at once.
 3. **Black Holes Are Cosmic Vacuum Cleaners:** If our Sun were instantly replaced by a black hole of exactly one solar mass, Earth would not get sucked in; it would continue orbiting along its identical elliptical path, because the gravitational mass at the center of the solar system would remain unchanged.
 4. **Dark Matter is Just Gas or Dust:** Interstellar dust absorbs and reradiates infrared light; cold gas absorbs radio lines. Dark matter interacts neither with electromagnetic radiation nor with ordinary atomic matter except through gravity.
+
+astronomy_analysis : Astronomy & Astrophysics: Understanding the Cosmos.
+
+first principles : Gravity governs motion of celestial objects, including planets, stars, and galaxies, according to Newton's law of universal gravitation.
+
+feynman analogy : Imagine a ball attached to a string, swung around in a circular motion, illustrating the concept of centripetal force and orbital mechanics, similar to planets orbiting a star.
+
+formal law : Kepler's third law of planetary motion states that the square of a planet's orbital period is proportional to the cube of its semi-major axis, mathematically expressed as P^2 =) \* a^3, where P is the orbital period, G is the gravitational constant, M is the mass of the star, m is the mass of the planet, and a is the semi-major axis.
+
+worked check : Step 1, define the problem: calculate the orbital period of a planet with a semi-major axis of 1 AU, orbiting a star with a mass similar to the Sun; step 2, apply the definition of Kepler's third law; step 3, claim that the orbital period is approximately 1 year; step 4, numerical verification: using the given values, P^2 =)) \*^3, resulting in P ≈ 3.1557 \* 10^7 seconds, or approximately 1 year.
+
+official door : Https://science.nasa.gov/astrophysics/focus-areas/dark-energy, a NASA webpage discussing dark energy and its role in cosmology, providing an official .gov source for understanding the universe on a large scale, including galaxies and the expansion of the universe, which is a key aspect of astronomy and astrophysics, and relates to the Hertzsprung-Russell diagram, which is a fundamental tool in understanding the life cycles of stars, and the structure and evolution of galaxies, and the overall field of cosmology.

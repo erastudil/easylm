@@ -16,7 +16,7 @@ related:
 
 # Media, Social Platforms & Information Disorders
 
-A textbook about the machinery behind the feed: how platforms earn money from attention, how claims spread and decay, how recommenders choose what you see next, and how a careful reader can audit any claim in minutes. Chapters are tagged by level: **hs** (open to readers 13 and up — no algebra needed), **undergrad** (some statistics), **grad** (network science and regulation research).
+A textbook about the machinery behind the feed : how platforms earn money from attention, how claims spread and decay, how recommenders choose what you see next, and how a careful reader can audit any claim in minutes. Chapters are tagged by level: **hs** [open to readers 13 and up — no algebra needed], **undergrad** [some statistics], **grad** [network science and regulation research].
 
 ---
 
@@ -65,7 +65,7 @@ If step 4 finds no primary source, the correct output is "unverified" — and th
 | **disinformation** | false and spread deliberately to deceive | a fabricated quote with a real logo |
 | **malinformation** | true, but shared to cause harm | leaking private messages to humiliate someone |
 
-The intent line matters because remedies differ: misinformation yields to correction; disinformation yields to provenance habits and platform friction; malinformation yields to privacy law and norms.
+The intent line matters because remedies differ : misinformation yields to correction; disinformation yields to provenance habits and platform friction; malinformation yields to privacy law and norms.
 
 ---
 
@@ -163,7 +163,7 @@ The **DeGroot** model iterates $x(t+1) = Wx(t)$ where $W$ is a row-stochastic in
 
 ### 8.4 Identifying Coordinated Inauthentic Behavior
 
-Detection research treats manipulation as an anomaly-detection problem over the interaction graph: near-duplicate posting times, shared infrastructure, statistically improbable synchronization of engagement. The honest open problem is base rates — detector precision outside lab conditions is contested, and false positives fall on real users.
+Detection research treats manipulation as an anomaly-detection problem over the interaction graph : near-duplicate posting times, shared infrastructure, statistically improbable synchronization of engagement. The honest open problem is base rates — detector precision outside lab conditions is contested, and false positives fall on real users.
 
 ---
 
@@ -190,3 +190,23 @@ Independent audit methods include sock-puppet audits (controlled accounts), rand
 3. **The single-study headline:** one preprint with a startling number is not a finding; Chapter 2's step 4 exists precisely for this.
 4. **The attribution error, platform edition:** "my feed shows it, therefore it is widespread." Your feed is a sample of size you.
 5. **The authenticity trap:** fluent, confident, well-produced content is the cheapest thing on the internet to fake. Production quality is uncorrelated with accuracy.
+
+media_analysis : Media, Social Platforms & Information Disorders.
+
+first principles : Information theory, where data transmitted through social media platforms is subject to noise, distortion, and filtering, influencing user perception and behavior.
+
+feynman analogy : Social media feed as a water pipeline, where algorithm-driven valves control the flow of information, and recommender systems act as filters, affecting the pressure and direction of the flow, thus impacting user attention and engagement.
+
+formal law : The Attention-Engagement equation, A = β \*, where A is attention, R is relevance, E is engagement, α is the algorithmic influence, β is the user's susceptibility, and S is the social proof.
+
+media_analysis : Worked check :.
+
+first principles step : Assume a social media user with a given set of interests and preferences.
+
+definition : Define attention as the amount of time spent on a particular piece of content, and engagement as the number of likes, comments, and shares.
+
+claim : The algorithm-driven feed will prioritize content that maximizes attention and engagement, potentially leading to information disorders.
+
+numerical verification : Using the Attention-Engagement equation, calculate the expected attention and engagement for a given piece of content, and verify that the algorithm prioritizes content with high expected attention and engagement.
+
+official door : Https://www.nist.gov/publications/social-media-security-testing-framework, providing guidelines for testing and evaluating the security of social media platforms, including the impact of algorithms and recommender systems on information disorders.

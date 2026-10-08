@@ -55,6 +55,7 @@ Richard Feynman loved to point out how easily our intuitive minds deceive us. We
 9. [Chapter 9: Personality Theory & Psychometric Measurement](#9-personality-theory--psychometric-measurement)
 10. [Chapter 10: Psychopathology & Evidence-Based Interventions](#10-psychopathology--evidence-based-interventions)
 11. [Chapter 11: Cognitive Debugging & Common Psychological Fallacies](#11-cognitive-debugging--common-psychological-fallacies)
+12. [Chapter 12: Philosophy of Mind & Cognition — Theory of Mind, Heuristics & Epistemology](#12-philosophy-of-mind--cognition-theory-of-mind-heuristics--epistemology)
 
 ---
 
@@ -268,3 +269,148 @@ $$\text{Triggering Event} \to \text{Automatic Thought} \to \text{Emotional & Beh
 ### 11.2 The Feynman Rule for the Human Mind
 
 Richard Feynman observed that the ultimate hallmark of a mature scientific intellect is the capacity to say: **"I do not know, and my current intuition may be completely wrong."** The human mind evolved on the African savannah to survive, reproduce, and navigate tribal politics—not to naturally compute probabilities or perceive quantum mechanics. To understand yourself and the world, you must cultivate the habit of questioning your own first impressions.
+
+---
+
+﻿## 12. Philosophy of Mind & Cognition: Theory of Mind, Heuristics & Epistemology
+
+### 12.1 Theory of Mind & Cognitive Modeling of Agents
+
+Watch two children playing inside a room with a toy basket and a lidded wooden box. Child Alpha places a red glass marble into the woven basket and steps out into the garden. While Child Alpha plays outside, Child Beta removes the marble from the basket, drops it into the wooden box, and fastens the latch. When Child Alpha walks back into the room to retrieve the marble, where will Child Alpha direct their hands? An observer who understands that other individuals possess internal models of the world separate from physical reality immediately predicts that Child Alpha will reach into the basket.
+
+This capacity to attribute mental states, beliefs, intents, desires, emotions, and knowledge to oneself and others carries the title **Theory of Mind**. It allows an organism to recognize that another agent can harbor a belief that diverges from objective physical reality. This test case carries the title the **False-Belief Task**. In cognitive philosophy, adopting the stance that an entity acts according to beliefs and desires represents what Daniel Dennett named the **Intentional Stance**.
+
+#### Contained Analogy: The Dual Flight Simulator
+An instructor in an aviation control tower watches a flight simulator screen showing what a trainee pilot sees on the cockpit instruments. When a simulated fog rolls in, the trainee flies toward a runway based on the cockpit altimeter reading, even if the instructor knows the barometric sensor calibration drifted five hundred feet off. The instructor predicts the pilot actions based on the pilot private gauges rather than the tower master radar.
+
+#### Formal Law: Epistemic Modal Logic and Intentional Stances
+Let `B_i phi` denote that agent i believes proposition phi, and let `K_i phi` denote that agent i knows proposition phi. Knowledge requires truth, satisfying the reflexive axiom:
+
+```math
+K_i phi => phi
+```
+
+Belief does not entail truth in the actual world w_0:
+
+```math
+B_i phi does not imply phi
+```
+
+Dennett formalizes cognitive prediction across three ascending analytical tiers:
+
+```math
+Physical Stance  ->  Design Stance  ->  Intentional Stance
+```
+
+The intentional stance predicts behavior via the optimization function:
+
+```math
+Action_i = argmax_{a in A} sum_{s in S} P_i(s | B_i) * U_i(a, s)
+```
+
+#### Worked Check: Computational Model of the Sally-Anne False-Belief Task
+1. World State Definition: Let world state `W = { marble_location: Box }`.
+2. Perceptual History:
+   - At time `t_0`: Agent Alpha observes marble placed into Basket. State attribution `B_Alpha(marble_location = Basket)`.
+   - At time `t_1`: Agent Alpha exits room. Perceptual channel disconnects.
+   - At time `t_2`: Agent Beta shifts marble to Box.
+3. Belief Update Rule: An agent belief state updates if and only if that agent perceptual sensory channel receives input:
+   `B_i^{t+1} = Update(B_i^t, Observation_i^t)`
+   Since Observation for Alpha at `t_2` equals empty set, `B_Alpha(marble_location = Basket)` persists.
+4. Behavioral Prediction:
+   `PredictedSearchTarget = argmax_L P_Alpha(marble_location = L) = Basket`
+5. Empirical Validation: Human developmental studies confirm that neurotypical children under three years of age fail the check by predicting the Box, while children above four years successfully predict the Basket, marking the formal developmental onset of representational Theory of Mind.
+
+#### Official Doors
+- American Psychological Association: Developmental Cognition and Theory of Mind, https://www.apa.org/topics/cognitive-psychology
+- Stanford Encyclopedia of Philosophy: Folk Psychology as a Theory, https://plato.stanford.edu/entries/folkpsych-theory/
+- National Institutes of Health: Neural Correlates of Theory of Mind, https://www.ncbi.nlm.nih.gov/
+
+
+### 12.2 Cognitive Heuristics & Bounded Rationality
+
+Observe a baseball outfielder running across the outfield grass to catch a high fly ball. The flying ball traces a complex parabolic trajectory shaped by gravitational acceleration, initial exit velocity, air resistance, wind gusts, and spin aerodynamics. The outfielder does not pull out a pocket calculator to compute systems of second-order differential equations while sprinting. Instead, the fielder adjusts their running speed to keep the visual angle of elevation to the ball increasing at a constant rate. By locking onto that single optical relationship, the fielder automatically arrives at the precise geographical patch of grass where the ball descends into reach.
+
+Human decision-makers operate under strict physical constraints: limited computational time, incomplete working memory, and noisy environmental data. Herbert Simon termed this reality **bounded rationality**. Rather than calculating exhausting mathematical optimizations, organisms employ rapid, frugal decision rules known as **heuristics**. In cognitive architecture, this dual structure partitions into fast, automatic pattern recognition labeled **System 1** and deliberative, effortful audit labeled **System 2**. When individuals substitute an easily calculated attribute for a complex target question, they exhibit systematic patterns known as **cognitive biases**, mapped extensively by Daniel Kahneman and Amos Tversky.
+
+#### Contained Analogy: The Mechanical Bimetallic Thermostat
+A home heating unit switches on when a curved strip of brass and iron curls past an electrical contact point. The thermostat never measures total building insulation, window draft velocity, or tomorrow's barometric forecast. It tracks one local physical dimension, metal deflection, to govern household temperature successfully.
+
+#### Formal Law: Satisficing and Attribute Substitution
+Herbert Simon formulated the satisficing principle, where an agent selects the first option meeting an aspiration threshold `V_threshold` rather than searching the full state space X for an absolute maximum:
+
+```math
+Select x* in X  <=>  V(x*) >= V_threshold,  stopping search at step k << |X|
+```
+
+Kahneman and Tversky formalized heuristic attribute substitution: an agent evaluating an intractable target attribute `T(x)` unknowingly substitutes a readily accessible heuristic attribute `H(x)`:
+
+```math
+E[T(x) | Query] approx f(H(x))
+```
+
+In the **Availability Heuristic**, subjective ease of mental retrieval `E_retrieval(C)` substitutes for actual statistical frequency `F(C)`:
+
+```math
+P_hat(C) proportional to E_retrieval(C)
+```
+
+#### Worked Check: Quantitative Audit of Availability Bias
+1. Target Inquiry: Estimate whether the English language contains more words with the letter K in the first position or in the third position.
+2. Cognitive Substitution: The human mind indexes vocabulary by initial letters. System 1 executes lexical search for words beginning with K, instantly retrieving common examples: King, Kite, Kitchen, Kettle.
+3. Search Cost Divergence: Searching for words with K as the third letter requires parsing internal phonemes, yielding slow, difficult retrieval: Acknowledge, Ask, Awkward.
+4. Heuristic Evaluation: Ease of retrieval for first-position K exceeds third-position K by a factor of four to one, leading 70 percent of human subjects to estimate that first-position words dominate.
+5. Empirical Lexicon Proof: Corpus analysis of the Oxford English Dictionary reveals approximately twice as many words with K in the third position than in the first position. The mathematical discrepancy verifies that cognitive heuristics trade exhaustive accuracy for minimal retrieval latency.
+
+#### Official Doors
+- National Science Foundation: Decision, Risk and Management Sciences, https://www.nsf.gov/funding/pgm_summ.jsp?pims_id=5423
+- Stanford Encyclopedia of Philosophy: Bounded Rationality, https://plato.stanford.edu/entries/bounded-rationality/
+- Nobel Prize Organization: Herbert Simon and Daniel Kahneman Economic Sciences Lectures, https://www.nobelprize.org/prizes/economic-sciences/
+
+
+### 12.3 Epistemology & Foundational Knowledge Justification
+
+Picture a competitive archer standing before a distant target in high wind. The archer plants their feet, measures wind speed, aligns the sight pin, tensions the bowstring, and releases. The arrow pierces the center bullseye. Now consider a second individual standing in the same field who closes their eyes, points an arrow toward the clouds, and lets fly. By pure happenstance, an errant wind draft redirects the second arrow, and it also strikes the exact center of the bullseye. Both arrows sit touching inside the gold ring, yet only the first archer achieved an outcome grounded in reliable competence rather than dumb luck.
+
+Philosophical investigation into what separates genuine comprehension from fortunate conjecture carries the title **epistemology**. For centuries, standard philosophical analysis defined knowledge as **Justified True Belief**. In 1963, Edmund Gettier published counterexamples proving that a belief can be both completely true and supported by evidence while still failing to qualify as knowledge because the truth rests upon ungrounded coincidence. Resolving this challenge led modern epistemologists to formulate **reliabilism**, requiring that beliefs originate from a reliable cognitive faculty that tracks the truth across possible worlds.
+
+#### Contained Analogy: The Certified Water Assay
+A municipal health inspector tests tap water by running chemical reagents and optical spectrometers across laboratory samples to certify purity. An untrained homeowner looks at a glass of water, sees no floating leaves, and assumes the water is safe. If the water happens to lack bacteria, the homeowner belief is true, yet only the laboratory assay provides authentic epistemic justification.
+
+#### Formal Law: Tripartite Analysis, Gettier Failure & Truth-Tracking
+The classical tripartite definition of propositional knowledge asserts:
+
+```math
+K(S, p)  <=>  (p is true) and (S believes p) and (S has epistemic justification for p)
+```
+
+Robert Nozick truth-tracking conditions introduce subjunctive conditionals over possible worlds:
+
+1. `p` is true.
+2. `S` believes `p`.
+3. If `p` were false, `S` would not believe `p`:
+   `not p  =>  not B_S(p)`
+4. If `p` were true in close alternative circumstances, `S` would still believe `p`:
+   `p  =>  B_S(p)`
+
+Ernest Sosa virtue epistemology analyzes knowledge through three evaluative criteria:
+- Accuracy: The belief hits the truth.
+- Adroitness: The belief manifests cognitive competence.
+- Aptness: The belief hits the truth because of the manifested cognitive competence.
+
+#### Worked Check: Formal Evaluation of a Gettier Case
+1. Case Setup: Smith and Jones apply for an executive engineering position.
+2. Evidence Collection: The board chairman informs Smith that Jones will win the appointment. Smith personally counted ten coins in Jones coat pocket.
+3. Inferred Proposition: Smith forms the justified belief proposition `q`: "The person who gets the engineering job has ten coins in their coat pocket."
+4. Actual World State: The chairman reverses decision and awards the position to Smith. Unknown to Smith, Smith also happens to carry exactly ten coins in his own pocket.
+5. Epistemic Audit:
+   - Truth Check: Proposition `q` is factually true in actual world `w_0`.
+   - Belief Check: Smith genuinely believes proposition `q`.
+   - Justification Check: Smith possessed direct testimonial and observational justification for `q`.
+   - Tracking Evaluation: Test Nozick condition three: In the closest possible world where the person hired does not have ten coins in their pocket, Smith still believes `q` based on the chairman remark about Jones. The counterfactual tracking condition fails.
+   - Aptness Evaluation: Smith hit the truth by coincidence, not because of cognitive competence. The justified true belief fails to qualify as knowledge, demonstrating that epistemic justification mandates truth-connected causal mechanisms.
+
+#### Official Doors
+- Stanford Encyclopedia of Philosophy: Epistemology, https://plato.stanford.edu/entries/epistemology/
+- Stanford Encyclopedia of Philosophy: The Analysis of Knowledge, https://plato.stanford.edu/entries/knowledge-analysis/
+- Internet Encyclopedia of Philosophy: Epistemic Justification, https://iep.utm.edu/epi-just/

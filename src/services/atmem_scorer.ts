@@ -105,7 +105,7 @@ export function scoreMemoryAtoms(
     }
     
     // Update document frequency (count unique terms per document)
-    const uniqueTerms = new Set(terms);
+    const uniqueTerms = new Set<string>(terms);
     for (const term of uniqueTerms) {
       documentFrequency.set(term, (documentFrequency.get(term) || 0) + 1);
     }

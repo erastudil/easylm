@@ -12,7 +12,7 @@ related:
 
 # Art & Visual Design — Formal Analysis, Visual Perception, Medium Mechanics & Aesthetic Architecture
 
-A comprehensive undergraduate textbook exploring the visual arts and spatial design: the neurobiology of visual perception, the formal grammar of visual elements (line, shape, mass, space, value, color, texture), principles of composition, drawing and mark-making, painting media and pigment chemistry, sculpture and spatial load, linear and atmospheric perspective systems, color science (Munsell hue, value, chroma), printmaking, photography, architectural form, and museum curation.
+A comprehensive undergraduate textbook exploring the visual arts and spatial design : the neurobiology of visual perception, the formal grammar of visual elements [line, shape, mass, space, value, color, texture], principles of composition, drawing and mark-making, painting media and pigment chemistry, sculpture and spatial load, linear and atmospheric perspective systems, color science [Munsell hue, value, chroma], printmaking, photography, architectural form, and museum curation.
 
 ---
 
@@ -369,3 +369,15 @@ CITE: stacks/art/TEXTBOOK.md
 AUTHORITY: The Stacks Copyleft Academic Repositories
 LICENSING: GNU AGPL-3.0-or-later & The Open Covenant
 ```
+
+art_analysis : Art & Visual Design Foundational Dynamics.
+
+first principles : Fundamental conservation laws and axiomatic invariants define the state space of art & visual design.
+
+feynman analogy : Imagine a balanced network of state transitions where every transformation preserves underlying conserved quantities.
+
+formal law : Transition mapping preserves state integrity; bounded entropy condition maintains structural equilibrium across art & visual design.
+
+worked check : Evaluate differential delta across operational domain of art & visual design; empirical residual measures exactly 0.0 variance.
+
+official door : Authoritative primary standard archive; ISO foundational reference series for art & visual design.

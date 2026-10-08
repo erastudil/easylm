@@ -15,6 +15,7 @@ import {
   stopGeneration,
   ProgressStatus,
   AVAILABLE_MODELS,
+  findModelOption,
   getOrInitEngine,
   isEngineReady,
   resetWebGPUAndCaches,
@@ -26,6 +27,7 @@ import {
   setEngineKidMode,
   takeInterruptedLoad
 } from './engine/webllm';
+import { isMindModel, streamMindCompletion, getOrInitMind } from './engine/mind';
 import { dispatchTool, SYSTEM_TOOLS_PROMPT, SYSTEM_TOOLS_PROMPT_KID } from './engine/tools';
 import {
   assembleSystemEnvelope,
@@ -33,6 +35,7 @@ import {
   classifyWebGpuFailure,
   MIN_COMPLETION
 } from './engine/context_budget';
+import { aliceDrive } from './engine/alice_drive';
 import { clockQueryOf, mathExpressionOf, stacksQueryOf, unitConversionOf } from './engine/preflight';
 import { Sidebar } from './components/Sidebar';
 import { SettingsModal } from './components/SettingsModal';
@@ -338,11 +341,11 @@ export const App: React.FC = () => {
   // Model & Personality Configuration
   const [selectedModel, setSelectedModel] = useState<string>(() => {
     const saved = localStorage.getItem('easylm_selected_model');
+    const kidAtBoot = getActiveProfile().role === 'kid';
     if (saved === 'Bonsai-2-27B-MLC') {
       try { localStorage.removeItem('easylm_selected_model'); } catch {}
-      return DEFAULT_MODEL_ID;
+      return modelForProfile(DEFAULT_MODEL_ID, kidAtBoot);
     }
-    const kidAtBoot = getActiveProfile().role === 'kid';
     if (saved && AVAILABLE_MODELS.some(m => m.id === saved)) return modelForProfile(saved, kidAtBoot);
     return modelForProfile(DEFAULT_MODEL_ID, kidAtBoot);
   });
@@ -354,8 +357,7 @@ export const App: React.FC = () => {
   });
 
   const handleSelectModel = (id: string) => {
-    if (!AVAILABLE_MODELS.some(m => m.id === id)) return;
-    if (kidMode && !isModelAllowedForKid(id)) return;
+    if (kidMode ? !isModelAllowedForKid(id) : !AVAILABLE_MODELS.some(m => m.id === id)) return;
     if (id !== selectedModel) {
       setIsModelReady(false);
     }
@@ -382,9 +384,15 @@ export const App: React.FC = () => {
     setIsGenerating(true);
     setLoadErrorToast(null);
     try {
-      await getOrInitEngine(modelToLoad, (prog) => {
-        setModelProgress(prog);
-      }, contextLimit);
+      if (isMindModel(modelToLoad)) {
+        await getOrInitMind((prog) => {
+          setModelProgress(prog);
+        });
+      } else {
+        await getOrInitEngine(modelToLoad, (prog) => {
+          setModelProgress(prog);
+        }, contextLimit);
+      }
       setIsModelReady(true);
       setSelectedModel(modelToLoad);
     } catch (err: any) {
@@ -546,7 +554,7 @@ export const App: React.FC = () => {
     setEngineKidMode(kidAtBoot);
     detectDevice({ kidMode: kidAtBoot }).then(detected => {
       const dev = { ...detected };
-      const modelLabel = (id: string) => AVAILABLE_MODELS.find(m => m.id === id)?.label || id;
+      const modelLabel = (id: string) => findModelOption(id)?.label || id;
       // A load that never finished on the last visit (tab killed mid-load): step down one size.
       const interrupted = takeInterruptedLoad();
       // Kid mode: the step-down skips models that failed the Kid Safe checks (SmolLM2 360M).
@@ -564,7 +572,7 @@ export const App: React.FC = () => {
       if (savedModel === 'Bonsai-2-27B-MLC') {
         try { localStorage.removeItem('easylm_selected_model'); } catch {}
         setSelectedModel(dev.recommendedModel || DEFAULT_MODEL_ID);
-      } else if (savedModel && !AVAILABLE_MODELS.some(m => m.id === savedModel)) {
+      } else if (savedModel && !AVAILABLE_MODELS.some(m => m.id === savedModel) && !(kidAtBoot && isModelAllowedForKid(savedModel))) {
         try { localStorage.removeItem('easylm_selected_model'); } catch {}
         setSelectedModel(dev.recommendedModel || DEFAULT_MODEL_ID);
       } else if (!savedModel && dev.recommendedModel) {
@@ -900,12 +908,29 @@ export const App: React.FC = () => {
       executedTools.push(toolRes);
     }
 
+    if (executedTools.length === 0 && !extendedThinking) {
+      const driven = aliceDrive(trimmed);
+      if (driven) {
+        executedTools.push({
+          tool: 'alice',
+          query: trimmed,
+          result: `${driven.act} · ${driven.route}\n\n${driven.text}`,
+          durationMs: 0,
+          isError: false
+        });
+      }
+    }
+
     // Prepare assistant response message placeholder
     const assistantMsgId = 'asst-' + Date.now();
     const assistantPlaceholder: Message = {
       id: assistantMsgId,
       role: 'assistant',
-      content: executedTools.length > 0 ? `I've calculated that using in-app tools:\n\n${executedTools[0].result}` : '',
+      content: executedTools.length === 0
+        ? ''
+        : executedTools[0].tool === 'alice'
+          ? executedTools[0].result
+          : `I've calculated that using in-app tools:\n\n${executedTools[0].result}`,
       toolsUsed: executedTools,
       timestamp: Date.now()
     };
@@ -967,29 +992,53 @@ export const App: React.FC = () => {
       }
 
       // Start initial stream
-      const result = await streamChatCompletion(
-        turnBudget.messages,
-        modelForProfile(selectedModel, kidSafe),
-        temperature,
-        turnBudget.maxTokens,
-        (delta) => {
-          currentStreamed += delta;
-          const { displayContent, inFlightThinking } = parseStreamedTokens(currentStreamed);
-          // In-flight token update - clean display text and live thinking trace
-          setSessions(prev => prev.map(s => {
-            if (s.id !== activeSession.id) return s;
-            const msgs = [...updatedMessages];
-            msgs.push({
-              ...assistantPlaceholder,
-              content: displayContent,
-              thinking: inFlightThinking
-            });
-            return { ...s, messages: msgs };
-          }));
-        },
-        (prog) => setModelProgress(prog),
-        contextLimit
-      );
+      const result = isMindModel(selectedModel)
+        ? await streamMindCompletion(
+            turnBudget.messages,
+            selectedModel,
+            temperature,
+            turnBudget.maxTokens,
+            (delta) => {
+              currentStreamed += delta;
+              const { displayContent, inFlightThinking } = parseStreamedTokens(currentStreamed);
+              // In-flight token update - clean display text and live thinking trace
+              setSessions(prev => prev.map(s => {
+                if (s.id !== activeSession.id) return s;
+                const msgs = [...updatedMessages];
+                msgs.push({
+                  ...assistantPlaceholder,
+                  content: displayContent,
+                  thinking: inFlightThinking
+                });
+                return { ...s, messages: msgs };
+              }));
+            },
+            (prog) => setModelProgress(prog),
+            contextLimit
+          )
+        : await streamChatCompletion(
+            turnBudget.messages,
+            modelForProfile(selectedModel, kidSafe),
+            temperature,
+            turnBudget.maxTokens,
+            (delta) => {
+              currentStreamed += delta;
+              const { displayContent, inFlightThinking } = parseStreamedTokens(currentStreamed);
+              // In-flight token update - clean display text and live thinking trace
+              setSessions(prev => prev.map(s => {
+                if (s.id !== activeSession.id) return s;
+                const msgs = [...updatedMessages];
+                msgs.push({
+                  ...assistantPlaceholder,
+                  content: displayContent,
+                  thinking: inFlightThinking
+                });
+                return { ...s, messages: msgs };
+              }));
+            },
+            (prog) => setModelProgress(prog),
+            contextLimit
+          );
       setIsModelReady(true);
 
       // Check if model emitted a tool call in any supported format
@@ -1077,29 +1126,53 @@ export const App: React.FC = () => {
             extendedThinking,
             isReasoning: isReasoningModel
           });
-          const finalResult = await streamChatCompletion(
-            followBudget.messages,
-            modelForProfile(selectedModel, kidSafe),
-            temperature,
-            followBudget.maxTokens,
-            (delta) => {
-              followUpStreamed += delta;
-              const { displayContent, inFlightThinking } = parseStreamedTokens(followUpStreamed);
-              setSessions(prev => prev.map(s => {
-                if (s.id !== activeSession.id) return s;
-                const msgs = [...updatedMessages];
-                msgs.push({
-                  ...assistantPlaceholder,
-                  content: displayContent,
-                  thinking: inFlightThinking || result.thinking,
-                  toolsUsed: executedTools
-                });
-                return { ...s, messages: msgs };
-              }));
-            },
-            (prog) => setModelProgress(prog),
-            contextLimit
-          );
+          const finalResult = isMindModel(selectedModel)
+            ? await streamMindCompletion(
+                followBudget.messages,
+                selectedModel,
+                temperature,
+                followBudget.maxTokens,
+                (delta) => {
+                  followUpStreamed += delta;
+                  const { displayContent, inFlightThinking } = parseStreamedTokens(followUpStreamed);
+                  setSessions(prev => prev.map(s => {
+                    if (s.id !== activeSession.id) return s;
+                    const msgs = [...updatedMessages];
+                    msgs.push({
+                      ...assistantPlaceholder,
+                      content: displayContent,
+                      thinking: inFlightThinking || result.thinking,
+                      toolsUsed: executedTools
+                    });
+                    return { ...s, messages: msgs };
+                  }));
+                },
+                (prog) => setModelProgress(prog),
+                contextLimit
+              )
+            : await streamChatCompletion(
+                followBudget.messages,
+                modelForProfile(selectedModel, kidSafe),
+                temperature,
+                followBudget.maxTokens,
+                (delta) => {
+                  followUpStreamed += delta;
+                  const { displayContent, inFlightThinking } = parseStreamedTokens(followUpStreamed);
+                  setSessions(prev => prev.map(s => {
+                    if (s.id !== activeSession.id) return s;
+                    const msgs = [...updatedMessages];
+                    msgs.push({
+                      ...assistantPlaceholder,
+                      content: displayContent,
+                      thinking: inFlightThinking || result.thinking,
+                      toolsUsed: executedTools
+                    });
+                    return { ...s, messages: msgs };
+                  }));
+                },
+                (prog) => setModelProgress(prog),
+                contextLimit
+              );
           setIsModelReady(true);
 
           const finalAssistantMsg: Message = {
@@ -1165,7 +1238,7 @@ export const App: React.FC = () => {
       const errorHint = isBudget
         ? `\n\nThis turn does not fit the context window. Raise context in Settings or shorten the prompt.`
         : isOOM
-        ? `\n\nGPU ran out of memory for this model. Switch to Qwen 2.5 1.5B in Settings.`
+        ? `\n\nGPU ran out of memory for this model. Switch to Gemma 4 E2B in Settings.`
         : isGPUProcessDead
         ? `\n\nWebGPU cannot see the GPU. Copy the restart command in the dialog. Save unsaved work first — tabs reload.`
         : isCorruptCache
@@ -1225,7 +1298,7 @@ export const App: React.FC = () => {
     reader.readAsText(file);
   };
 
-  const currentModelLabel = AVAILABLE_MODELS.find(m => m.id === selectedModel)?.label || 'Qwen 2.5 3B';
+  const currentModelLabel = findModelOption(selectedModel)?.label || 'Gemma 4 E4B Thinking';
   const currentPersonality = PERSONALITIES.find(p => p.id === clampPersonalityIdForRole(selectedPersonality, currentProfile.role)) || PERSONALITIES.find(p => p.id === 'socratic_kid') || PERSONALITIES[0];
 
   const chatPane = (

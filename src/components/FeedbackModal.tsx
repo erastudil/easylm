@@ -96,7 +96,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, a
       `To: ${FEEDBACK_EMAIL}`,
       `Subject: ${subject || '[EasyLM Beta Feedback]'}`,
       `Date: ${new Date().toISOString()}`,
-      `Model: ${activeModel || 'Qwen 2.5 3B'}`,
+      `Model: ${activeModel || 'Gemma 4 E4B Thinking'}`,
       `User Agent: ${navigator.userAgent}`,
       `WebGPU Available: ${'gpu' in navigator ? 'Yes' : 'No'}`,
       ``,
@@ -120,7 +120,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, a
     emailBody += `----------------------------------------\n`;
     emailBody += `System Info:\n`;
     emailBody += `App: EasyLM (Public Beta)\n`;
-    emailBody += `Model: ${activeModel || 'Qwen 2.5 3B'}\n`;
+    emailBody += `Model: ${activeModel || 'Gemma 4 E4B Thinking'}\n`;
     emailBody += `WebGPU: ${'gpu' in navigator ? 'Active' : 'Unavailable'}\n`;
     emailBody += `Browser: ${navigator.userAgent}\n`;
 

@@ -30,7 +30,7 @@ EasyLM dynamically detects your hardware tier and recommends the optimal model f
 
 | Model | Download | VRAM Footprint | Tier & Sweet Spot | Upstream License |
 |---|---|---|---|---|
-| **Bonsai 2 27B (PrismML)** | ~5.9 GB | ~6.8 GB | **Recommended for ~12GB VRAM & under.** Extreme ternary quantization brings 27B reasoning to consumer GPUs. | Apache-2.0 |
+| **Bonsai 2 27B (PrismML)** | ~5.9 GB | ~6.8 GB | **16GB tier.** Ternary 27B weights for a power workstation. An 8GB card stays on Qwen 2.5 3B. | Apache-2.0 |
 | **Qwen 2.5 3B Instruct** | ~1.9 GB | ~2.2 GB | **Default for 8GB cards.** Everyday workhorse. Balanced reasoning, coding, and fast throughput. | Apache-2.0 |
 | **Llama 3.2 3B Instruct** | ~2.0 GB | ~2.3 GB | **8GB tier.** Meta's compact 3B model. Sharp reasoning and concise conversational flow. | Llama 3.2 |
 | **DeepSeek-R1 Distill Qwen 7B** | ~4.5 GB | ~5.1 GB | **8GB–16GB tier.** Heavyweight chain-of-thought reasoning for deeper analytical tasks. | MIT |

@@ -8,11 +8,9 @@
   - Classified `DXGI_ERROR_DEVICE_REMOVED`, `0x887A0005`, and command queue creation failures as `gpu_process_dead` in `classifyWebGpuFailure`, automatically opening the 1-click browser restart dialog (`chrome://restart`, `edge://restart`).
   - Added safety reset in `App.tsx` to evict any cached Bonsai 2 selection back to `DEFAULT_MODEL_ID` on page reload.
 - **Phone shell:** At `max-width: 768px` the app is four full-screen tabs — Chat (default), Studio, Learn, Options — with a bottom nav. Learn and Studio are pages, not overlays on chat. Studio Read drills packs → chapters → text. Chat is a thin bar, a Chats sheet, and a ⋯ menu. Desktop sidebar and header HUD are unchanged.
-- **Bonsai 2 27B Integration & ~12GB VRAM Recommendation:**
-  - Integrated PrismML's breakthrough **Ternary Bonsai 2 27B** into the WebGPU model suite.
-  - Designated as official **Recommended Model for ~12GB VRAM and under**—bringing 27B-parameter chain-of-thought intelligence and 262k context down to consumer GPUs in ~5.95 GB compressed weights and ~6.8 GB VRAM footprint.
-  - Dynamically recommended in `src/engine/device.ts` and badged in `ModelModal.tsx` for discrete and high performance GPUs.
-  - Added custom WebLLM engine record with 32k context override and WebGPU fallback protection.
+- **Bonsai 2 27B Integration:**
+  - Integrated PrismML's ternary **Bonsai 2 27B** into the WebGPU model suite (~5.95 GB weights, ~6.8 GB VRAM). It stays in the 16GB tier. Everyday cards, including a 12GB discrete GPU, stay on Qwen 2.5 3B.
+  - Added a custom WebLLM engine record with a 16k context override.
   - Attributed PrismML research team in Open Weights Covenant (`src/data/credits.ts`).
 - **Master Development Roadmap & Knowledge Cartography:**
   - Codified comprehensive 4-phase master development roadmap in `ROADMAP.md` covering Phase 1 through Phase 4 and the AGPL-3.0 public-good covenant.

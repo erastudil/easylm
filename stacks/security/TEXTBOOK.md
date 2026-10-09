@@ -564,3 +564,29 @@ formal law : Transition mapping preserves state integrity; bounded entropy condi
 worked check : Evaluate differential delta across operational domain of information security & cryptography; empirical residual measures exactly 0.0 variance.
 
 official door : Authoritative primary standard archive; ISO foundational reference series for information security & cryptography.
+
+
+## Modern Cipher Suites
+
+Cryptography scrambles data so only authorized parties can read it. It relies on mathematical operations that are easy to perform in one direction but practically impossible to reverse without a key.
+
+- **Symmetric encryption**: A cryptographic system where the exact same secret key is used both to lock and unlock the data.
+- **AES-GCM**: Advanced Encryption Standard in Galois/Counter Mode, the industry standard symmetric cipher that simultaneously encrypts data and proves it hasn't been tampered with.
+- **ChaCha20-Poly1305**: A fast, modern symmetric cipher suite designed to be highly secure even on mobile processors that lack dedicated hardware acceleration for AES.
+- **Asymmetric encryption**: A cryptographic system using a paired public key for locking data and a mathematically linked private key for unlocking it.
+- **Elliptic Curve Cryptography (ECC)**: An asymmetric approach using the algebraic structure of elliptic curves to provide strong security with much smaller key sizes than older methods like RSA.
+- **Ed25519**: A specific, highly secure elliptic curve signature scheme known for its speed and resistance to side-channel attacks.
+- **Forward secrecy**: A protocol property ensuring that even if a server's long-term private key is stolen in the future, past recorded encrypted conversations cannot be decrypted.
+
+## Hardware Enclaves and Advanced Verification
+
+Attackers don't always try to break the math; they often attack the physical machine running the math or try to steal the keys directly from memory.
+
+- **Side-channel attack**: A method of extracting secrets by observing physical implementation details, like how long a computation takes, how much power it draws, or what sounds the processor makes.
+- **Timing attack**: A specific side-channel attack where an attacker measures the exact milliseconds a server takes to reject a password, using those tiny differences to guess the correct characters.
+- **Constant-time algorithm**: Cryptographic code explicitly written so that its execution time is identical regardless of the secret data being processed, neutralizing timing attacks.
+- **Trusted Execution Environment (TEE)**: A secure area inside a main processor that guarantees code and data loaded inside are protected with respect to confidentiality and integrity.
+- **Hardware secure enclave**: A physical implementation of a TEE, like Intel SGX or Apple Secure Enclave, that isolates sensitive operations from the rest of the operating system.
+- **Zero-knowledge proof**: A cryptographic method allowing one party to prove to another that a statement is true without revealing any actual information beyond the truth of the statement.
+- **Hash function**: A one-way mathematical algorithm that takes input data of any size and deterministically maps it to a fixed-size string of characters.
+- **Salting**: The practice of appending a unique, random string to a password before hashing it to ensure that identical passwords yield completely different hashes, blocking rainbow table attacks.

@@ -485,3 +485,13 @@ formal law : Transition mapping preserves state integrity; bounded entropy condi
 worked check : Evaluate differential delta across operational domain of earth sciences & planetary systems; empirical residual measures exactly 0.0 variance.
 
 official door : Authoritative primary standard archive; ISO foundational reference series for earth sciences & planetary systems.
+
+## Plate Tectonics
+
+The Earth's solid crust is cracked like the shell of a boiled egg. These immense rock plates float on a deeper layer of slow-moving, intensely hot putty. Convection currents from the deep core churn the putty, dragging the cold plates across the surface to collide, pull apart, or grind past one another.
+
+- **Lithosphere**: the rigid, brittle outer shell of the Earth comprising the crust and the uppermost solid mantle.
+- **Asthenosphere**: the hotter, ductile layer of mantle rock directly beneath the plates that slowly flows and deforms under pressure.
+- **Subduction zone**: a destructive plate boundary where a dense oceanic crust dives beneath a lighter continental crust, melting and driving volcanoes.
+- **Divergent boundary**: a constructive plate boundary where plates tear apart and deep magma rises to freeze into new crust.
+- **Seismic wave**: a traveling shockwave of acoustic energy traveling through the Earth's layers triggered by a sudden rock fracture.

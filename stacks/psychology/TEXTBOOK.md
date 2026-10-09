@@ -414,3 +414,21 @@ Ernest Sosa virtue epistemology analyzes knowledge through three evaluative crit
 - Stanford Encyclopedia of Philosophy: Epistemology, https://plato.stanford.edu/entries/epistemology/
 - Stanford Encyclopedia of Philosophy: The Analysis of Knowledge, https://plato.stanford.edu/entries/knowledge-analysis/
 - Internet Encyclopedia of Philosophy: Epistemic Justification, https://iep.utm.edu/epi-just/
+
+## Cognitive Processing and Neurobiology
+
+- **Dual-process theory**: A framework dividing cognition into two systems, one fast and intuitive, the other slow and analytical.
+- **System 1 cognition**: Automatic, effortless, and rapid pattern recognition operating below conscious deliberation.
+- **System 2 cognition**: Resource-intensive, sequential, and logical processing requiring deliberate focus and working memory.
+- **Anchoring heuristic**: A cognitive bias where initial exposure to arbitrary numbers disproportionately skews subsequent quantitative estimates.
+- **Availability heuristic**: A cognitive shortcut substituting the ease of recalling examples for actual statistical probability.
+- **Representativeness heuristic**: A judgment strategy estimating probability based on similarity to a mental prototype while ignoring base rates.
+- **Working memory constraints**: The cognitive bottleneck limiting active information retention to a handful of items for a brief duration.
+- **Cognitive load**: The total mental effort imposed on working memory by task complexity, environmental noise, and learning schema.
+- **Chunking strategy**: Compressing multiple discrete information units into single meaningful concepts to bypass working memory limits.
+- **Neuroplasticity**: The physical capacity of neural networks to rewire their structural connections in response to learning and experience.
+- **Synaptic pruning**: The biological mechanism eliminating weak or unused neural connections to optimize network efficiency.
+- **Long-term potentiation**: The persistent strengthening of synapses following high-frequency stimulation, forming the physical basis of memory.
+- **Myelination**: The biological process of insulating axons with lipid layers to accelerate signal transmission speeds.
+- **Habituation**: A decrease in neurological and behavioral response after repeated exposure to a non-threatening stimulus.
+- **Executive function**: Higher-order cognitive control processes including inhibition, planning, and task-switching regulated by the prefrontal cortex.

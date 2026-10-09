@@ -73,6 +73,8 @@ Each course links directly into Studio, allowing learners to open textbooks, ins
 The Stacks provide comprehensive undergraduate textbooks and curated link trees across 30 sovereign academic fields, including mathematics, physics, computing, information security & cryptography, skilled trades & machining, earth sciences, philosophy, agriculture, language, and poetry.
 
 Textbooks follow the **Greene / Feynman pedagogical method**:
+
+Textbooks are strictly Greene Feynman Clarity (GFC). Progen syntax is reserved solely for fact databases (FACTS_INDEX.md, stacks_facts.db) and the Progen personality.
 - Physical, sensory intuition first: concepts are introduced through everyday observations and first principles.
 - Formal terminology second: technical vocabulary and mathematical notation are introduced only once the physical reality is grasped.
 - Subject-authentic pedagogy: avoids formulaic copy-paste structures, meeting the learner in the native voice and conceptual landscape of each discipline.

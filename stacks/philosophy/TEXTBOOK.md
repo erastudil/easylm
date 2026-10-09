@@ -1635,3 +1635,21 @@ eq O_{	ext{observed}}$.
 - Stanford Encyclopedia of Philosophy: Karl Popper, https://plato.stanford.edu/entries/popper/
 - Stanford Encyclopedia of Philosophy: Imre Lakatos, https://plato.stanford.edu/entries/lakatos/
 - Stanford Encyclopedia of Philosophy: The Problem of Demarcation, https://plato.stanford.edu/entries/pseudo-science/
+
+## Advanced Logic and Ethics
+
+- **Syllogistic reasoning**: Deductive inference where a conclusion follows necessarily from two premises that share exactly one middle term.
+- **Categorical propositions**: Statements affirming or denying relationships between classes, quantified as universal or particular.
+- **Barbara syllogism**: A valid argument form consisting of three universal affirmative statements (All M are P; All S are M; Therefore, all S are P).
+- **Truth tables**: Matrices that exhaustively map truth-value assignments for propositional variables to determine compound statement validity.
+- **Modus ponens**: A valid propositional rule affirming the consequent by affirming the antecedent (If P then Q; P; Therefore Q).
+- **Modus tollens**: A valid propositional rule denying the antecedent by denying the consequent (If P then Q; Not Q; Therefore Not P).
+- **Modal logic S5**: An axiomatic system where possible necessity implies actual necessity, establishing equivalence across all accessible worlds.
+- **Necessity operator**: A modal logical operator indicating a proposition is true in every accessible possible world.
+- **Possibility operator**: A modal logical operator indicating a proposition is true in at least one accessible possible world.
+- **Epistemology of testimony**: The study of under what conditions beliefs acquired from the statements of others are justified.
+- **Reductionism in testimony**: The view that testimony is justified only if corroborated by independent inductive evidence.
+- **Anti-reductionism**: The view that testimony grants prima facie justification without requiring independent inductive verification.
+- **Ethics of autonomy**: The moral principle prioritizing an individual's rational capacity for self-governance and uncoerced choice.
+- **Categorical imperative**: Kant's unconditional moral law demanding actions be universalizable without logical contradiction.
+- **Informed consent**: The practical application of autonomy requiring transparent disclosure before individuals assume risks.

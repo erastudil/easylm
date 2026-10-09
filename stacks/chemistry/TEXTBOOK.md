@@ -572,3 +572,33 @@ formal law : Arrhenius equation, describing acid dissociation, Ka = [H+][A-] / [
 worked check : Calculate pH of acidic solution using Arrhenius equation, pH = -log[H+].
 
 official door : Https://www.nap.edu/read/11902/chapter/6, National Academy of Sciences, Chemistry in the National Science Education Standards.
+
+## Reaction Kinetics and Equilibrium
+
+A chemical reaction is not a sudden magic trick. It is a microscopic demolition derby. Molecules smash together, and if they hit hard enough and at the right angle, their bonds snap and reform. Some reactions are entirely one-way, while others run forward and backward until they balance out perfectly.
+
+- **Activation energy**: the minimum speed and force molecules need when colliding to successfully break their existing bonds and trigger a reaction.
+- **Catalyst**: a molecular tool that lowers the required activation energy by providing a physically easier pathway for the reaction, without being consumed itself.
+- **Reaction rate**: the measured speed at which starting ingredients are consumed and final products are created.
+- **Chemical equilibrium**: the dynamic state where the forward reaction and the backward reaction happen at the exact same speed, keeping the total amounts constant.
+- **Le Chatelier's Principle**: the rule that if you push an equilibrium system by adding more ingredients or changing the heat, the system shifts automatically to push back and restore balance.
+
+## Molecular Orbital Theory
+
+Electrons do not orbit atoms in neat little planetary rings. They form fuzzy clouds of probability. When two atoms get close, their individual electron clouds blend and smear together into a single new shape that holds both atoms tightly.
+
+- **Atomic orbital**: a three-dimensional region around a single nucleus where an electron is most likely to be found.
+- **Molecular orbital**: the merged, shared region of electron probability created when atomic orbitals overlap.
+- **Sigma bond**: a strong, direct chemical bond formed when electron clouds overlap directly head-on between two nuclei.
+- **Pi bond**: a secondary, weaker chemical bond formed when parallel electron clouds overlap side-to-side.
+- **Hybridization**: the mathematical mixing of different atomic orbitals to create identical, evenly spaced new orbitals ready for bonding.
+
+## Spectroscopy
+
+Molecules interact with light selectively. Because electron orbits and molecular vibrations have very specific energy jumps, a molecule will only absorb exact colors of light. By shooting light through a gas and seeing which colors vanish, we can read its chemical fingerprint.
+
+- **Spectroscopy**: the study of how matter absorbs or emits specific frequencies of light.
+- **Absorption spectrum**: the dark lines missing from a rainbow of light, showing exactly which frequencies were absorbed by a substance.
+- **Emission spectrum**: the bright bands of light released by excited atoms as their electrons drop back to lower energy states.
+- **Resonance**: the physical phenomenon where incoming light matches the exact natural vibration frequency of a chemical bond, causing the bond to absorb the energy and shake harder.
+- **Nuclear Magnetic Resonance**: a technique that uses strong magnetic fields and radio waves to map out the exact carbon and hydrogen framework of a complex molecule.

@@ -1603,3 +1603,37 @@ Because the second term is independent of agent $i$'s reported valuation $v'_i$,
 - Cambridge University Press: Algorithmic Game Theory (Nisan, Roughgarden, Tardos, Vazirani), https://www.cambridge.org/core/books/algorithmic-game-theory/
 - Stanford Encyclopedia of Philosophy: Game Theory, https://plato.stanford.edu/entries/game-theory/
 - Nobel Prize in Economic Sciences: Mechanism Design Theory (Hurwicz, Maskin, Myerson), https://www.nobelprize.org/prizes/economic-sciences/2007/summary/
+
+
+## CPU Pipelines and Branch Prediction
+
+A processor executes instructions like a factory assembly line. Instead of building one car completely before starting the next, different workers handle different stages simultaneously.
+
+- **Pipeline stages**: The sequence of fetching an instruction from memory, decoding what it means, executing the math or logic, and writing the result back to registers.
+- **Instruction throughput**: Completing one instruction per clock cycle on average, even if a single instruction takes several cycles from start to finish.
+- **Pipeline stall**: A delay that occurs when the next instruction cannot start because it needs data from a previous instruction that has not yet finished.
+- **Data hazard**: A conflict where the output of one pipeline stage is immediately required as the input for the next stage, potentially forcing the pipeline to wait.
+- **Branch prediction**: The mechanism where the processor guesses which way an if-statement will evaluate so it can keep the pipeline full before the actual condition is calculated.
+- **Speculative execution**: The process of running instructions along the predicted path of a branch, which are later committed if the guess was correct or discarded if wrong.
+- **Branch target buffer**: A small, fast memory structure that records the destination addresses of previously executed branches to speed up future predictions.
+
+## Memory Hierarchy and TLB Paging
+
+Computer memory balances speed and capacity. The fastest memory is tiny and sits right next to the processor core, while the slowest memory is massive and sits on a separate storage drive. 
+
+- **L1 cache**: The smallest and fastest cache memory built directly into the processor core, usually split into separate instruction and data caches.
+- **L2 and L3 caches**: Larger, slightly slower caches that back up the L1 cache; L3 is often shared across multiple processor cores.
+- **Cache line**: The basic unit of data transferred between main memory and cache, typically 64 bytes, meaning neighboring data is fetched together.
+- **Virtual memory**: A system that gives every program the illusion of having its own massive, contiguous block of memory, isolating it from other programs.
+- **Page table**: The data structure used by the operating system to map a program's fake virtual addresses to real physical hardware addresses.
+- **Page fault**: An interrupt that occurs when a program tries to access a virtual memory page that is not currently loaded in physical RAM.
+- **Translation Lookaside Buffer (TLB)**: A dedicated hardware cache inside the CPU that stores recent virtual-to-physical address translations to skip slow page table lookups.
+
+## Process Scheduling and Compilers
+
+The operating system juggles thousands of tasks on a handful of processor cores by rapidly switching between them.
+
+- **Context switch**: The process of saving the exact state of one running program and loading the state of another so it can take over the processor.
+- **Time slice**: The brief window of processor time allocated to a process before the operating system pauses it to give another process a turn.
+- **Intermediate Representation (IR)**: A generic, machine-independent code format that compilers use to analyze and optimize a program before translating it into final machine code.
+- **Static Single Assignment (SSA)**: A compiler design pattern where every variable is assigned a value exactly once, making it much easier to track data flow and optimize loops.

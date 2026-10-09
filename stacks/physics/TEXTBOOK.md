@@ -387,3 +387,38 @@ formal law : Schrödinger equation, a partial differential equation, describes t
 worked check : Step 1, define wave function as mathematical description of quantum state, step 2, claim that wave function satisfies Schrödinger equation, step 3, verify numerically using example values, e.g., calculate wave function for a simple quantum system.
 
 official door : Https://www.nist.gov/pml/quantum/nist-quantum-portal, official documentation on quantum physics and metrology from National Institute of Standards and Technology.
+
+## Thermodynamics
+
+Heat is simply microscopic motion. When you touch a hot stove, the rapidly vibrating atoms in the metal violently shake the molecules in your skin. Thermodynamics studies how this restless energy moves and spreads.
+
+- **Temperature**: a measure of the average kinetic energy or speed of the microscopic particles in a substance.
+- **Entropy**: a measure of how thoroughly energy has spread out and lost its ability to do useful, organized work.
+- **First Law of Thermodynamics**: the total energy in a closed system stays constant, only changing forms from motion to heat to light.
+- **Second Law of Thermodynamics**: heat naturally flows from hot to cold, meaning organized energy constantly spreads out into disordered heat over time.
+
+## Quantum Mechanics
+
+At the scale of single atoms, particles stop acting like solid billiard balls and start acting like waves on a pond. A particle does not exist in one exact spot until it interacts with something else; it exists as a spreading wave of probability.
+
+- **Wave function**: a mathematical description of a particle's spreading wave of possibilities before it is observed.
+- **Superposition**: the physical state of a particle existing in multiple possible configurations simultaneously until an interaction forces a single outcome.
+- **Entanglement**: a strict correlation between two particles where measuring the state of one instantly defines the state of the other, no matter the distance.
+- **Heisenberg Uncertainty Principle**: the absolute physical limit preventing you from simultaneously knowing both exactly where a particle is and exactly how fast it is moving.
+
+## Electromagnetism
+
+Electric and magnetic forces are two sides of the same invisible field stretching through space. A stationary charge pushes outward electrically. When that charge moves, the field twists around it magnetically.
+
+- **Electric field**: the invisible web of force radiating from a charged particle that pushes or pulls other charges.
+- **Magnetic field**: the looping field of force generated strictly by moving electric charges or changing electric fields.
+- **Electromagnetic wave**: a rippling chain reaction of changing electric and magnetic fields pushing each other forward through empty space at the speed of light.
+- **Photon**: a localized, indivisible packet of electromagnetic energy acting as the carrier of light.
+
+## Special Relativity
+
+Space and time are not a rigid background stage. They are a single flexible fabric. If you travel incredibly fast, your watch ticks slower and your spaceship physically shrinks from the perspective of a stationary watcher. The only absolute constant is the speed of light.
+
+- **Spacetime**: the four-dimensional flexible fabric merging three dimensions of space and one dimension of time.
+- **Time dilation**: the physical slowing of time experienced by a moving object relative to a stationary observer.
+- **Length contraction**: the physical shortening of a moving object along its direction of motion relative to a stationary observer.

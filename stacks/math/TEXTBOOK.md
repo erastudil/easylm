@@ -389,3 +389,33 @@ claim : Derive Bayes' theorem by substituting the definition of P into the formu
 numerical verification : Given P = 0.8, P = 0.4, and P = 0.6, calculate P using Bayes' theorem to verify the claim, P = 0.8 * 0.4 / 0.6 = 0.5333.
 
 official door : Https://www.nist.gov/itl/mathematical-and-computational-sciences-division, the National Institute of Standards and Technology provides official documentation and standards for mathematical and computational sciences, including probability and statistics.
+
+## Linear Algebra
+
+Think of linear algebra as a way to stretch, rotate, and skew space itself while keeping grid lines parallel and evenly spaced. Instead of looking at single numbers, we track how entire shapes and directions move.
+
+- **Vector space**: a collection of arrows that can be added together or stretched, representing magnitudes and directions without fixed starting points.
+- **Basis vectors**: the fundamental building blocks of a space, like the basic x, y, and z directions that describe any possible position.
+- **Linear transformation**: a mapping from one space to another that keeps straight lines straight and the origin fixed in place.
+- **Matrix**: a structured grid of numbers that encodes exactly how a specific linear transformation squishes or stretches space.
+- **Determinant**: the scaling factor by which a transformation changes areas or volumes.
+- **Eigenvector**: an arrow that stays pointing in the exact same direction after a transformation, only getting stretched or shrunk.
+- **Eigenvalue**: the amount by which an eigenvector is stretched or shrunk during a transformation.
+
+## Probability Distributions
+
+Probability describes the shape of chance. If you drop a thousand marbles through a pegboard, they do not land randomly; they build a predictable mountain. We measure the overall shape of the pile rather than predicting single marbles.
+
+- **Random variable**: a numerical outcome of an unpredictable event, like the number rolled on a die or the height of a tree.
+- **Probability density**: a curve showing where continuous outcomes cluster, where higher peaks mean higher likelihoods.
+- **Normal distribution**: the classic bell curve that naturally emerges when many small, independent random factors add up.
+- **Standard deviation**: the typical distance that outcomes wander away from the center average.
+- **Expected value**: the long-term average outcome you would get if you repeated a random process an infinite number of times.
+
+## Topology and Geometry
+
+Geometry measures rigid distances and angles. Topology ignores distances entirely and only cares about how things are connected. A coffee mug and a doughnut are topologically identical because both have exactly one hole.
+
+- **Manifold**: a shape that looks flat and ordinary when you zoom in very close, even if it curves globally like the surface of a sphere.
+- **Metric tensor**: a mathematical ruler that measures how distances and angles change as you move across a curved surface.
+- **Homeomorphism**: a continuous stretching and bending of a shape without tearing it or gluing parts together.

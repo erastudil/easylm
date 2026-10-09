@@ -487,3 +487,21 @@ claim : The burden of proof in a court of law is a critical component of due pro
 numerical verification : In a hypothetical case, if the probability of a guilty verdict is 0.8 and the probability of a not guilty verdict is 0.2, the burden of proof can be represented as: P / P = 0.8 / 0.2 = 4, indicating that the prosecution must provide four times more evidence than the defense to meet the burden of proof.
 
 official door : Https://www.law.cornell.edu/wex/due_process, which provides an overview of due process and its application in the US legal system, as well as links to relevant statutes, case law, and scholarly articles.
+
+## Legal Doctrine and Liability
+
+- **Stare decisis**: The legal doctrine compelling courts to follow established historical precedents when deciding subsequent similar cases.
+- **Binding precedent**: Prior judicial decisions from higher courts that lower courts are strictly required to apply.
+- **Persuasive precedent**: Prior decisions from parallel or lower courts that inform but do not mandate a specific ruling.
+- **Tort liability**: Civil legal responsibility for causing harm or injury to another party through unreasonable action or omission.
+- **Negligence standard**: Liability arising when a party breaches a duty of reasonable care, proximately causing foreseeable harm.
+- **Strict liability**: Absolute legal responsibility for damages regardless of fault, care, or intent, typically applied to inherently hazardous activities.
+- **Proximate cause**: The legal boundary limiting liability to those harms that are reasonably foreseeable consequences of an action.
+- **Contract formation**: The creation of binding legal agreements requiring offer, acceptance, and consideration.
+- **Mutual assent**: The objective manifestation of an agreement between parties on the material terms of a contract.
+- **Consideration**: The bargained-for exchange of legal value, benefit, or detriment establishing an enforceable contract.
+- **Breach of contract**: The failure of a party, without legal excuse, to perform any promise forming the whole or part of a contract.
+- **Procedural due process**: The constitutional requirement that government must follow fair procedures before depriving a person of life, liberty, or property.
+- **Notice requirement**: The due process obligation to inform individuals of impending legal action against them.
+- **Opportunity to be heard**: The due process right to present evidence and challenge accusations before a neutral adjudicator.
+- **Standard of proof**: The specific threshold of evidence required to validate a claim, varying from preponderance of evidence to beyond a reasonable doubt.

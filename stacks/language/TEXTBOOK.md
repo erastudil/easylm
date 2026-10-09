@@ -759,3 +759,21 @@ formal law : According to Saussure's sign theory, the relationship between a sig
 worked check : Step 1, define the fundamental units of language; step 2, apply Saussure's sign theory to understand how these units convey meaning; step 3, claim that effective communication requires a balance between syntax, semantics, and phonology; step 4, numerical verification involves quantifying the complexity of language structures using metrics such as lexical density or syntactic complexity, demonstrating how these metrics correlate with communicative effectiveness.
 
 official door : For a comprehensive understanding of language standards and educational resources, visit https://www.nap.edu/read/13487/chapter/7, which provides access to the National Academy of Sciences' publications on language and linguistics education.
+
+## Syntax and Phonology
+
+- **Generative grammar**: A linguistic framework modeling the unconscious mental rules that enable speakers to produce infinite valid sentences.
+- **Syntax trees**: Hierarchical branching diagrams visually representing the underlying phrase structure of a sentence.
+- **Constituency**: The syntactic principle where groups of words function together as a single structural unit within a sentence.
+- **Noun phrase**: A syntactic constituent headed by a noun or pronoun that can function as a subject or object.
+- **Verb phrase**: A syntactic constituent headed by a verb that functions as the predicate of a clause.
+- **Recursion**: The linguistic property allowing constituents to be embedded infinitely within constituents of the same type.
+- **Phonology**: The systematic study of how individual speech sounds function and pattern within a specific language's mental grammar.
+- **Phoneme**: The smallest abstract unit of sound that can distinguish semantic meaning between words in a given language.
+- **Allophone**: A predictable phonetic variant of a phoneme that does not change the meaning of a word.
+- **Minimal pairs**: Pairs of words differing by exactly one phonological element, proving those elements are distinct phonemes.
+- **Articulatory phonetics**: The study of how vocal tracts physically produce individual speech sounds via airflow manipulation.
+- **Place of articulation**: The specific physical location in the vocal tract where airflow is obstructed to create a consonant sound.
+- **Manner of articulation**: The specific method and degree of airflow obstruction used to generate speech sounds.
+- **Syllable structure**: The hierarchical phonological organization grouping sounds into onsets, nuclei, and codas.
+- **Morphology**: The linguistic study of the internal structure and formation rules of words from smaller units of meaning.

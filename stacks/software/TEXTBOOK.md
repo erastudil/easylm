@@ -774,7 +774,6 @@ It will not pick your framework. It will not quote a star count as evidence. It 
 When the job is a language primitive, fetch Python / TypeScript / Rust / MDN. When the job is a protocol, fetch the RFC. When the job is git, fetch git-scm. When the job is a number, **calc**.
 
 Doors for this pack: `LINK_INDEX.md` in this directory.
-)
 
 software_analysis : Physical Dynamics.
 
@@ -792,13 +791,11 @@ software_analysis : Software Engineering & Architecture Foundational Dynamics.
 
 first principles : Fundamental conservation laws and axiomatic invariants define the state space of software engineering & architecture.
 
-feynman analogy : Imagine a balanced network of state transitions where every transformation preserves underlying conserved quantities.
 
-formal law : Transition mapping preserves state integrity; bounded entropy condition maintains structural equilibrium across software engineering & architecture.
 
-worked check : Evaluate differential delta across operational domain of software engineering & architecture; empirical residual measures exactly 0.0 variance.
+## 15. Distributed Systems and Consensus
 
-official door : Authoritative primary standard archive; ISO foundational reference series for software engineering & architecture.
+In a distributed environment, ensuring that multiple computers agree on a shared reality is one of the most difficult challenges in software engineering. When network cables fail, hard drives crash, and servers unexpectedly restart, the system must either guarantee absolute consistency or admit failure. Reliable replication relies on formal protocols that manage logs and elect leaders, ensuring that no matter how chaotic the underlying hardware becomes, the external observer sees a perfectly linear sequence of events.
 
 - **Paxos consensus**: distributed protocol guarantees agreed state among unreliable networked nodes.
 - **Raft log consensus**: understandable replication algorithm elects leader and maintains sequential commit history.
@@ -806,3 +803,28 @@ official door : Authoritative primary standard archive; ISO foundational referen
 - **Byzantine fault tolerance**: network resilience threshold allows system operation despite arbitrary or malicious node failures.
 - **linearizability**: strict consistency model dictates operations appear instantaneous to all external observers.
 
+
+## Distributed Systems and Network Partitions
+
+A distributed system splits work across many independent computers that talk to each other. When a network cable is cut or a switch fails, some computers can no longer reach the rest of the group.
+
+- **Fault domain**: A group of components that share a single point of failure, such as servers plugged into the same power strip or network switch.
+- **Network partition**: A communication failure that splits a distributed system into isolated groups of nodes that cannot talk to each other.
+- **Split-brain**: A dangerous state where a partitioned network causes two disconnected parts of the system to both believe they are the primary leader, potentially overwriting each other's data.
+- **CAP theorem**: The principle stating that during a network partition, a distributed system must choose between returning the most recent correct data (Consistency) or remaining online to serve requests (Availability).
+- **Eventual consistency**: A guarantee that if no new updates are made, all copies of data across the distributed system will eventually match.
+- **Consensus protocol**: An algorithm like Raft or Paxos that allows a cluster of machines to agree on a shared state or leader, even if some machines fail.
+- **Heartbeat mechanism**: Periodic signals sent between nodes to prove they are alive; missing heartbeats indicate a node has failed or a network is partitioned.
+
+## Database Isolation and Concurrency
+
+Databases handle thousands of transactions at the same time. They must isolate these transactions so they don't step on each other's toes and corrupt the data.
+
+- **ACID properties**: The fundamental database guarantees of Atomicity (all or nothing), Consistency (valid data), Isolation (transactions don't interfere), and Durability (saved permanently).
+- **Serializability**: The highest level of database isolation, guaranteeing that executing transactions concurrently produces the exact same result as if they were executed one after the other.
+- **Write skew**: An anomaly where two concurrent transactions read overlapping data and make decisions that invalidate each other, but because they update different rows, standard locks don't catch the conflict.
+- **Multiversion Concurrency Control (MVCC)**: A mechanism where the database keeps multiple versions of a row; readers see a snapshot from the past without blocking writers, and writers don't block readers.
+- **Deadlock**: A stalemate where two transactions are each waiting for the other to release a lock, requiring the database to forcibly abort one of them.
+- **Write-Ahead Log (WAL)**: An append-only file where the database records every change before modifying the actual data tables, ensuring recovery after a power failure.
+- **Zero-downtime schema migration**: The process of altering a database table's structure (like adding a column) in small, non-blocking steps so the application stays online the entire time.
+- **Blue-green deployment**: A release strategy where a new version of the software is deployed alongside the old version, allowing traffic to be switched over instantly and safely.

@@ -366,3 +366,32 @@ formal law : Transition mapping preserves state integrity; bounded entropy condi
 worked check : Evaluate differential delta across operational domain of biology & life sciences; empirical residual measures exactly 0.0 variance.
 
 official door : Authoritative primary standard archive; ISO foundational reference series for biology & life sciences.
+
+## Cellular Metabolism
+
+A cell is an energetic engine. It constantly strips high-energy electrons from food molecules and passes them down a molecular wire. The energy released at each step pumps protons across a membrane, spinning tiny turbines that charge the chemical batteries powering the cell.
+
+- **ATP**: the universal chemical battery of the cell, carrying a high-energy phosphate bond ready to be broken to power work.
+- **Cellular respiration**: the controlled burning of sugar molecules with oxygen to harvest energy and charge ATP.
+- **Enzyme**: a specialized protein machine folded into a specific shape that grabs target molecules and forces them to react rapidly.
+- **Mitochondria**: the enclosed cellular organelle where proton pumps and molecular turbines generate the vast majority of ATP.
+
+## Genetic Translation and CRISPR
+
+DNA is not a blueprint; it is a rigid instruction tape. To build anything, the cell makes a disposable paper copy of the tape, feeds it through a protein reader, and strings together amino acids like pop-beads. Bacteria invented molecular scissors to slice up attacking viruses, which we now use to edit the tape directly.
+
+- **Transcription**: the process of unzipping DNA and creating a temporary RNA copy of a specific gene.
+- **Translation**: the process where a ribosome reads the RNA copy three letters at a time and builds a corresponding chain of amino acids.
+- **Protein folding**: the physical collapsing of an amino acid chain into a complex, functional 3D shape driven by electrical attraction and water repulsion.
+- **CRISPR-Cas9**: a programmable bacterial defense mechanism functioning as molecular scissors that can seek out and cut a highly specific sequence of DNA.
+- **Guide RNA**: the custom sequence strip loaded into a Cas9 enzyme that acts like a search query to find the exact matching DNA target.
+
+## Evolutionary Dynamics
+
+Evolution is a mechanical filter, not an active designer. Genetic copying is sloppy, producing a spray of random variations in every generation. The physical environment simply deletes the variations that fail to survive long enough to copy themselves again.
+
+- **Natural selection**: the mindless environmental filtering process where traits aiding survival become more common because their carriers reproduce more.
+- **Mutation**: a random copying error in the DNA sequence that introduces a new physical variation into a population.
+- **Genetic drift**: the random, luck-driven fluctuation of trait frequencies in a small population, independent of survival advantages.
+- **Speciation**: the splitting of one lineage into two distinct species when populations become physically separated and accumulate enough genetic differences that they can no longer successfully interbreed.
+- **Fitness**: a strict measure of an organism's relative success at passing its genes into the next generation.

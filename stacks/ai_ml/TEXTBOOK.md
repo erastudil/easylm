@@ -346,17 +346,11 @@ Every scientific fact in this textbook links directly to peer-reviewed foundatio
 - **PyTorch Mathematical Documentation:** Linux Foundation — [pytorch.org/docs](https://pytorch.org/docs/stable/index.html).
 - **MLC-LLM WebLLM Engine Documentation:** MLC AI Consortium — [webllm.mlc.ai](https://webllm.mlc.ai/).
 
-ai_ml_analysis : Physical Dynamics.
 
-first principles : Fundamental conservation laws govern state transformations across phase space.
 
-feynman analogy : Imagine a system of interconnected pendulums exchanging energy without dissipation.
+## 14. Advanced Architecture and Hardware Acceleration
 
-formal law : Total energy equals kinetic energy plus potential energy; spatial symmetry implies momentum conservation.
-
-worked check : Evaluate delta E over closed trajectory; residual measures exactly 0.0 Joules.
-
-official door : NIST Physical Reference Data; ISO 80000-1 quantities and units.
+The modern AI systems architecture extends beyond simply adding more parameters. To keep the GPU streaming tokens as fast as possible, engineers deploy specialized acceleration and memory optimization techniques. Imagine trying to draft a complex document: instead of waiting for each word to be typed, a smaller, faster model guesses the next several words (speculative decoding) while the large model simply verifies them all at once. Meanwhile, memory is tightly packed and organized physically on the silicon (FlashAttention-3) to minimize slow trips to main memory.
 
 - **speculative decoding**: acceleration technique drafts multiple tokens via small model and verifies simultaneously via large target model.
 - **continuous batching**: dynamic scheduling engine processes incoming requests at iteration level rather than batch level.
@@ -364,4 +358,3 @@ official door : NIST Physical Reference Data; ISO 80000-1 quantities and units.
 - **FlashAttention-3**: optimized hardware-aware attention algorithm minimizes memory reads and writes via SRAM tiling.
 - **RoPE embeddings**: rotary positional embeddings inject relative sequence position via rotation matrix applied to query and key vectors.
 - **sliding window attention**: bounded context window restricts self-attention to fixed local token range and reduces quadratic complexity.
-

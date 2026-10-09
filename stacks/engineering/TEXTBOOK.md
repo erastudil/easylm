@@ -624,3 +624,29 @@ formal law : Transition mapping preserves state integrity; bounded entropy condi
 worked check : Evaluate differential delta across operational domain of engineering mechanics & systems; empirical residual measures exactly 0.0 variance.
 
 official door : Authoritative primary standard archive; ISO foundational reference series for engineering mechanics & systems.
+
+
+## Solid Mechanics and Tensors
+
+When a physical object is squeezed, stretched, or bent, the internal material reacts. Engineers calculate these internal forces to ensure bridges and machine parts do not break under load.
+
+- **Stress**: The internal force exerted by neighboring particles of a continuous material upon each other, measured as force per unit area.
+- **Strain**: The measure of physical deformation representing the displacement between particles in the material body relative to a reference length.
+- **Young's modulus**: A mechanical property that measures the stiffness of a solid material, defining the linear relationship between stress and strain in the elastic region.
+- **Stress-strain tensor**: A mathematical matrix that fully describes the state of stress and deformation at a specific point inside a 3D volume, accounting for forces pulling in all spatial directions.
+- **Yield strength**: The maximum stress a material can endure before it permanently bends or deforms, transitioning from elastic behavior to plastic deformation.
+- **Beam deflection**: The degree to which a structural element bends under a load, dependent on the beam's material, length, cross-sectional shape, and how it is supported.
+- **Moment of inertia**: A geometric property of a beam's cross-section that dictates its resistance to bending and deflection; a taller I-beam has a much higher moment of inertia than a flat plate.
+
+## Thermodynamics and Control Loops
+
+Engines turn heat into motion, and refrigerators turn motion into cooling. Automated systems monitor these processes and adjust themselves to maintain precise temperatures or speeds.
+
+- **First law of thermodynamics**: The principle of energy conservation stating that energy cannot be created or destroyed, only transformed from one state, like heat, to another, like mechanical work.
+- **Carnot cycle**: An idealized thermodynamic cycle that sets the absolute maximum theoretical efficiency any heat engine can achieve when operating between two temperatures.
+- **Enthalpy**: A thermodynamic quantity equivalent to the total heat content of a system, used to calculate energy transfers during heating or cooling processes.
+- **Entropy**: A measure of the unavailable energy in a closed thermodynamic system that is also considered a measure of the system's disorder or randomness.
+- **PID controller**: A control loop mechanism that continuously calculates an error value as the difference between a desired setpoint and a measured variable, applying a correction based on proportional, integral, and derivative terms.
+- **Proportional band**: The part of a PID loop that applies a correction directly proportional to the current size of the error; a large error triggers a large correction.
+- **Integral action**: The part of a PID loop that looks at the history of the error over time, steadily increasing the correction to eliminate any tiny, persistent gap between the target and actual value.
+- **Derivative action**: The part of a PID loop that predicts future errors based on the current rate of change, acting as a brake to prevent the system from overshooting the target.

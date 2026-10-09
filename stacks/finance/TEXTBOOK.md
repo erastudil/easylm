@@ -770,3 +770,21 @@ formal law : Net Present Value formula, NPV = Σ^t), where CFt is the cash flow 
 worked check : Step 1, define the variables: CFt = $100, r = 5%, t = 5 years, step 2, apply the NPV formula: NPV = $100 /^1 + $100 /^2 + ... + $100 /^5, step 3, claim: the NPV of the cash flows is approximately $432.95, step 4, numerical verification: using a financial calculator or software, the NPV is indeed $432.95.
 
 official door : Https://www.sec.gov/investor/pubs/bond.htm, official documentation from the US Securities and Exchange Commission on bonds and fixed income securities, providing a primary source for understanding bond valuation and risk assessment in finance.
+
+## Valuation and Capital Markets
+
+- **Discounted cash flow**: A valuation method estimating investment value by forecasting future cash flows and discounting them to present value.
+- **Time value of money**: The financial axiom that a unit of currency available today is worth more than the identical unit in the future.
+- **Discount rate**: The interest rate used in discounted cash flow analysis to convert future cash returns into current value.
+- **Bond yield curves**: Graphical plots illustrating the relationship between interest rates and the time to maturity for identical debt securities.
+- **Normal yield curve**: An upward-sloping curve indicating longer-term debt carries higher interest rates to compensate for duration risk.
+- **Inverted yield curve**: A downward-sloping curve where short-term rates exceed long-term rates, historically preceding economic recessions.
+- **Capital asset pricing model**: A mathematical framework calculating expected investment returns based on the risk-free rate and asset systematic risk.
+- **Systematic risk**: Unavoidable market-wide volatility that cannot be eliminated through portfolio diversification.
+- **Idiosyncratic risk**: Asset-specific volatility that can be neutralized by holding a diverse portfolio of uncorrelated investments.
+- **Beta coefficient**: A quantitative measure representing the volatility of an individual asset relative to the broader market index.
+- **Black-Scholes intuition**: An options pricing model assuming price movements follow a geometric Brownian motion with continuous hedging.
+- **Call option**: A financial contract granting the right, without obligation, to purchase an asset at a predetermined strike price.
+- **Put option**: A financial contract granting the right, without obligation, to sell an asset at a predetermined strike price.
+- **Implied volatility**: The market's expectation of future price fluctuations, reverse-engineered from current option premiums.
+- **Arbitrage**: The simultaneous purchase and sale of identical assets in different markets to capture risk-free price differentials.

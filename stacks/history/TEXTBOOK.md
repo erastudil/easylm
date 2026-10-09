@@ -348,3 +348,21 @@ formal law : Transition mapping preserves state integrity; bounded entropy condi
 worked check : Evaluate differential delta across operational domain of world history & historiography; empirical residual measures exactly 0.0 variance.
 
 official door : Authoritative primary standard archive; ISO foundational reference series for world history & historiography.
+
+## Historical Causality and Mechanics
+
+- **Historical causality**: The analytical study identifying structural, immediate, and systemic forces driving chronological events.
+- **Longue duree**: The historical approach focusing on slow-moving geographic, climatic, and demographic structures over centuries.
+- **Contingency**: The historical principle that specific events were not inevitable and depended on precise, unpredictable interacting variables.
+- **Primary sources**: Unfiltered original documents, artifacts, or recordings created during the specific historical period under study.
+- **Secondary sources**: Interpretive analyses and synthetic accounts constructed by later historians using primary materials.
+- **Historiography**: The study of how historical interpretations, methodologies, and dominant narratives evolve over time.
+- **Teleology in history**: The flawed narrative assumption that historical events march inevitably toward a specific, predetermined outcome.
+- **Structural factors**: Deep economic, geographic, or institutional foundations that constrain or enable historical action.
+- **Proximate triggers**: Immediate catalysts or specific human actions that directly ignite an underlying structural tension into an event.
+- **Demographic shifts**: Large-scale changes in population birth rates, migration patterns, and mortality that drive economic and political transformations.
+- **Technological determinism**: The theory that changes in technology are the primary independent variable shaping social structures and cultural values.
+- **Great man theory**: An outdated historiographical framework attributing historical momentum primarily to the actions of exceptional individuals.
+- **Materialism**: The historical methodology arguing that economic conditions and resource control form the base driving all political and cultural phenomena.
+- **Cultural hegemony**: The mechanism by which a dominant class maintains control not through force, but by establishing its worldview as common sense.
+- **Historical revisionism**: The critical re-examination of accepted historical narratives based on newly discovered evidence or alternative analytical frameworks.

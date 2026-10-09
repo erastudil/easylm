@@ -21,6 +21,9 @@ lookup: **textbook chapter** → **official door**. wiki is a seed you fetch, no
 
 ## what a textbook is
 
+Textbooks are strictly Greene Feynman Clarity (GFC). Progen syntax is reserved solely for fact databases (FACTS_INDEX.md, stacks_facts.db) and the Progen personality.
+
+
 a chapter names the object, explains from first principles with intuitive physical analogies, states the formal law, shows the worked check, and maps down to trusted doors.
 
 | pass | fail |

@@ -444,3 +444,29 @@ formal law : Transition mapping preserves state integrity; bounded entropy condi
 worked check : Evaluate differential delta across operational domain of skilled trades & precision fabrication; empirical residual measures exactly 0.0 variance.
 
 official door : Authoritative primary standard archive; ISO foundational reference series for skilled trades & precision fabrication.
+
+
+## Machining and Metallurgy
+
+Fabricating parts from raw metal requires careful control of how cutting tools interact with the material and how heat changes the metal's physical properties.
+
+- **Speeds and feeds**: The fundamental variables of machining: the rotational speed of the cutting tool (RPM) and the speed at which the tool advances through the material (feed rate).
+- **Chip load**: The physical thickness of the metal shaving removed by a single cutting edge on a tool during one revolution.
+- **Surface feet per minute (SFM)**: A measure of the cutting speed representing how fast the outer edge of the cutting tool travels across the surface of the workpiece.
+- **Work hardening**: A phenomenon where a metal becomes physically harder and more brittle as it is deformed or cut, often destroying cutting tools if the feed rate is too slow.
+- **Annealing**: A heat treatment process that alters a metal's physical properties to increase its ductility and reduce its hardness, making it easier to bend or machine.
+- **Weld penetration**: The physical depth to which the melted weld pool extends into the base metal, critical for the structural integrity of the joint.
+- **Heat-affected zone (HAZ)**: The area of base metal surrounding a weld that did not melt but whose microscopic mechanical properties were altered by the intense heat.
+
+## Electrical Systems and Plumbing
+
+Installing building infrastructure requires precise calculations to prevent electrical fires and ensure water systems remain leak-free under pressure.
+
+- **Ampacity**: The maximum electrical current, in amperes, that a conductor can carry continuously under the conditions of use without exceeding its temperature rating.
+- **Voltage drop**: The loss of electrical potential along a wire's length due to its physical resistance, requiring thicker wires for long cable runs to ensure equipment receives enough power.
+- **Overcurrent protection**: Devices like circuit breakers or fuses designed to automatically cut power when the current exceeds the safe capacity of the wires, preventing overheating and fires.
+- **Ground fault circuit interrupter (GFCI)**: A fast-acting electrical safety device that constantly monitors the balance of current between the hot and neutral wires, instantly cutting power if it detects a leak to the ground.
+- **Capillary action**: The physical mechanism that draws liquid solder into the microscopic gap between a copper pipe and a fitting against the force of gravity.
+- **Flux**: A chemical cleaning agent applied before soldering that removes oxidation from the copper surface and prevents new oxidation during heating, allowing the solder to bond.
+- **Galvanic corrosion**: An electrochemical process where one metal corrodes faster than normal when it is in direct contact with a different type of metal in the presence of an electrolyte like water.
+- **Water hammer**: A destructive pressure surge or wave caused when a fluid in motion is forced to stop or change direction suddenly, often mitigated by installing physical air chambers or arrestors.

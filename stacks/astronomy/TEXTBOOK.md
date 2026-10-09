@@ -280,3 +280,13 @@ formal law : Kepler's third law of planetary motion states that the square of a 
 worked check : Step 1, define the problem: calculate the orbital period of a planet with a semi-major axis of 1 AU, orbiting a star with a mass similar to the Sun; step 2, apply the definition of Kepler's third law; step 3, claim that the orbital period is approximately 1 year; step 4, numerical verification: using the given values, P^2 =)) \*^3, resulting in P ≈ 3.1557 \* 10^7 seconds, or approximately 1 year.
 
 official door : Https://science.nasa.gov/astrophysics/focus-areas/dark-energy, a NASA webpage discussing dark energy and its role in cosmology, providing an official .gov source for understanding the universe on a large scale, including galaxies and the expansion of the universe, which is a key aspect of astronomy and astrophysics, and relates to the Hertzsprung-Russell diagram, which is a fundamental tool in understanding the life cycles of stars, and the structure and evolution of galaxies, and the overall field of cosmology.
+
+## Stellar Mechanics
+
+A star is an incredibly violent, continuous explosion trapped by its own massive weight. Gravity crushes the hydrogen core inward so fiercely that atoms fuse together. The fusion releases a blinding outward blast of light and heat. As long as the outward blast perfectly balances the inward crush, the star remains stable.
+
+- **Nuclear fusion**: the process of smashing light atomic nuclei together under extreme heat and pressure to form a heavier nucleus, releasing immense energy.
+- **Hydrostatic equilibrium**: the stable balance in a star where the inward force of gravity is perfectly matched by the outward pressure of fusion.
+- **Main sequence**: the primary, longest life phase of a star where it steadily fuses hydrogen into helium in its core.
+- **Supernova**: the catastrophic, brilliant explosion of a massive dying star after its core collapses under its own gravity.
+- **Black hole**: a region of space where matter has been crushed so densely that its gravitational grip prevents even light from escaping.

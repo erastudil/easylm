@@ -504,3 +504,21 @@ claim : The constitution protects individual rights by establishing a system of 
 numerical verification : In the United States, for example, Congress has the power to propose laws, but the President can veto them, and the Supreme Court can declare them unconstitutional, demonstrating the separation of powers in action.
 
 official door : Https://www.congress.gov/ - the official website of the United States Congress, providing access to legislative information, including the text of the Constitution and proposed laws.
+
+## Constitutional Mechanics and Federalism
+
+- **Checks and balances**: A structural mechanism allowing distinct government branches to veto or delay actions of other branches.
+- **Separation of powers**: The division of legislative, executive, and judicial authority into independent institutions to prevent consolidated control.
+- **Federalism mechanics**: The division of sovereign authority between a central national government and constituent regional states.
+- **Enumerated powers**: Specific authorities explicitly granted to the national government by a constitutional text.
+- **Implied powers**: Unwritten national authorities logically necessary to execute explicitly granted constitutional powers.
+- **Concurrent powers**: Governing authorities held simultaneously and independently by both national and state governments.
+- **Legislative committee procedure**: The institutional workflow where specialized subgroups draft, amend, and filter legislation before full assembly votes.
+- **Markup session**: The specific procedural phase where legislative committees debate and rewrite the text of a proposed bill.
+- **Filibuster mechanic**: A legislative delaying tactic in a Senate requiring a supermajority vote to end debate and force a final decision.
+- **Electoral systems**: The mathematical rules and structures determining how citizen votes translate into allocated representative seats.
+- **First-past-the-post**: A plurality voting system where the single candidate with the most votes wins, regardless of majority status.
+- **Proportional representation**: An electoral system allocating legislature seats corresponding precisely to the total vote percentages secured by each party.
+- **Ranked-choice voting**: An electoral system allowing voters to order candidate preferences, redistributing votes from eliminated candidates.
+- **Gerrymandering**: The deliberate manipulation of electoral district boundaries to manufacture an artificial structural advantage for a specific faction.
+- **Judicial review**: The institutional authority of courts to invalidate legislative acts or executive actions that violate constitutional law.

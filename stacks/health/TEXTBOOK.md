@@ -9,7 +9,6 @@ related:
   - "../methods/"
   - "../philosophy/"
   - "mcp/CALC.md"
-  - "../../meta/FETCH_AND_CITE.md"
 ---
 
 # Health Sciences & Human Physiology — Homeostasis, Organ Systems, Immunology & Evidence-Based Medicine

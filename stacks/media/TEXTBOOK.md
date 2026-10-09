@@ -2,7 +2,7 @@
 title: "media — textbook"
 date: "2026-09-18"
 status: living · multi-level · the-stacks
-level: "hs"
+level: hs
 floor_age: 13
 needs: []
 home: "stacks/media/"

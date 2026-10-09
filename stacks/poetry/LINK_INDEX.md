@@ -51,5 +51,4 @@ remembered quotes, English 5-7-5 as Japanese law, iambs exported into tonal vers
 | music | `stacks/music/` |
 | philosophy (metaphor as theory) | `stacks/philosophy/` |
 | place / history | `stacks/geography/` · `../history/` |
-| fetch/cite | `stacks/meta/FETCH_AND_CITE.md` |
 | wiki seed | `ARTICLES.md` · `WIKI_INDEX.md` |

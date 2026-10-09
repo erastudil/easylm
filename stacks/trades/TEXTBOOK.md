@@ -6,7 +6,6 @@ home: "stacks/trades/"
 related:
   - "../engineering/"
   - "../physics/"
-  - "../materials/"
   - "stacks/LAW.md"
 ---
 

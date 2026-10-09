@@ -26,19 +26,19 @@ EasyLM is an open-source, consumer alternative to hosted AI platforms that **exe
 
 ## Supported Models
 
-EasyLM dynamically detects your hardware tier and recommends the optimal model for your GPU's Video RAM:
+The picker offers seven fine-tunes. The probe selects **Gemma 4 E2B Instruct** on phones and low-memory devices, and **Gemma 4 E4B Thinking** on laptops and desktops. Larger rows stay in the menu. Kid Safe profiles run Llama 3.2 1B Instruct only.
 
 | Model | Download | VRAM Footprint | Tier & Sweet Spot | Upstream License |
 |---|---|---|---|---|
-| **Bonsai 2 27B (PrismML)** | ~5.9 GB | ~6.8 GB | **Recommended for ~12GB VRAM & under.** Extreme ternary quantization brings 27B reasoning to consumer GPUs. | Apache-2.0 |
-| **Qwen 2.5 3B Instruct** | ~1.9 GB | ~2.2 GB | **Default for 8GB cards.** Everyday workhorse. Balanced reasoning, coding, and fast throughput. | Apache-2.0 |
-| **Llama 3.2 3B Instruct** | ~2.0 GB | ~2.3 GB | **8GB tier.** Meta's compact 3B model. Sharp reasoning and concise conversational flow. | Llama 3.2 |
-| **DeepSeek-R1 Distill Qwen 7B** | ~4.5 GB | ~5.1 GB | **8GB–16GB tier.** Heavyweight chain-of-thought reasoning for deeper analytical tasks. | MIT |
-| **Gemma 2 9B Instruct** | ~5.8 GB | ~6.4 GB | **16GB tier.** High-caliber intelligence running comfortably without overloading host memory. | Gemma |
-| **DeepSeek-R1 Distill Qwen 1.5B** | ~1.0 GB | ~1.6 GB | **4GB tier.** Extended reasoning and step-by-step thinking for low-memory systems. | MIT |
-| **Qwen 2.5 1.5B Instruct** | ~1.1 GB | ~1.4 GB | **Ultralight (4GB tier).** Instant startup, low memory. Runs smoothly on phones, tablets, and iGPUs. | Apache-2.0 |
+| **Gemma 4 E2B Instruct** | ~1.2 GB | ~1.7 GB | **Phones and ultralight.** The probe picks this model on iOS and low-memory devices. | Gemma |
+| **Gemma 4 E4B Thinking** | ~2.3 GB | ~3.2 GB | **Default.** The probe picks this model on laptops and desktops. | Gemma |
+| **Qwen 3 4B Instruct** | ~2.4 GB | ~3.4 GB | **8GB tier.** Everyday workhorse in the picker. | Apache-2.0 |
+| **DeepSeek V4 Distill 9B** | ~4.7 GB | ~5.1 GB | **8GB tier.** Longer reasoning in the picker. | MIT |
+| **Gemma 4 12B Thinking** | ~6.9 GB | ~8.2 GB | **16GB tier.** Deep reasoning when the card has room. | Gemma |
+| **Gemma 4 26B A4B MoE** | ~8.6 GB | ~8.8 GB | **16GB tier.** Mixture-of-experts row in the picker. | Gemma |
+| **Bonsai 2 27B** | ~5.8 GB | ~6.8 GB | **16GB tier.** Top-end row in the picker. | Apache-2.0 |
 
-*Note: Model weights retain their upstream licenses. The EasyLM application code is licensed under GNU AGPL-3.0 or later.*
+*Note: Download and VRAM figures match the picker (`sizeMB` and `vram_required_MB`). Model weights retain their upstream licenses. The EasyLM application code is licensed under GNU AGPL-3.0 or later.*
 
 ---
 
@@ -115,7 +115,7 @@ EasyLM is in active open public beta. We are radically transparent about what wo
 - **Where We Are:** Instant WebGPU inference in modern browsers, 30 undergraduate textbooks in The Stacks, 7 comprehensive university courses in Learn, and full local Studio tools with zero cloud tracking and zero accounts.
 - **The Adapter Reality:** Base open-weight models in the 1.5B–3B range (Qwen 2.5, DeepSeek-R1 Distill) **need task-specific fine-tuned adapters badly to be reliable**. Currently, EasyLM uses regex pre-flight routing, strict system envelopes, and ZCABS canary checks to mitigate tool-calling drift and maintain Socratic guidance. We are actively training lightweight LoRA adapters in earnest to achieve deterministic tool dispatch and rock-solid reasoning.
 - **Known Limitations:**
-  - *Cold-Start Weight Download:* First load requires downloading 1.0 GB – 1.9 GB of model weights from Hugging Face into browser cache. (Mitigation: non-LLM tools like Stacks, Math, and Graphing work instantly with 0 MB downloaded).
+  - *Cold-Start Weight Download:* First load downloads about 1.2 GB – 8.6 GB of model weights from Hugging Face into browser cache, depending on the row you pick. (Mitigation: non-LLM tools like Stacks, Math, and Graphing work instantly with 0 MB downloaded).
   - *WebGPU Ecosystem Gaps:* Firefox requires `dom.webgpu.enabled = true` in `about:config`; mobile browsers frequently hit memory limits; integrated GPUs with < 3 GB shared VRAM can hit OOM on 3B models.
   - *Context Window VRAM Ceilings:* High context allocations (32k–256k) require substantial system memory.
   - *Stacks Retrieval:* Currently powered by deterministic BM25 keyword matching rather than semantic vector embeddings.
@@ -158,7 +158,7 @@ npm install
 node scripts/compile_stacks.mjs
 node scripts/compile_courses.mjs
 
-# Run full test harness (vitest)
+# Run the verification gate
 npm test
 
 # Verify TypeScript types

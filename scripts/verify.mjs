@@ -63,6 +63,34 @@ for (const id of retiredModelIds) {
   assert(!availableModelsBlock.includes(`id: '${id}'`), `Retired model ${id} must not be in AVAILABLE_MODELS`);
 }
 
+const pickerLabels = [...availableModelsBlock.matchAll(/label: '([^']+)'/g)].map(match => match[1]);
+assert(
+  pickerLabels.length === expectedModelIds.length,
+  `AVAILABLE_MODELS must expose ${expectedModelIds.length} labels, found ${pickerLabels.length}`
+);
+
+const readme = readFileSync(resolve(ROOT, 'README.md'), 'utf8');
+const supportedModels = readme.split('## Supported Models')[1]?.split('\n## ')[0] || '';
+assert(supportedModels.length > 0, 'README must include a Supported Models section');
+for (const label of pickerLabels) {
+  assert(
+    supportedModels.includes(`**${label}**`),
+    `README Supported Models must name picker model ${label}`
+  );
+}
+const retiredReadmeNames = [
+  'Qwen 2.5 3B Instruct',
+  'Llama 3.2 3B Instruct',
+  'Gemma 2 9B Instruct',
+  'DeepSeek-R1 Distill Qwen 7B',
+  'DeepSeek-R1 Distill Qwen 1.5B',
+  'Qwen 2.5 1.5B Instruct',
+  'Recommended for ~12GB'
+];
+for (const name of retiredReadmeNames) {
+  assert(!supportedModels.includes(name), `README Supported Models still says "${name}"`);
+}
+
 // 4. Invariant: Alice is excluded until ready
 assert(!availableModelsBlock.includes("id: 'alice'"), "Alice must not be in AVAILABLE_MODELS until ready");
 
@@ -96,7 +124,7 @@ assert(
 );
 
 console.log('==> [4/5] Running kid allowlist tests (tests/kid_models.test.ts)...');
-execSync('npx vitest run tests/kid_models.test.ts', { cwd: ROOT, stdio: 'inherit' });
+execSync('node ./node_modules/vitest/vitest.mjs run tests/kid_models.test.ts', { cwd: ROOT, stdio: 'inherit' });
 
 console.log('==> [5/5] Verifying TypeScript and Vite production bundle (npm run build)...');
 execSync('npm run build', { cwd: ROOT, stdio: 'inherit' });

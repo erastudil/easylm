@@ -428,6 +428,55 @@ export function crashStepDownModel(
     : nextSmallerModel(interruptedId, opts.maxMB);
 }
 
+/** iOS model swap after OOM stays under 1 GB. The 2 GB device budget is a separate gate. */
+export const OOM_IOS_SWAP_MAX_MB = 1000;
+
+const ADULT_DESKTOP_OOM_FALLBACK_ID = 'easylm-gemma-4-e2b-it';
+
+/**
+ * Model to try after an out-of-memory failure.
+ * Undefined means keep the current model and only shrink the context window.
+ * Engine init does not call this. A swap has to go through here.
+ * A kid profile gets Llama 3.2 1B when that id is on the kid allowlist.
+ * iOS gets a model under 1 GB, or no swap.
+ */
+export function getOomFallbackModel(input: {
+  kidMode: boolean;
+  isIOS: boolean;
+  currentModelId?: string;
+}): string | undefined {
+  const current = input.currentModelId;
+
+  if (input.kidMode) {
+    const id = KID_MODE_MODEL_ID;
+    if (!isModelAllowedForKid(id) || current === id) return undefined;
+    if (input.isIOS) {
+      const mb = getModelVramMB(id);
+      if (mb === undefined || mb >= OOM_IOS_SWAP_MAX_MB) return undefined;
+    }
+    return id;
+  }
+
+  if (input.isIOS) {
+    let best: { id: string; mb: number } | undefined;
+    for (const m of AVAILABLE_MODELS) {
+      if (m.id === current) continue;
+      const mb = getModelVramMB(m.id);
+      if (mb === undefined || mb >= OOM_IOS_SWAP_MAX_MB) continue;
+      if (!best || mb < best.mb) best = { id: m.id, mb };
+    }
+    return best?.id;
+  }
+
+  if (!current || current === ADULT_DESKTOP_OOM_FALLBACK_ID) {
+    return current ? undefined : ADULT_DESKTOP_OOM_FALLBACK_ID;
+  }
+  const nextMb = getModelVramMB(ADULT_DESKTOP_OOM_FALLBACK_ID);
+  const curMb = getModelVramMB(current);
+  if (nextMb === undefined || curMb === undefined || nextMb >= curMb) return undefined;
+  return ADULT_DESKTOP_OOM_FALLBACK_ID;
+}
+
 // Crash-loop breaker: a tab killed mid-load (iOS memory limit) leaves this key behind.
 export const LOADING_FLAG_KEY = 'easylm_loading_model';
 

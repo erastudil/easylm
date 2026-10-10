@@ -185,7 +185,7 @@ export function shouldRetryEngineInit(
   if (attempt >= 2) return false;
   if (fence === 'process_dead' || fence === 'lost') return false;
   if (kind === 'gpu_process_dead' || kind === 'device_lost') return false;
-  // On OOM, allow 1 retry if context window can step down or fallback model used
+  // One OOM retry. This does not pick a smaller model or a smaller window.
   if (kind === 'oom') return attempt === 0;
   return kind === 'disposed';
 }
@@ -202,15 +202,6 @@ export function stepDownContextWindow(currentWindow: number): number {
   if (w >= 4096) return 2048;
   if (w >= 2048) return 1024;
   return 512;
-}
-
-export const ULTRALIGHT_FALLBACK_MODEL = 'easylm-gemma-4-e2b-it';
-
-/**
- * Returns a lightweight model ID for automatic OOM fallback
- */
-export function getOomFallbackModel(_currentModelId?: string): string {
-  return ULTRALIGHT_FALLBACK_MODEL;
 }
 
 /**

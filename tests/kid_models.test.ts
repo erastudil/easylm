@@ -13,10 +13,13 @@ import {
   KID_MODE_MODEL_ID,
   crashStepDownModel,
   findModelOption,
+  getModelVramMB,
+  getOomFallbackModel,
   getOrInitEngine,
   isModelAllowedForKid,
   modelForProfile,
   modelsForProfile,
+  OOM_IOS_SWAP_MAX_MB,
   registerCustomHFModel,
   setEngineKidMode
 } from '../src/engine/webllm';
@@ -108,6 +111,42 @@ describe('kid allowlist', () => {
       expect(crashStepDownModel(m.id, { kidMode: true }), m.id).toBe(LLAMA_1B);
     }
     expect(crashStepDownModel(LLAMA_1B, { kidMode: true })).toBeUndefined();
+  });
+
+  it('kid oom fallback stays on the kid allowlist', () => {
+    const currents = [...AVAILABLE_MODELS.map(m => m.id), LLAMA_1B, 'alice', undefined];
+    for (const isIOS of [false, true]) {
+      for (const currentModelId of currents) {
+        const next = getOomFallbackModel({ kidMode: true, isIOS, currentModelId });
+        const where = `${currentModelId ?? 'none'} ios=${isIOS}`;
+        if (next === undefined) {
+          expect(currentModelId, where).toBe(LLAMA_1B);
+          continue;
+        }
+        expect(isModelAllowedForKid(next), where).toBe(true);
+        expect(next, where).toBe(LLAMA_1B);
+        expect(KID_ALLOWED_MODEL_IDS.has(next), where).toBe(true);
+      }
+    }
+  });
+
+  it('iOS oom fallback is under 1 GB or no swap', () => {
+    const gemma = 'easylm-gemma-4-e2b-it';
+    expect(getModelVramMB(gemma)).toBeGreaterThanOrEqual(OOM_IOS_SWAP_MAX_MB);
+    for (const m of AVAILABLE_MODELS) {
+      const next = getOomFallbackModel({ kidMode: false, isIOS: true, currentModelId: m.id });
+      if (next === undefined) continue;
+      const mb = getModelVramMB(next);
+      expect(mb, next).toBeLessThan(OOM_IOS_SWAP_MAX_MB);
+      expect(next).not.toBe(m.id);
+    }
+    expect(getOomFallbackModel({ kidMode: false, isIOS: true, currentModelId: gemma })).toBeUndefined();
+  });
+
+  it('desktop oom fallback steps down to Gemma 4 E2B', () => {
+    const gemma = 'easylm-gemma-4-e2b-it';
+    expect(getOomFallbackModel({ kidMode: false, isIOS: false, currentModelId: 'easylm-bonsai-2-27b' })).toBe(gemma);
+    expect(getOomFallbackModel({ kidMode: false, isIOS: false, currentModelId: gemma })).toBeUndefined();
   });
 });
 

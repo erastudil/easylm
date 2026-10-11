@@ -16,6 +16,7 @@ import {
   getOrInitEngine,
   isModelAllowedForKid,
   modelForProfile,
+  modelIsReasoning,
   modelsForProfile,
   registerCustomHFModel,
   setEngineKidMode
@@ -149,6 +150,18 @@ describe('kid custom Hugging Face models', () => {
   it('an adult custom model stays off the kid allowlist', () => {
     expect(registerCustomHFModel(record('adult-custom-MLC'), false)).toBe(true);
     expect(isModelAllowedForKid('adult-custom-MLC')).toBe(false);
+  });
+});
+
+describe('reasoning models', () => {
+  it('follows the catalog flag, and still recognizes the old id strings', () => {
+    for (const m of AVAILABLE_MODELS) {
+      expect(modelIsReasoning(m.id), m.id).toBe(!!m.isReasoning);
+    }
+    expect(modelIsReasoning('easylm-gemma-4-e4b-it')).toBe(true);
+    expect(modelIsReasoning('easylm-qwen3-4b-instruct')).toBe(false);
+    expect(modelIsReasoning('DeepSeek-R1-Distill-Qwen-7B-q4f16_1-MLC')).toBe(true);
+    expect(modelIsReasoning(LLAMA_1B)).toBe(false);
   });
 });
 

@@ -8,7 +8,7 @@ status: living · easylm
 
 kaizen is policy here: continuous small improvement, every pass. 5S is policy here: we clean while we work. these four standards are how both show up in daily output. one page each. if a policy and the code disagree, one of them is wrong — fix it in the same change.
 
-## 1. code — 5S / ponytail
+## 1. code — 5S / wuwei
 
 | S | applied to code |
 |---|---|
@@ -18,7 +18,7 @@ kaizen is policy here: continuous small improvement, every pass. 5S is policy he
 | **standardize** | follow `AGENTS.md` dir law, `tests/AGENTS.md`, and the compile scripts. no private conventions. |
 | **sustain** | every change keeps `npm test` green. the audit (`scripts/nightly_stacks.mjs`) is the sweep that never sleeps. |
 
-**ponytail** — pull all complexity into one grip. a module should hang from a single narrow interface you can hold in one hand: one exported function, one clear input, one clear output. if a caller needs to know three internals to use it, braid it. rules:
+**wuwei** — pull all complexity into one grip. a module should hang from a single narrow interface you can hold in one hand: one exported function, one clear input, one clear output. if a caller needs to know three internals to use it, braid it. rules:
 
 1. one narrow public surface per module; everything else private.
 2. no tangles: two modules that import each other is a knot — split or merge.

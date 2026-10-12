@@ -7,4 +7,4 @@ status: living · easylm
 
 # docs
 
-living docs only: `CURRICULUM.md` (Studio), `POLICIES.md` (5S/ponytail, GFC, tokens, progen), `KAIZEN.md` (nightly loop + run log). prose is GFC. generated reports do not live here — audit output lands in `stacks/NIGHTLY_REPORT.md`.
+living docs only: `CURRICULUM.md` (Studio), `POLICIES.md` (5S/wuwei, GFC, tokens, progen), `KAIZEN.md` (nightly loop + run log). prose is GFC. generated reports do not live here — audit output lands in `stacks/NIGHTLY_REPORT.md`.

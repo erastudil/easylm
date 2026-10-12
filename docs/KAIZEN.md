@@ -19,7 +19,7 @@ DID:
 - stacks/PACKS.json +media row · stacks/INDEX.md +row
 - stacks/LAW.md +levels law (read→grad, floor 13, grad-welcome clause)
 - src/engine/stacks.ts +10 search aliases (social, misinformation, tiktok, …)
-- docs/POLICIES.md — 5S/ponytail · GFC · token economy · progen
+- docs/POLICIES.md — 5S/wuwei · GFC · token economy · progen
 - scripts/nightly_stacks.mjs — audit: sync, stubs, level tags, dangling refs, doors
 - .github/workflows/stacks-nightly.yml — cron 07:17 UTC daily + manual dispatch
 - 5S: removed dangling ops_5s_kaizen refs in stacks/business (TEXTBOOK + LINK_INDEX)

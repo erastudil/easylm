@@ -199,6 +199,8 @@ export const App: React.FC = () => {
   const [studioTarget, setStudioTarget] = useState<StudioTarget | null>(null);
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
   const [hardwareModalOpen, setHardwareModalOpen] = useState(false);
+  // A chat message waiting on the model-load decision (first AI action gate).
+  const pendingAiPromptRef = useRef<string | null>(null);
   const [showHardwarePrompt, setShowHardwarePrompt] = useState<boolean>(() => {
     return localStorage.getItem('easylm_show_hardware_prompt') !== 'false';
   });
@@ -472,7 +474,18 @@ export const App: React.FC = () => {
       setShowHardwarePrompt(false);
     }
     setHardwareModalOpen(false);
-    handleLoadModel(profileDeviceInfo?.recommendedModel);
+    void (async () => {
+      await handleLoadModel(profileDeviceInfo?.recommendedModel);
+      const pending = pendingAiPromptRef.current;
+      if (!pending) return;
+      pendingAiPromptRef.current = null;
+      if (isEngineReady()) {
+        handleSendMessage(pending);
+      } else {
+        // Load failed: give the words back instead of losing the message.
+        setInputPrompt(pending);
+      }
+    })();
   };
 
   const handleHardwareDecline = (remember: boolean) => {
@@ -482,6 +495,11 @@ export const App: React.FC = () => {
       setShowHardwarePrompt(false);
     }
     setHardwareModalOpen(false);
+    const pending = pendingAiPromptRef.current;
+    if (pending) {
+      pendingAiPromptRef.current = null;
+      setInputPrompt(pending);
+    }
   };
 
   const handleToggleHardwarePrompt = () => {
@@ -603,13 +621,14 @@ export const App: React.FC = () => {
         return;
       }
 
-      // Hardware detected: prompt to load recommended model weights unless remembered otherwise.
+      // Value before download: the model-load prompt no longer fires at boot.
+      // It waits for the first AI action in handleSendMessage, so a first visit
+      // can read the Stacks, take a Learn course, and use the local tools with
+      // no download at all. Only a remembered opt-in auto-loads here.
       // Phones and tablets never auto-load at boot; the user taps Load.
       const showPromptPref = localStorage.getItem('easylm_show_hardware_prompt');
       const autoLoad = localStorage.getItem('easylm_auto_load_model');
-      if (showPromptPref !== 'false') {
-        setHardwareModalOpen(true);
-      } else if (autoLoad === 'true' && !dev.isMobile) {
+      if (showPromptPref === 'false' && autoLoad === 'true' && !dev.isMobile) {
         handleLoadModel(dev.recommendedModel);
       }
     });
@@ -759,6 +778,27 @@ export const App: React.FC = () => {
     const rawInput = typeof overridePrompt === 'string' ? overridePrompt : inputPrompt;
     const trimmed = rawInput.trim();
     if (!trimmed || isGenerating || !activeSession) return;
+
+    // Value before download: messages the deterministic hands can answer
+    // (math, units, clock, Stacks lookup) never need the model. Anything else
+    // needs the engine, and loading it is a multi-GB download, so the first
+    // AI action asks first instead of downloading as a side effect of Send.
+    const answeredLocally =
+      toolsEnabled &&
+      !!(
+        mathExpressionOf(trimmed) ||
+        unitConversionOf(trimmed) ||
+        clockQueryOf(trimmed) ||
+        stacksQueryOf(trimmed)
+      );
+    if (!answeredLocally && !isModelReady && !isEngineReady()) {
+      if (localStorage.getItem('easylm_show_hardware_prompt') !== 'false') {
+        pendingAiPromptRef.current = trimmed;
+        setInputPrompt('');
+        setHardwareModalOpen(true);
+        return;
+      }
+    }
 
     // Internet Safety Sentinel: check for personal identifiable info (PII)
     const piiCheck = detectPII(trimmed);
@@ -1314,6 +1354,8 @@ export const App: React.FC = () => {
       attachedDoc={attachedDoc}
       fileInputRef={fileInputRef}
       messagesEndRef={messagesEndRef}
+      modelReady={isModelReady}
+      onLoadModel={() => handleLoadModel()}
       onShuffleChips={handleShuffleChips}
       onSendChip={(prompt) => handleSendMessage(prompt)}
       onOpenWelcome={() => setWelcomeModalOpen(true)}

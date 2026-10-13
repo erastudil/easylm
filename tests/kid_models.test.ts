@@ -13,6 +13,7 @@ import {
   KID_MODE_MODEL_ID,
   crashStepDownModel,
   findModelOption,
+  getOomFallbackModel,
   getOrInitEngine,
   isModelAllowedForKid,
   modelForProfile,
@@ -196,5 +197,39 @@ describe('kid model picker UI', () => {
     expect(html).toContain('<span>Hugging Face</span>');
     expect(html).not.toContain('Llama 3.2 1B Instruct');
     for (const m of AVAILABLE_MODELS) expect(html, m.label).toContain(m.label);
+  });
+});
+
+describe('OOM fallback model (issue #24)', () => {
+  it('kid profiles only ever fall back to a model on the kid allowlist', () => {
+    for (const m of AVAILABLE_MODELS) {
+      const fb = getOomFallbackModel(m.id, { kidMode: true });
+      expect(fb, m.id).toBe(LLAMA_1B);
+      expect(isModelAllowedForKid(fb!)).toBe(true);
+    }
+    expect(getOomFallbackModel('alice', { kidMode: true })).toBe(LLAMA_1B);
+    expect(getOomFallbackModel(undefined, { kidMode: true })).toBe(LLAMA_1B);
+    // Already on the kid model: no swap is legal.
+    expect(getOomFallbackModel(LLAMA_1B, { kidMode: true })).toBeUndefined();
+  });
+
+  it('iOS only swaps to a model under 1 GB on disk, or not at all', () => {
+    for (const m of AVAILABLE_MODELS) {
+      const fb = getOomFallbackModel(m.id, { ios: true });
+      expect(fb, m.id).toBeDefined();
+      expect(findModelOption(fb!)!.sizeMB, m.id).toBeLessThan(1024);
+    }
+    expect(getOomFallbackModel(LLAMA_1B, { ios: true })).toBeUndefined();
+  });
+
+  it('general fallback steps down and never returns the current model', () => {
+    expect(getOomFallbackModel('easylm-gemma-4-e4b-it')).toBe('easylm-gemma-4-e2b-it');
+    expect(getOomFallbackModel('easylm-gemma-4-e2b-it')).toBe(LLAMA_1B);
+    expect(getOomFallbackModel(LLAMA_1B)).toBeUndefined();
+    expect(getOomFallbackModel(undefined)).toBe('easylm-gemma-4-e2b-it');
+    for (const m of AVAILABLE_MODELS) {
+      const fb = getOomFallbackModel(m.id);
+      if (fb !== undefined) expect(fb, m.id).not.toBe(m.id);
+    }
   });
 });

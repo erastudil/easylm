@@ -19,7 +19,7 @@ EasyLM is an open-source, consumer alternative to hosted AI platforms that **exe
 - **AtMem (Atomic & Attentive Memory):** Discrete, typed memory atoms with dynamic BM25 relevance scoring, strict token budgeting, profile isolation, and parental governance.
 - **Client-Side Vault Encryption:** Optional AES-GCM-256 encryption with 600,000-round PBKDF2 key derivation protects conversations, profiles, and memory banks at rest in IndexedDB.
 - **LaTeX Math Support:** High-performance KaTeX math rendering for LaTeX expressions in both interactive chat and Studio reading modes.
-- **Studio & Learn Integration:** An integrated suite featuring 30 undergraduate textbooks, interactive learning courses, math graphing, code sandboxes, and drawing canvases.
+- **Studio & Learn Integration:** An integrated suite featuring 32 undergraduate textbooks, interactive learning courses, math graphing, code sandboxes, and drawing canvases.
 - **Strict UI Canon:** Zero horizontal scrollbars on desktop or mobile devices, responsive layout wrapping, and clean interface naming.
 
 ---
@@ -30,13 +30,15 @@ EasyLM dynamically detects your hardware tier and recommends the optimal model f
 
 | Model | Download | VRAM Footprint | Tier & Sweet Spot | Upstream License |
 |---|---|---|---|---|
-| **Bonsai 2 27B (PrismML)** | ~5.9 GB | ~6.8 GB | **Recommended for ~12GB VRAM & under.** Extreme ternary quantization brings 27B reasoning to consumer GPUs. | Apache-2.0 |
-| **Qwen 2.5 3B Instruct** | ~1.9 GB | ~2.2 GB | **Default for 8GB cards.** Everyday workhorse. Balanced reasoning, coding, and fast throughput. | Apache-2.0 |
-| **Llama 3.2 3B Instruct** | ~2.0 GB | ~2.3 GB | **8GB tier.** Meta's compact 3B model. Sharp reasoning and concise conversational flow. | Llama 3.2 |
-| **DeepSeek-R1 Distill Qwen 7B** | ~4.5 GB | ~5.1 GB | **8GB–16GB tier.** Heavyweight chain-of-thought reasoning for deeper analytical tasks. | MIT |
-| **Gemma 2 9B Instruct** | ~5.8 GB | ~6.4 GB | **16GB tier.** High-caliber intelligence running comfortably without overloading host memory. | Gemma |
-| **DeepSeek-R1 Distill Qwen 1.5B** | ~1.0 GB | ~1.6 GB | **4GB tier.** Extended reasoning and step-by-step thinking for low-memory systems. | MIT |
-| **Qwen 2.5 1.5B Instruct** | ~1.1 GB | ~1.4 GB | **Ultralight (4GB tier).** Instant startup, low memory. Runs smoothly on phones, tablets, and iGPUs. | Apache-2.0 |
+| **Gemma 4 E2B Instruct** | ~1.2 GB | ~1.7 GB | **Ultralight (4GB tier).** Smallest general model. Mobile and low-spec runtimes. | Apache-2.0 |
+| **Gemma 4 E4B Thinking** | ~2.4 GB | ~3.2 GB | **Default for all tiers.** Recommended workhorse. Balanced reasoning and fast throughput. | Apache-2.0 |
+| **Qwen 3 4B Instruct** | ~2.5 GB | ~3.4 GB | **8GB tier.** Structured output and Hands tool dispatch. | Apache-2.0 |
+| **DeepSeek V4 Distill 9B** | ~4.8 GB | ~5.1 GB | **8GB-16GB tier.** Heavyweight chain-of-thought reasoning for deeper analytical tasks. | See upstream repository |
+| **Bonsai 2 27B** | ~6.0 GB | ~6.8 GB | **16GB tier.** Extreme ternary quantization brings 27B reasoning to consumer GPUs. | Apache-2.0 |
+| **Gemma 4 12B Thinking** | ~7.1 GB | ~8.2 GB | **16GB tier.** High-caliber long-context intelligence. | Apache-2.0 |
+| **Gemma 4 26B A4B MoE** | ~8.8 GB | ~8.8 GB | **16GB tier.** Mixture-of-experts synthesis and code. | Apache-2.0 |
+
+Kid profiles do not use this catalog: they run **Llama 3.2 1B Instruct** (~0.7 GB download) and nothing else - the one model with Kid Safe A/B/C evidence on file. Fine-tuned models and adapters stay on adult profiles until they pass the same checks.
 
 *Note: Model weights retain their upstream licenses. The EasyLM application code is licensed under GNU AGPL-3.0 or later.*
 
@@ -65,12 +67,13 @@ The Learn system provides structured, self-paced academic courses with comprehen
 - **Biology I:** Cellular Life & Molecular Biology
 - **Civics I:** Constitutional Democracy, Civil Rights & Governance
 - **Health Sciences I:** Human Physiology, Wellness & Disease
+- **Philosophy I:** Foundations, Logic, Epistemology & Systems Dialectics
 
 Each course links directly into Studio, allowing learners to open textbooks, inspect link trees, and navigate between lessons and primary sources without leaving the application.
 
-### 3. The Stacks: 30 Academic Disciplines
+### 3. The Stacks: 32 Academic Disciplines
 
-The Stacks provide comprehensive undergraduate textbooks and curated link trees across 30 sovereign academic fields, including mathematics, physics, computing, information security & cryptography, skilled trades & machining, earth sciences, philosophy, agriculture, language, and poetry.
+The Stacks provide comprehensive undergraduate textbooks and curated link trees across 32 sovereign academic fields, including mathematics, physics, computing, information security & cryptography, skilled trades & machining, earth sciences, philosophy, agriculture, language, and poetry.
 
 Textbooks follow the **Greene / Feynman pedagogical method**:
 - Physical, sensory intuition first: concepts are introduced through everyday observations and first principles.
@@ -112,7 +115,7 @@ Studio unites creative and technical tools in a single interface:
 
 EasyLM is in active open public beta. We are radically transparent about what works today and what remains under heavy development:
 
-- **Where We Are:** Instant WebGPU inference in modern browsers, 30 undergraduate textbooks in The Stacks, 7 comprehensive university courses in Learn, and full local Studio tools with zero cloud tracking and zero accounts.
+- **Where We Are:** Instant WebGPU inference in modern browsers, 32 undergraduate textbooks in The Stacks, 8 comprehensive university courses in Learn, and full local Studio tools with zero cloud tracking and zero accounts.
 - **The Adapter Reality:** Base open-weight models in the 1.5B–3B range (Qwen 2.5, DeepSeek-R1 Distill) **need task-specific fine-tuned adapters badly to be reliable**. Currently, EasyLM uses regex pre-flight routing, strict system envelopes, and ZCABS canary checks to mitigate tool-calling drift and maintain Socratic guidance. We are actively training lightweight LoRA adapters in earnest to achieve deterministic tool dispatch and rock-solid reasoning.
 - **Known Limitations:**
   - *Cold-Start Weight Download:* First load requires downloading 1.0 GB – 1.9 GB of model weights from Hugging Face into browser cache. (Mitigation: non-LLM tools like Stacks, Math, and Graphing work instantly with 0 MB downloaded).

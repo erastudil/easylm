@@ -428,6 +428,44 @@ export function crashStepDownModel(
     : nextSmallerModel(interruptedId, opts.maxMB);
 }
 
+/** Hard ceiling for an automatic OOM model swap on iOS: under 1 GB on disk, or no swap (issue #24). */
+export const IOS_OOM_FALLBACK_MAX_MB = 1024;
+
+export interface OomFallbackOptions {
+  kidMode?: boolean;
+  ios?: boolean;
+}
+
+/**
+ * Model to swap to after an OOM, chosen for the active profile and device (issue #24).
+ * Kid profiles: Llama 3.2 1B is the whole kid allowlist, so it is the only legal
+ * fallback — an adapter or fine-tune never lands on a kid profile via OOM.
+ * iOS: only a model under IOS_OOM_FALLBACK_MAX_MB on disk, or no swap at all.
+ * Otherwise: the largest smaller general model, or the ultralight tier when the
+ * current model is unknown. Returns undefined when nothing smaller is legal,
+ * so the caller keeps the current model instead of swapping somewhere unsafe.
+ */
+export function getOomFallbackModel(
+  currentModelId?: string,
+  opts: OomFallbackOptions = {}
+): string | undefined {
+  if (opts.kidMode) {
+    return currentModelId === KID_MODE_MODEL_ID ? undefined : KID_MODE_MODEL_ID;
+  }
+  if (opts.ios) {
+    const under = KID_CATALOG.filter(
+      m => m.id !== currentModelId && m.sizeMB < IOS_OOM_FALLBACK_MAX_MB
+    ).sort((a, b) => b.sizeMB - a.sizeMB)[0];
+    return under?.id;
+  }
+  if (!currentModelId || !findModelOption(currentModelId)) return 'easylm-gemma-4-e2b-it';
+  if (currentModelId === 'easylm-gemma-4-e2b-it') {
+    // Smallest general model already: the kid-record Llama is the only smaller legal step.
+    return KID_MODE_MODEL_ID;
+  }
+  return nextSmallerModel(currentModelId, undefined, undefined, KID_CATALOG);
+}
+
 // Crash-loop breaker: a tab killed mid-load (iOS memory limit) leaves this key behind.
 export const LOADING_FLAG_KEY = 'easylm_loading_model';
 

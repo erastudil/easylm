@@ -1,0 +1,8 @@
+# Generated files and their sources: one line-ending convention (LF)
+# on every platform, so regeneration never produces content-free diffs.
+# The compiler also normalizes CRLF on read (scripts/compile_stacks.mjs);
+# this pins the checkout side.
+src/data/stacks_compiled.ts text eol=lf
+src/data/courses_compiled.ts text eol=lf
+src/data/answers_compiled.ts text eol=lf
+stacks/**/*.md text eol=lf

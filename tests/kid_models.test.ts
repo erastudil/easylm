@@ -23,6 +23,14 @@ import {
 } from '../src/engine/webllm';
 import { detectDevice, deviceInfoForProfile, DeviceInfo, IOS_RECOMMENDED_MODEL } from '../src/engine/device';
 import { ModelModal } from '../src/components/ModelModal';
+import {
+  addProfileAtom,
+  clearProfileAtoms,
+  getAttentivePromptEnvelope,
+  getProfileAtoms,
+  loadAllAtoms,
+  resetAtMemCache
+} from '../src/engine/atmem';
 
 const LLAMA_1B = 'Llama-3.2-1B-Instruct-q4f16_1-MLC';
 const SMOL = 'SmolLM2-360M-Instruct-q4f16_1-MLC';
@@ -231,5 +239,59 @@ describe('OOM fallback model (issue #24)', () => {
       const fb = getOomFallbackModel(m.id);
       if (fb !== undefined) expect(fb, m.id).not.toBe(m.id);
     }
+  });
+});
+
+describe('AtMem profile isolation (the kid fence)', () => {
+  const ADULT_SECRET = 'adulttaxledger espresso budget note';
+  const ADULT_RULE = 'adult governed mandate about investment accounts';
+  const KID_NOTE = 'kid volcano science project note';
+
+  beforeEach(() => {
+    resetAtMemCache();
+    // Seed two profiles through the real engine API.
+    expect(addProfileAtom('parent', ADULT_SECRET, 'fact').ok).toBe(true);
+    expect(addProfileAtom('parent', ADULT_RULE, 'rule', true, 'parent').ok).toBe(true);
+    expect(addProfileAtom('kid', KID_NOTE, 'fact').ok).toBe(true);
+  });
+
+  afterEach(() => {
+    resetAtMemCache();
+  });
+
+  it('getProfileAtoms returns only the requesting profile atoms', () => {
+    const kidAtoms = getProfileAtoms('kid');
+    expect(kidAtoms.map(a => a.text)).toEqual([KID_NOTE]);
+    expect(getProfileAtoms('parent').map(a => a.text)).toContain(ADULT_SECRET);
+    expect(getProfileAtoms('nobody')).toEqual([]);
+  });
+
+  it('a kid prompt envelope never contains adult atoms, even governed rules or exact-match queries', () => {
+    // Governed rules bypass relevance scoring in the envelope builder, so an
+    // adult governed mandate is the strongest leak candidate.
+    const byRule = getAttentivePromptEnvelope('kid', 'governed mandate investment accounts', 1024);
+    expect(byRule).not.toContain(ADULT_RULE);
+    expect(byRule).not.toContain('investment accounts');
+    const byFact = getAttentivePromptEnvelope('kid', 'adulttaxledger espresso budget', 1024);
+    expect(byFact).not.toContain(ADULT_SECRET);
+    expect(byFact).not.toContain('adulttaxledger');
+  });
+
+  it('a kid prompt envelope still serves the kid profile its own atoms', () => {
+    const envelope = getAttentivePromptEnvelope('kid', 'volcano science project', 1024);
+    expect(envelope).toContain(KID_NOTE);
+  });
+
+  it('a profile with no atoms gets an empty envelope while other profiles hold atoms', () => {
+    expect(loadAllAtoms().length).toBeGreaterThan(0);
+    expect(getAttentivePromptEnvelope('nobody', 'volcano adulttaxledger', 1024)).toBe('');
+  });
+
+  it('clearing the kid profile leaves adult atoms untouched', () => {
+    const cleared = clearProfileAtoms('kid', true);
+    expect(cleared.clearedCount).toBe(1);
+    expect(getProfileAtoms('kid')).toEqual([]);
+    expect(getProfileAtoms('parent').map(a => a.text)).toContain(ADULT_SECRET);
+    expect(getProfileAtoms('parent').map(a => a.text)).toContain(ADULT_RULE);
   });
 });

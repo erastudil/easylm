@@ -84,6 +84,17 @@ assert(cspHeader.includes('https://*.cdn.hf.co'), 'vercel.json CSP must include 
 assert(cspHeader.includes('https://*.aws.cdn.hf.co'), 'vercel.json CSP must include https://*.aws.cdn.hf.co');
 assert(cspHeader.includes('https://cdn-lfs.hf.co'), 'vercel.json CSP must include https://cdn-lfs.hf.co');
 
+// 7. Invariant: the model-load prompt waits for the first AI action (no boot-time download gate)
+const appContent = readFileSync(resolve(ROOT, 'src/App.tsx'), 'utf8');
+assert(
+  appContent.includes('pendingAiPromptRef'),
+  'handleSendMessage must stash the pending prompt behind the model-load decision'
+);
+assert(
+  !appContent.includes("if (showPromptPref !== 'false') {"),
+  'the hardware prompt must not open at boot; it fires on the first AI action'
+);
+
 console.log('==> [3/6] Verifying device recommendations...');
 const deviceContent = readFileSync(resolve(ROOT, 'src/engine/device.ts'), 'utf8');
 assert(

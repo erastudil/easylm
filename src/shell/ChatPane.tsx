@@ -22,6 +22,8 @@ export const ChatPane: React.FC<{
   attachedDoc: AttachedDoc | null;
   fileInputRef: React.RefObject<HTMLInputElement | null>;
   messagesEndRef: React.RefObject<HTMLDivElement | null>;
+  modelReady: boolean;
+  onLoadModel: () => void;
   onShuffleChips: () => void;
   onSendChip: (prompt: string) => void;
   onOpenWelcome: () => void;
@@ -48,6 +50,8 @@ export const ChatPane: React.FC<{
   attachedDoc,
   fileInputRef,
   messagesEndRef,
+  modelReady,
+  onLoadModel,
   onShuffleChips,
   onSendChip,
   onOpenWelcome,
@@ -88,6 +92,18 @@ export const ChatPane: React.FC<{
                 <p className="chat-empty-lead">
                   Zero-Install Local WebGPU Intelligence · In-Browser Privacy · Deterministic Tools &amp; University Stacks
                 </p>
+              )}
+              {!modelReady && (
+                <div className="chat-empty-note">
+                  <p>
+                    No AI model is loaded yet, and plenty already works: math, unit conversions,
+                    the clock, the Stacks textbooks and Learn courses. Chat answers need a
+                    one-time model download.
+                  </p>
+                  <button type="button" onClick={onLoadModel} className="btn-pill">
+                    Load model
+                  </button>
+                </div>
               )}
               <div className="chat-chip-wrap">
                 {starterChips.map((chip) => (

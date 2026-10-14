@@ -6,3 +6,4 @@ src/data/stacks_compiled.ts text eol=lf
 src/data/courses_compiled.ts text eol=lf
 src/data/answers_compiled.ts text eol=lf
 stacks/**/*.md text eol=lf
+courses/*.json text eol=lf

@@ -36,7 +36,7 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
-# Step 2: Single-grip deterministic verification gate (wuwei wu wei)
+# Step 2: Single-grip deterministic verification gate (wuwei)
 Write-Host "`n[2/3] Executing deterministic verification gate (verify.ps1)..." -ForegroundColor Yellow
 & "$root\verify.ps1"
 if ($LASTEXITCODE -ne 0) {

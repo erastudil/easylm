@@ -211,6 +211,26 @@ describe('kid model picker UI', () => {
     for (const m of AVAILABLE_MODELS) expect(html, m.label).not.toContain(m.label);
   });
 
+  it('steps a crashed specialist down to a general model, and keeps Think off E2B Instruct', () => {
+    const e2b = AVAILABLE_MODELS.find(m => m.id === 'easylm-gemma-4-e2b-it');
+    expect(e2b?.isReasoning).toBeFalsy();
+    expect(e2b?.isCoding).toBeFalsy();
+    expect(crashStepDownModel('easylm-bonsai-2-27b')).toBe('easylm-qwen3-4b-instruct');
+    expect(crashStepDownModel('easylm-gemma-4-26b-a4b-it')).toBe('easylm-qwen3-4b-instruct');
+    expect(crashStepDownModel('easylm-gemma-4-e4b-it')).toBe('easylm-gemma-4-e2b-it');
+    expect(crashStepDownModel('easylm-qwen3-4b-instruct')).toBe('easylm-gemma-4-e2b-it');
+    expect(crashStepDownModel('easylm-gemma-4-e2b-it')).toBeUndefined();
+    expect(crashStepDownModel('easylm-bonsai-2-27b', { maxMB: 2048 })).toBe('easylm-gemma-4-e2b-it');
+
+    const html = render(false);
+    const badgesBefore = (label: string) => {
+      const at = html.indexOf(label);
+      return html.slice(html.lastIndexOf('GB VRAM', at), at);
+    };
+    expect(badgesBefore('Gemma 4 E2B Instruct')).not.toContain('Think');
+    expect(badgesBefore('Gemma 4 E4B Thinking')).toContain('🧠 Think');
+  });
+
   it('adult picker keeps the catalog, the Fine-Tuned tab and the Hugging Face tab', () => {
     const html = render(false);
     const fineTunedCount = AVAILABLE_MODELS.filter(m => m.isFineTuned).length;

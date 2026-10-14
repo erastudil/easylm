@@ -200,7 +200,6 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     sizeMB: 1200,
     vramEst: vramLabel('easylm-gemma-4-e2b-it'),
     vramTier: '4gb',
-    isReasoning: true,
     isFineTuned: true,
     baseModelId: 'google/gemma-4-E2B-it',
     adapterRepo: 'Bluebarrels/easylm-gemma-4-e2b-it',
@@ -300,6 +299,7 @@ export const CURATED_MODEL_IDS: ReadonlySet<string> = new Set(AVAILABLE_MODELS.m
 /**
  * Largest general model that is smaller than `modelId` (by vram_required_MB),
  * optionally capped at `maxMB`. Reasoning and coding specialists are skipped.
+ * Fine-tunes stay eligible: the catalog is fine-tunes, and skipping them leaves no step-down.
  */
 export function nextSmallerModel(
   modelId: string,
@@ -310,7 +310,7 @@ export function nextSmallerModel(
   const current = getModelVramMB(modelId) ?? Infinity;
   let best: { id: string; mb: number } | undefined;
   for (const m of candidates) {
-    if (m.id === modelId || m.id === 'alice') continue;
+    if (m.isReasoning || m.isCoding || m.id === modelId || m.id === 'alice') continue;
     if (exclude?.has(m.id)) continue;
     const mb = getModelVramMB(m.id);
     if (mb === undefined || mb >= current) continue;

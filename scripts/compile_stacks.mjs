@@ -8,7 +8,15 @@ const packs = JSON.parse(readFileSync(join(stacksDir, 'PACKS.json'), 'utf8'));
 
 function extractUnits(textbook, dewey, slug) {
   const units = [];
-  const lines = textbook.split(/\r?\n/);
+  // Skip a leading YAML frontmatter block (--- ... ---): its key: value
+  // lines otherwise match the Progen pattern and become junk units
+  // (e.g. topic "status", "floor_age", "level") that pollute Stacks search.
+  let source = textbook;
+  if (source.startsWith('---\n')) {
+    const end = source.indexOf('\n---\n', 4);
+    if (end !== -1) source = source.slice(end + 5);
+  }
+  const lines = source.split(/\r?\n/);
   let currentChapter = 'General';
 
   for (const rawLine of lines) {
@@ -47,10 +55,15 @@ function extractUnits(textbook, dewey, slug) {
   return units;
 }
 
+// Normalize line endings on read: a textbook saved with CRLF (Windows)
+// otherwise embeds \r\n escapes in the compiled output, so regenerating
+// on a different OS produces a large content-free diff.
+const normalizeEol = (s) => s.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
 const compiled = packs.map((p) => {
   const dir = join(stacksDir, p.slug);
-  const textbook = readFileSync(join(dir, 'TEXTBOOK.md'), 'utf8');
-  const links = readFileSync(join(dir, 'LINK_INDEX.md'), 'utf8');
+  const textbook = normalizeEol(readFileSync(join(dir, 'TEXTBOOK.md'), 'utf8'));
+  const links = normalizeEol(readFileSync(join(dir, 'LINK_INDEX.md'), 'utf8'));
   const units = extractUnits(textbook, p.dewey, p.slug);
   return { ...p, textbook, links, units };
 });

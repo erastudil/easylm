@@ -86,7 +86,7 @@ export const HardwareRecommendationModal: React.FC<HardwareRecommendationModalPr
                 fontWeight: 600
               }}
             >
-              Hardware Detected
+              Load your AI model
             </h3>
           </div>
           <button
@@ -188,9 +188,22 @@ export const HardwareRecommendationModal: React.FC<HardwareRecommendationModalPr
           </div>
         </div>
 
-        {/* Question Prompt */}
-        <div style={{ fontSize: '0.88rem', color: '#e4e4e7', lineHeight: 1.5 }}>
-          Here is the recommended model for your device, do you want to load the weights from huggingface now?
+        {/* Plain-language download card */}
+        <div style={{ fontSize: '0.88rem', color: '#e4e4e7', lineHeight: 1.55, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+          <p style={{ margin: 0 }}>
+            EasyLM's AI runs right here in your browser. Nothing you type is sent to a server.
+            For that, it needs a one-time download of about{' '}
+            {recModel?.sizeMB ? `${Math.round((recModel.sizeMB / 1024) * 10) / 10} GB` : '2.4 GB'}{' '}
+            from Hugging Face. On Wi-Fi it usually takes a few minutes.
+          </p>
+          <p style={{ margin: 0 }}>
+            The model stays on this device, and after this download EasyLM works offline,
+            even with the internet unplugged.
+          </p>
+          <p style={{ margin: 0, color: '#a1a1aa' }}>
+            Not now is fine. Math, unit conversions, the clock, the Stacks textbooks and
+            Learn courses already work without it. Load the model any time with the Load button.
+          </p>
         </div>
 
         {/* Buttons (Yes / No) */}
@@ -207,7 +220,7 @@ export const HardwareRecommendationModal: React.FC<HardwareRecommendationModalPr
               justifyContent: 'center'
             }}
           >
-            Yes
+            Download and start
           </button>
           <button
             type="button"
@@ -222,7 +235,7 @@ export const HardwareRecommendationModal: React.FC<HardwareRecommendationModalPr
               color: '#a1a1aa'
             }}
           >
-            No
+            Not now
           </button>
         </div>
 

@@ -13,13 +13,13 @@ function assert(condition, message) {
   }
 }
 
-console.log('==> [1/5] Running prebuild compilation (Stacks and Courses)...');
+console.log('==> [1/6] Running prebuild compilation (Stacks and Courses)...');
 execSync('node scripts/compile_stacks.mjs', { cwd: ROOT, stdio: 'inherit' });
 execSync('node scripts/compile_courses.mjs', { cwd: ROOT, stdio: 'inherit' });
 assert(existsSync(resolve(ROOT, 'src/data/stacks_compiled.ts')), 'stacks_compiled.ts must exist');
 assert(existsSync(resolve(ROOT, 'src/data/courses_compiled.ts')), 'courses_compiled.ts must exist');
 
-console.log('==> [2/5] Verifying model selection and cache invariants...');
+console.log('==> [2/6] Verifying model selection and cache invariants...');
 const webllmContent = readFileSync(resolve(ROOT, 'src/engine/webllm.ts'), 'utf8');
 
 // 1. Invariant: DEFAULT_MODEL_ID is the 4B Gemma fine-tune
@@ -84,7 +84,18 @@ assert(cspHeader.includes('https://*.cdn.hf.co'), 'vercel.json CSP must include 
 assert(cspHeader.includes('https://*.aws.cdn.hf.co'), 'vercel.json CSP must include https://*.aws.cdn.hf.co');
 assert(cspHeader.includes('https://cdn-lfs.hf.co'), 'vercel.json CSP must include https://cdn-lfs.hf.co');
 
-console.log('==> [3/5] Verifying device recommendations...');
+// 7. Invariant: the model-load prompt waits for the first AI action (no boot-time download gate)
+const appContent = readFileSync(resolve(ROOT, 'src/App.tsx'), 'utf8');
+assert(
+  appContent.includes('pendingAiPromptRef'),
+  'handleSendMessage must stash the pending prompt behind the model-load decision'
+);
+assert(
+  !appContent.includes("if (showPromptPref !== 'false') {"),
+  'the hardware prompt must not open at boot; it fires on the first AI action'
+);
+
+console.log('==> [3/6] Verifying device recommendations...');
 const deviceContent = readFileSync(resolve(ROOT, 'src/engine/device.ts'), 'utf8');
 assert(
   deviceContent.includes("let recommendedModel = 'easylm-gemma-4-e4b-it';"),
@@ -95,10 +106,34 @@ assert(
   "IOS_RECOMMENDED_MODEL must be 'easylm-gemma-4-e2b-it'"
 );
 
-console.log('==> [4/5] Running kid allowlist tests (tests/kid_models.test.ts)...');
+
+console.log('==> [4/6] Verifying README model table matches the catalog (issues #5/#6)...');
+const readmeContent = readFileSync(resolve(ROOT, 'README.md'), 'utf8');
+const catalogEntries = [...availableModelsBlock.matchAll(/id: '([^']+)',[\s\S]{0,200}?label: '([^']+)',[\s\S]{0,200}?sizeMB: (\d+)/g)]
+  .map(m => ({ id: m[1], label: m[2], sizeMB: Number(m[3]) }));
+assert(catalogEntries.length === expectedModelIds.length, 'catalog entries must parse from AVAILABLE_MODELS');
+const tableSection = readmeContent.split('## Supported Models')[1]?.split('\n## ')[0];
+assert(tableSection, 'README must have a Supported Models section');
+const tableRows = [...tableSection.matchAll(/\| \*\*(.+?)\*\* \| ~([\d.]+) GB \|/g)]
+  .map(m => ({ label: m[1], gb: Number(m[2]) }));
+assert(
+  tableRows.length === catalogEntries.length,
+  `README model table must list exactly the ${catalogEntries.length} catalog models (found ${tableRows.length})`
+);
+for (const entry of catalogEntries) {
+  const row = tableRows.find(r => r.label === entry.label);
+  assert(row, `README model table must include ${entry.label}`);
+  assert(
+    Math.abs(row.gb - entry.sizeMB / 1000) <= 0.15,
+    `README download size for ${entry.label} (~${row.gb} GB) must match catalog sizeMB ${entry.sizeMB}`
+  );
+}
+assert(readmeContent.includes('Llama 3.2 1B Instruct'), 'README must document the kid-profile model (Llama 3.2 1B Instruct)');
+
+console.log('==> [5/6] Running kid allowlist tests (tests/kid_models.test.ts)...');
 execSync('npx vitest run tests/kid_models.test.ts', { cwd: ROOT, stdio: 'inherit' });
 
-console.log('==> [5/5] Verifying TypeScript and Vite production bundle (npm run build)...');
+console.log('==> [6/6] Verifying TypeScript and Vite production bundle (npm run build)...');
 execSync('npm run build', { cwd: ROOT, stdio: 'inherit' });
 
 console.log('\n[PASS] All EasyLM invariants and production build verified green.');

@@ -204,15 +204,6 @@ export function stepDownContextWindow(currentWindow: number): number {
   return 512;
 }
 
-export const ULTRALIGHT_FALLBACK_MODEL = 'easylm-gemma-4-e2b-it';
-
-/**
- * Returns a lightweight model ID for automatic OOM fallback
- */
-export function getOomFallbackModel(_currentModelId?: string): string {
-  return ULTRALIGHT_FALLBACK_MODEL;
-}
-
 /**
  * Sovereign browser restart command.
  * Default: Brave (brave://restart), Zen/Firefox fallback (about:restart), Chromium (chrome://restart).

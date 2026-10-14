@@ -146,8 +146,17 @@ export function tokenize(query: string): string[] {
     .filter(t => t.length > 1 && !STOP.has(t));
 }
 
+/** Drop a leading YAML block so search sees the book, not `title:` / `status:` / `floor_age:`. */
+function withoutFrontMatter(md: string): string {
+  const lines = md.replace(/^\uFEFF/, '').split(/\r?\n/);
+  if (lines[0]?.trim() !== '---') return lines.join('\n');
+  const end = lines.findIndex((line, i) => i > 0 && line.trim() === '---');
+  if (end === -1) return lines.join('\n');
+  return lines.slice(end + 1).join('\n');
+}
+
 export function splitChapters(md: string): StackChapter[] {
-  const lines = md.split(/\r?\n/);
+  const lines = withoutFrontMatter(md).split(/\r?\n/);
   const chapters: StackChapter[] = [];
   let heading = 'General Introduction';
   let buf: string[] = [];

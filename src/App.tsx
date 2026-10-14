@@ -16,6 +16,7 @@ import {
   ProgressStatus,
   AVAILABLE_MODELS,
   findModelOption,
+  modelIsReasoning,
   getOrInitEngine,
   isEngineReady,
   resetWebGPUAndCaches,
@@ -1022,7 +1023,7 @@ export const App: React.FC = () => {
 
       let currentStreamed = '';
       const startTime = Date.now();
-      const isReasoningModel = selectedModel.includes('DeepSeek-R1') || selectedModel.includes('Reasoning');
+      const isReasoningModel = modelIsReasoning(selectedModel);
       const turnBudget = budgetTurn(convoMessages, contextLimit, {
         extendedThinking,
         isReasoning: isReasoningModel

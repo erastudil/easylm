@@ -395,6 +395,16 @@ export function findModelOption(modelId: string): ModelOption | undefined {
   return KID_CATALOG.find(m => m.id === modelId);
 }
 
+/**
+ * Reasoning models get the higher completion budget and a 0.6 temperature floor.
+ * The catalog flag is the source of truth. Old ids that say DeepSeek-R1 or Reasoning
+ * still count when they are not in the catalog.
+ */
+export function modelIsReasoning(modelId: string): boolean {
+  if (findModelOption(modelId)?.isReasoning) return true;
+  return modelId.includes('DeepSeek-R1') || modelId.includes('Reasoning');
+}
+
 // Load-path guard: set by the app whenever the active profile changes.
 let engineKidMode = false;
 export function setEngineKidMode(on: boolean): void {
@@ -1181,7 +1191,7 @@ export async function streamChatCompletion(
   onProgress?: (p: ProgressStatus) => void,
   contextWindowSize?: number
 ): Promise<{ fullText: string; thinking?: string; loopDetected?: boolean; loopReason?: string }> {
-  const isReasoning = modelId.includes('DeepSeek-R1') || modelId.includes('Reasoning');
+  const isReasoning = modelIsReasoning(modelId);
   const effectiveTemperature = isReasoning ? Math.max(0.6, temperature) : temperature;
   const ctx = contextWindowSize || currentContextLimit || 4096;
 

@@ -30,7 +30,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Query the EasyLM Progen Fact Database."
     )
-    default_db = REPO_ROOT / "hnai" / "easylm" / "stacks" / "stacks_facts.db"
+    local_root = Path(__file__).resolve().parents[1]
+    default_db = (local_root / "stacks" / "stacks_facts.db") if (local_root / "stacks").exists() else (REPO_ROOT / "hnai" / "easylm" / "stacks" / "stacks_facts.db")
     parser.add_argument(
         "--db",
         type=str,

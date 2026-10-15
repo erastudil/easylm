@@ -5,6 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
 echo "==> Running EasyLM deterministic verification..."
+python3 scripts/compile_adapter_datasets.py --self-test
 node scripts/verify.mjs
 
 echo "==> All EasyLM verification checks passed green!"

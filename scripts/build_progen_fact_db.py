@@ -296,7 +296,8 @@ def generate_facts_index_markdown(
 
 
 if __name__ == "__main__":
-    stacks_dir = REPO_ROOT / "hnai" / "easylm" / "stacks"
+    local_root = Path(__file__).resolve().parents[1]
+    stacks_dir = (local_root / "stacks") if (local_root / "stacks").exists() else (REPO_ROOT / "hnai" / "easylm" / "stacks")
     db_out = stacks_dir / "stacks_facts.db"
     replicates = [
         REPO_ROOT / "hnai" / "easylm" / "data" / "facts.db",

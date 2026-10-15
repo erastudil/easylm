@@ -374,7 +374,7 @@ In the classic Von Neumann computer architecture, executable program instruction
 ```
 
 - **Aleph One: "Smashing The Stack For Fun And Profit" (1996):**
-  Functions like `strcpy()`, `gets()`, and `sprintf()` read bytes until encountering a null terminator (` `) without checking destination buffer boundaries. Supplying 72 bytes to a 64-byte buffer overwrites the Saved RBP and the **Return Address (RIP)**. When the function executes `RET`, the CPU jumps directly to malicious shellcode injected into the buffer.
+  Functions like `strcpy()`, `gets()`, and `sprintf()` read bytes until encountering a null terminator (`\x00`) without checking destination buffer boundaries. Supplying 72 bytes to a 64-byte buffer overwrites the Saved RBP and the **Return Address (RIP)**. When the function executes `RET`, the CPU jumps directly to malicious shellcode injected into the buffer.
 
 ### 7.2 Return-Oriented Programming (ROP) & Binary Defenses
 

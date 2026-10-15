@@ -24,4 +24,13 @@ describe('stack chapter split', () => {
     expect(plain[0].body).toContain('plain');
     expect(plain[1]).toEqual({ heading: 'One', body: 'body' });
   });
+
+  it('ships textbooks as text, with the C null escape written out', () => {
+    for (const pack of STACKS_PACKS) {
+      expect(pack.textbook.includes('\u0000'), pack.slug).toBe(false);
+      expect(pack.links.includes('\u0000'), pack.slug).toBe(false);
+    }
+    const security = STACKS_PACKS.find(p => p.slug === 'security')!;
+    expect(security.textbook).toContain('null terminator (`\\x00`)');
+  });
 });

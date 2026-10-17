@@ -22,14 +22,26 @@ assert(existsSync(resolve(ROOT, 'src/data/courses_compiled.ts')), 'courses_compi
 console.log('==> [2/6] Verifying model selection and cache invariants...');
 const webllmContent = readFileSync(resolve(ROOT, 'src/engine/webllm.ts'), 'utf8');
 
-// 1. Invariant: DEFAULT_MODEL_ID is the 4B Gemma fine-tune
+// 1. Invariant: DEFAULT_MODEL_ID is the 500MB Bonsai 2 2B universal default
 assert(
-  webllmContent.includes("export const DEFAULT_MODEL_ID = 'easylm-gemma-4-e4b-it';"),
-  "DEFAULT_MODEL_ID must be 'easylm-gemma-4-e4b-it'"
+  webllmContent.includes("export const DEFAULT_MODEL_ID = 'easylm-bonsai-2-2b';"),
+  "DEFAULT_MODEL_ID must be 'easylm-bonsai-2-2b'"
 );
 
-// 2. Invariant: exactly 7 fine-tuned models in AVAILABLE_MODELS
+// 1b. Invariant: zero old-gen Bonsai 1 (1.7B, 8B, welcoma/*Bonsai*) references in webllm.ts
+assert(
+  !webllmContent.includes('welcoma/Bonsai-') &&
+    !webllmContent.includes('welcoma/Ternary-Bonsai-') &&
+    !webllmContent.includes('Bonsai-1.7B') &&
+    !webllmContent.includes('Bonsai-8B'),
+  'webllm.ts must not contain old-gen Bonsai 1 or non-existent welcoma/*Bonsai* URLs'
+);
+
+// 2. Invariant: 10 fine-tuned models in AVAILABLE_MODELS (Bonsai 2 2B, 4B, 9B, 27B + Gemma 4 / Qwen 3 / DeepSeek V4)
 const expectedModelIds = [
+  'easylm-bonsai-2-2b',
+  'easylm-bonsai-2-4b',
+  'easylm-bonsai-2-9b',
   'easylm-gemma-4-e2b-it',
   'easylm-gemma-4-e4b-it',
   'easylm-qwen3-4b-instruct',
@@ -98,12 +110,12 @@ assert(
 console.log('==> [3/6] Verifying device recommendations...');
 const deviceContent = readFileSync(resolve(ROOT, 'src/engine/device.ts'), 'utf8');
 assert(
-  deviceContent.includes("let recommendedModel = 'easylm-gemma-4-e4b-it';"),
-  "detectDeviceUnsafe must recommend 'easylm-gemma-4-e4b-it' as default"
+  deviceContent.includes("let recommendedModel = 'easylm-bonsai-2-2b';"),
+  "detectDeviceUnsafe must recommend 'easylm-bonsai-2-2b' as default"
 );
 assert(
-  deviceContent.includes("export const IOS_RECOMMENDED_MODEL = 'easylm-gemma-4-e2b-it';"),
-  "IOS_RECOMMENDED_MODEL must be 'easylm-gemma-4-e2b-it'"
+  deviceContent.includes("export const IOS_RECOMMENDED_MODEL = 'easylm-bonsai-2-2b';"),
+  "IOS_RECOMMENDED_MODEL must be 'easylm-bonsai-2-2b'"
 );
 
 

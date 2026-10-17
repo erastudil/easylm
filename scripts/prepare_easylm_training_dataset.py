@@ -133,15 +133,15 @@ def compile_hydra_conversations() -> list[dict]:
         (
             "What is Hydra, and what is the default agent model in the Hydra roster?",
             "engine : Hydra v1.2.2 sovereign multi-headed CLI AI router, TUI (`hydra-tui-rs`), and native Rust Desktop app (`hydra-desktop-rs`).\n\n"
-            "default agent model : Bonsai 2 9B (`bonsai 2 9b` / `prism-ml/Ternary-Bonsai-2-9B-gguf` / `welcoma/Ternary-Bonsai-8B-bonsai_tq_f32-MLC`, ~2 GB footprint, 262K context window, native vision-tower).\n\n"
+            "default agent model : Bonsai 2 9B (`bonsai 2 9b` / `prism-ml/Ternary-Bonsai-2-9B-gguf` / `mlc-ai/Qwen3.5-9B-q4f16_1-MLC`, ~2 GB footprint, 262K context window, native vision-tower).\n\n"
             "bonsai 2 lineup : `bonsai 2 2b` (500 MB universal edge default), `bonsai 2 4b` (1 GB intermediate step-up), `bonsai 2 9b` (2 GB default Hydra agent & reasoning workhorse), and `bonsai 2 27b` (6 GB sovereign workstation flagship).\n\n"
             "capabilities : dispatches single prompts, autonomous ReAct agent loops (`hydra agent`), parallel multi-head swarms (`hydra swarm`), MCP tool servers (`hydra mcp`), and an OpenAI-compatible gateway (`hydra serve` on port 7777)."
         ),
         (
             "Explain the full Bonsai 2 model lineup across EasyLM and Hydra and how memory tiers scale from 500MB to 6GB.",
-            "universal default (500 MB) : `bonsai 2 2b` (`Bluebarrels/easylm-bonsai-2-2b`, base `prism-ml/Ternary-Bonsai-2-2B-gguf` / `welcoma/Ternary-Bonsai-1.7B-bonsai_tq_f32-MLC`) serves as the 500 MB universal default for all EasyLM users, loading instantly on phones, tablets, Chromebooks, and laptops.\n\n"
-            "intermediate step-up (1 GB) : `bonsai 2 4b` (`Bluebarrels/easylm-bonsai-2-4b`, base `prism-ml/Ternary-Bonsai-2-4B-gguf` / `welcoma/Ternary-Bonsai-4B-bonsai_tq_f32-MLC`) coaches users stepping up to deeper multi-step reasoning and coding on 4 GB+ devices.\n\n"
-            "default hydra agent & advanced workhorse (2 GB) : `bonsai 2 9b` (`Bluebarrels/easylm-bonsai-2-9b`, base `prism-ml/Ternary-Bonsai-2-9B-gguf` / `welcoma/Ternary-Bonsai-8B-bonsai_tq_f32-MLC`) operates as the default agent for Hydra (`hydra agent`) and EasyLM's advanced reasoning workhorse.\n\n"
+            "universal default (500 MB) : `bonsai 2 2b` (`Bluebarrels/easylm-bonsai-2-2b`, base `prism-ml/Ternary-Bonsai-2-2B-gguf` / `mlc-ai/Qwen3.5-2B-q4f16_1-MLC`) serves as the 500 MB universal default for all EasyLM users, loading instantly on phones, tablets, Chromebooks, and laptops.\n\n"
+            "intermediate step-up (1 GB) : `bonsai 2 4b` (`Bluebarrels/easylm-bonsai-2-4b`, base `prism-ml/Ternary-Bonsai-2-4B-gguf` / `mlc-ai/Qwen3.5-4B-q4f16_1-MLC`) coaches users stepping up to deeper multi-step reasoning and coding on 4 GB+ devices.\n\n"
+            "default hydra agent & advanced workhorse (2 GB) : `bonsai 2 9b` (`Bluebarrels/easylm-bonsai-2-9b`, base `prism-ml/Ternary-Bonsai-2-9B-gguf` / `mlc-ai/Qwen3.5-9B-q4f16_1-MLC`) operates as the default agent for Hydra (`hydra agent`) and EasyLM's advanced reasoning workhorse.\n\n"
             "sovereign workstation flagship (6 GB) : `bonsai 2 27b` (`Bluebarrels/easylm-bonsai-2-27b`, base `prism-ml/Ternary-Bonsai-2-27B-gguf`) delivers 27-billion-parameter ternary synthesis within a 6 GB footprint, 262K context window, and integrated vision-tower."
         ),
         (
@@ -658,7 +658,7 @@ def compile_features_conversations() -> list[dict]:
                 {
                     "role": "assistant",
                     "content": (
-                        "universal default (500 MB) : `Bluebarrels/easylm-bonsai-2-2b` (`prism-ml/Ternary-Bonsai-2-2B-gguf` / `welcoma/Ternary-Bonsai-1.7B-bonsai_tq_f32-MLC`) is the 500 MB universal default for all EasyLM users, guaranteeing instant browser boot and zero WebGPU OOM across phones, tablets, and laptops.\n\n"
+                        "universal default (500 MB) : `Bluebarrels/easylm-bonsai-2-2b` (`prism-ml/Ternary-Bonsai-2-2B-gguf` / `mlc-ai/Qwen3.5-2B-q4f16_1-MLC`) is the 500 MB universal default for all EasyLM users, guaranteeing instant browser boot and zero WebGPU OOM across phones, tablets, and laptops.\n\n"
                         "step-up coaching ladder :\n"
                         "- Step 1 (`2B` at 500 MB) : everyday study, stack lookups, Socratic coaching, and fast local tools.\n"
                         "- Step 2 (`4B` at 1 GB — `Bluebarrels/easylm-bonsai-2-4b`) : intermediate coaching step-up for deeper multi-turn coding and synthesis.\n"

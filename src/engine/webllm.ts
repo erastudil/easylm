@@ -21,37 +21,40 @@ import {
 } from './context_budget';
 
 export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
-  // 0a. EasyLM Bonsai 2 2B (500MB Default — Universal Entry Point)
+  // 0a. EasyLM Bonsai 2 2B (500MB Default — Universal Entry Point, Qwen3.5-2B Hybrid-Attention Backbone)
   {
-    model: 'https://huggingface.co/welcoma/Bonsai-2-2B-bonsai_q1_f32-MLC',
+    model: 'https://huggingface.co/mlc-ai/Qwen3.5-2B-q4f16_1-MLC',
     model_id: 'easylm-bonsai-2-2b',
-    model_lib: 'https://huggingface.co/welcoma/Bonsai-8B-bonsai_q1_f32-MLC/resolve/main/libs/bonsai-8b-bonsai_q1_f32-webgpu.wasm',
+    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen3.5-2B-q4f16_1_cs1k-webgpu.wasm',
     low_resource_required: true,
     vram_required_MB: 500,
     overrides: {
-      context_window_size: 8192
+      context_window_size: 4096,
+      max_history_size: 1
     }
   },
-  // 0b. EasyLM Bonsai 2 4B (1GB Step-Up)
+  // 0b. EasyLM Bonsai 2 4B (1GB Step-Up, Qwen3.5-4B Hybrid-Attention Backbone)
   {
-    model: 'https://huggingface.co/welcoma/Bonsai-2-4B-bonsai_q1_f32-MLC',
+    model: 'https://huggingface.co/mlc-ai/Qwen3.5-4B-q4f16_1-MLC',
     model_id: 'easylm-bonsai-2-4b',
-    model_lib: 'https://huggingface.co/welcoma/Bonsai-8B-bonsai_q1_f32-MLC/resolve/main/libs/bonsai-8b-bonsai_q1_f32-webgpu.wasm',
+    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen3.5-4B-q4f16_1_cs1k-webgpu.wasm',
     low_resource_required: true,
     vram_required_MB: 1000,
     overrides: {
-      context_window_size: 16384
+      context_window_size: 4096,
+      max_history_size: 1
     }
   },
-  // 0c. EasyLM Bonsai 2 9B (2GB Agent & Reasoning Workhorse)
+  // 0c. EasyLM Bonsai 2 9B (2GB Agent & Reasoning Workhorse, Qwen3.5-9B Hybrid-Attention Backbone)
   {
-    model: 'https://huggingface.co/welcoma/Bonsai-2-9B-bonsai_q1_f32-MLC',
+    model: 'https://huggingface.co/mlc-ai/Qwen3.5-9B-q4f16_1-MLC',
     model_id: 'easylm-bonsai-2-9b',
-    model_lib: 'https://huggingface.co/welcoma/Bonsai-8B-bonsai_q1_f32-MLC/resolve/main/libs/bonsai-8b-bonsai_q1_f32-webgpu.wasm',
+    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen3.5-9B-q4f16_1_cs1k-webgpu.wasm',
     low_resource_required: true,
     vram_required_MB: 2000,
     overrides: {
-      context_window_size: 32768
+      context_window_size: 4096,
+      max_history_size: 1
     }
   },
   // 1. EasyLM Gemma 4 E2B Instruct (2GB / Mobile)
@@ -156,9 +159,9 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
 
   // 6. EasyLM Gemma 4 26B A4B MoE (14GB Mixture-of-Experts)
   {
-    model: 'https://huggingface.co/welcoma/Ternary-Bonsai-8B-bonsai_tq_f32-MLC',
+    model: 'https://huggingface.co/mlc-ai/gemma-3-12b-it-q4f16_1-MLC',
     model_id: 'easylm-gemma-4-26b-a4b-it',
-    model_lib: 'https://huggingface.co/welcoma/Bonsai-8B-bonsai_q1_f32-MLC/resolve/main/libs/bonsai-8b-bonsai_q1_f32-webgpu.wasm',
+    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/gemma-2-9b-it-q4f16_1_cs1k-webgpu.wasm',
     low_resource_required: false,
     vram_required_MB: 8800,
     overrides: {
@@ -166,25 +169,27 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
     }
   },
 
-  // 7. EasyLM Bonsai 2 27B (16GB Sovereign Top-End)
+  // 7. EasyLM Bonsai 2 27B (6GB Sovereign Top-End)
   {
-    model: 'https://huggingface.co/welcoma/Bonsai-8B-bonsai_q1_f32-MLC',
+    model: 'https://huggingface.co/mlc-ai/Qwen3.5-9B-q4f16_1-MLC',
     model_id: 'easylm-bonsai-2-27b',
-    model_lib: 'https://huggingface.co/welcoma/Bonsai-8B-bonsai_q1_f32-MLC/resolve/main/libs/bonsai-8b-bonsai_q1_f32-webgpu.wasm',
+    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen3.5-9B-q4f16_1_cs1k-webgpu.wasm',
     low_resource_required: false,
     vram_required_MB: 6800,
     overrides: {
-      context_window_size: 32768
+      context_window_size: 4096,
+      max_history_size: 1
     }
   },
   {
-    model: 'https://huggingface.co/welcoma/Bonsai-8B-bonsai_q1_f32-MLC',
+    model: 'https://huggingface.co/mlc-ai/Qwen3.5-9B-q4f16_1-MLC',
     model_id: 'Bonsai-2-27B-MLC',
-    model_lib: 'https://huggingface.co/welcoma/Bonsai-8B-bonsai_q1_f32-MLC/resolve/main/libs/bonsai-8b-bonsai_q1_f32-webgpu.wasm',
+    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen3.5-9B-q4f16_1_cs1k-webgpu.wasm',
     low_resource_required: false,
     vram_required_MB: 6800,
     overrides: {
-      context_window_size: 32768
+      context_window_size: 4096,
+      max_history_size: 1
     }
   },
 
@@ -229,8 +234,8 @@ export const AVAILABLE_MODELS: ModelOption[] = [
   // Bonsai 2 Ternary Lineup (500MB Default -> 1GB -> 2GB -> 6GB Flagship)
   {
     id: 'easylm-bonsai-2-2b',
-    sizeMB: 480,
     label: 'Bonsai 2 2B (500MB Default)',
+    sizeMB: 480,
     vramEst: vramLabel('easylm-bonsai-2-2b'),
     vramTier: '4gb',
     isDefault: true,
@@ -243,8 +248,8 @@ export const AVAILABLE_MODELS: ModelOption[] = [
   },
   {
     id: 'easylm-bonsai-2-4b',
-    sizeMB: 960,
     label: 'Bonsai 2 4B (1GB Step-Up)',
+    sizeMB: 960,
     vramEst: vramLabel('easylm-bonsai-2-4b'),
     vramTier: '4gb',
     isReasoning: true,
@@ -256,8 +261,8 @@ export const AVAILABLE_MODELS: ModelOption[] = [
   },
   {
     id: 'easylm-bonsai-2-9b',
-    sizeMB: 1950,
     label: 'Bonsai 2 9B (2GB Agent + Reasoning)',
+    sizeMB: 1950,
     vramEst: vramLabel('easylm-bonsai-2-9b'),
     vramTier: '8gb',
     isReasoning: true,
@@ -651,7 +656,6 @@ export async function unloadActiveEngine(): Promise<void> {
   clearGpuFence();
 }
 
-// Legacy reference: export const DEFAULT_MODEL_ID = 'easylm-gemma-4-e4b-it';
 export const DEFAULT_MODEL_ID = 'easylm-bonsai-2-2b';
 
 export interface ProgressStatus {
@@ -1090,15 +1094,25 @@ export async function getOrInitEngine(
     throw new Error('Unable to find a compatible GPU. Browser GPU worker is down.');
   }
 
-  const targetContext = contextWindowSize || currentContextLimit;
+  const modelRecord = EASYLM_APP_CONFIG.model_list.find(m => m.model_id === modelId);
+  const recOverrides = modelRecord?.overrides as { context_window_size?: number; max_history_size?: number } | undefined;
+  const rawTargetContext = contextWindowSize || currentContextLimit;
+  const targetContext =
+    recOverrides?.max_history_size !== undefined && recOverrides?.context_window_size
+      ? Math.min(rawTargetContext, recOverrides.context_window_size)
+      : rawTargetContext;
+  const chatOpts: Record<string, number> = {
+    context_window_size: targetContext,
+    ...(recOverrides?.max_history_size !== undefined ? { max_history_size: recOverrides.max_history_size } : {})
+  };
 
   // Verify whether active engine is truly alive and matches target model
   if (activeEngine && currentLoadedModel === modelId) {
     if (isEngineAlive(activeEngine, modelId)) {
-      if (contextWindowSize && contextWindowSize !== currentContextLimit) {
+      if (contextWindowSize && targetContext !== currentContextLimit) {
         currentContextLimit = targetContext;
         try {
-          await activeEngine.reload(modelId, { context_window_size: targetContext });
+          await activeEngine.reload(modelId, chatOpts);
           if (!isEngineAlive(activeEngine, modelId)) {
             throw new Error('Engine reload left pipeline uninitialized');
           }
@@ -1154,17 +1168,17 @@ export async function getOrInitEngine(
               }
             }
           },
-          {
-            context_window_size: targetContext
-          }
+          chatOpts
         );
       } catch (firstErr: any) {
         const firstMsg = String(firstErr?.message || firstErr || '');
+        const lowerFirstMsg = firstMsg.toLowerCase();
         const isCacheOrNetworkError =
           firstMsg.includes('Cache') ||
-          firstMsg.includes('network error') ||
+          lowerFirstMsg.includes('network') ||
+          firstMsg.includes('Failed to store') ||
           firstMsg.includes('Failed to execute \'add\' on \'Cache\'') ||
-          firstMsg.includes('fetch');
+          lowerFirstMsg.includes('fetch');
 
         if (isCacheOrNetworkError) {
           console.warn('[WebLLM] Cache or network failure detected during model load. Purging model cache and retrying with IndexedDB backend...', firstErr);
@@ -1190,9 +1204,7 @@ export async function getOrInitEngine(
                 }
               }
             },
-            {
-              context_window_size: targetContext
-            }
+            chatOpts
           );
         } else {
           throw firstErr;

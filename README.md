@@ -30,12 +30,15 @@ EasyLM dynamically detects your hardware tier and recommends the optimal model f
 
 | Model | Download | VRAM Footprint | Tier & Sweet Spot | Upstream License |
 |---|---|---|---|---|
-| **Gemma 4 E2B Instruct** | ~1.2 GB | ~1.7 GB | **Ultralight (4GB tier).** Smallest general model. Mobile and low-spec runtimes. | Apache-2.0 |
-| **Gemma 4 E4B Thinking** | ~2.4 GB | ~3.2 GB | **Default for all tiers.** Recommended workhorse. Balanced reasoning and fast throughput. | Apache-2.0 |
+| **Bonsai 2 2B (500MB Default)** | ~0.5 GB | ~0.5 GB | **Universal default for all users.** 500MB 1.58-bit ternary footprint, 262k context, instant load across phones, tablets, and laptops. | Apache-2.0 |
+| **Bonsai 2 4B (1GB Step-Up)** | ~1.0 GB | ~1.0 GB | **1GB step-up.** Deeper multi-step Socratic reasoning, math derivations, and 262k context. | Apache-2.0 |
+| **Bonsai 2 9B (2GB Agent + Reasoning)** | ~2.0 GB | ~2.0 GB | **2GB agent workhorse.** Default agent for Hydra and advanced EasyLM coding, tool loops, and formal stack proofs. | Apache-2.0 |
+| **Gemma 4 E2B Instruct** | ~1.2 GB | ~1.7 GB | **Ultralight (4GB tier).** Compact multimodal model for mobile and low-spec runtimes. | Apache-2.0 |
+| **Gemma 4 E4B Thinking** | ~2.4 GB | ~3.2 GB | **4GB tier.** Multimodal dense reasoning foundation with native Thinking Mode. | Apache-2.0 |
 | **Qwen 3 4B Instruct** | ~2.5 GB | ~3.4 GB | **8GB tier.** Structured output and Hands tool dispatch. | Apache-2.0 |
 | **DeepSeek V4 Distill 9B** | ~4.8 GB | ~5.1 GB | **8GB-16GB tier.** Heavyweight chain-of-thought reasoning for deeper analytical tasks. | See upstream repository |
 | **Bonsai 2 27B (6GB Sovereign Flagship)** | ~6.0 GB | ~6.8 GB | **16GB tier.** Extreme ternary quantization brings 27B reasoning to consumer GPUs. | Apache-2.0 |
-| **Gemma 4 12B Thinking** | ~7.1 GB | ~8.2 GB | **16GB tier.** High-caliber long-context intelligence. | Apache-2.0 |
+| **Gemma 4 12B Thinking** | ~7.1 GB | ~8.2 GB | **16GB tier.** High-caliber long-context multimodal intelligence. | Apache-2.0 |
 | **Gemma 4 26B A4B MoE** | ~8.8 GB | ~8.8 GB | **16GB tier.** Mixture-of-experts synthesis and code. | Apache-2.0 |
 
 Kid profiles do not use this catalog: they run **Llama 3.2 1B Instruct** (~0.7 GB download) and nothing else - the one model with Kid Safe A/B/C evidence on file. Fine-tuned models and adapters stay on adult profiles until they pass the same checks.

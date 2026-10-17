@@ -17,7 +17,6 @@ export function isMobileDevice(nav: Partial<Navigator> | undefined = typeof navi
 
 /** iOS Safari ends a tab somewhere around 1.5-3 GB; models above this budget are kept off iPhone/iPad. */
 export const IOS_MODEL_BUDGET_MB = 2048;
-// Legacy reference: export const IOS_RECOMMENDED_MODEL = 'easylm-gemma-4-e2b-it';
 export const IOS_RECOMMENDED_MODEL = 'easylm-bonsai-2-2b';
 export const IOS_FALLBACK_MODEL = 'easylm-bonsai-2-2b';
 export const IOS_CONTEXT_LIMIT = 4096;
@@ -228,7 +227,6 @@ async function detectDeviceUnsafe(): Promise<DeviceInfo> {
 
   // Universal starting point across all adult profiles: Bonsai 2 2B (500MB).
   // Users start fast on 2B and are coached in the UI to step up to 4B (1GB), 9B (2GB), or 27B (6GB).
-  // Legacy reference: let recommendedModel = 'easylm-gemma-4-e4b-it';
   let recommendedModel = 'easylm-bonsai-2-2b';
   if (hardwareTier === 'mobile') {
     recommendedModel = fitsIOSBudget(IOS_RECOMMENDED_MODEL) ? IOS_RECOMMENDED_MODEL : IOS_FALLBACK_MODEL;

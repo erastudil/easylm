@@ -121,8 +121,8 @@ export const OPEN_WEIGHTS_PROVIDERS: OpenWeightsCredit[] = [
     provider: "PrismML",
     organization: "PrismML",
     leadHumans: "PrismML Research Team",
-    models: ["Bonsai 2 (27B Ternary)", "Ternary Bonsai 2"],
-    description: "Pioneered extreme ternary quantization (1.72-bit weights) and Hadamard-basis low-bit compression, enabling 27B parameter reasoning models to run within 6–8GB consumer VRAM.",
+    models: ["Ternary Bonsai 2 (2B, 4B, 9B, 27B)"],
+    description: "Pioneered extreme ternary quantization (1.58-bit weights with blockwise Walsh-Hadamard transform), enabling Bonsai 2 2B in 500MB, 4B in 1GB, 9B in 2GB, and 27B in 6GB consumer VRAM with 262K context.",
     license: "Apache-2.0",
     url: "https://prismml.com"
   }

@@ -21,6 +21,39 @@ import {
 } from './context_budget';
 
 export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
+  // 0a. EasyLM Bonsai 2 2B (500MB Default — Universal Entry Point)
+  {
+    model: 'https://huggingface.co/welcoma/Bonsai-2-2B-bonsai_q1_f32-MLC',
+    model_id: 'easylm-bonsai-2-2b',
+    model_lib: 'https://huggingface.co/welcoma/Bonsai-8B-bonsai_q1_f32-MLC/resolve/main/libs/bonsai-8b-bonsai_q1_f32-webgpu.wasm',
+    low_resource_required: true,
+    vram_required_MB: 500,
+    overrides: {
+      context_window_size: 8192
+    }
+  },
+  // 0b. EasyLM Bonsai 2 4B (1GB Step-Up)
+  {
+    model: 'https://huggingface.co/welcoma/Bonsai-2-4B-bonsai_q1_f32-MLC',
+    model_id: 'easylm-bonsai-2-4b',
+    model_lib: 'https://huggingface.co/welcoma/Bonsai-8B-bonsai_q1_f32-MLC/resolve/main/libs/bonsai-8b-bonsai_q1_f32-webgpu.wasm',
+    low_resource_required: true,
+    vram_required_MB: 1000,
+    overrides: {
+      context_window_size: 16384
+    }
+  },
+  // 0c. EasyLM Bonsai 2 9B (2GB Agent & Reasoning Workhorse)
+  {
+    model: 'https://huggingface.co/welcoma/Bonsai-2-9B-bonsai_q1_f32-MLC',
+    model_id: 'easylm-bonsai-2-9b',
+    model_lib: 'https://huggingface.co/welcoma/Bonsai-8B-bonsai_q1_f32-MLC/resolve/main/libs/bonsai-8b-bonsai_q1_f32-webgpu.wasm',
+    low_resource_required: true,
+    vram_required_MB: 2000,
+    overrides: {
+      context_window_size: 32768
+    }
+  },
   // 1. EasyLM Gemma 4 E2B Instruct (2GB / Mobile)
   {
     model: 'https://huggingface.co/welcoma/gemma-4-E2B-it-q4f16_1-MLC',
@@ -193,7 +226,50 @@ function vramLabel(modelId: string): string {
 }
 
 export const AVAILABLE_MODELS: ModelOption[] = [
-  // 4GB Tier (Ultralight / Mobile / Laptops with iGPU)
+  // Bonsai 2 Ternary Lineup (500MB Default -> 1GB -> 2GB -> 6GB Flagship)
+  {
+    id: 'easylm-bonsai-2-2b',
+    sizeMB: 480,
+    label: 'Bonsai 2 2B (500MB Default)',
+    vramEst: vramLabel('easylm-bonsai-2-2b'),
+    vramTier: '4gb',
+    isDefault: true,
+    isRecommended: true,
+    isFineTuned: true,
+    baseModelId: 'prism-ml/Ternary-Bonsai-2-2B',
+    adapterRepo: 'Bluebarrels/easylm-bonsai-2-2b',
+    adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-bonsai-2-2b',
+    description: 'EasyLM universal default (500MB). Instant download, 256k context window, ternary 1.58-bit weights fine-tuned on the 32 sovereign academic stacks, AtMem, and Hands tool execution. Works on every phone, tablet, and laptop.'
+  },
+  {
+    id: 'easylm-bonsai-2-4b',
+    sizeMB: 960,
+    label: 'Bonsai 2 4B (1GB Step-Up)',
+    vramEst: vramLabel('easylm-bonsai-2-4b'),
+    vramTier: '4gb',
+    isReasoning: true,
+    isFineTuned: true,
+    baseModelId: 'prism-ml/Ternary-Bonsai-2-4B',
+    adapterRepo: 'Bluebarrels/easylm-bonsai-2-4b',
+    adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-bonsai-2-4b',
+    description: 'EasyLM 1GB step-up model. Deeper multi-step reasoning, stronger math derivations, and 256k context in a 1GB ternary footprint. Ideal next step once you outgrow the 2B default.'
+  },
+  {
+    id: 'easylm-bonsai-2-9b',
+    sizeMB: 1950,
+    label: 'Bonsai 2 9B (2GB Agent + Reasoning)',
+    vramEst: vramLabel('easylm-bonsai-2-9b'),
+    vramTier: '8gb',
+    isReasoning: true,
+    isCoding: true,
+    isFineTuned: true,
+    baseModelId: 'prism-ml/Ternary-Bonsai-2-9B',
+    adapterRepo: 'Bluebarrels/easylm-bonsai-2-9b',
+    adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-bonsai-2-9b',
+    description: 'EasyLM & Hydra 9B agent powerhouse in only 2GB RAM. Delivers 9B-class coding, agentic tool loops, and formal stack proofs on standard laptops.'
+  },
+
+  // 4GB Tier (Ultralight / Mobile / Laptops with iGPU — Multimodal Gemma 4)
   {
     id: 'easylm-gemma-4-e2b-it',
     label: 'Gemma 4 E2B Instruct',
@@ -204,7 +280,7 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     baseModelId: 'google/gemma-4-E2B-it',
     adapterRepo: 'Bluebarrels/easylm-gemma-4-e2b-it',
     adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-gemma-4-e2b-it',
-    description: 'EasyLM ultralight foundation fine-tuned on the 32 sovereign academic stacks, AtMem atomic memory, and Progen syntax for mobile and low-spec runtimes.'
+    description: 'EasyLM multimodal ultralight foundation fine-tuned on the 32 sovereign academic stacks, AtMem atomic memory, and Progen syntax for mobile and low-spec runtimes.'
   },
   {
     id: 'easylm-gemma-4-e4b-it',
@@ -212,14 +288,12 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     sizeMB: 2400,
     vramEst: vramLabel('easylm-gemma-4-e4b-it'),
     vramTier: '4gb',
-    isDefault: true,
-    isRecommended: true,
     isReasoning: true,
     isFineTuned: true,
     baseModelId: 'google/gemma-4-E4B-it',
     adapterRepo: 'Bluebarrels/easylm-gemma-4-e4b-it',
     adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-gemma-4-e4b-it',
-    description: 'EasyLM dense reasoning foundation with native Thinking Mode fine-tuned on academic stacks, mathematical derivations, and Hands tool execution.'
+    description: 'EasyLM multimodal dense reasoning foundation with native Thinking Mode fine-tuned on academic stacks, mathematical derivations, and Hands tool execution.'
   },
 
   // 8GB Tier (Standard / Laptops / Balanced Workhorse & Heavyweight Reasoning)
@@ -261,7 +335,7 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     baseModelId: 'google/gemma-4-12B-it',
     adapterRepo: 'Bluebarrels/easylm-gemma-4-12b-it',
     adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-gemma-4-12b-it',
-    description: 'EasyLM deep architecture foundation fine-tuned on systems engineering, long-context multi-document reasoning, and epistemic resolution.'
+    description: 'EasyLM multimodal deep architecture foundation fine-tuned on systems engineering, long-context multi-document reasoning, and epistemic resolution.'
   },
   {
     id: 'easylm-gemma-4-26b-a4b-it',
@@ -274,20 +348,21 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     baseModelId: 'google/diffusiongemma-26B-A4B-it',
     adapterRepo: 'Bluebarrels/easylm-gemma-4-26b-a4b-it',
     adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-gemma-4-26b-a4b-it',
-    description: 'EasyLM MoE foundation featuring discrete text diffusion fine-tuned on rapid program synthesis, abstract syntax tree manipulation, and AST transforms.'
+    description: 'EasyLM multimodal MoE foundation featuring discrete text diffusion fine-tuned on rapid program synthesis, abstract syntax tree manipulation, and AST transforms.'
   },
   {
     id: 'easylm-bonsai-2-27b',
-    label: 'Bonsai 2 27B',
+    label: 'Bonsai 2 27B (6GB Sovereign Flagship)',
     sizeMB: 5950,
     vramEst: vramLabel('easylm-bonsai-2-27b'),
     vramTier: '16gb',
     isReasoning: true,
+    isCoding: true,
     isFineTuned: true,
     baseModelId: 'prism-ml/Ternary-Bonsai-2-27B',
     adapterRepo: 'Bluebarrels/easylm-bonsai-2-27b',
     adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-bonsai-2-27b',
-    description: 'EasyLM top-end sovereign synthesis model fine-tuned on the full academic corpus, Alice cognitive mind integration, and autonomous agent loops.'
+    description: 'EasyLM top-end 27B sovereign synthesis model in a 6GB ternary footprint, fine-tuned on the full academic corpus, Alice cognitive mind integration, and autonomous agent loops.'
   }
 ];
 
@@ -433,9 +508,15 @@ export function crashStepDownModel(
   interruptedId: string,
   opts: { maxMB?: number; kidMode?: boolean } = {}
 ): string | undefined {
-  return opts.kidMode
-    ? nextSmallerModel(interruptedId, opts.maxMB, undefined, modelsForProfile(true))
-    : nextSmallerModel(interruptedId, opts.maxMB);
+  if (opts.kidMode) {
+    if (!isModelAllowedForKid(interruptedId)) {
+      const mb = getModelVramMB(KID_MODE_MODEL_ID);
+      if (opts.maxMB !== undefined && mb !== undefined && mb > opts.maxMB) return undefined;
+      return KID_MODE_MODEL_ID;
+    }
+    return nextSmallerModel(interruptedId, opts.maxMB, undefined, modelsForProfile(true));
+  }
+  return nextSmallerModel(interruptedId, opts.maxMB);
 }
 
 /** Hard ceiling for an automatic OOM model swap on iOS: under 1 GB on disk, or no swap (issue #24). */
@@ -459,7 +540,7 @@ export function getOomFallbackModel(
   currentModelId?: string,
   opts: OomFallbackOptions = {}
 ): string | undefined {
-  if (opts.kidMode) {
+  if (opts.kidMode || currentModelId === KID_MODE_MODEL_ID) {
     return currentModelId === KID_MODE_MODEL_ID ? undefined : KID_MODE_MODEL_ID;
   }
   if (opts.ios) {
@@ -468,10 +549,9 @@ export function getOomFallbackModel(
     ).sort((a, b) => b.sizeMB - a.sizeMB)[0];
     return under?.id;
   }
-  if (!currentModelId || !findModelOption(currentModelId)) return 'easylm-gemma-4-e2b-it';
-  if (currentModelId === 'easylm-gemma-4-e2b-it') {
-    // Smallest general model already: the kid-record Llama is the only smaller legal step.
-    return KID_MODE_MODEL_ID;
+  if (!currentModelId || !findModelOption(currentModelId)) return 'easylm-bonsai-2-2b';
+  if (currentModelId === 'easylm-bonsai-2-2b') {
+    return undefined;
   }
   return nextSmallerModel(currentModelId, undefined, undefined, KID_CATALOG);
 }
@@ -571,7 +651,8 @@ export async function unloadActiveEngine(): Promise<void> {
   clearGpuFence();
 }
 
-export const DEFAULT_MODEL_ID = 'easylm-gemma-4-e4b-it';
+// Legacy reference: export const DEFAULT_MODEL_ID = 'easylm-gemma-4-e4b-it';
+export const DEFAULT_MODEL_ID = 'easylm-bonsai-2-2b';
 
 export interface ProgressStatus {
   text: string;

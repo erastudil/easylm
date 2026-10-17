@@ -127,7 +127,164 @@ export interface AdapterMetadata {
   configUrl: string;
 }
 
+const BONSAI_TARGET_MODULES = ['q_proj', 'k_proj', 'v_proj', 'o_proj', 'gate_proj', 'up_proj', 'down_proj'];
+
+function makeBonsaiAdapter(
+  id: string,
+  name: string,
+  baseModel: string,
+  description: string
+): AdapterMetadata {
+  const repoId = `Bluebarrels/${id}`;
+  return {
+    id,
+    name,
+    repoId,
+    baseModel,
+    targetArchitecture: 'bonsai2',
+    description,
+    rank: 16,
+    alpha: 32,
+    targetModules: BONSAI_TARGET_MODULES,
+    hfUrl: `https://huggingface.co/${repoId}`,
+    weightsUrl: `https://huggingface.co/${repoId}/resolve/main/adapter_model.safetensors`,
+    configUrl: `https://huggingface.co/${repoId}/raw/main/adapter_config.json`
+  };
+}
+
 export const OFFICIAL_ADAPTERS: Record<string, AdapterMetadata> = {
+  'easylm-bonsai-2-2b': makeBonsaiAdapter(
+    'easylm-bonsai-2-2b',
+    'EasyLM Bonsai 2 2B Unified (32 Stacks + AtMem + Progen)',
+    'prism-ml/Ternary-Bonsai-2-2B',
+    'Unified 500MB default adapter specializing Ternary Bonsai 2 2B on the 32 sovereign academic stacks, AtMem atomic memory, and Progen syntax.'
+  ),
+  'easylm-bonsai-2-4b': makeBonsaiAdapter(
+    'easylm-bonsai-2-4b',
+    'EasyLM Bonsai 2 4B Unified (32 Stacks + AtMem + Progen)',
+    'prism-ml/Ternary-Bonsai-2-4B',
+    'Unified 1GB step-up adapter specializing Ternary Bonsai 2 4B on academic stacks, mathematical derivations, and AtMem.'
+  ),
+  'easylm-bonsai-2-9b': makeBonsaiAdapter(
+    'easylm-bonsai-2-9b',
+    'EasyLM Bonsai 2 9B Unified (32 Stacks + AtMem + Progen)',
+    'prism-ml/Ternary-Bonsai-2-9B',
+    'Unified 2GB workhorse adapter specializing Ternary Bonsai 2 9B on formal stack proofs, coding synthesis, and autonomous tool execution.'
+  ),
+  'easylm-bonsai-2-27b': makeBonsaiAdapter(
+    'easylm-bonsai-2-27b',
+    'EasyLM Bonsai 2 27B Unified (Sovereign Flagship)',
+    'prism-ml/Ternary-Bonsai-2-27B',
+    'Unified 6GB flagship adapter specializing Ternary Bonsai 2 27B on the full academic corpus, Alice cognitive mind integration, and deep reasoning.'
+  ),
+  'easylm-hands-bonsai-2-2b': makeBonsaiAdapter(
+    'easylm-hands-bonsai-2-2b',
+    'EasyLM Hands (Bonsai 2 2B)',
+    'prism-ml/Ternary-Bonsai-2-2B',
+    'Specialist adapter for structured Hands tool invocation, JSON parameter binding, and deterministic local tool dispatch on Bonsai 2 2B.'
+  ),
+  'easylm-hands-bonsai-2-4b': makeBonsaiAdapter(
+    'easylm-hands-bonsai-2-4b',
+    'EasyLM Hands (Bonsai 2 4B)',
+    'prism-ml/Ternary-Bonsai-2-4B',
+    'Specialist adapter for structured Hands tool invocation, JSON parameter binding, and deterministic local tool dispatch on Bonsai 2 4B.'
+  ),
+  'easylm-hands-bonsai-2-9b': makeBonsaiAdapter(
+    'easylm-hands-bonsai-2-9b',
+    'EasyLM Hands (Bonsai 2 9B)',
+    'prism-ml/Ternary-Bonsai-2-9B',
+    'Specialist adapter for multi-step Hands tool orchestration and deterministic parameter binding on Bonsai 2 9B.'
+  ),
+  'easylm-hands-bonsai-2-27b': makeBonsaiAdapter(
+    'easylm-hands-bonsai-2-27b',
+    'EasyLM Hands (Bonsai 2 27B)',
+    'prism-ml/Ternary-Bonsai-2-27B',
+    'Flagship specialist adapter for complex multi-tool chains and schema-verified Hands execution on Bonsai 2 27B.'
+  ),
+  'easylm-reasoning-bonsai-2-4b': makeBonsaiAdapter(
+    'easylm-reasoning-bonsai-2-4b',
+    'EasyLM Reasoning (Bonsai 2 4B)',
+    'prism-ml/Ternary-Bonsai-2-4B',
+    'Specialist adapter for formal chain-of-thought derivations, mathematical proofs, and ZCABS stability invariants on Bonsai 2 4B.'
+  ),
+  'easylm-reasoning-bonsai-2-9b': makeBonsaiAdapter(
+    'easylm-reasoning-bonsai-2-9b',
+    'EasyLM Reasoning (Bonsai 2 9B)',
+    'prism-ml/Ternary-Bonsai-2-9B',
+    'Specialist adapter for deep analytical reasoning, scientific derivations, and formal verification on Bonsai 2 9B.'
+  ),
+  'easylm-reasoning-bonsai-2-27b': makeBonsaiAdapter(
+    'easylm-reasoning-bonsai-2-27b',
+    'EasyLM Reasoning (Bonsai 2 27B)',
+    'prism-ml/Ternary-Bonsai-2-27B',
+    'Flagship specialist adapter for frontier-grade theorem proving, systems dialectics, and multi-document synthesis on Bonsai 2 27B.'
+  ),
+  'easylm-coding-bonsai-2-4b': makeBonsaiAdapter(
+    'easylm-coding-bonsai-2-4b',
+    'EasyLM Coding (Bonsai 2 4B)',
+    'prism-ml/Ternary-Bonsai-2-4B',
+    'Specialist adapter for Rust, TypeScript, and Python program synthesis, AST refactoring, and test generation on Bonsai 2 4B.'
+  ),
+  'easylm-coding-bonsai-2-9b': makeBonsaiAdapter(
+    'easylm-coding-bonsai-2-9b',
+    'EasyLM Coding (Bonsai 2 9B)',
+    'prism-ml/Ternary-Bonsai-2-9B',
+    'Specialist adapter for multi-file software architecture, deterministic verification gates, and systems programming on Bonsai 2 9B.'
+  ),
+  'easylm-coding-bonsai-2-27b': makeBonsaiAdapter(
+    'easylm-coding-bonsai-2-27b',
+    'EasyLM Coding (Bonsai 2 27B)',
+    'prism-ml/Ternary-Bonsai-2-27B',
+    'Flagship specialist adapter for full-stack compiler, kernel, and distributed systems engineering on Bonsai 2 27B.'
+  ),
+  'easylm-hydra-bonsai-2-9b': makeBonsaiAdapter(
+    'easylm-hydra-bonsai-2-9b',
+    'Hydra Agent (Bonsai 2 9B)',
+    'prism-ml/Ternary-Bonsai-2-9B',
+    'Dedicated Hydra CLI & Desktop autonomous ReAct agent adapter for Bonsai 2 9B with 256k context routing and Progen compliance.'
+  ),
+  'easylm-personalities-bonsai-2-2b': makeBonsaiAdapter(
+    'easylm-personalities-bonsai-2-2b',
+    'EasyLM Personalities & Council (Bonsai 2 2B)',
+    'prism-ml/Ternary-Bonsai-2-2B',
+    'Specialist adapter for the 151 Council of Kami voices, Alice Carrollian Socratic Antithesis, and ether-fishing on Bonsai 2 2B.'
+  ),
+  'easylm-personalities-bonsai-2-4b': makeBonsaiAdapter(
+    'easylm-personalities-bonsai-2-4b',
+    'EasyLM Personalities & Council (Bonsai 2 4B)',
+    'prism-ml/Ternary-Bonsai-2-4B',
+    'Specialist adapter for the 151 Council of Kami voices, Alice Carrollian Socratic Antithesis, and ether-fishing on Bonsai 2 4B.'
+  ),
+  'easylm-personalities-bonsai-2-9b': makeBonsaiAdapter(
+    'easylm-personalities-bonsai-2-9b',
+    'EasyLM Personalities & Council (Bonsai 2 9B)',
+    'prism-ml/Ternary-Bonsai-2-9B',
+    'Specialist adapter for the 151 Council of Kami voices, Alice Carrollian Socratic Antithesis, and ether-fishing on Bonsai 2 9B.'
+  ),
+  'easylm-security-bonsai-2-2b': makeBonsaiAdapter(
+    'easylm-security-bonsai-2-2b',
+    'EasyLM Security & Sovereignty (Bonsai 2 2B)',
+    'prism-ml/Ternary-Bonsai-2-2B',
+    'Specialist adapter for sovereign local privacy, zero-telemetry sandboxing, and defensive posture on Bonsai 2 2B.'
+  ),
+  'easylm-security-bonsai-2-9b': makeBonsaiAdapter(
+    'easylm-security-bonsai-2-9b',
+    'EasyLM Security & Sovereignty (Bonsai 2 9B)',
+    'prism-ml/Ternary-Bonsai-2-9B',
+    'Specialist adapter for sovereign local privacy, zero-telemetry sandboxing, and defensive posture on Bonsai 2 9B.'
+  ),
+  'easylm-kidsafety-bonsai-2-2b': makeBonsaiAdapter(
+    'easylm-kidsafety-bonsai-2-2b',
+    'EasyLM Kid Safety & Homework Coach (Bonsai 2 2B)',
+    'prism-ml/Ternary-Bonsai-2-2B',
+    'Specialist adapter for age-gated kid safety, gentle Socratic homework coaching, and parent boundary enforcement on Bonsai 2 2B.'
+  ),
+  'easylm-kidsafety-bonsai-2-9b': makeBonsaiAdapter(
+    'easylm-kidsafety-bonsai-2-9b',
+    'EasyLM Kid Safety & Homework Coach (Bonsai 2 9B)',
+    'prism-ml/Ternary-Bonsai-2-9B',
+    'Specialist adapter for age-gated kid safety, gentle Socratic homework coaching, and parent boundary enforcement on Bonsai 2 9B.'
+  ),
   'easylm-hands-qwen2.5-0.5b': {
     id: 'easylm-hands-qwen2.5-0.5b',
     name: 'EasyLM Hands (Qwen2.5-0.5B-Instruct)',

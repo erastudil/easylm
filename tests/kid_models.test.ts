@@ -6,6 +6,7 @@ import {
   AVAILABLE_MODELS,
   ALLOWED_MODEL_IDS,
   CURATED_MODEL_IDS,
+  DEFAULT_MODEL_ID,
   EASYLM_APP_CONFIG,
   KID_ALLOWED_MODEL_IDS,
   KID_ALLOWED_MODEL_ID_LIST,
@@ -23,6 +24,7 @@ import {
   setEngineKidMode
 } from '../src/engine/webllm';
 import { detectDevice, deviceInfoForProfile, DeviceInfo, IOS_RECOMMENDED_MODEL } from '../src/engine/device';
+import { OFFICIAL_ADAPTERS } from '../src/services/lora_loader';
 import { ModelModal } from '../src/components/ModelModal';
 import {
   addProfileAtom,
@@ -162,7 +164,7 @@ describe('kid custom Hugging Face models', () => {
   });
 });
 
-describe('reasoning models', () => {
+describe('reasoning models and Bonsai 2 lineup', () => {
   it('follows the catalog flag, and still recognizes the old id strings', () => {
     for (const m of AVAILABLE_MODELS) {
       expect(modelIsReasoning(m.id), m.id).toBe(!!m.isReasoning);
@@ -171,6 +173,47 @@ describe('reasoning models', () => {
     expect(modelIsReasoning('easylm-qwen3-4b-instruct')).toBe(false);
     expect(modelIsReasoning('DeepSeek-R1-Distill-Qwen-7B-q4f16_1-MLC')).toBe(true);
     expect(modelIsReasoning(LLAMA_1B)).toBe(false);
+  });
+
+  it('wires Bonsai 2 2B as the universal adult default and registers all 15 Bonsai 2 adapters', () => {
+    expect(DEFAULT_MODEL_ID).toBe('easylm-bonsai-2-2b');
+    expect(IOS_RECOMMENDED_MODEL).toBe('easylm-bonsai-2-2b');
+    expect(AVAILABLE_MODELS[0].id).toBe('easylm-bonsai-2-2b');
+    expect(AVAILABLE_MODELS[0].isDefault).toBe(true);
+    expect(AVAILABLE_MODELS[0].isRecommended).toBe(true);
+    expect(AVAILABLE_MODELS.map(m => m.id)).toEqual(
+      expect.arrayContaining([
+        'easylm-bonsai-2-2b',
+        'easylm-bonsai-2-4b',
+        'easylm-bonsai-2-9b',
+        'easylm-bonsai-2-27b',
+        'easylm-gemma-4-e2b-it',
+        'easylm-gemma-4-e4b-it',
+        'easylm-gemma-4-12b-it',
+        'easylm-gemma-4-26b-a4b-it'
+      ])
+    );
+    const bonsaiAdapterIds = [
+      'easylm-bonsai-2-2b',
+      'easylm-bonsai-2-4b',
+      'easylm-bonsai-2-9b',
+      'easylm-bonsai-2-27b',
+      'easylm-hands-bonsai-2-2b',
+      'easylm-hands-bonsai-2-4b',
+      'easylm-hands-bonsai-2-9b',
+      'easylm-hands-bonsai-2-27b',
+      'easylm-reasoning-bonsai-2-4b',
+      'easylm-reasoning-bonsai-2-9b',
+      'easylm-reasoning-bonsai-2-27b',
+      'easylm-coding-bonsai-2-4b',
+      'easylm-coding-bonsai-2-9b',
+      'easylm-coding-bonsai-2-27b',
+      'easylm-hydra-bonsai-2-9b'
+    ];
+    for (const id of bonsaiAdapterIds) {
+      expect(OFFICIAL_ADAPTERS[id], id).toBeDefined();
+      expect(OFFICIAL_ADAPTERS[id].repoId).toBe(`Bluebarrels/${id}`);
+    }
   });
 });
 
@@ -219,7 +262,8 @@ describe('kid model picker UI', () => {
     expect(crashStepDownModel('easylm-gemma-4-26b-a4b-it')).toBe('easylm-qwen3-4b-instruct');
     expect(crashStepDownModel('easylm-gemma-4-e4b-it')).toBe('easylm-gemma-4-e2b-it');
     expect(crashStepDownModel('easylm-qwen3-4b-instruct')).toBe('easylm-gemma-4-e2b-it');
-    expect(crashStepDownModel('easylm-gemma-4-e2b-it')).toBeUndefined();
+    expect(crashStepDownModel('easylm-gemma-4-e2b-it')).toBe('easylm-bonsai-2-2b');
+    expect(crashStepDownModel('easylm-bonsai-2-2b')).toBeUndefined();
     expect(crashStepDownModel('easylm-bonsai-2-27b', { maxMB: 2048 })).toBe('easylm-gemma-4-e2b-it');
 
     const html = render(false);
@@ -266,8 +310,9 @@ describe('OOM fallback model (issue #24)', () => {
   it('general fallback steps down and never returns the current model', () => {
     expect(getOomFallbackModel('easylm-gemma-4-e4b-it')).toBe('easylm-gemma-4-e2b-it');
     expect(getOomFallbackModel('easylm-gemma-4-e2b-it')).toBe(LLAMA_1B);
+    expect(getOomFallbackModel('easylm-bonsai-2-2b')).toBeUndefined();
     expect(getOomFallbackModel(LLAMA_1B)).toBeUndefined();
-    expect(getOomFallbackModel(undefined)).toBe('easylm-gemma-4-e2b-it');
+    expect(getOomFallbackModel(undefined)).toBe('easylm-bonsai-2-2b');
     for (const m of AVAILABLE_MODELS) {
       const fb = getOomFallbackModel(m.id);
       if (fb !== undefined) expect(fb, m.id).not.toBe(m.id);

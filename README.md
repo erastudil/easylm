@@ -34,7 +34,7 @@ EasyLM dynamically detects your hardware tier and recommends the optimal model f
 | **Gemma 4 E4B Thinking** | ~2.4 GB | ~3.2 GB | **Default for all tiers.** Recommended workhorse. Balanced reasoning and fast throughput. | Apache-2.0 |
 | **Qwen 3 4B Instruct** | ~2.5 GB | ~3.4 GB | **8GB tier.** Structured output and Hands tool dispatch. | Apache-2.0 |
 | **DeepSeek V4 Distill 9B** | ~4.8 GB | ~5.1 GB | **8GB-16GB tier.** Heavyweight chain-of-thought reasoning for deeper analytical tasks. | See upstream repository |
-| **Bonsai 2 27B** | ~6.0 GB | ~6.8 GB | **16GB tier.** Extreme ternary quantization brings 27B reasoning to consumer GPUs. | Apache-2.0 |
+| **Bonsai 2 27B (6GB Sovereign Flagship)** | ~6.0 GB | ~6.8 GB | **16GB tier.** Extreme ternary quantization brings 27B reasoning to consumer GPUs. | Apache-2.0 |
 | **Gemma 4 12B Thinking** | ~7.1 GB | ~8.2 GB | **16GB tier.** High-caliber long-context intelligence. | Apache-2.0 |
 | **Gemma 4 26B A4B MoE** | ~8.8 GB | ~8.8 GB | **16GB tier.** Mixture-of-experts synthesis and code. | Apache-2.0 |
 

@@ -590,18 +590,20 @@ export const App: React.FC = () => {
       const savedModel = localStorage.getItem('easylm_selected_model');
       if (savedModel === 'Bonsai-2-27B-MLC') {
         try { localStorage.removeItem('easylm_selected_model'); } catch {}
-        setSelectedModel(dev.recommendedModel || DEFAULT_MODEL_ID);
+        setSelectedModel(modelForProfile(DEFAULT_MODEL_ID, kidAtBoot));
       } else if (savedModel && !AVAILABLE_MODELS.some(m => m.id === savedModel) && !(kidAtBoot && isModelAllowedForKid(savedModel))) {
         try { localStorage.removeItem('easylm_selected_model'); } catch {}
-        setSelectedModel(dev.recommendedModel || DEFAULT_MODEL_ID);
-      } else if (!savedModel && dev.recommendedModel) {
-        setSelectedModel(dev.recommendedModel);
+        setSelectedModel(modelForProfile(DEFAULT_MODEL_ID, kidAtBoot));
+      } else if (!savedModel) {
+        // Universal default: skip hardware autodetect model-switching on startup so all users start on Bonsai 2 2B (500MB)
+        setSelectedModel(smaller || modelForProfile(DEFAULT_MODEL_ID, kidAtBoot));
       } else if (kidAtBoot && savedModel && !isModelAllowedForKid(savedModel)) {
         // Saved model is outside the kid allowlist: this session uses the kid model; the saved choice stays for adults.
         setSelectedModel(modelForProfile(savedModel, true));
       } else if (savedModel && (smaller || (dev.isIOS && !fitsIOSBudget(savedModel)))) {
-        setSelectedModel(dev.recommendedModel);
-        try { localStorage.setItem('easylm_selected_model', dev.recommendedModel); } catch {}
+        const nextSafe = smaller || modelForProfile(DEFAULT_MODEL_ID, kidAtBoot);
+        setSelectedModel(nextSafe);
+        try { localStorage.setItem('easylm_selected_model', nextSafe); } catch {}
       }
       const savedLimit = localStorage.getItem('easylm_context_limit');
       if (!savedLimit && dev.recommendedContextLimit) {

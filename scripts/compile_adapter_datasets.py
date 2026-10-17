@@ -24,6 +24,12 @@ SYSTEM_PROMPT = (
 
 _BULLET_RE = re.compile(r"^[-*]\s+\*\*([^*]+)\*\*[:\u2014\-]\s+(.+)$")
 _PROGEN_RE = re.compile(r"^([^:=#|>]{2,60})\s*([:=])\s*([A-Za-z0-9].+)$")
+# FACTS.md comments may open on a quote, TeX mark, caret, bracket, or comma.
+# Those rows always carry a // door aside. The aside is what keeps textbook
+# YAML and bold lines out of the training set.
+_PROGEN_DOOR_RE = re.compile(
+    r"^([^:=#|>]{2,60})\s*([:=])\s*(\S.*// door \S+.*)$"
+)
 
 
 def extract_units_from_markdown(text: str, dewey: str = "000", slug: str = "general") -> list[dict]:
@@ -50,6 +56,8 @@ def extract_units_from_markdown(text: str, dewey: str = "000", slug: str = "gene
             continue
         if not line.startswith(("http", "#", "|", "//")):
             m_prog = _PROGEN_RE.match(line)
+            if m_prog is None and " // door " in line:
+                m_prog = _PROGEN_DOOR_RE.match(line)
             if m_prog:
                 topic = m_prog.group(1).strip()
                 if "http" not in topic and len(topic.split()) <= 6 and not topic.isdigit():
@@ -131,6 +139,24 @@ entropy = a measure of thermal energy unavailable for mechanical work.
     assert rec1["messages"][1]["content"].startswith("Define entropy")
 
 
+def _run_door_comment_self_test() -> None:
+    """Quoted and TeX comments with a door aside are facts. A quote without one is not."""
+    sample_md = """# Chemistry (540)
+## Nuclear
+title: "methods — undergrad textbook"
+not a fact : "this line has no door aside"
+golden rule : "Treat others as you would want to be treated." // door https://plato.stanford.edu/
+nuclide notation : ^{A}{Z}X denotes an isotope. // door https://goldbook.iupac.org/
+"""
+    units = extract_units_from_markdown(sample_md, dewey="540", slug="chemistry")
+    topics = [unit["topic"] for unit in units]
+    assert topics == ["golden rule", "nuclide notation"], topics
+    assert units[0]["comment"].startswith('"Treat others')
+    assert " // door " in units[0]["comment"]
+    assert units[1]["comment"].startswith("^{A}")
+    assert units[1]["mark"] == ":"
+
+
 def main(argv: Iterable[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Compile EasyLM adapter ChatML JSONL dataset.")
     default_root = Path(__file__).resolve().parents[1]
@@ -141,6 +167,7 @@ def main(argv: Iterable[str] | None = None) -> int:
 
     if args.self_test:
         _run_self_test()
+        _run_door_comment_self_test()
         print("[OK] compile_adapter_datasets self-test passed.")
         return 0
 

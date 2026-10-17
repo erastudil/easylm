@@ -1,7 +1,8 @@
-node_modules
-dist
-output
-data
+/node_modules
+/dist
+/output
+/data
+*.jsonl
 .pytest_cache
 __pycache__
 *.pyc

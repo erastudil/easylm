@@ -28,13 +28,12 @@ assert(
   "DEFAULT_MODEL_ID must be 'easylm-bonsai-2-2b'"
 );
 
-// 1b. Invariant: zero old-gen Bonsai 1 (1.7B, 8B, welcoma/*Bonsai*) references in webllm.ts
+// 1b. Invariant: Bonsai 2 WebLLM records point to verified HTTP 200 Qwen3.5-2B/4B/9B-q4f16_1-MLC endpoints
 assert(
-  !webllmContent.includes('welcoma/Bonsai-') &&
-    !webllmContent.includes('welcoma/Ternary-Bonsai-') &&
-    !webllmContent.includes('Bonsai-1.7B') &&
-    !webllmContent.includes('Bonsai-8B'),
-  'webllm.ts must not contain old-gen Bonsai 1 or non-existent welcoma/*Bonsai* URLs'
+  webllmContent.includes("model: 'https://huggingface.co/mlc-ai/Qwen3.5-2B-q4f16_1-MLC'") &&
+    webllmContent.includes("model: 'https://huggingface.co/mlc-ai/Qwen3.5-4B-q4f16_1-MLC'") &&
+    webllmContent.includes("model: 'https://huggingface.co/mlc-ai/Qwen3.5-9B-q4f16_1-MLC'"),
+  'webllm.ts must map Bonsai 2 2B, 4B, 9B, and 27B to verified mlc-ai/Qwen3.5-* MLC endpoints'
 );
 
 // 2. Invariant: 10 fine-tuned models in AVAILABLE_MODELS (Bonsai 2 2B, 4B, 9B, 27B + Gemma 4 / Qwen 3 / DeepSeek V4)

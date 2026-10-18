@@ -78,19 +78,18 @@ for (const id of retiredModelIds) {
 // 4. Invariant: Alice is excluded until ready
 assert(!availableModelsBlock.includes("id: 'alice'"), "Alice must not be in AVAILABLE_MODELS until ready");
 
-// 4b. TRUTH GATE (2026-10-17): a catalog entry may claim an adapter only for a
-// repo on this verified list. The 2026-10-17 stub incident shipped adapter claims
-// for synthetic placeholder weights; a new adapterRepo fails here until a human
-// adds the repo after verifying real trained weights (trainer_state.json, tensor
-// shapes matching the base architecture, sane file size).
-const verifiedAdapterRepos = new Set([
-  'easylm-gemma-4-e2b-it',
-  'easylm-gemma-4-e4b-it',
-  'easylm-qwen3-4b-instruct'
-]);
-for (const m of webllmContent.matchAll(/adapterRepo: 'Bluebarrels\/([^']+)'/g)) {
-  assert(verifiedAdapterRepos.has(m[1]), `adapterRepo ${m[1]} is not on the verified adapter list`);
-}
+// 4b. TRUTH GATE: AVAILABLE_MODELS serves the weights named in CUSTOM_MODEL_RECORDS.
+// A card may claim a fine-tune only after those weights are merged into the served
+// MLC shards or executed in the forward pass. The 2026-10-17 stub incident shipped
+// adapter claims for weights the web app never ran.
+assert(
+  !availableModelsBlock.includes('isFineTuned:'),
+  'AVAILABLE_MODELS must not claim isFineTuned'
+);
+assert(
+  !availableModelsBlock.includes('adapterRepo:') && !availableModelsBlock.includes('adapterUrl:'),
+  'AVAILABLE_MODELS must not claim an adapter'
+);
 
 // 4c. TRUTH GATE: the adapter registry lists exactly the verified set — adapters
 // whose Hugging Face repos hold real trained weights, checked 2026-10-18

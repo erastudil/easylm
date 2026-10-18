@@ -181,13 +181,12 @@ describe('reasoning models and Bonsai 2 lineup', () => {
     expect(AVAILABLE_MODELS[0].id).toBe('easylm-bonsai-2-2b');
     expect(AVAILABLE_MODELS[0].isDefault).toBe(true);
     expect(AVAILABLE_MODELS[0].isRecommended).toBe(true);
-    // The Bonsai entries are base weights until real fine-tunes pass verification:
-    // no fine-tune flag and no adapter claim may ride on them.
-    for (const id of ['easylm-bonsai-2-2b', 'easylm-bonsai-2-4b', 'easylm-bonsai-2-9b']) {
-      const m = AVAILABLE_MODELS.find(x => x.id === id);
-      expect(m, id).toBeDefined();
-      expect(m!.isFineTuned, id).toBeFalsy();
-      expect(m!.adapterRepo, id).toBeUndefined();
+    // The web catalog serves base weights. No card may claim a fine-tune or an
+    // adapter until that adapter runs in the forward pass.
+    for (const m of AVAILABLE_MODELS) {
+      expect(m.isFineTuned, m.id).toBeFalsy();
+      expect(m.adapterRepo, m.id).toBeUndefined();
+      expect(m.adapterUrl, m.id).toBeUndefined();
     }
     expect(AVAILABLE_MODELS.map(m => m.id)).toEqual(
       expect.arrayContaining([
@@ -305,10 +304,15 @@ describe('kid model picker UI', () => {
     expect(badgesBefore('Gemma 4 E4B Thinking')).toContain('🧠 Think');
   });
 
-  it('adult picker keeps the catalog, the Fine-Tuned tab and the Hugging Face tab', () => {
+  it('adult picker keeps the catalog and the Hugging Face tab, and only offers models the app serves', () => {
     const html = render(false);
-    const fineTunedCount = AVAILABLE_MODELS.filter(m => m.isFineTuned).length;
-    expect(html).toMatch(new RegExp(`<span>Fine-Tuned</span><span[^>]*>${fineTunedCount}</span>`));
+    expect(html).not.toContain('<span>Fine-Tuned</span>');
+    expect(html).not.toContain('LoRA');
+    expect(html).not.toContain('Bonsai 2 27B');
+    expect(html).not.toContain('4B (1GB)');
+    expect(html).not.toContain('9B (2GB)');
+    expect(html).toContain('Bonsai 2 4B (Base)');
+    expect(html).toContain('Bonsai 2 9B (Base)');
     expect(html).toContain('<span>Hugging Face</span>');
     expect(html).not.toContain('Llama 3.2 1B Instruct');
     for (const m of AVAILABLE_MODELS) expect(html, m.label).toContain(m.label);

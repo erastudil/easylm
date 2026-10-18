@@ -407,58 +407,41 @@ def verify_safetensors_header_contract(safetensors_path: Path, expected_rank: in
     }
 
 
-def generate_orthogonal_lora_safetensors(
+def require_real_trained_safetensors(
     target_path: Path,
-    repo_id: str,
-    d_model: int = 256,
-    rank: int = 16,
-    num_layers: int = 4,
+    slug: str,
+    expected_rank: int = 16,
 ) -> dict[str, Any]:
-    """Generates a deterministic, SVD-orthogonalized low-rank PEFT LoRA `adapter_model.safetensors` file."""
-    seed_bytes = hashlib.sha256(repo_id.encode("utf-8")).digest()[:8]
-    seed_int = int.from_bytes(seed_bytes, "little")
-    rng = np.random.default_rng(seed_int)
+    """Fails closed unless a real SFTTrainer-trained `adapter_model.safetensors` checkpoint exists.
+    Never synthesizes random or stub tensors (axiom zero stub / P013).
+    """
+    trained_candidates = [
+        EASYLM_ROOT / "output" / "adapters" / slug / "adapter_model.safetensors",
+        target_path,
+    ]
+    source_path: Path | None = None
+    for cand in trained_candidates:
+        if cand.is_file() and cand.stat().st_size > 0:
+            # Verify accompanying trainer_state.json or real SFT provenance
+            trainer_state = cand.parent / "trainer_state.json"
+            if not trainer_state.is_file():
+                raise RuntimeError(
+                    f"[JIDOKA HALT] Refusing to upload {cand}: missing trainer_state.json proof of real SFTTrainer gradient descent. "
+                    f"Run scripts/train_modal_adapters.py or scripts/train_adapters_gcloud.py first."
+                )
+            source_path = cand
+            break
 
-    tensors: dict[str, np.ndarray] = {}
-    d_ff = d_model * 2
+    if source_path is None:
+        raise RuntimeError(
+            f"[JIDOKA HALT] No real trained adapter_model.safetensors found for '{slug}'. "
+            f"Synthetic/random weight generation is permanently banned. "
+            f"Run scripts/train_modal_adapters.py --model <tier> --adapter <target> first."
+        )
 
-    module_dims = {
-        "self_attn.q_proj": (d_model, d_model),
-        "self_attn.k_proj": (d_model, d_model),
-        "self_attn.v_proj": (d_model, d_model),
-        "self_attn.o_proj": (d_model, d_model),
-        "mlp.gate_proj": (d_model, d_ff),
-        "mlp.up_proj": (d_model, d_ff),
-        "mlp.down_proj": (d_ff, d_model),
-    }
-
-    for layer_idx in range(num_layers):
-        for mod_path, (in_features, out_features) in module_dims.items():
-            # SVD-orthogonalized initialization for lora_A (rank x in_features) and lora_B (out_features x rank)
-            raw_a = rng.standard_normal((rank, in_features), dtype=np.float32)
-            u_a, _, vt_a = np.linalg.svd(raw_a, full_matrices=False)
-            ortho_a = (u_a @ vt_a) * np.float32(1.0 / np.sqrt(in_features))
-
-            raw_b = rng.standard_normal((out_features, rank), dtype=np.float32)
-            u_b, s_b, vt_b = np.linalg.svd(raw_b, full_matrices=False)
-            # Spectrum-weighted low-rank projection factor
-            spectral_decay = np.linspace(1.0, 0.35, rank, dtype=np.float32)
-            ortho_b = (u_b * spectral_decay) @ vt_b * np.float32(0.05 / np.sqrt(rank))
-
-            prefix = f"base_model.model.model.layers.{layer_idx}.{mod_path}"
-            tensors[f"{prefix}.lora_A.weight"] = ortho_a.astype(np.float16)
-            tensors[f"{prefix}.lora_B.weight"] = ortho_b.astype(np.float16)
-
-    metadata = {
-        "format": "pt",
-        "peft_type": "LORA",
-        "repo_id": repo_id,
-        "rank": str(rank),
-        "alpha": "32",
-        "init": "svd_orthogonal_f16",
-    }
-    save_file(tensors, str(target_path), metadata=metadata)
-    return verify_safetensors_header_contract(target_path, expected_rank=rank)
+    if source_path.resolve() != target_path.resolve():
+        shutil.copy2(source_path, target_path)
+    return verify_safetensors_header_contract(target_path, expected_rank=expected_rank)
 
 
 # ==============================================================================
@@ -808,14 +791,12 @@ def main() -> int:
         print(f"  Base Model: {spec['base_model']} | Tier: {spec['tier']}")
         print(f"-------------------------------------------------------------------")
 
-        # a) Generate deterministic orthogonal/SVD-initialized adapter_model.safetensors
+        # a) Require real SFTTrainer-trained adapter_model.safetensors (fail closed if missing)
         weights_path = local_dir / "adapter_model.safetensors"
-        st_stats = generate_orthogonal_lora_safetensors(
+        st_stats = require_real_trained_safetensors(
             weights_path,
-            repo_id=repo_id,
-            d_model=spec.get("d_model", 256),
-            rank=16,
-            num_layers=4,
+            slug=slug,
+            expected_rank=16,
         )
         print(
             f"  [+] adapter_model.safetensors verified: {st_stats['tensor_count']} tensors, "

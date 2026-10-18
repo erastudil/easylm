@@ -184,20 +184,11 @@ const engine = await CreateMLCEngine('{spec["base_model"]}', {{
 """
 
 def generate_adapter_safetensors(target_path: Path):
-    """Generates valid safetensors low-rank weights file."""
-    # Use existing verified weights or synthesize valid PEFT safetensors header and tensors
-    source_weights = EASYLM_ROOT / "output" / "adapters" / "hands_qwen2.5-3b-instruct" / "adapter_model.safetensors"
-    if source_weights.exists():
-        target_path.write_bytes(source_weights.read_bytes())
-    else:
-        # Create minimal valid safetensors
-        from safetensors.numpy import save_file
-        import numpy as np
-        tensors = {
-            "base_model.model.model.layers.0.self_attn.q_proj.lora_A.weight": np.zeros((16, 64), dtype=np.float16),
-            "base_model.model.model.layers.0.self_attn.q_proj.lora_B.weight": np.zeros((64, 16), dtype=np.float16),
-        }
-        save_file(tensors, str(target_path))
+    """Fails closed unless real trained adapter_model.safetensors exists."""
+    raise RuntimeError(
+        f"[JIDOKA HALT] Refusing to synthesize stub safetensors at {target_path}. "
+        f"Run real SFTTrainer training via scripts/train_modal_adapters.py first."
+    )
 
 def main():
     token = get_token()

@@ -226,7 +226,7 @@ async function detectDeviceUnsafe(): Promise<DeviceInfo> {
   }
 
   // Universal starting point across all adult profiles: Bonsai 2 2B (Base).
-  // Users start fast on 2B and are coached in the UI to step up to 4B (1GB), 9B (2GB), or 27B (6GB).
+  // Users start on the 2B base. The picker coaches a step up to the 4B and 9B base builds.
   let recommendedModel = 'easylm-bonsai-2-2b';
   if (hardwareTier === 'mobile') {
     recommendedModel = fitsIOSBudget(IOS_RECOMMENDED_MODEL) ? IOS_RECOMMENDED_MODEL : IOS_FALLBACK_MODEL;

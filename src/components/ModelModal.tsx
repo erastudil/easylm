@@ -7,6 +7,7 @@ import {
   resetWebGPUAndCaches,
   getModelVramMB,
   fetchAndVerifyAdapter,
+  findModelOption,
   getActiveSkillAdapter,
   getAdaptersForModel,
   getVerifiedAdapterState,
@@ -51,6 +52,9 @@ export const ModelModal: React.FC<ModelModalProps> = ({
 
   useEffect(() => {
     if (!isOpen || kidMode) return;
+    // Verification only matters for a card that claims a fine-tune. The web
+    // catalog serves base weights, so this stays quiet until one does.
+    if (!findModelOption(selectedModel)?.isFineTuned) return;
     const active = getActiveSkillAdapter(selectedModel);
     if (!active) return;
     let cancelled = false;
@@ -257,10 +261,9 @@ export const ModelModal: React.FC<ModelModalProps> = ({
               🌱 Level Up Your Local Model (Bonsai 2 Progression)
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(175px, 1fr))', gap: '0.35rem 0.75rem', color: '#d4d4d8' }}>
-              <div>• <strong>Start: Bonsai 2 2B (Base)</strong> — About a 1 GB download, works on every device.</div>
-              <div>• <strong>Step Up: Bonsai 2 4B (1GB)</strong> — Deeper reasoning &amp; stronger math/code.</div>
-              <div>• <strong>Step Up: Bonsai 2 9B (2GB)</strong> — Full coding, multi-step reasoning &amp; agentic tools on laptops.</div>
-              <div>• <strong>Flagship: Bonsai 2 27B (6GB)</strong> — Sovereign flagship synthesis on 8GB+ GPUs.</div>
+              <div>• <strong>Start: Bonsai 2 2B (Base)</strong> — Works on every device.</div>
+              <div>• <strong>Step Up: Bonsai 2 4B (Base)</strong> — Deeper reasoning and stronger math.</div>
+              <div>• <strong>Step Up: Bonsai 2 9B (Base)</strong> — Coding and multi-step reasoning on laptops.</div>
             </div>
             <div style={{ marginTop: '0.25rem', color: '#a1a1aa', fontSize: '0.7rem' }}>
               Need multimodal image &amp; vision input? Choose the <strong>Gemma 4</strong> models below.
@@ -277,7 +280,11 @@ export const ModelModal: React.FC<ModelModalProps> = ({
             { id: '16gb', label: 'High Performance', count: pickerModels.filter(m => m.vramTier === '16gb').length },
             { id: 'finetuned', label: 'Fine-Tuned', count: pickerModels.filter(m => m.isFineTuned).length },
             { id: 'hf', label: 'Hugging Face', count: undefined }
-          ].filter(t => !(kidMode && (t.id === 'hf' || t.id === 'finetuned'))).map(t => (
+          ].filter(t => {
+            if (kidMode && (t.id === 'hf' || t.id === 'finetuned')) return false;
+            if (t.id === 'finetuned' && t.count === 0) return false;
+            return true;
+          }).map(t => (
             <button
               key={t.id}
               onClick={() => setActiveTab(t.id as any)}

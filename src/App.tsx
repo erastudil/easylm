@@ -587,7 +587,7 @@ export const App: React.FC = () => {
         try { localStorage.removeItem('easylm_selected_model'); } catch {}
         setSelectedModel(modelForProfile(DEFAULT_MODEL_ID, kidAtBoot));
       } else if (!savedModel) {
-        // Universal default: skip hardware autodetect model-switching on startup so all users start on Bonsai 2 2B (500MB)
+        // Universal default: skip hardware autodetect model-switching on startup so all users start on Bonsai 2 2B (Base)
         setSelectedModel(smaller || modelForProfile(DEFAULT_MODEL_ID, kidAtBoot));
       } else if (kidAtBoot && savedModel && !isModelAllowedForKid(savedModel)) {
         // Saved model is outside the kid allowlist: this session uses the kid model; the saved choice stays for adults.
@@ -968,7 +968,7 @@ export const App: React.FC = () => {
       return;
     }
 
-    // Otherwise, stream through WebLLM (Bonsai 2 2B default + active LoRA adapter)
+    // Otherwise, stream through WebLLM (Bonsai 2 2B base weights by default; the web app does not apply LoRA adapters)
     try {
       const convoMessages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
         { role: 'system', content: systemInstruction }
@@ -1270,7 +1270,7 @@ export const App: React.FC = () => {
     reader.readAsText(file);
   };
 
-  const currentModelLabel = findModelOption(selectedModel)?.label || 'Bonsai 2 2B (500MB Default)';
+  const currentModelLabel = findModelOption(selectedModel)?.label || 'Bonsai 2 2B (Base)';
   const currentPersonality = PERSONALITIES.find(p => p.id === clampPersonalityIdForRole(selectedPersonality, currentProfile.role)) || PERSONALITIES.find(p => p.id === 'socratic_kid') || PERSONALITIES[0];
 
   const chatPane = (

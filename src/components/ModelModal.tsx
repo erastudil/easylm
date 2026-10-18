@@ -229,7 +229,7 @@ export const ModelModal: React.FC<ModelModalProps> = ({
                 border: '1px solid rgba(16, 185, 129, 0.3)',
                 fontWeight: 600
               }}>
-                Recommended: {deviceInfo?.recommendedModel ? (pickerModels.find(m => m.id === deviceInfo.recommendedModel)?.label || deviceInfo.recommendedModel) : 'Bonsai 2 2B (500MB Default)'}
+                Recommended: {deviceInfo?.recommendedModel ? (pickerModels.find(m => m.id === deviceInfo.recommendedModel)?.label || deviceInfo.recommendedModel) : 'Bonsai 2 2B (Base)'}
               </span>
             </div>
             {cacheNotice && (
@@ -257,7 +257,7 @@ export const ModelModal: React.FC<ModelModalProps> = ({
               🌱 Level Up Your Local Model (Bonsai 2 Progression)
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(175px, 1fr))', gap: '0.35rem 0.75rem', color: '#d4d4d8' }}>
-              <div>• <strong>Start: Bonsai 2 2B (500MB)</strong> — Instant download, works on every device.</div>
+              <div>• <strong>Start: Bonsai 2 2B (Base)</strong> — About a 1 GB download, works on every device.</div>
               <div>• <strong>Step Up: Bonsai 2 4B (1GB)</strong> — Deeper reasoning &amp; stronger math/code.</div>
               <div>• <strong>Step Up: Bonsai 2 9B (2GB)</strong> — Full coding, multi-step reasoning &amp; agentic tools on laptops.</div>
               <div>• <strong>Flagship: Bonsai 2 27B (6GB)</strong> — Sovereign flagship synthesis on 8GB+ GPUs.</div>
@@ -618,7 +618,7 @@ export const ModelModal: React.FC<ModelModalProps> = ({
           <div style={{ fontSize: '0.74rem', color: '#71717a', maxWidth: '520px' }}>
             💡 <strong>Guideline:</strong> {kidMode
               ? 'Llama 3.2 1B Instruct is the model for kid profiles.'
-              : 'Bonsai 2 2B (500MB) is the universal starting point. Advance to Bonsai 2 4B (1GB), 9B (2GB), or 27B (6GB) as your tasks grow, or choose Gemma 4 for multimodal vision.'}
+              : 'Bonsai 2 2B (Base) is the universal starting point. Advance to Bonsai 2 4B or 9B (Base) as your tasks grow, or choose Gemma 4 for multimodal vision.'}
           </div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             {onLoadModel && (

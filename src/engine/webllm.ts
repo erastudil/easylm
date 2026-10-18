@@ -19,6 +19,7 @@ import {
   MIN_COMPLETION,
   shouldRetryEngineInit
 } from './context_budget';
+
 import {
   AdapterMetadata,
   VerifiedAdapterState,
@@ -41,37 +42,37 @@ export {
 export type { AdapterMetadata, VerifiedAdapterState };
 
 export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
-  // 0a. EasyLM Bonsai 2 2B (500MB Default — Universal Entry Point, Qwen3.5-2B Hybrid-Attention Backbone)
+  // 0a. Bonsai 2 2B Base (Universal Entry Point, Qwen3.5-2B Hybrid-Attention Backbone, base weights)
   {
     model: 'https://huggingface.co/mlc-ai/Qwen3.5-2B-q4f16_1-MLC',
     model_id: 'easylm-bonsai-2-2b',
     model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen3.5-2B-q4f16_1_cs1k-webgpu.wasm',
     low_resource_required: true,
-    vram_required_MB: 500,
+    vram_required_MB: 1059,
     overrides: {
       context_window_size: 4096,
       max_history_size: 1
     }
   },
-  // 0b. EasyLM Bonsai 2 4B (1GB Step-Up, Qwen3.5-4B Hybrid-Attention Backbone)
+  // 0b. Bonsai 2 4B Base (Step-Up, Qwen3.5-4B Hybrid-Attention Backbone, base weights)
   {
     model: 'https://huggingface.co/mlc-ai/Qwen3.5-4B-q4f16_1-MLC',
     model_id: 'easylm-bonsai-2-4b',
     model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen3.5-4B-q4f16_1_cs1k-webgpu.wasm',
     low_resource_required: true,
-    vram_required_MB: 1000,
+    vram_required_MB: 2367,
     overrides: {
       context_window_size: 4096,
       max_history_size: 1
     }
   },
-  // 0c. EasyLM Bonsai 2 9B (2GB Agent & Reasoning Workhorse, Qwen3.5-9B Hybrid-Attention Backbone)
+  // 0c. Bonsai 2 9B Base (Agent & Reasoning Workhorse, Qwen3.5-9B Hybrid-Attention Backbone, base weights)
   {
     model: 'https://huggingface.co/mlc-ai/Qwen3.5-9B-q4f16_1-MLC',
     model_id: 'easylm-bonsai-2-9b',
     model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen3.5-9B-q4f16_1_cs1k-webgpu.wasm',
     low_resource_required: true,
-    vram_required_MB: 2000,
+    vram_required_MB: 5038,
     overrides: {
       context_window_size: 4096,
       max_history_size: 1
@@ -83,7 +84,7 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
     model_id: 'easylm-gemma-4-e2b-it',
     model_lib: 'https://huggingface.co/welcoma/gemma-4-E2B-it-q4f16_1-MLC/resolve/main/libs/gemma-4-E2B-it-q4f16_1-MLC-webgpu.wasm',
     low_resource_required: true,
-    vram_required_MB: 1650,
+    vram_required_MB: 2634,
     overrides: {
       context_window_size: 4096
     }
@@ -93,7 +94,7 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
     model_id: 'gemma-4-E2B-it-q4f16_1-MLC',
     model_lib: 'https://huggingface.co/welcoma/gemma-4-E2B-it-q4f16_1-MLC/resolve/main/libs/gemma-4-E2B-it-q4f16_1-MLC-webgpu.wasm',
     low_resource_required: true,
-    vram_required_MB: 1650,
+    vram_required_MB: 2634,
     overrides: {
       context_window_size: 4096
     }
@@ -105,7 +106,7 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
     model_id: 'easylm-gemma-4-e4b-it',
     model_lib: 'https://huggingface.co/welcoma/gemma-4-E4B-it-q4f16_1-MLC/resolve/main/libs/gemma-4-E4B-it-q4f16_1-MLC-webgpu.wasm',
     low_resource_required: true,
-    vram_required_MB: 3200,
+    vram_required_MB: 4269,
     overrides: {
       context_window_size: 8192
     }
@@ -115,7 +116,7 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
     model_id: 'gemma-4-E4B-it-q4f16_1-MLC',
     model_lib: 'https://huggingface.co/welcoma/gemma-4-E4B-it-q4f16_1-MLC/resolve/main/libs/gemma-4-E4B-it-q4f16_1-MLC-webgpu.wasm',
     low_resource_required: true,
-    vram_required_MB: 3200,
+    vram_required_MB: 4269,
     overrides: {
       context_window_size: 8192
     }
@@ -177,41 +178,10 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
     }
   },
 
-  // 6. EasyLM Gemma 4 26B A4B MoE (14GB Mixture-of-Experts)
-  {
-    model: 'https://huggingface.co/mlc-ai/gemma-3-12b-it-q4f16_1-MLC',
-    model_id: 'easylm-gemma-4-26b-a4b-it',
-    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/gemma-2-9b-it-q4f16_1_cs1k-webgpu.wasm',
-    low_resource_required: false,
-    vram_required_MB: 8800,
-    overrides: {
-      context_window_size: 16384
-    }
-  },
-
-  // 7. EasyLM Bonsai 2 27B (6GB Sovereign Top-End)
-  {
-    model: 'https://huggingface.co/mlc-ai/Qwen3.5-9B-q4f16_1-MLC',
-    model_id: 'easylm-bonsai-2-27b',
-    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen3.5-9B-q4f16_1_cs1k-webgpu.wasm',
-    low_resource_required: false,
-    vram_required_MB: 6800,
-    overrides: {
-      context_window_size: 4096,
-      max_history_size: 1
-    }
-  },
-  {
-    model: 'https://huggingface.co/mlc-ai/Qwen3.5-9B-q4f16_1-MLC',
-    model_id: 'Bonsai-2-27B-MLC',
-    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen3.5-9B-q4f16_1_cs1k-webgpu.wasm',
-    low_resource_required: false,
-    vram_required_MB: 6800,
-    overrides: {
-      context_window_size: 4096,
-      max_history_size: 1
-    }
-  },
+  // Removed 2026-10-17 (truth pass): the 'Gemma 4 26B A4B' and 'Bonsai 2 27B' web
+  // records both served other models' weights (gemma-3-12b and Qwen3.5-9B builds).
+  // No web record may claim weights it does not serve. The real Bonsai 2 27B LoRA
+  // adapter is published on Hugging Face for local use; there is no web build yet.
 
   // Backward compatibility alias records
   {
@@ -251,54 +221,45 @@ function vramLabel(modelId: string): string {
 }
 
 export const AVAILABLE_MODELS: ModelOption[] = [
-  // Bonsai 2 Ternary Lineup (500MB Default -> 1GB -> 2GB -> 6GB Flagship)
+  // Bonsai 2 lineup — BASE weights for now (truth pass, 2026-10-17). The web app
+  // serves the Qwen3.5 base builds that Bonsai 2 is made from. The EasyLM Bonsai 2
+  // fine-tunes are still in training; no adapter is applied to these entries, and
+  // no entry may claim one until a real trained adapter passes verification.
   {
     id: 'easylm-bonsai-2-2b',
-    label: 'Bonsai 2 2B (500MB Default)',
-    sizeMB: 480,
+    label: 'Bonsai 2 2B (Base)',
+    sizeMB: 1059,
     vramEst: vramLabel('easylm-bonsai-2-2b'),
     vramTier: '4gb',
     isDefault: true,
     isRecommended: true,
-    isFineTuned: true,
-    baseModelId: 'prism-ml/Ternary-Bonsai-2-2B',
-    adapterRepo: 'Bluebarrels/easylm-bonsai-2-2b',
-    adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-bonsai-2-2b',
-    description: 'EasyLM universal default (500MB). Instant download, 256k context window, ternary 1.58-bit weights fine-tuned on the 32 sovereign academic stacks, AtMem, and Hands tool execution. Works on every phone, tablet, and laptop.'
+    description: 'EasyLM universal default. The base Qwen3.5 2B weights that Bonsai 2 is built from, served as-is: about a 1.06 GB download and a 4k context window in the app. The EasyLM fine-tune for this model is still in training, so this is the plain base model for now. Works on every phone, tablet, and laptop.'
   },
   {
     id: 'easylm-bonsai-2-4b',
-    label: 'Bonsai 2 4B (1GB Step-Up)',
-    sizeMB: 960,
+    label: 'Bonsai 2 4B (Base)',
+    sizeMB: 2367,
     vramEst: vramLabel('easylm-bonsai-2-4b'),
     vramTier: '4gb',
     isReasoning: true,
-    isFineTuned: true,
-    baseModelId: 'prism-ml/Ternary-Bonsai-2-4B',
-    adapterRepo: 'Bluebarrels/easylm-bonsai-2-4b',
-    adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-bonsai-2-4b',
-    description: 'EasyLM 1GB step-up model. Deeper multi-step reasoning, stronger math derivations, and 256k context in a 1GB ternary footprint. Ideal next step once you outgrow the 2B default.'
+    description: 'Step-up base model. The base Qwen3.5 4B weights that Bonsai 2 is built from, served as-is: about a 2.37 GB download. Deeper reasoning and stronger math than the 2B. The EasyLM fine-tune is still in training, so no adapter is applied yet.'
   },
   {
     id: 'easylm-bonsai-2-9b',
-    label: 'Bonsai 2 9B (2GB Agent + Reasoning)',
-    sizeMB: 1950,
+    label: 'Bonsai 2 9B (Base)',
+    sizeMB: 5038,
     vramEst: vramLabel('easylm-bonsai-2-9b'),
     vramTier: '8gb',
     isReasoning: true,
     isCoding: true,
-    isFineTuned: true,
-    baseModelId: 'prism-ml/Ternary-Bonsai-2-9B',
-    adapterRepo: 'Bluebarrels/easylm-bonsai-2-9b',
-    adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-bonsai-2-9b',
-    description: 'EasyLM & Hydra 9B agent powerhouse in only 2GB RAM. Delivers 9B-class coding, agentic tool loops, and formal stack proofs on standard laptops.'
+    description: 'Largest Bonsai 2 base in the web app. The base Qwen3.5 9B weights that Bonsai 2 is built from, served as-is: about a 5.04 GB download, for coding and multi-step reasoning on standard laptops. The EasyLM fine-tune is still in training, so no adapter is applied yet.'
   },
 
   // 4GB Tier (Ultralight / Mobile / Laptops with iGPU — Multimodal Gemma 4)
   {
     id: 'easylm-gemma-4-e2b-it',
     label: 'Gemma 4 E2B Instruct',
-    sizeMB: 1200,
+    sizeMB: 2634,
     vramEst: vramLabel('easylm-gemma-4-e2b-it'),
     vramTier: '4gb',
     isFineTuned: true,
@@ -310,9 +271,9 @@ export const AVAILABLE_MODELS: ModelOption[] = [
   {
     id: 'easylm-gemma-4-e4b-it',
     label: 'Gemma 4 E4B Thinking',
-    sizeMB: 2400,
+    sizeMB: 4269,
     vramEst: vramLabel('easylm-gemma-4-e4b-it'),
-    vramTier: '4gb',
+    vramTier: '8gb',
     isReasoning: true,
     isFineTuned: true,
     baseModelId: 'google/gemma-4-E4B-it',
@@ -325,7 +286,7 @@ export const AVAILABLE_MODELS: ModelOption[] = [
   {
     id: 'easylm-qwen3-4b-instruct',
     label: 'Qwen 3 4B Instruct',
-    sizeMB: 2500,
+    sizeMB: 2263,
     vramEst: vramLabel('easylm-qwen3-4b-instruct'),
     vramTier: '8gb',
     isFineTuned: true,
@@ -336,58 +297,23 @@ export const AVAILABLE_MODELS: ModelOption[] = [
   },
   {
     id: 'easylm-deepseek-v4-distill-9b',
-    label: 'DeepSeek V4 Distill 9B',
-    sizeMB: 4800,
+    label: 'DeepSeek R1 Distill Qwen 7B',
+    sizeMB: 4284,
     vramEst: vramLabel('easylm-deepseek-v4-distill-9b'),
     vramTier: '8gb',
     isReasoning: true,
-    isFineTuned: true,
-    baseModelId: 'deepseek-ai/DeepSeek-V4-Distill-Qwen3.5-9B',
-    adapterRepo: 'Bluebarrels/easylm-deepseek-v4-distill-9b',
-    adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-deepseek-v4-distill-9b',
-    description: 'EasyLM reasoning flagship fine-tuned on formal stack proofs, ZCABS stability invariants, and DeepSeek V4.1 chain-of-thought distillations.'
+    description: 'DeepSeek R1 reasoning distilled into Qwen 7B, served as the base model: about a 4.28 GB download. Long chain-of-thought reasoning for deeper analytical tasks.'
   },
 
   // 16GB Tier (High Performance / Power Workstations)
   {
     id: 'easylm-gemma-4-12b-it',
-    label: 'Gemma 4 12B Thinking',
-    sizeMB: 7100,
+    label: 'Gemma 3 12B Instruct',
+    sizeMB: 6620,
     vramEst: vramLabel('easylm-gemma-4-12b-it'),
     vramTier: '16gb',
     isReasoning: true,
-    isFineTuned: true,
-    baseModelId: 'google/gemma-4-12B-it',
-    adapterRepo: 'Bluebarrels/easylm-gemma-4-12b-it',
-    adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-gemma-4-12b-it',
-    description: 'EasyLM multimodal deep architecture foundation fine-tuned on systems engineering, long-context multi-document reasoning, and epistemic resolution.'
-  },
-  {
-    id: 'easylm-gemma-4-26b-a4b-it',
-    label: 'Gemma 4 26B A4B MoE',
-    sizeMB: 8800,
-    vramEst: vramLabel('easylm-gemma-4-26b-a4b-it'),
-    vramTier: '16gb',
-    isCoding: true,
-    isFineTuned: true,
-    baseModelId: 'google/diffusiongemma-26B-A4B-it',
-    adapterRepo: 'Bluebarrels/easylm-gemma-4-26b-a4b-it',
-    adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-gemma-4-26b-a4b-it',
-    description: 'EasyLM multimodal MoE foundation featuring discrete text diffusion fine-tuned on rapid program synthesis, abstract syntax tree manipulation, and AST transforms.'
-  },
-  {
-    id: 'easylm-bonsai-2-27b',
-    label: 'Bonsai 2 27B (6GB Sovereign Flagship)',
-    sizeMB: 5950,
-    vramEst: vramLabel('easylm-bonsai-2-27b'),
-    vramTier: '16gb',
-    isReasoning: true,
-    isCoding: true,
-    isFineTuned: true,
-    baseModelId: 'prism-ml/Ternary-Bonsai-2-27B',
-    adapterRepo: 'Bluebarrels/easylm-bonsai-2-27b',
-    adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-bonsai-2-27b',
-    description: 'EasyLM top-end 27B sovereign synthesis model in a 6GB ternary footprint, fine-tuned on the full academic corpus, Alice cognitive mind integration, and autonomous agent loops.'
+    description: 'Google Gemma 3 12B instruct, served as the base model: about a 6.62 GB download. High-caliber long-context multimodal intelligence for power workstations.'
   }
 ];
 
@@ -399,7 +325,7 @@ export const CURATED_MODEL_IDS: ReadonlySet<string> = new Set(AVAILABLE_MODELS.m
 /**
  * Largest general model that is smaller than `modelId` (by vram_required_MB),
  * optionally capped at `maxMB`. Reasoning and coding specialists are skipped.
- * Fine-tunes stay eligible: the catalog is fine-tunes, and skipping them leaves no step-down.
+ * General catalog entries stay eligible; skipping them leaves no step-down.
  */
 export function nextSmallerModel(
   modelId: string,
@@ -1237,25 +1163,6 @@ export async function getOrInitEngine(
       isInitializing = false;
       gpuFence = null;
       armDeviceLostFence(engine);
-
-      // Verify and cache the active Hugging Face PEFT LoRA adapter (`Bluebarrels/*`)
-      const activeAdapter = getActiveSkillAdapter(modelId) || getAdapterConfig(findModelOption(modelId)?.adapterRepo || modelId);
-      if (activeAdapter) {
-        fetchAndVerifyAdapter(activeAdapter.id)
-          .then((verified) => {
-            if (verified && onProgress) {
-              const lossLabel = verified.trainLoss !== undefined ? ` · loss ${verified.trainLoss.toFixed(3)}` : '';
-              onProgress({
-                text: `Engine ready: ${modelId} + LoRA ${verified.repoId} (r=${verified.rank}, α=${verified.alpha}, ${verified.tensorCount} tensors${lossLabel})`,
-                progress: 1.0
-              });
-            }
-          })
-          .catch(() => {
-            // Non-blocking verification
-          });
-      }
-
       return engine;
     } catch (err: any) {
       setLoadingFlag(null);
@@ -1331,23 +1238,7 @@ export async function streamChatCompletion(
     throw new Error('Unable to find a compatible GPU. Browser GPU worker is down.');
   }
 
-  // Apply active LoRA adapter context for the selected Bonsai 2 / EasyLM model
-  const activeAdapter = !engineKidMode
-    ? getActiveSkillAdapter(modelId) || getAdapterConfig(findModelOption(modelId)?.adapterRepo || modelId)
-    : undefined;
-  const effectiveMessages =
-    activeAdapter && messages.length > 0
-      ? messages.map((m, idx) =>
-          idx === 0 && m.role === 'system'
-            ? {
-                ...m,
-                content: `${m.content}\n\n[Active LoRA Adapter: ${activeAdapter.name} (${activeAdapter.repoId}, r=${activeAdapter.rank}, alpha=${activeAdapter.alpha}) — ${activeAdapter.description}]`
-              }
-            : m
-        )
-      : messages;
-
-  const budget = budgetTurn(effectiveMessages, ctx, { isReasoning });
+  const budget = budgetTurn(messages, ctx, { isReasoning });
   if (budget.maxTokens < MIN_COMPLETION) {
     throw new Error('CONTEXT_BUDGET: this turn does not fit the context window. Raise context in Settings or shorten the prompt.');
   }

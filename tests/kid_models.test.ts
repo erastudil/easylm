@@ -175,25 +175,38 @@ describe('reasoning models and Bonsai 2 lineup', () => {
     expect(modelIsReasoning(LLAMA_1B)).toBe(false);
   });
 
-  it('wires Bonsai 2 2B as the universal adult default and registers all 15 Bonsai 2 adapters', () => {
+  it('wires Bonsai 2 2B (Base) as the universal default and registers only verified adapters', () => {
     expect(DEFAULT_MODEL_ID).toBe('easylm-bonsai-2-2b');
     expect(IOS_RECOMMENDED_MODEL).toBe('easylm-bonsai-2-2b');
     expect(AVAILABLE_MODELS[0].id).toBe('easylm-bonsai-2-2b');
     expect(AVAILABLE_MODELS[0].isDefault).toBe(true);
     expect(AVAILABLE_MODELS[0].isRecommended).toBe(true);
+    // The Bonsai entries are base weights until real fine-tunes pass verification:
+    // no fine-tune flag and no adapter claim may ride on them.
+    for (const id of ['easylm-bonsai-2-2b', 'easylm-bonsai-2-4b', 'easylm-bonsai-2-9b']) {
+      const m = AVAILABLE_MODELS.find(x => x.id === id);
+      expect(m, id).toBeDefined();
+      expect(m!.isFineTuned, id).toBeFalsy();
+      expect(m!.adapterRepo, id).toBeUndefined();
+    }
     expect(AVAILABLE_MODELS.map(m => m.id)).toEqual(
       expect.arrayContaining([
         'easylm-bonsai-2-2b',
         'easylm-bonsai-2-4b',
         'easylm-bonsai-2-9b',
-        'easylm-bonsai-2-27b',
         'easylm-gemma-4-e2b-it',
         'easylm-gemma-4-e4b-it',
-        'easylm-gemma-4-12b-it',
-        'easylm-gemma-4-26b-a4b-it'
+        'easylm-gemma-4-12b-it'
       ])
     );
-    const bonsaiAdapterIds = [
+    // Entries that served other models' weights under false names are gone.
+    expect(AVAILABLE_MODELS.map(m => m.id)).not.toContain('easylm-bonsai-2-27b');
+    expect(AVAILABLE_MODELS.map(m => m.id)).not.toContain('easylm-gemma-4-26b-a4b-it');
+    // The verified adapters (real trained weights on Hugging Face, checked
+    // 2026-10-18) are registered for local use. The web catalog above still
+    // serves base weights only: registration is not a claim that the web app
+    // applies an adapter.
+    const verifiedAdapterIds = [
       'easylm-bonsai-2-2b',
       'easylm-bonsai-2-4b',
       'easylm-bonsai-2-9b',
@@ -201,6 +214,24 @@ describe('reasoning models and Bonsai 2 lineup', () => {
       'easylm-hands-bonsai-2-2b',
       'easylm-hands-bonsai-2-4b',
       'easylm-hands-bonsai-2-9b',
+      'easylm-personalities-bonsai-2-2b',
+      'easylm-personalities-bonsai-2-4b',
+      'easylm-personalities-bonsai-2-9b',
+      'easylm-security-bonsai-2-2b',
+      'easylm-security-bonsai-2-9b',
+      'easylm-kidsafety-bonsai-2-2b',
+      'easylm-kidsafety-bonsai-2-9b',
+      'easylm-hydra-bonsai-2-9b',
+      'easylm-hands-qwen2.5-0.5b',
+      'easylm-hands-qwen2.5-3b'
+    ];
+    for (const id of verifiedAdapterIds) {
+      expect(OFFICIAL_ADAPTERS[id], id).toBeDefined();
+      expect(OFFICIAL_ADAPTERS[id].repoId, id).toBe(`Bluebarrels/${id}`);
+    }
+    expect(Object.keys(OFFICIAL_ADAPTERS).sort()).toEqual([...verifiedAdapterIds].sort());
+    // The never-existent vapor ids and the retired adapter must never register.
+    const bannedAdapterIds = [
       'easylm-hands-bonsai-2-27b',
       'easylm-reasoning-bonsai-2-4b',
       'easylm-reasoning-bonsai-2-9b',
@@ -208,11 +239,10 @@ describe('reasoning models and Bonsai 2 lineup', () => {
       'easylm-coding-bonsai-2-4b',
       'easylm-coding-bonsai-2-9b',
       'easylm-coding-bonsai-2-27b',
-      'easylm-hydra-bonsai-2-9b'
+      'alice-emap-adapter'
     ];
-    for (const id of bonsaiAdapterIds) {
-      expect(OFFICIAL_ADAPTERS[id], id).toBeDefined();
-      expect(OFFICIAL_ADAPTERS[id].repoId).toBe(`Bluebarrels/${id}`);
+    for (const id of bannedAdapterIds) {
+      expect(OFFICIAL_ADAPTERS[id], id).toBeUndefined();
     }
   });
 });
@@ -260,11 +290,11 @@ describe('kid model picker UI', () => {
     expect(e2b?.isCoding).toBeFalsy();
     expect(crashStepDownModel('easylm-bonsai-2-27b')).toBe('easylm-qwen3-4b-instruct');
     expect(crashStepDownModel('easylm-gemma-4-26b-a4b-it')).toBe('easylm-qwen3-4b-instruct');
-    expect(crashStepDownModel('easylm-gemma-4-e4b-it')).toBe('easylm-gemma-4-e2b-it');
+    expect(crashStepDownModel('easylm-gemma-4-e4b-it')).toBe('easylm-qwen3-4b-instruct');
     expect(crashStepDownModel('easylm-qwen3-4b-instruct')).toBe('easylm-gemma-4-e2b-it');
     expect(crashStepDownModel('easylm-gemma-4-e2b-it')).toBe('easylm-bonsai-2-2b');
     expect(crashStepDownModel('easylm-bonsai-2-2b')).toBeUndefined();
-    expect(crashStepDownModel('easylm-bonsai-2-27b', { maxMB: 2048 })).toBe('easylm-gemma-4-e2b-it');
+    expect(crashStepDownModel('easylm-bonsai-2-27b', { maxMB: 2048 })).toBe('easylm-bonsai-2-2b');
 
     const html = render(false);
     const badgesBefore = (label: string) => {
@@ -308,8 +338,8 @@ describe('OOM fallback model (issue #24)', () => {
   });
 
   it('general fallback steps down and never returns the current model', () => {
-    expect(getOomFallbackModel('easylm-gemma-4-e4b-it')).toBe('easylm-gemma-4-e2b-it');
-    expect(getOomFallbackModel('easylm-gemma-4-e2b-it')).toBe(LLAMA_1B);
+    expect(getOomFallbackModel('easylm-gemma-4-e4b-it')).toBe('easylm-qwen3-4b-instruct');
+    expect(getOomFallbackModel('easylm-gemma-4-e2b-it')).toBe('easylm-bonsai-2-2b');
     expect(getOomFallbackModel('easylm-bonsai-2-2b')).toBeUndefined();
     expect(getOomFallbackModel(LLAMA_1B)).toBeUndefined();
     expect(getOomFallbackModel(undefined)).toBe('easylm-bonsai-2-2b');

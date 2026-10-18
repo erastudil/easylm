@@ -225,7 +225,7 @@ async function detectDeviceUnsafe(): Promise<DeviceInfo> {
     }
   }
 
-  // Universal starting point across all adult profiles: Bonsai 2 2B (500MB).
+  // Universal starting point across all adult profiles: Bonsai 2 2B (Base).
   // Users start fast on 2B and are coached in the UI to step up to 4B (1GB), 9B (2GB), or 27B (6GB).
   let recommendedModel = 'easylm-bonsai-2-2b';
   if (hardwareTier === 'mobile') {

@@ -197,7 +197,7 @@ export const HardwareRecommendationModal: React.FC<HardwareRecommendationModalPr
             from Hugging Face.
           </p>
           <p style={{ margin: 0, fontSize: '0.8rem', color: '#a7f3d0', backgroundColor: 'rgba(16, 185, 129, 0.08)', padding: '0.5rem 0.65rem', borderRadius: '6px', border: '1px solid rgba(16, 185, 129, 0.25)' }}>
-            🌱 <strong>Level Up Anytime:</strong> Start on <strong>Bonsai 2 2B (500MB)</strong>, then step up in Model Selection to <strong>4B (1GB)</strong> for deeper reasoning, <strong>9B (2GB)</strong> for full coding &amp; agentic tools, or <strong>27B (6GB)</strong> for flagship synthesis (plus <strong>Gemma 4</strong> for multimodal vision).
+            🌱 <strong>Level Up Anytime:</strong> Start on <strong>Bonsai 2 2B (Base)</strong>, then step up in Model Selection to <strong>Bonsai 2 4B or 9B (Base)</strong> for deeper reasoning and full coding, or <strong>Gemma 3 12B</strong> for the largest web model (plus <strong>Gemma 4</strong> for multimodal vision).
           </p>
           <p style={{ margin: 0 }}>
             The model stays on this device, and after this download EasyLM works offline,

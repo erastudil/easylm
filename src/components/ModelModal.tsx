@@ -1,18 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ModelOption } from '../types';
-import {
-  modelsForProfile,
-  registerCustomHFModel,
-  ProgressStatus,
-  resetWebGPUAndCaches,
-  getModelVramMB,
-  fetchAndVerifyAdapter,
-  getActiveSkillAdapter,
-  getAdaptersForModel,
-  getVerifiedAdapterState,
-  setActiveSkillAdapter,
-  VerifiedAdapterState
-} from '../engine/webllm';
+import { modelsForProfile, registerCustomHFModel, ProgressStatus, resetWebGPUAndCaches, getModelVramMB } from '../engine/webllm';
 import { DeviceInfo, fitsIOSBudget } from '../engine/device';
 
 interface ModelModalProps {
@@ -46,23 +34,6 @@ export const ModelModal: React.FC<ModelModalProps> = ({
   const [hfError, setHfError] = useState<string | null>(null);
   const [cacheNotice, setCacheNotice] = useState<string | null>(null);
   const [isResetting, setIsResetting] = useState(false);
-  const [adapterStates, setAdapterStates] = useState<Record<string, VerifiedAdapterState>>({});
-  const [, setSkillAdapterTick] = useState(0);
-
-  useEffect(() => {
-    if (!isOpen || kidMode) return;
-    const active = getActiveSkillAdapter(selectedModel);
-    if (!active) return;
-    let cancelled = false;
-    fetchAndVerifyAdapter(active.id).then((st) => {
-      if (!cancelled && st) {
-        setAdapterStates(prev => ({ ...prev, [active.id]: st }));
-      }
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [isOpen, selectedModel, kidMode]);
 
   const handleResetCache = async () => {
     setIsResetting(true);
@@ -229,7 +200,7 @@ export const ModelModal: React.FC<ModelModalProps> = ({
                 border: '1px solid rgba(16, 185, 129, 0.3)',
                 fontWeight: 600
               }}>
-                Recommended: {deviceInfo?.recommendedModel ? (pickerModels.find(m => m.id === deviceInfo.recommendedModel)?.label || deviceInfo.recommendedModel) : 'Bonsai 2 2B (500MB Default)'}
+                Recommended: {deviceInfo?.recommendedModel ? (pickerModels.find(m => m.id === deviceInfo.recommendedModel)?.label || deviceInfo.recommendedModel) : 'Bonsai 2 2B (Base)'}
               </span>
             </div>
             {cacheNotice && (
@@ -257,10 +228,10 @@ export const ModelModal: React.FC<ModelModalProps> = ({
               🌱 Level Up Your Local Model (Bonsai 2 Progression)
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(175px, 1fr))', gap: '0.35rem 0.75rem', color: '#d4d4d8' }}>
-              <div>• <strong>Start: Bonsai 2 2B (500MB)</strong> — Instant download, works on every device.</div>
-              <div>• <strong>Step Up: Bonsai 2 4B (1GB)</strong> — Deeper reasoning &amp; stronger math/code.</div>
-              <div>• <strong>Step Up: Bonsai 2 9B (2GB)</strong> — Full coding, multi-step reasoning &amp; agentic tools on laptops.</div>
-              <div>• <strong>Flagship: Bonsai 2 27B (6GB)</strong> — Sovereign flagship synthesis on 8GB+ GPUs.</div>
+              <div>• <strong>Start: Bonsai 2 2B (Base)</strong> — Smallest full model, works on every device.</div>
+              <div>• <strong>Step Up: Bonsai 2 4B (Base)</strong> — Deeper reasoning &amp; stronger math/code.</div>
+              <div>• <strong>Step Up: Bonsai 2 9B (Base)</strong> — Full coding, multi-step reasoning &amp; agentic tools on laptops.</div>
+              <div>• <strong>Top End: Gemma 3 12B Instruct</strong> — The largest web model, for power workstations.</div>
             </div>
             <div style={{ marginTop: '0.25rem', color: '#a1a1aa', fontSize: '0.7rem' }}>
               Need multimodal image &amp; vision input? Choose the <strong>Gemma 4</strong> models below.
@@ -483,77 +454,9 @@ export const ModelModal: React.FC<ModelModalProps> = ({
                       </div>
 
                       {/* Description */}
-                      <div style={{ fontSize: '0.74rem', color: '#a1a1aa', lineHeight: 1.45, marginBottom: '0.5rem' }}>
+                      <div style={{ fontSize: '0.74rem', color: '#a1a1aa', lineHeight: 1.45, marginBottom: '0.6rem' }}>
                         {m.description}
                       </div>
-
-                      {/* Active LoRA Adapter & Skill Selector */}
-                      {!kidMode && m.isFineTuned && (() => {
-                        const availableAdapters = getAdaptersForModel(m.id);
-                        const activeAdapter = getActiveSkillAdapter(m.id);
-                        if (!activeAdapter) return null;
-                        const verified = adapterStates[activeAdapter.id] || getVerifiedAdapterState(activeAdapter.id);
-                        return (
-                          <div
-                            onClick={(e) => e.stopPropagation()}
-                            style={{
-                              padding: '0.4rem 0.55rem',
-                              marginBottom: '0.45rem',
-                              borderRadius: '6px',
-                              backgroundColor: 'rgba(245, 158, 11, 0.08)',
-                              border: '1px solid rgba(245, 158, 11, 0.25)',
-                              fontSize: '0.68rem',
-                              fontFamily: 'var(--font-mono)',
-                              color: '#fde68a'
-                            }}
-                          >
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.35rem', flexWrap: 'wrap' }}>
-                              <span>
-                                <strong>LoRA:</strong> {activeAdapter.repoId} (r={activeAdapter.rank}, α={activeAdapter.alpha})
-                              </span>
-                              {verified && (
-                                <span style={{ color: '#34d399' }}>
-                                  ✓ {verified.tensorCount > 0 ? `${verified.tensorCount} tensors` : 'verified'}
-                                  {verified.trainLoss !== undefined ? ` · loss ${verified.trainLoss.toFixed(2)}` : ''}
-                                </span>
-                              )}
-                            </div>
-                            {availableAdapters.length > 1 && (
-                              <div style={{ marginTop: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                                <span style={{ color: '#a1a1aa' }}>Skill:</span>
-                                <select
-                                  aria-label={`Select LoRA skill adapter for ${m.label}`}
-                                  value={activeAdapter.id}
-                                  onChange={(e) => {
-                                    const nextId = e.target.value;
-                                    setActiveSkillAdapter(m.id, nextId);
-                                    setSkillAdapterTick(t => t + 1);
-                                    fetchAndVerifyAdapter(nextId).then((st) => {
-                                      if (st) setAdapterStates(prev => ({ ...prev, [nextId]: st }));
-                                    });
-                                  }}
-                                  style={{
-                                    flex: 1,
-                                    backgroundColor: '#09090b',
-                                    color: '#fafafa',
-                                    border: '1px solid rgba(245, 158, 11, 0.35)',
-                                    borderRadius: '4px',
-                                    padding: '0.15rem 0.35rem',
-                                    fontSize: '0.66rem',
-                                    fontFamily: 'var(--font-mono)'
-                                  }}
-                                >
-                                  {availableAdapters.map(ad => (
-                                    <option key={ad.id} value={ad.id}>
-                                      {ad.name}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })()}
                     </div>
 
                     {/* Footer / Action */}
@@ -618,7 +521,7 @@ export const ModelModal: React.FC<ModelModalProps> = ({
           <div style={{ fontSize: '0.74rem', color: '#71717a', maxWidth: '520px' }}>
             💡 <strong>Guideline:</strong> {kidMode
               ? 'Llama 3.2 1B Instruct is the model for kid profiles.'
-              : 'Bonsai 2 2B (500MB) is the universal starting point. Advance to Bonsai 2 4B (1GB), 9B (2GB), or 27B (6GB) as your tasks grow, or choose Gemma 4 for multimodal vision.'}
+              : 'Bonsai 2 2B (Base) is the universal starting point. Advance to Bonsai 2 4B or 9B (Base) as your tasks grow, or choose Gemma 4 for multimodal vision.'}
           </div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             {onLoadModel && (

@@ -65,10 +65,10 @@ Here is the simple, real-world breakdown:
 | GPU / Hardware Tier | Typical Devices | Recommended Models | Why It Fits |
 | :--- | :--- | :--- | :--- |
 | **iPhone / iPad** | iOS Safari | **Gemma 4 E2B Instruct** | Fits iPhone: low memory footprint. |
-| **4GB (Ultralight)** | Android phones, older laptops, Intel UHD iGPU | **Gemma 4 E2B Instruct**, **Gemma 4 E4B Thinking** | Small footprint (~1.6–3.2 GB VRAM). Snappy on mobile/iGPU. |
-| **6GB–8GB (Standard)** | Modern laptops (Intel Iris Xe, Radeon 780M, RTX 3050/4050, Apple M1/M2) | **Gemma 4 E4B Thinking (Default)**, **Qwen 3 4B Instruct**, **DeepSeek V4 Distill 9B** | **The sweet spot.** Gemma 4 E4B is light work on an 8GB card—fast, articulate, and highly capable. |
-| **8GB–16GB (High Performance)** | Gaming laptops, desktops with RTX 3060/4060/4070, Apple M Pro | **Gemma 4 12B Thinking**, **Gemma 4 26B A4B MoE**, **Bonsai 2 27B** | Gemma 4 12B Thinking delivers deep reasoning in ~8.2 GB VRAM. |
-| **16GB–32GB (Workstation)** | High-end PCs with RTX 3090/4080/4090, Apple M Max/Ultra | **Bonsai 2 27B**, **Gemma 4 26B A4B MoE** | Massive context window with plenty of breathing room. |
+| **4GB (Ultralight)** | Android phones, older laptops, Intel UHD iGPU | **Bonsai 2 2B (Base)**, **Gemma 4 E2B Instruct** | Small footprint (~1.1–2.6 GB). Snappy on mobile/iGPU. |
+| **6GB–8GB (Standard)** | Modern laptops (Intel Iris Xe, Radeon 780M, RTX 3050/4050, Apple M1/M2) | **Gemma 4 E4B Thinking**, **Qwen 3 4B Instruct**, **DeepSeek R1 Distill Qwen 7B** | **The sweet spot.** Capable models that sit comfortably on an 8GB card. |
+| **8GB–16GB (High Performance)** | Gaming laptops, desktops with RTX 3060/4060/4070, Apple M Pro | **Bonsai 2 9B (Base)**, **Gemma 3 12B Instruct** | Deep reasoning and coding headroom in ~5–6.6 GB of weights. |
+| **16GB–32GB (Workstation)** | High-end PCs with RTX 3090/4080/4090, Apple M Max/Ultra | **Gemma 3 12B Instruct**, **Bonsai 2 9B (Base)** | The largest web builds, with plenty of breathing room. |
 
 *Rule of Thumb: If in doubt, stick with **Gemma 4 E4B Thinking**. It is fast, accurate, and gentle on your battery and fans.*`
   },
@@ -203,7 +203,7 @@ Tone & Demeanor:
 - Epistemic Integrity: When you do not know a fact or cannot verify it, say so with warmth and honesty. Never invent citations.
 
 Core Features:
-- WebGPU Local Inference: Running Gemma 4 E4B Thinking (default), DeepSeek V4 Distill 9B (reasoning), or lightweight models.
+- WebGPU Local Inference: Running Bonsai 2 2B (Base) by default, DeepSeek R1 Distill Qwen 7B (reasoning), or lightweight models.
 - Deterministic Hands: Calculator (calc), unit converter (units), world clock (datetime), local academic library (stacks), and Studio status (studio).
 - Zero Remote MCP Overhead: Core tools run in-process within the browser sandbox with microsecond execution, zero listening ports, zero daemon crashes, and complete offline immunity.
 - Honest Boundaries: Optional network tools (weather, search, exchange, dictionary) only send lookups when Hands are enabled.

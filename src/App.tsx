@@ -595,7 +595,7 @@ export const App: React.FC = () => {
         try { localStorage.removeItem('easylm_selected_model'); } catch {}
         setSelectedModel(modelForProfile(DEFAULT_MODEL_ID, kidAtBoot));
       } else if (!savedModel) {
-        // Universal default: skip hardware autodetect model-switching on startup so all users start on Bonsai 2 2B (500MB)
+        // Universal default: skip hardware autodetect model-switching on startup so all users start on Bonsai 2 2B (Base)
         setSelectedModel(smaller || modelForProfile(DEFAULT_MODEL_ID, kidAtBoot));
       } else if (kidAtBoot && savedModel && !isModelAllowedForKid(savedModel)) {
         // Saved model is outside the kid allowlist: this session uses the kid model; the saved choice stays for adults.

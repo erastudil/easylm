@@ -22,7 +22,7 @@ assert(existsSync(resolve(ROOT, 'src/data/courses_compiled.ts')), 'courses_compi
 console.log('==> [2/6] Verifying model selection and cache invariants...');
 const webllmContent = readFileSync(resolve(ROOT, 'src/engine/webllm.ts'), 'utf8');
 
-// 1. Invariant: DEFAULT_MODEL_ID is the 500MB Bonsai 2 2B universal default
+// 1. Invariant: DEFAULT_MODEL_ID is the Bonsai 2 2B (Base) universal default
 assert(
   webllmContent.includes("export const DEFAULT_MODEL_ID = 'easylm-bonsai-2-2b';"),
   "DEFAULT_MODEL_ID must be 'easylm-bonsai-2-2b'"
@@ -33,10 +33,13 @@ assert(
   webllmContent.includes("model: 'https://huggingface.co/mlc-ai/Qwen3.5-2B-q4f16_1-MLC'") &&
     webllmContent.includes("model: 'https://huggingface.co/mlc-ai/Qwen3.5-4B-q4f16_1-MLC'") &&
     webllmContent.includes("model: 'https://huggingface.co/mlc-ai/Qwen3.5-9B-q4f16_1-MLC'"),
-  'webllm.ts must map Bonsai 2 2B, 4B, 9B, and 27B to verified mlc-ai/Qwen3.5-* MLC endpoints'
+  'webllm.ts must map Bonsai 2 2B, 4B, and 9B to verified mlc-ai/Qwen3.5-* MLC endpoints'
 );
 
-// 2. Invariant: 10 fine-tuned models in AVAILABLE_MODELS (Bonsai 2 2B, 4B, 9B, 27B + Gemma 4 / Qwen 3 / DeepSeek V4)
+// 2. Invariant: the 8 catalog models in AVAILABLE_MODELS (Bonsai 2 base 2B/4B/9B,
+// Gemma 4 E2B/E4B, Qwen 3 4B, DeepSeek R1 Distill 7B, Gemma 3 12B). The former
+// 'Bonsai 2 27B' and 'Gemma 4 26B A4B' entries served other models' weights and
+// were removed in the 2026-10-17 truth pass; they must not come back.
 const expectedModelIds = [
   'easylm-bonsai-2-2b',
   'easylm-bonsai-2-4b',
@@ -45,9 +48,7 @@ const expectedModelIds = [
   'easylm-gemma-4-e4b-it',
   'easylm-qwen3-4b-instruct',
   'easylm-deepseek-v4-distill-9b',
-  'easylm-gemma-4-12b-it',
-  'easylm-gemma-4-26b-a4b-it',
-  'easylm-bonsai-2-27b'
+  'easylm-gemma-4-12b-it'
 ];
 
 for (const id of expectedModelIds) {
@@ -76,6 +77,52 @@ for (const id of retiredModelIds) {
 
 // 4. Invariant: Alice is excluded until ready
 assert(!availableModelsBlock.includes("id: 'alice'"), "Alice must not be in AVAILABLE_MODELS until ready");
+
+// 4b. TRUTH GATE (2026-10-17): a catalog entry may claim an adapter only for a
+// repo on this verified list. The 2026-10-17 stub incident shipped adapter claims
+// for synthetic placeholder weights; a new adapterRepo fails here until a human
+// adds the repo after verifying real trained weights (trainer_state.json, tensor
+// shapes matching the base architecture, sane file size).
+const verifiedAdapterRepos = new Set([
+  'easylm-gemma-4-e2b-it',
+  'easylm-gemma-4-e4b-it',
+  'easylm-qwen3-4b-instruct'
+]);
+for (const m of webllmContent.matchAll(/adapterRepo: 'Bluebarrels\/([^']+)'/g)) {
+  assert(verifiedAdapterRepos.has(m[1]), `adapterRepo ${m[1]} is not on the verified adapter list`);
+}
+
+// 4c. TRUTH GATE: the adapter registry may not list the stub, vapor, or retired
+// adapters. Each id earns registration back only after verification.
+const loraContent = readFileSync(resolve(ROOT, 'src/services/lora_loader.ts'), 'utf8');
+const bannedAdapterIds = [
+  'easylm-bonsai-2-2b',
+  'easylm-bonsai-2-4b',
+  'easylm-bonsai-2-9b',
+  'easylm-hands-bonsai-2-2b',
+  'easylm-hands-bonsai-2-4b',
+  'easylm-hands-bonsai-2-9b',
+  'easylm-hands-bonsai-2-27b',
+  'easylm-reasoning-bonsai-2-4b',
+  'easylm-reasoning-bonsai-2-9b',
+  'easylm-reasoning-bonsai-2-27b',
+  'easylm-coding-bonsai-2-4b',
+  'easylm-coding-bonsai-2-9b',
+  'easylm-coding-bonsai-2-27b',
+  'easylm-hydra-bonsai-2-9b',
+  'easylm-personalities-bonsai-2-2b',
+  'easylm-personalities-bonsai-2-4b',
+  'easylm-personalities-bonsai-2-9b',
+  'easylm-security-bonsai-2-2b',
+  'easylm-security-bonsai-2-9b',
+  'easylm-kidsafety-bonsai-2-2b',
+  'easylm-kidsafety-bonsai-2-9b',
+  'alice-emap-adapter'
+];
+for (const id of bannedAdapterIds) {
+  assert(!loraContent.includes(`'${id}':`), `banned adapter ${id} must not be registered in lora_loader.ts`);
+  assert(!webllmContent.includes(`adapterRepo: 'Bluebarrels/${id}'`), `banned adapter ${id} must not be claimed in webllm.ts`);
+}
 
 // 5. Invariant: cache self-healing and indexeddb retry implemented
 assert(
@@ -141,19 +188,8 @@ for (const entry of catalogEntries) {
 }
 assert(readmeContent.includes('Llama 3.2 1B Instruct'), 'README must document the kid-profile model (Llama 3.2 1B Instruct)');
 
-// 8. Invariant: LoRA adapter loader (`lora_loader.ts`) is wired into `webllm.ts` and `ModelModal.tsx`
-const modelModalContent = readFileSync(resolve(ROOT, 'src/components/ModelModal.tsx'), 'utf8');
-assert(
-  webllmContent.includes('fetchAndVerifyAdapter') && webllmContent.includes('getActiveSkillAdapter'),
-  'webllm.ts must integrate fetchAndVerifyAdapter and getActiveSkillAdapter from lora_loader.ts'
-);
-assert(
-  modelModalContent.includes('getAdaptersForModel') && modelModalContent.includes('setActiveSkillAdapter'),
-  'ModelModal.tsx must integrate getAdaptersForModel and setActiveSkillAdapter for LoRA skill selection'
-);
-
-console.log('==> [5/6] Running kid allowlist, LoRA loader, and stacks chapter tests...');
-execSync('node ./node_modules/vitest/vitest.mjs run tests/kid_models.test.ts tests/lora_loader.test.ts tests/stacks_chapters.test.ts', { cwd: ROOT, stdio: 'inherit' });
+console.log('==> [5/6] Running kid allowlist and stacks chapter tests...');
+execSync('node ./node_modules/vitest/vitest.mjs run tests/kid_models.test.ts tests/stacks_chapters.test.ts', { cwd: ROOT, stdio: 'inherit' });
 
 console.log('==> [6/6] Verifying TypeScript and Vite production bundle (npm run build)...');
 execSync('npm run build', { cwd: ROOT, stdio: 'inherit' });

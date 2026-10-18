@@ -1331,10 +1331,12 @@ export async function streamChatCompletion(
     throw new Error('Unable to find a compatible GPU. Browser GPU worker is down.');
   }
 
-  // Apply active skill LoRA adapter context when a discrete specialization adapter is selected
-  const activeAdapter = !engineKidMode ? getActiveSkillAdapter(modelId) : undefined;
+  // Apply active LoRA adapter context for the selected Bonsai 2 / EasyLM model
+  const activeAdapter = !engineKidMode
+    ? getActiveSkillAdapter(modelId) || getAdapterConfig(findModelOption(modelId)?.adapterRepo || modelId)
+    : undefined;
   const effectiveMessages =
-    activeAdapter && activeAdapter.id !== modelId && messages.length > 0
+    activeAdapter && messages.length > 0
       ? messages.map((m, idx) =>
           idx === 0 && m.role === 'system'
             ? {

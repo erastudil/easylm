@@ -175,7 +175,7 @@ export const OFFICIAL_ADAPTERS: Record<string, AdapterMetadata> = {
     'easylm-bonsai-2-27b',
     'EasyLM Bonsai 2 27B Unified (Sovereign Flagship)',
     'prism-ml/Ternary-Bonsai-2-27B',
-    'Unified 6GB flagship adapter specializing Ternary Bonsai 2 27B on the full academic corpus, Alice cognitive mind integration, and deep reasoning.'
+    'Unified 6GB flagship adapter specializing Ternary Bonsai 2 27B on the full academic corpus, multi-step systems synthesis, and deep reasoning.'
   ),
   'easylm-hands-bonsai-2-2b': makeBonsaiAdapter(
     'easylm-hands-bonsai-2-2b',
@@ -247,19 +247,19 @@ export const OFFICIAL_ADAPTERS: Record<string, AdapterMetadata> = {
     'easylm-personalities-bonsai-2-2b',
     'EasyLM Personalities & Council (Bonsai 2 2B)',
     'prism-ml/Ternary-Bonsai-2-2B',
-    'Specialist adapter for the 151 Council of Kami voices, Alice Carrollian Socratic Antithesis, and ether-fishing on Bonsai 2 2B.'
+    'Specialist adapter for the 151 Council of Kami voices, Socratic inquiry, and ether-fishing on Bonsai 2 2B.'
   ),
   'easylm-personalities-bonsai-2-4b': makeBonsaiAdapter(
     'easylm-personalities-bonsai-2-4b',
     'EasyLM Personalities & Council (Bonsai 2 4B)',
     'prism-ml/Ternary-Bonsai-2-4B',
-    'Specialist adapter for the 151 Council of Kami voices, Alice Carrollian Socratic Antithesis, and ether-fishing on Bonsai 2 4B.'
+    'Specialist adapter for the 151 Council of Kami voices, Socratic inquiry, and ether-fishing on Bonsai 2 4B.'
   ),
   'easylm-personalities-bonsai-2-9b': makeBonsaiAdapter(
     'easylm-personalities-bonsai-2-9b',
     'EasyLM Personalities & Council (Bonsai 2 9B)',
     'prism-ml/Ternary-Bonsai-2-9B',
-    'Specialist adapter for the 151 Council of Kami voices, Alice Carrollian Socratic Antithesis, and ether-fishing on Bonsai 2 9B.'
+    'Specialist adapter for the 151 Council of Kami voices, Socratic inquiry, and ether-fishing on Bonsai 2 9B.'
   ),
   'easylm-security-bonsai-2-2b': makeBonsaiAdapter(
     'easylm-security-bonsai-2-2b',
@@ -312,20 +312,6 @@ export const OFFICIAL_ADAPTERS: Record<string, AdapterMetadata> = {
     hfUrl: 'https://huggingface.co/Bluebarrels/easylm-hands-qwen2.5-3b',
     weightsUrl: 'https://huggingface.co/Bluebarrels/easylm-hands-qwen2.5-3b/resolve/main/adapter_model.safetensors',
     configUrl: 'https://huggingface.co/Bluebarrels/easylm-hands-qwen2.5-3b/raw/main/adapter_config.json'
-  },
-  'alice-emap-adapter': {
-    id: 'alice-emap-adapter',
-    name: 'Alice 1.0 EMap + Socratic Antithesis Adapter (Bonsai 2 9B)',
-    repoId: 'Bluebarrels/alice-emap-adapter',
-    baseModel: 'prism-ml/Ternary-Bonsai-2-9B',
-    targetArchitecture: 'bonsai2',
-    description: 'Discrete low-rank adapter specializing Bonsai 2 9B for Alice 1.0 EMap (46,030 nodes) knowledge graph arbitration, Carrollian Question Shapes (Q01-Q12), and Socratic Antithesis.',
-    rank: 16,
-    alpha: 32,
-    targetModules: ['q_proj', 'k_proj', 'v_proj', 'o_proj', 'gate_proj', 'up_proj', 'down_proj'],
-    hfUrl: 'https://huggingface.co/Bluebarrels/alice-emap-adapter',
-    weightsUrl: 'https://huggingface.co/Bluebarrels/alice-emap-adapter/resolve/main/adapter_model.safetensors',
-    configUrl: 'https://huggingface.co/Bluebarrels/alice-emap-adapter/raw/main/adapter_config.json'
   }
 };
 
@@ -383,7 +369,7 @@ export function getAdaptersForModel(baseModelOrId: string): AdapterMetadata[] {
   if (tierMatch) {
     const tier = tierMatch[1];
     return Object.values(OFFICIAL_ADAPTERS).filter(
-      a => a.id.endsWith(`bonsai-2-${tier}`) || (tier === '9b' && a.id === 'alice-emap-adapter')
+      a => a.id.endsWith(`bonsai-2-${tier}`)
     );
   }
   return Object.values(OFFICIAL_ADAPTERS).filter(

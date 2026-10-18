@@ -71,10 +71,10 @@ describe('EasyLM LoRA Loader & Runtime Adapter Integration', () => {
         'easylm-personalities-bonsai-2-9b',
         'easylm-security-bonsai-2-9b',
         'easylm-kidsafety-bonsai-2-9b',
-        'easylm-hydra-bonsai-2-9b',
-        'alice-emap-adapter'
+        'easylm-hydra-bonsai-2-9b'
       ])
     );
+    expect(adapters9b.map(a => a.id)).not.toContain('alice-emap-adapter');
   });
 
   it('switches active skill adapters per model and verifies SafeTensors headers via fetchAndVerifyAdapter', async () => {
@@ -127,6 +127,7 @@ describe('EasyLM LoRA Loader & Runtime Adapter Integration', () => {
     expect(state?.rank).toBe(16);
     expect(state?.alpha).toBe(32);
     expect(state?.trainLoss).toBeCloseTo(0.412, 3);
-    expect(getAdapterConfig('Bluebarrels/alice-emap-adapter')?.id).toBe('alice-emap-adapter');
+    expect(getAdapterConfig('Bluebarrels/easylm-bonsai-2-2b')?.id).toBe('easylm-bonsai-2-2b');
+    expect(getAdapterConfig('Bluebarrels/alice-emap-adapter')).toBeUndefined();
   });
 });

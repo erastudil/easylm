@@ -106,6 +106,20 @@ assert(
   'the hardware prompt must not open at boot; it fires on the first AI action'
 );
 
+// 7b. Invariant: Alice is completely unplugged from EasyLM runtime (App.tsx and lora_loader.ts)
+const loraLoaderContent = readFileSync(resolve(ROOT, 'src/services/lora_loader.ts'), 'utf8');
+assert(
+  !appContent.includes('aliceDrive') &&
+    !appContent.includes('streamMindCompletion') &&
+    !appContent.includes('getOrInitMind') &&
+    !appContent.includes('isMindModel'),
+  'App.tsx must not import or call aliceDrive, streamMindCompletion, getOrInitMind, or isMindModel'
+);
+assert(
+  !loraLoaderContent.includes('alice-emap-adapter'),
+  'lora_loader.ts must not expose alice-emap-adapter in EasyLM'
+);
+
 console.log('==> [3/6] Verifying device recommendations...');
 const deviceContent = readFileSync(resolve(ROOT, 'src/engine/device.ts'), 'utf8');
 assert(

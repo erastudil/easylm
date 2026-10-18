@@ -315,11 +315,11 @@ export const OFFICIAL_ADAPTERS: Record<string, AdapterMetadata> = {
   },
   'alice-emap-adapter': {
     id: 'alice-emap-adapter',
-    name: 'Alice EMap Adapter (Qwen2.5-3B-Instruct)',
+    name: 'Alice 1.0 EMap + Socratic Antithesis Adapter (Bonsai 2 9B)',
     repoId: 'Bluebarrels/alice-emap-adapter',
-    baseModel: 'Qwen/Qwen2.5-3B-Instruct',
-    targetArchitecture: 'qwen2',
-    description: 'Discrete low-rank adapter specializing Qwen2.5-3B for Alice 1.0 EMap knowledge graph arbitration.',
+    baseModel: 'prism-ml/Ternary-Bonsai-2-9B',
+    targetArchitecture: 'bonsai2',
+    description: 'Discrete low-rank adapter specializing Bonsai 2 9B for Alice 1.0 EMap (46,030 nodes) knowledge graph arbitration, Carrollian Question Shapes (Q01-Q12), and Socratic Antithesis.',
     rank: 16,
     alpha: 32,
     targetModules: ['q_proj', 'k_proj', 'v_proj', 'o_proj', 'gate_proj', 'up_proj', 'down_proj'],
@@ -329,7 +329,45 @@ export const OFFICIAL_ADAPTERS: Record<string, AdapterMetadata> = {
   }
 };
 
+export interface VerifiedAdapterState {
+  adapterId: string;
+  repoId: string;
+  verifiedAt: number;
+  headerVerified: boolean;
+  tensorCount: number;
+  rank: number;
+  alpha: number;
+  baseModel: string;
+  trainLoss?: number;
+  recordsTrained?: number;
+}
+
+const verifiedAdapterCache = new Map<string, VerifiedAdapterState>();
+const activeSkillAdapterByModel = new Map<string, string>();
+const ACTIVE_SKILL_STORAGE_KEY = 'easylm_active_skill_adapters';
+
+function loadPersistedSkillAdapters(): void {
+  try {
+    if (typeof localStorage === 'undefined') return;
+    const raw = localStorage.getItem(ACTIVE_SKILL_STORAGE_KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === 'object') {
+      for (const [k, v] of Object.entries(parsed)) {
+        if (typeof v === 'string') activeSkillAdapterByModel.set(k, v);
+      }
+    }
+  } catch {
+    // ignore storage errors
+  }
+}
+loadPersistedSkillAdapters();
+
 export function getAdapterConfig(idOrRepo: string): AdapterMetadata | undefined {
+  const clean = idOrRepo.replace(/^Bluebarrels\//i, '');
+  if (OFFICIAL_ADAPTERS[clean]) {
+    return OFFICIAL_ADAPTERS[clean];
+  }
   if (OFFICIAL_ADAPTERS[idOrRepo]) {
     return OFFICIAL_ADAPTERS[idOrRepo];
   }
@@ -340,11 +378,142 @@ export function getAdapterConfig(idOrRepo: string): AdapterMetadata | undefined 
 
 export function getAdaptersForModel(baseModelOrId: string): AdapterMetadata[] {
   const norm = baseModelOrId.toLowerCase();
+  // Match tier suffix for easylm-bonsai-2-{2b,4b,9b,27b}
+  const tierMatch = norm.match(/bonsai-2-(2b|4b|9b|27b)/);
+  if (tierMatch) {
+    const tier = tierMatch[1];
+    return Object.values(OFFICIAL_ADAPTERS).filter(
+      a => a.id.endsWith(`bonsai-2-${tier}`) || (tier === '9b' && a.id === 'alice-emap-adapter')
+    );
+  }
   return Object.values(OFFICIAL_ADAPTERS).filter(
     a => a.baseModel.toLowerCase() === norm ||
          norm.includes(a.baseModel.toLowerCase().replace(/.*\//, '')) ||
          a.baseModel.toLowerCase().includes(norm)
   );
+}
+
+export function getActiveSkillAdapter(modelId: string): AdapterMetadata | undefined {
+  const overrideId = activeSkillAdapterByModel.get(modelId);
+  if (overrideId && OFFICIAL_ADAPTERS[overrideId]) {
+    return OFFICIAL_ADAPTERS[overrideId];
+  }
+  return getAdapterConfig(modelId);
+}
+
+export function setActiveSkillAdapter(modelId: string, adapterId: string | null): void {
+  if (!adapterId || adapterId === modelId) {
+    activeSkillAdapterByModel.delete(modelId);
+  } else if (OFFICIAL_ADAPTERS[adapterId]) {
+    activeSkillAdapterByModel.set(modelId, adapterId);
+  }
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const obj: Record<string, string> = {};
+      for (const [k, v] of activeSkillAdapterByModel.entries()) {
+        obj[k] = v;
+      }
+      localStorage.setItem(ACTIVE_SKILL_STORAGE_KEY, JSON.stringify(obj));
+    }
+  } catch {
+    // ignore
+  }
+}
+
+export function getVerifiedAdapterState(idOrRepo: string): VerifiedAdapterState | undefined {
+  const meta = getAdapterConfig(idOrRepo);
+  return meta ? verifiedAdapterCache.get(meta.id) : undefined;
+}
+
+/**
+ * Fetches and verifies a live PEFT LoRA adapter from Hugging Face (`Bluebarrels/*`),
+ * validating both `adapter_config.json` and the binary `adapter_model.safetensors` header.
+ */
+export async function fetchAndVerifyAdapter(idOrRepo: string): Promise<VerifiedAdapterState | null> {
+  const meta = getAdapterConfig(idOrRepo);
+  if (!meta || typeof fetch === 'undefined') return null;
+
+  const cached = verifiedAdapterCache.get(meta.id);
+  if (cached && cached.headerVerified) {
+    return cached;
+  }
+
+  try {
+    const cfgResp = await fetch(meta.configUrl);
+    if (!cfgResp.ok) return null;
+    const cfgJson = await cfgResp.json();
+
+    let trainLoss: number | undefined;
+    let recordsTrained: number | undefined;
+    try {
+      const metaUrl = `https://huggingface.co/${meta.repoId}/raw/main/training_metadata.json`;
+      const metaResp = await fetch(metaUrl);
+      if (metaResp.ok) {
+        const tm = await metaResp.json();
+        if (typeof tm?.training_metrics?.final_train_loss === 'number') {
+          trainLoss = tm.training_metrics.final_train_loss;
+        } else if (typeof tm?.train_loss === 'number') {
+          trainLoss = tm.train_loss;
+        }
+        if (typeof tm?.dataset?.conversations === 'number') {
+          recordsTrained = tm.dataset.conversations;
+        }
+      }
+    } catch {
+      // optional metadata
+    }
+
+    // Fetch first 64KB of adapter_model.safetensors to verify binary SafeTensors header without blocking on full tensor download
+    let tensorCount = 0;
+    let headerVerified = false;
+    try {
+      const stResp = await fetch(meta.weightsUrl, {
+        headers: { Range: 'bytes=0-65535' }
+      });
+      if (stResp.ok || stResp.status === 206) {
+        const buf = await stResp.arrayBuffer();
+        if (buf.byteLength >= 8) {
+          const view = new DataView(buf);
+          const headerLen = Number(view.getBigUint64(0, true));
+          if (headerLen > 2 && buf.byteLength >= 8 + headerLen) {
+            const { header } = parseSafeTensorsHeader(buf);
+            tensorCount = Object.keys(header).filter(k => k !== '__metadata__').length;
+            headerVerified = tensorCount > 0;
+          } else if (headerLen > 2) {
+            // Header exceeds 64KB (e.g., 32-64 layer model with 400+ LoRA tensors): fetch exact header slice
+            const fullHeaderResp = await fetch(meta.weightsUrl, {
+              headers: { Range: `bytes=0-${8 + headerLen + 16}` }
+            });
+            if (fullHeaderResp.ok || fullHeaderResp.status === 206) {
+              const fullBuf = await fullHeaderResp.arrayBuffer();
+              const { header } = parseSafeTensorsHeader(fullBuf);
+              tensorCount = Object.keys(header).filter(k => k !== '__metadata__').length;
+              headerVerified = tensorCount > 0;
+            }
+          }
+        }
+      }
+    } catch {
+      // network/CORS fallback
+    }
+
+    const state: VerifiedAdapterState = {
+      adapterId: meta.id,
+      repoId: meta.repoId,
+      verifiedAt: Date.now(),
+      headerVerified,
+      tensorCount,
+      rank: Number(cfgJson?.r || meta.rank || 16),
+      alpha: Number(cfgJson?.lora_alpha || meta.alpha || 32),
+      baseModel: String(cfgJson?.base_model_name_or_path || meta.baseModel),
+      trainLoss,
+      recordsTrained
+    };
+    verifiedAdapterCache.set(meta.id, state);
+    return state;
+  } catch {
+    return null;
+  }
 }
 
 export function listOfficialAdapters(): AdapterMetadata[] {

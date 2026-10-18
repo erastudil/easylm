@@ -141,8 +141,19 @@ for (const entry of catalogEntries) {
 }
 assert(readmeContent.includes('Llama 3.2 1B Instruct'), 'README must document the kid-profile model (Llama 3.2 1B Instruct)');
 
-console.log('==> [5/6] Running kid allowlist and stacks chapter tests...');
-execSync('node ./node_modules/vitest/vitest.mjs run tests/kid_models.test.ts tests/stacks_chapters.test.ts', { cwd: ROOT, stdio: 'inherit' });
+// 8. Invariant: LoRA adapter loader (`lora_loader.ts`) is wired into `webllm.ts` and `ModelModal.tsx`
+const modelModalContent = readFileSync(resolve(ROOT, 'src/components/ModelModal.tsx'), 'utf8');
+assert(
+  webllmContent.includes('fetchAndVerifyAdapter') && webllmContent.includes('getActiveSkillAdapter'),
+  'webllm.ts must integrate fetchAndVerifyAdapter and getActiveSkillAdapter from lora_loader.ts'
+);
+assert(
+  modelModalContent.includes('getAdaptersForModel') && modelModalContent.includes('setActiveSkillAdapter'),
+  'ModelModal.tsx must integrate getAdaptersForModel and setActiveSkillAdapter for LoRA skill selection'
+);
+
+console.log('==> [5/6] Running kid allowlist, LoRA loader, and stacks chapter tests...');
+execSync('node ./node_modules/vitest/vitest.mjs run tests/kid_models.test.ts tests/lora_loader.test.ts tests/stacks_chapters.test.ts', { cwd: ROOT, stdio: 'inherit' });
 
 console.log('==> [6/6] Verifying TypeScript and Vite production bundle (npm run build)...');
 execSync('npm run build', { cwd: ROOT, stdio: 'inherit' });

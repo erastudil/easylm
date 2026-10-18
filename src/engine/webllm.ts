@@ -19,6 +19,26 @@ import {
   MIN_COMPLETION,
   shouldRetryEngineInit
 } from './context_budget';
+import {
+  AdapterMetadata,
+  VerifiedAdapterState,
+  fetchAndVerifyAdapter,
+  getActiveSkillAdapter,
+  getAdapterConfig,
+  getAdaptersForModel,
+  getVerifiedAdapterState,
+  setActiveSkillAdapter
+} from '../services/lora_loader';
+
+export {
+  fetchAndVerifyAdapter,
+  getActiveSkillAdapter,
+  getAdapterConfig,
+  getAdaptersForModel,
+  getVerifiedAdapterState,
+  setActiveSkillAdapter
+};
+export type { AdapterMetadata, VerifiedAdapterState };
 
 export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
   // 0a. EasyLM Bonsai 2 2B (500MB Default — Universal Entry Point, Qwen3.5-2B Hybrid-Attention Backbone)
@@ -1217,6 +1237,25 @@ export async function getOrInitEngine(
       isInitializing = false;
       gpuFence = null;
       armDeviceLostFence(engine);
+
+      // Verify and cache the active Hugging Face PEFT LoRA adapter (`Bluebarrels/*`)
+      const activeAdapter = getActiveSkillAdapter(modelId) || getAdapterConfig(findModelOption(modelId)?.adapterRepo || modelId);
+      if (activeAdapter) {
+        fetchAndVerifyAdapter(activeAdapter.id)
+          .then((verified) => {
+            if (verified && onProgress) {
+              const lossLabel = verified.trainLoss !== undefined ? ` · loss ${verified.trainLoss.toFixed(3)}` : '';
+              onProgress({
+                text: `Engine ready: ${modelId} + LoRA ${verified.repoId} (r=${verified.rank}, α=${verified.alpha}, ${verified.tensorCount} tensors${lossLabel})`,
+                progress: 1.0
+              });
+            }
+          })
+          .catch(() => {
+            // Non-blocking verification
+          });
+      }
+
       return engine;
     } catch (err: any) {
       setLoadingFlag(null);
@@ -1292,7 +1331,21 @@ export async function streamChatCompletion(
     throw new Error('Unable to find a compatible GPU. Browser GPU worker is down.');
   }
 
-  const budget = budgetTurn(messages, ctx, { isReasoning });
+  // Apply active skill LoRA adapter context when a discrete specialization adapter is selected
+  const activeAdapter = !engineKidMode ? getActiveSkillAdapter(modelId) : undefined;
+  const effectiveMessages =
+    activeAdapter && activeAdapter.id !== modelId && messages.length > 0
+      ? messages.map((m, idx) =>
+          idx === 0 && m.role === 'system'
+            ? {
+                ...m,
+                content: `${m.content}\n\n[Active LoRA Adapter: ${activeAdapter.name} (${activeAdapter.repoId}, r=${activeAdapter.rank}, alpha=${activeAdapter.alpha}) — ${activeAdapter.description}]`
+              }
+            : m
+        )
+      : messages;
+
+  const budget = budgetTurn(effectiveMessages, ctx, { isReasoning });
   if (budget.maxTokens < MIN_COMPLETION) {
     throw new Error('CONTEXT_BUDGET: this turn does not fit the context window. Raise context in Settings or shorten the prompt.');
   }

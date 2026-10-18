@@ -120,7 +120,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     return 'Highly Imaginative — wild associations, poetry, and unpredictable brainstorming.';
   };
 
-  const recommendedLimit = deviceInfo?.recommendedContextLimit || 4096;
+  const recommendedLimit = deviceInfo?.recommendedContextLimit || 32768;
 
   const handleEnableEncryption = async () => {
     const trimmed = passphraseInput.trim();

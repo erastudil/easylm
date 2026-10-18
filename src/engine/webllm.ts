@@ -50,7 +50,7 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
     low_resource_required: true,
     vram_required_MB: 1059,
     overrides: {
-      context_window_size: 4096,
+      context_window_size: 32768,
       max_history_size: 1
     }
   },
@@ -62,7 +62,7 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
     low_resource_required: true,
     vram_required_MB: 2367,
     overrides: {
-      context_window_size: 4096,
+      context_window_size: 32768,
       max_history_size: 1
     }
   },
@@ -74,7 +74,7 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
     low_resource_required: true,
     vram_required_MB: 5038,
     overrides: {
-      context_window_size: 4096,
+      context_window_size: 65536,
       max_history_size: 1
     }
   },
@@ -86,7 +86,7 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
     low_resource_required: true,
     vram_required_MB: 2634,
     overrides: {
-      context_window_size: 4096
+      context_window_size: 32768
     }
   },
   {
@@ -96,7 +96,7 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
     low_resource_required: true,
     vram_required_MB: 2634,
     overrides: {
-      context_window_size: 4096
+      context_window_size: 32768
     }
   },
 
@@ -108,7 +108,7 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
     low_resource_required: true,
     vram_required_MB: 4269,
     overrides: {
-      context_window_size: 8192
+      context_window_size: 32768
     }
   },
   {
@@ -118,7 +118,7 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
     low_resource_required: true,
     vram_required_MB: 4269,
     overrides: {
-      context_window_size: 8192
+      context_window_size: 32768
     }
   },
 
@@ -130,7 +130,7 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
     low_resource_required: true,
     vram_required_MB: 3431.59,
     overrides: {
-      context_window_size: 16384
+      context_window_size: 32768
     }
   },
   {
@@ -140,7 +140,7 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
     low_resource_required: true,
     vram_required_MB: 3431.59,
     overrides: {
-      context_window_size: 16384
+      context_window_size: 32768
     }
   },
 
@@ -152,7 +152,7 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
     low_resource_required: false,
     vram_required_MB: 5106.67,
     overrides: {
-      context_window_size: 16384
+      context_window_size: 32768
     }
   },
 
@@ -164,7 +164,7 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
     low_resource_required: false,
     vram_required_MB: 8200,
     overrides: {
-      context_window_size: 16384
+      context_window_size: 32768
     }
   },
   {
@@ -174,7 +174,7 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
     low_resource_required: false,
     vram_required_MB: 8200,
     overrides: {
-      context_window_size: 16384
+      context_window_size: 32768
     }
   },
 
@@ -182,6 +182,9 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
   // records both served other models' weights (gemma-3-12b and Qwen3.5-9B builds).
   // No web record may claim weights it does not serve. The real Bonsai 2 27B LoRA
   // adapter is published on Hugging Face for local use; there is no web build yet.
+  // When a real Bonsai 2 27B web record exists, its default context window is
+  // 131072 (owner ruling, 2026-10-18: 32k minimum defaults, 64k for the 9B,
+  // 128k for the 27B).
 
   // Backward compatibility alias records
   {
@@ -191,7 +194,7 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
     low_resource_required: true,
     vram_required_MB: 1629.75,
     overrides: {
-      context_window_size: 4096
+      context_window_size: 32768
     }
   },
   {
@@ -201,7 +204,7 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
     low_resource_required: false,
     vram_required_MB: 8500,
     overrides: {
-      context_window_size: 8192
+      context_window_size: 32768
     }
   }
 ];
@@ -233,7 +236,7 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     vramTier: '4gb',
     isDefault: true,
     isRecommended: true,
-    description: 'EasyLM universal default. The base Qwen3.5 2B weights that Bonsai 2 is built from, served as-is: about a 1.06 GB download and a 4k context window in the app. The EasyLM fine-tune for this model is still in training, so this is the plain base model for now. Works on every phone, tablet, and laptop.'
+    description: 'EasyLM universal default. The base Qwen3.5 2B weights that Bonsai 2 is built from, served as-is: about a 1.06 GB download and a 32k default context window in the app. The EasyLM fine-tune for this model is still in training, so this is the plain base model for now. Works on every phone, tablet, and laptop.'
   },
   {
     id: 'easylm-bonsai-2-4b',
@@ -611,7 +614,7 @@ export interface ProgressStatus {
 
 let activeEngine: MLCEngine | null = null;
 let currentLoadedModel: string = '';
-let currentContextLimit: number = 4096;
+let currentContextLimit: number = 32768;
 let isInitializing: boolean = false;
 let initPromise: Promise<MLCEngine> | null = null;
 let gpuFence: GpuFence = null;
@@ -1043,9 +1046,15 @@ export async function getOrInitEngine(
   const modelRecord = EASYLM_APP_CONFIG.model_list.find(m => m.model_id === modelId);
   const recOverrides = modelRecord?.overrides as { context_window_size?: number; max_history_size?: number } | undefined;
   const rawTargetContext = contextWindowSize || currentContextLimit;
+  // A record's context_window_size is the model's DEFAULT window and a floor,
+  // never a silent cap (owner ruling, 2026-10-18: minimum 32k defaults, 64k
+  // for Bonsai 2 9B, 128k for a future Bonsai 2 27B record). Larger explicit
+  // windows pass through untouched. The one exception is a sub-8k target,
+  // which only the iOS platform fence sets (IOS_CONTEXT_LIMIT 4096, a hard
+  // Safari memory limit), so platform limits stay exactly as requested.
   const targetContext =
-    recOverrides?.max_history_size !== undefined && recOverrides?.context_window_size
-      ? Math.min(rawTargetContext, recOverrides.context_window_size)
+    recOverrides?.max_history_size !== undefined && recOverrides?.context_window_size && rawTargetContext >= 8192
+      ? Math.max(rawTargetContext, recOverrides.context_window_size)
       : rawTargetContext;
   const chatOpts: Record<string, number> = {
     context_window_size: targetContext,
@@ -1232,7 +1241,7 @@ export async function streamChatCompletion(
 ): Promise<{ fullText: string; thinking?: string; loopDetected?: boolean; loopReason?: string }> {
   const isReasoning = modelIsReasoning(modelId);
   const effectiveTemperature = isReasoning ? Math.max(0.6, temperature) : temperature;
-  const ctx = contextWindowSize || currentContextLimit || 4096;
+  const ctx = contextWindowSize || currentContextLimit || 32768;
 
   if (gpuFence === 'process_dead') {
     throw new Error('Unable to find a compatible GPU. Browser GPU worker is down.');

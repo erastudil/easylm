@@ -354,7 +354,7 @@ export const App: React.FC = () => {
   const [isModelReady, setIsModelReady] = useState<boolean>(() => isEngineReady());
   const [contextLimit, setContextLimit] = useState<number>(() => {
     const saved = localStorage.getItem('easylm_context_limit');
-    return saved ? parseInt(saved, 10) : 4096;
+    return saved ? parseInt(saved, 10) : 32768;
   });
 
   const handleSelectModel = (id: string) => {

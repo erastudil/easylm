@@ -76,7 +76,7 @@ async function detectDeviceAnyProfile(): Promise<DeviceInfo> {
       osName: isIOS ? 'iOS' : isAndroid ? 'Android' : 'Desktop',
       recommendedModel: isIOS ? IOS_RECOMMENDED_MODEL : 'easylm-bonsai-2-2b',
       hardwareTier: isIOS ? 'mobile' : 'ultralight',
-      recommendedContextLimit: isIOS ? IOS_CONTEXT_LIMIT : 8192
+      recommendedContextLimit: isIOS ? IOS_CONTEXT_LIMIT : 32768
     };
   }
 }
@@ -201,11 +201,11 @@ async function detectDeviceUnsafe(): Promise<DeviceInfo> {
     if (!isTablet || (maxMemoryGB && maxMemoryGB <= 4) || (maxBufferSizeMB && maxBufferSizeMB < 512)) {
       hardwareTier = 'ultralight';
       estimatedVRAMGB = 4;
-      recommendedContextLimit = 8192;
+      recommendedContextLimit = 32768; // 32k floor for every non-iOS device (owner ruling, 2026-10-18)
     } else {
       hardwareTier = 'standard';
       estimatedVRAMGB = 6;
-      recommendedContextLimit = 16384;
+      recommendedContextLimit = 32768;
     }
   } else {
     // Desktop or Laptop

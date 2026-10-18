@@ -30,4 +30,4 @@ GitHub `erastudil/easylm` is SoT. this tree is the working copy.
 
 ## refuse
 
-homework farms as sources. vendoring NC bodies (MIT OCW) into git. cloud gradebooks. deadline shame. horizontal scroll bars. button parentheticals.
+homework farms as sources. vendoring NC bodies (MIT OCW) into git. cloud gradebooks. deadline shame. horizontal scroll bars. button parentheticals. nominal facades (never claim a model is fine-tuned or running a LoRA adapter in WebGPU unless the trained weights are physically merged and compiled into the served MLC/WebGPU shards or executed in the forward pass; steer at the cheap stage with an honest upfront cost and engineering plan).

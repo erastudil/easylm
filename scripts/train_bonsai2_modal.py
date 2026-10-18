@@ -11,8 +11,9 @@ true `Qwen3_5ForConditionalGeneration` architectures (`transformers>=5.17.0`, `p
   - 27B (`Qwen/Qwen3.5-27B`, 64 layers, hidden_size=5120, 4-bit NF4 QLoRA): 1 adapter
 
 Persists real `adapter_model.safetensors`, `adapter_config.json`, `trainer_state.json`,
-`training_metadata.json`, and `README.md` to Modal Volume `easylm-adapters`, uploads
-directly to `Bluebarrels/*` on Hugging Face Hub, and syncs local verification artifacts.
+and `training_metadata.json` to Modal Volume `easylm-adapters` and syncs the log files
+locally. Publishing to Hugging Face goes through `adapter_publish_gate.publish_adapter_folder`
+(eval results required), never from the training container.
 """
 
 from __future__ import annotations
@@ -21,7 +22,6 @@ import hashlib
 import json
 import logging
 import math
-import os
 from pathlib import Path
 import random
 import re
@@ -335,8 +335,8 @@ BONSAI2_SPECS: list[dict[str, Any]] = [
         "max_samples": 111,
         "num_steps": 32,
         "desc": (
-            "Discrete PEFT LoRA adapter specializing Bonsai 2 9B (2GB) in child-safe STEM/humanities tutoring, "
-            "hard refusals on minor exploitation or unsafe synthesis, and offline-only studio/stack tool routing."
+            "Discrete PEFT LoRA adapter for Bonsai 2 9B (2GB) trained on adapter_kidsafety_chatml.jsonl: "
+            "child-safe STEM and humanities tutoring and offline-only studio and stack tool routing."
         ),
         "tags": ["bonsai2", "9b", "kidsafety", "child-safety", "socratic-coach", "easylm"],
     },
@@ -458,7 +458,6 @@ def train_tier_adapters_on_modal(
     tier_key: str,
     tier_cfg: dict[str, Any],
     specs: list[dict[str, Any]],
-    hf_token: str,
 ) -> dict[str, Any]:
     """Loads the tier base model (`Qwen/Qwen3.5-2B`, `4B`, `9B`, or `27B`) on an A100 GPU,
     attaches PEFT LoRA (`r=16, alpha=32`), and trains each adapter for the tier with real
@@ -466,7 +465,6 @@ def train_tier_adapters_on_modal(
     """
     import numpy as np
     import torch
-    from huggingface_hub import HfApi
     from peft import LoraConfig, TaskType, get_peft_model, prepare_model_for_kbit_training
     from transformers import AutoTokenizer, BitsAndBytesConfig, Qwen3_5ForConditionalGeneration, get_cosine_schedule_with_warmup
 
@@ -478,7 +476,6 @@ def train_tier_adapters_on_modal(
     max_seq_len = tier_cfg["max_seq_len"]
 
     output_volume.reload()
-    api = HfApi(token=hf_token)
     results: dict[str, Any] = {}
     pending_specs: list[tuple[int, dict[str, Any]]] = []
 
@@ -489,19 +486,16 @@ def train_tier_adapters_on_modal(
         ts_file = out_dir / "trainer_state.json"
         tm_file = out_dir / "training_metadata.json"
         ac_file = out_dir / "adapter_config.json"
-        rm_file = out_dir / "README.md"
         if (
             st_file.is_file()
             and st_file.stat().st_size > 15_000_000
             and ts_file.is_file()
             and tm_file.is_file()
             and ac_file.is_file()
-            and rm_file.is_file()
         ):
             ts_data = json.loads(ts_file.read_text(encoding="utf-8"))
             tm_data = json.loads(tm_file.read_text(encoding="utf-8"))
             ac_data = json.loads(ac_file.read_text(encoding="utf-8"))
-            rm_text = rm_file.read_text(encoding="utf-8")
             results[slug] = {
                 "repo_id": spec["repo_id"],
                 "st_stats": tm_data["safetensors_verification"],
@@ -511,7 +505,6 @@ def train_tier_adapters_on_modal(
                 "adapter_config": ac_data,
                 "trainer_state": ts_data,
                 "training_metadata": tm_data,
-                "readme_md": rm_text,
             }
             print(
                 f"=== [Tier {tier_key.upper()}] Cached real trained adapter found for {slug}: "
@@ -521,7 +514,7 @@ def train_tier_adapters_on_modal(
             pending_specs.append((spec_idx, spec))
 
     if not pending_specs:
-        print(f"=== [Tier {tier_key.upper()}] All {len(specs)} adapters already trained and uploaded! ===")
+        print(f"=== [Tier {tier_key.upper()}] All {len(specs)} adapters already trained! ===")
         return results
 
     print(f"=== [Tier {tier_key.upper()}] Loading Base Model: {hf_base} (4bit={load_in_4bit}) for {len(pending_specs)} pending adapters ===")
@@ -840,70 +833,7 @@ def train_tier_adapters_on_modal(
             }
             (out_dir / "emap_csr.json").write_text(json.dumps(emap_json, indent=2), encoding="utf-8")
 
-        # Write README.md with real loss curve table
-        tags_yaml = "\n".join(f"- {t}" for t in spec["tags"])
-        loss_rows = "\n".join(
-            f"| {entry['step']} | {entry['loss']:.4f} | {entry['grad_norm']:.4f} | {entry['learning_rate']:.2e} |"
-            for entry in log_history
-            if entry["step"] == 1 or entry["step"] % 5 == 0 or entry["step"] == num_steps
-        )
-        readme_md = f"""---
-base_model: {tier_cfg["gguf_base"]}
-library_name: peft
-pipeline_tag: text-generation
-tags:
-- lora
-- peft
-- easylm
-- hydra
-- sovereign
-{tags_yaml}
-license: agpl-3.0
-datasets:
-- {DATASET_REPO_ID}
----
-
-# {slug}
-
-> **{spec["tier"]}** — Real GPU-Trained PEFT LoRA Adapter for **EasyLM** and **Hydra**
-
-{spec["desc"]}
-
-## Training & Architecture Summary
-
-| Property | Value |
-|---|---|
-| **Repository** | [`{repo_id}`](https://huggingface.co/{repo_id}) |
-| **Ternary GGUF Base** | [`{tier_cfg["gguf_base"]}`](https://huggingface.co/{tier_cfg["gguf_base"]}) |
-| **HF Training Backbone** | [`{hf_base}`](https://huggingface.co/{hf_base}) |
-| **WebGPU / MLC Base** | [`{tier_cfg["mlc_model"]}`](https://huggingface.co/{tier_cfg["mlc_model"]}) |
-| **Training Dataset** | [`{DATASET_REPO_ID}`](https://huggingface.co/datasets/{DATASET_REPO_ID}) (`{dataset_file}`, `{total_conversations:,}` conversations) |
-| **LoRA Rank / Alpha** | `r = 16`, `alpha = 32`, `dropout = 0.05` |
-| **Target Modules** | `q_proj`, `k_proj`, `v_proj`, `o_proj`, `gate_proj`, `up_proj`, `down_proj` |
-| **Initial -> Final Loss** | `{initial_loss:.4f}` -> `{final_loss:.4f}` (min `{min_loss:.4f}`) |
-| **SafeTensors Verification** | `{st_stats["tensor_count"]}` trained FP16 tensors, `{st_stats["nonzero_elements"]:,}` non-zero elements (`{st_stats["total_bytes"] / (1024 * 1024):.2f} MB`) |
-
-## Empirical Backpropagation Loss Curve (`trainer_state.json`)
-
-| Step | Cross-Entropy Loss | Grad Norm | Learning Rate |
-|---:|---:|---:|---:|
-{loss_rows}
-"""
-        (out_dir / "README.md").write_text(readme_md, encoding="utf-8")
-
         output_volume.commit()
-
-        # Upload directly from Modal container to Hugging Face Hub
-        api.create_repo(repo_id=repo_id, repo_type="model", exist_ok=True)
-        api.upload_folder(
-            folder_path=str(out_dir),
-            repo_id=repo_id,
-            repo_type="model",
-            commit_message=(
-                f"Upload real GPU-trained {slug} LoRA adapter "
-                f"(loss {initial_loss:.4f} -> {final_loss:.4f}, {st_stats['tensor_count']} tensors)"
-            ),
-        )
 
         # Return metadata + JSON files to host so host can sync without waiting on large downloads if needed
         results[slug] = {
@@ -915,10 +845,9 @@ datasets:
             "adapter_config": cfg_data,
             "trainer_state": trainer_state,
             "training_metadata": training_meta,
-            "readme_md": readme_md,
         }
         print(
-            f"  [UPLOADED] https://huggingface.co/{repo_id} | "
+            f"  [TRAINED] {repo_id} | "
             f"loss {initial_loss:.4f} -> {final_loss:.4f} | "
             f"{st_stats['tensor_count']} tensors ({st_stats['total_bytes'] / 1e6:.2f} MB)"
         )
@@ -930,12 +859,6 @@ datasets:
 def main(tier: str = "all") -> None:
     check_modal_credit_budget(min_credit_remaining=2.00)
 
-    from huggingface_hub import get_token
-
-    hf_token = os.environ.get("HF_TOKEN") or os.environ.get("HUGGING_FACE_HUB_TOKEN") or get_token()
-    if not hf_token:
-        raise RuntimeError("Hugging Face token not found. Run `huggingface-cli login` or set HF_TOKEN.")
-
     tiers_to_run = ["2b", "4b", "9b", "27b"] if tier == "all" else [t.strip().lower() for t in tier.split(",")]
 
     spawned_handles: list[tuple[str, Any]] = []
@@ -944,7 +867,7 @@ def main(tier: str = "all") -> None:
         if not t_specs:
             continue
         logger.info(f"Spawning Modal A100 GPU job for tier '{t_key}' ({len(t_specs)} adapters)...")
-        handle = train_tier_adapters_on_modal.spawn(t_key, TIER_BASE_MODELS[t_key], t_specs, hf_token)
+        handle = train_tier_adapters_on_modal.spawn(t_key, TIER_BASE_MODELS[t_key], t_specs)
         spawned_handles.append((t_key, handle))
 
     all_results: dict[str, Any] = {}
@@ -952,7 +875,7 @@ def main(tier: str = "all") -> None:
         logger.info(f"Awaiting completion of Modal A100 GPU job for tier '{t_key}'...")
         tier_res = handle.get()
         all_results.update(tier_res)
-        logger.info(f"[+] Tier '{t_key}' complete ({len(tier_res)} adapters trained and uploaded).")
+        logger.info(f"[+] Tier '{t_key}' complete ({len(tier_res)} adapters trained).")
 
     # Sync metadata and download trained SafeTensors locally
     LOCAL_ADAPTERS_DIR.mkdir(parents=True, exist_ok=True)
@@ -970,7 +893,6 @@ def main(tier: str = "all") -> None:
             (base_dir / "training_metadata.json").write_text(
                 json.dumps(info["training_metadata"], indent=2), encoding="utf-8"
             )
-            (base_dir / "README.md").write_text(info["readme_md"], encoding="utf-8")
 
     summary_path = LOCAL_LINEUP_DIR / "MODAL_REAL_TRAINING_SUMMARY.json"
     summary_path.write_text(
@@ -989,4 +911,4 @@ def main(tier: str = "all") -> None:
         ),
         encoding="utf-8",
     )
-    logger.info(f"=== ALL {len(all_results)} BONSAI 2 ADAPTERS TRAINED ON MODAL GPU & UPLOADED TO HUGGING FACE ===")
+    logger.info(f"=== ALL {len(all_results)} BONSAI 2 ADAPTERS TRAINED ON MODAL GPU; PUBLISH THROUGH adapter_publish_gate ===")

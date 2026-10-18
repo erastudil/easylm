@@ -12,7 +12,6 @@ from __future__ import annotations
 import argparse
 import json
 import logging
-import os
 from pathlib import Path
 import re
 import subprocess
@@ -262,16 +261,13 @@ def train_adapter_on_modal(
     output_volume.commit()
     print(f"Exported SafeTensors weights to {out_dir} (Volume committed)")
 
-    # 7. Push to Hugging Face Hub if requested
+    # 7. Publishing goes through scripts/upload_to_hf.py (adapter_publish_gate), never from the trainer
     hub_repo_url = None
-    token = hf_token or os.environ.get("HF_TOKEN")
-    if push_to_hub and token:
-        repo_id = f"{hf_org}/easylm-{adapter_name}-{model_slug}"
-        print(f"Pushing to Hugging Face Hub: {repo_id}")
-        trainer.model.push_to_hub(repo_id, token=token, safe_serialization=True)
-        tokenizer.push_to_hub(repo_id, token=token)
-        hub_repo_url = f"https://huggingface.co/{repo_id}"
-        print(f"Upload complete: {hub_repo_url}")
+    if push_to_hub:
+        print(
+            "push_to_hub is handled by scripts/upload_to_hf.py, which requires a training log, loss curve "
+            "and eval result next to the adapter. Nothing was pushed."
+        )
 
     return {
         "status": "success",

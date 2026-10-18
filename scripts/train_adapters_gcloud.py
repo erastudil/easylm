@@ -21,7 +21,6 @@ from __future__ import annotations
 import argparse
 import json
 import logging
-import os
 from pathlib import Path
 import sys
 from typing import Any, Dict, List, Optional
@@ -210,14 +209,12 @@ def train_single_adapter(
     trainer.model.save_pretrained(str(adapter_out_dir), safe_serialization=True)
     tokenizer.save_pretrained(str(adapter_out_dir))
 
-    # 7. Push to Hugging Face Hub (Optional)
+    # 7. Publishing goes through scripts/upload_to_hf.py (adapter_publish_gate), never from the trainer
     if args.push_to_hub:
-        repo_id = f"{args.hf_org}/easylm-{adapter_name}-{model_slug}"
-        logger.info(f"Pushing adapter to Hugging Face Hub: {repo_id}...")
-        hf_token = args.hf_token or os.environ.get("HF_TOKEN")
-        trainer.model.push_to_hub(repo_id, token=hf_token, safe_serialization=True)
-        tokenizer.push_to_hub(repo_id, token=hf_token)
-        logger.info(f"[+] Successfully pushed adapter to https://huggingface.co/{repo_id}")
+        logger.warning(
+            "--push-to-hub is handled by scripts/upload_to_hf.py, which requires a training log, loss curve "
+            "and eval result next to the adapter. Nothing was pushed."
+        )
 
     return adapter_out_dir
 

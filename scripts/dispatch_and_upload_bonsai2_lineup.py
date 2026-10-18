@@ -1,34 +1,27 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: AGPL-3.0-or-later
-"""Build and upload the EasyLM & Hydra Bonsai 2 (`2B`, `4B`, `9B`, `27B`) lineup,
-discrete skill adapters, refreshed `alice-emap-adapter`, and `easylm-training-corpus`
-dataset repository to Hugging Face under `Bluebarrels/`.
+"""Stage and publish the EasyLM & Hydra Bonsai 2 lineup, discrete skill adapters, and the
+`easylm-training-corpus` dataset repository to Hugging Face under `Bluebarrels/`.
 
-Generates:
-1. Valid, non-zero PEFT LoRA `adapter_model.safetensors` with deterministic
-   orthogonal/SVD-initialized low-rank `lora_A` and `lora_B` tensors across all 7
-   projection modules (`q_proj`, `k_proj`, `v_proj`, `o_proj`, `gate_proj`, `up_proj`, `down_proj`),
-   verified against the exact `parseSafeTensorsHeader` binary contract in `src/services/lora_loader.ts`.
-2. `adapter_config.json` (PEFT LoRA configuration, r=16, alpha=32).
-3. `training_metadata.json` (provenance, dataset SHA-256 digests, hyperparameters, SVD spectrum metrics).
-4. Comprehensive `README.md` model cards and dataset card.
+Adapters come from real training runs (`scripts/train_bonsai2_modal.py`). Each adapter folder
+holds its weights, adapter config, training log, loss curve and eval result, and publishes
+through `adapter_publish_gate.publish_adapter_folder`, which writes the model card from those
+files. The `kidsafety` adapters also need `refusal_eval.json` with a recorded pass.
 """
 
 from __future__ import annotations
 
-import hashlib
 import json
 import os
 from pathlib import Path
 import shutil
 import struct
 import sys
-import time
 from typing import Any
 
+from adapter_publish_gate import PublishGateError, check_publish_gate, publish_adapter_folder
 from huggingface_hub import HfApi, get_token
 import numpy as np
-from safetensors.numpy import save_file
 
 EASYLM_ROOT = Path(__file__).resolve().parents[1]
 DOCS_ROOT = EASYLM_ROOT.parent
@@ -314,8 +307,8 @@ BONSAI2_REPOS: list[dict[str, Any]] = [
         "dataset_file": "adapter_kidsafety_chatml.jsonl",
         "d_model": 384,
         "desc": (
-            "Discrete PEFT LoRA adapter specializing Bonsai 2 9B (2GB) in child-safe STEM/humanities tutoring, "
-            "hard refusals on minor exploitation or unsafe synthesis, and offline-only studio/stack tool routing."
+            "Discrete PEFT LoRA adapter for Bonsai 2 9B (2GB) trained on adapter_kidsafety_chatml.jsonl: "
+            "child-safe STEM and humanities tutoring and offline-only studio and stack tool routing."
         ),
         "tags": ["bonsai2", "9b", "kidsafety", "child-safety", "socratic-coach", "easylm"],
     },
@@ -368,7 +361,7 @@ BONSAI2_REPOS: list[dict[str, Any]] = [
 
 
 # ==============================================================================
-# SAFETENSORS SYNTHESIS & VERIFICATION (`lora_loader.ts` CONTRACT)
+# SAFETENSORS STAGING & VERIFICATION (`lora_loader.ts` CONTRACT)
 # ==============================================================================
 
 def verify_safetensors_header_contract(safetensors_path: Path, expected_rank: int = 16) -> dict[str, Any]:
@@ -412,8 +405,8 @@ def require_real_trained_safetensors(
     slug: str,
     expected_rank: int = 16,
 ) -> dict[str, Any]:
-    """Fails closed unless a real SFTTrainer-trained `adapter_model.safetensors` checkpoint exists.
-    Never synthesizes random or stub tensors (axiom zero stub / P013).
+    """Fails closed unless a trained `adapter_model.safetensors` checkpoint exists.
+    Never synthesizes tensors. The publish gate checks the training log, loss curve and eval result.
     """
     trained_candidates = [
         EASYLM_ROOT / "output" / "adapters" / slug / "adapter_model.safetensors",
@@ -422,21 +415,13 @@ def require_real_trained_safetensors(
     source_path: Path | None = None
     for cand in trained_candidates:
         if cand.is_file() and cand.stat().st_size > 0:
-            # Verify accompanying trainer_state.json or real SFT provenance
-            trainer_state = cand.parent / "trainer_state.json"
-            if not trainer_state.is_file():
-                raise RuntimeError(
-                    f"[JIDOKA HALT] Refusing to upload {cand}: missing trainer_state.json proof of real SFTTrainer gradient descent. "
-                    f"Run scripts/train_modal_adapters.py or scripts/train_adapters_gcloud.py first."
-                )
             source_path = cand
             break
 
     if source_path is None:
         raise RuntimeError(
-            f"[JIDOKA HALT] No real trained adapter_model.safetensors found for '{slug}'. "
-            f"Synthetic/random weight generation is permanently banned. "
-            f"Run scripts/train_modal_adapters.py --model <tier> --adapter <target> first."
+            f"[JIDOKA HALT] No trained adapter_model.safetensors found for '{slug}'. "
+            f"Run scripts/train_bonsai2_modal.py first."
         )
 
     if source_path.resolve() != target_path.resolve():
@@ -445,156 +430,8 @@ def require_real_trained_safetensors(
 
 
 # ==============================================================================
-# CONFIG, METADATA & MODEL CARD GENERATORS
+# DATASET CARD & UPLOAD
 # ==============================================================================
-
-def make_adapter_config(spec: dict[str, Any]) -> dict[str, Any]:
-    return {
-        "base_model_name_or_path": spec["base_model"],
-        "mlc_webgpu_model": spec.get("mlc_model", spec["base_model"]),
-        "bias": "none",
-        "fan_in_fan_out": False,
-        "inference_mode": True,
-        "init_lora_weights": "svd_orthogonal",
-        "lora_alpha": 32,
-        "lora_dropout": 0.05,
-        "modules_to_save": None,
-        "peft_type": "LORA",
-        "peft_version": "0.21.2",
-        "r": 16,
-        "target_modules": TARGET_MODULES,
-        "task_type": "CAUSAL_LM",
-    }
-
-
-def make_training_metadata(spec: dict[str, Any], st_stats: dict[str, Any]) -> dict[str, Any]:
-    ds_path = DATA_DIR / spec["dataset_file"]
-    ds_rows = 0
-    ds_sha256 = ""
-    if ds_path.is_file():
-        raw_bytes = ds_path.read_bytes()
-        ds_sha256 = hashlib.sha256(raw_bytes).hexdigest()
-        ds_rows = raw_bytes.count(b"\n")
-
-    return {
-        "repo_id": spec["repo_id"],
-        "slug": spec["slug"],
-        "kind": spec["kind"],
-        "base_model": spec["base_model"],
-        "mlc_webgpu_model": spec.get("mlc_model", spec["base_model"]),
-        "tier": spec["tier"],
-        "weights_size": spec["weights_size"],
-        "context_window": spec["context"],
-        "lora_hyperparameters": {
-            "rank": 16,
-            "alpha": 32,
-            "dropout": 0.05,
-            "target_modules": TARGET_MODULES,
-            "initialization": "deterministic_svd_orthogonal_f16",
-        },
-        "dataset": {
-            "corpus_repo": DATASET_REPO_ID,
-            "file": spec["dataset_file"],
-            "conversations": ds_rows,
-            "sha256": ds_sha256,
-            "sources": {
-                "sovereign_stacks": 92,
-                "google_drive_fact_tables": 369,
-                "council_of_kami_books": 151,
-                "easylm_personalities": 75,
-                "alice_emap_nodes": 46025,
-                "alice_emap_edges": 19842,
-                "alice_socratic_shapes": "Q01-Q12, C1-C6, S0-S6",
-                "muse_ether_fishing": "W0001-W0003 append-only why-ledger",
-            },
-        },
-        "safetensors_verification": st_stats,
-        "built_at": "2026-10-17T20:48:00Z",
-    }
-
-
-def make_model_readme(spec: dict[str, Any], meta: dict[str, Any]) -> str:
-    tags_yaml = "\n".join(f"- {t}" for t in spec["tags"])
-    ds_info = meta["dataset"]
-    st_info = meta["safetensors_verification"]
-    return f"""---
-base_model: {spec["base_model"]}
-library_name: peft
-pipeline_tag: text-generation
-tags:
-- lora
-- peft
-- easylm
-- hydra
-- sovereign
-{tags_yaml}
-license: agpl-3.0
-datasets:
-- {DATASET_REPO_ID}
----
-
-# {spec["slug"]}
-
-> **{spec["tier"]}** — Sovereign PEFT LoRA Adapter & Fine-Tune for **EasyLM** and **Hydra**
-
-{spec["desc"]}
-
-## Architecture & Model Lineup Summary
-
-| Property | Value |
-|---|---|
-| **Repository** | [`{spec["repo_id"]}`](https://huggingface.co/{spec["repo_id"]}) |
-| **Primary GGUF / Ternary Base** | [`{spec["base_model"]}`](https://huggingface.co/{spec["base_model"]}) |
-| **WebGPU / MLC Base** | [`{spec["mlc_model"]}`](https://huggingface.co/{spec["mlc_model"]}) |
-| **Target Memory Tier** | {spec["tier"]} |
-| **Footprint** | {spec["weights_size"]} |
-| **Context Window** | {spec["context"]} |
-| **Training Dataset** | [`{DATASET_REPO_ID}`](https://huggingface.co/datasets/{DATASET_REPO_ID}) (`{spec["dataset_file"]}`, `{ds_info["conversations"]:,}` turns) |
-| **LoRA Rank / Alpha** | `r = 16`, `alpha = 32`, `dropout = 0.05` |
-| **Target Modules** | `q_proj`, `k_proj`, `v_proj`, `o_proj`, `gate_proj`, `up_proj`, `down_proj` |
-| **SafeTensors Verification** | `{st_info["tensor_count"]}` tensors, `{st_info["nonzero_elements"]:,}` non-zero FP16 elements (`{st_info["total_bytes"]:,}` bytes) |
-
-## The EasyLM & Hydra Bonsai 2 Progression Ladder
-
-1. **`Bluebarrels/easylm-bonsai-2-2b` (`500 MB` — Universal Default for All EasyLM Users)**:
-   - Instant in-browser WebGPU load across phones, tablets, Chromebooks, and laptops.
-2. **`Bluebarrels/easylm-bonsai-2-4b` (`1 GB` — Intermediate Coaching Step-Up)**:
-   - Enhanced multi-turn Socratic coaching, essay synthesis, and coding mentor capabilities.
-3. **`Bluebarrels/easylm-bonsai-2-9b` (`2 GB` — Default Agent for Hydra & Advanced EasyLM Reasoning Workhorse)**:
-   - Powers `hydra agent` (`bonsai 2 9b`), MCP tool orchestration, and deep STEM derivations.
-4. **`Bluebarrels/easylm-bonsai-2-27b` (`6 GB` — Sovereign Workstation Flagship)**:
-   - Full 27-billion-parameter 1.58-bit ternary synthesis with integrated vision-tower and 262K context window.
-
-## Training Corpus Provenance (`Bluebarrels/easylm-training-corpus`)
-
-- **92 Sovereign Academic Stacks**: Exhaustive Greene-Feynman-Clarity (GFC) textbooks and Progen `FACTS.md` across mathematics, physics, chemistry, biology, computing, engineering, law, history, philosophy, and trades.
-- **369 Google Drive Fact Tables**: `4,634` verified quantitative reference rows spanning USGS mineral commodities, demographics, acoustics, thermodynamics, and primary historical charters.
-- **151 Council of Kami Books**: Voice-authentic multi-turn counsel across all 151 seated historical, scientific, and philosophical masters.
-- **Alice 1.0 EMap (`46,025` Nodes, `19,842` Edges) & Socratic Antithesis Layer**:
-  - 6 Confusion Diagnostic modes (`C1`–`C6`), 12 taught Carrollian Question Shapes (`Q01`–`Q12`), and 7-stage Elenchus & Aporia state machine (`S0`–`S6`).
-- **Muse's `ether-fishing` Why-Ledger**:
-  - `W0001` (why before how), `W0002` (append-only supersession DAG), `W0003` (5-check empirical verification gate), and `taste-futures` epistemic fragility pricing.
-- **Full Hydra Curriculum (`v1.2.2`)**:
-  - CLI (`hydra`, `hydra agent`, `hydra swarm`, `hydra serve` port 7777, `@[hydra]` capsules), `hydra-tui-rs` & `hydra-desktop-rs` modes (`chat`, `agent`, `swarm`, `computer`, `terminal`), permissions (`manual`, `accept_edits`, `plan`, `bypass`), and context modes (`recall`, `compact`, `sliding`).
-
-## Client-Side WebGPU & Hydra Usage
-
-```typescript
-import {{ parseSafeTensorsHeader, applyLoRAWeights }} from './services/lora_loader';
-
-// Fetch and validate SafeTensors LoRA adapter in EasyLM WebGPU runtime
-const response = await fetch('https://huggingface.co/{spec["repo_id"]}/resolve/main/adapter_model.safetensors');
-const buffer = await response.arrayBuffer();
-const {{ header, offset }} = parseSafeTensorsHeader(buffer);
-```
-
-```bash
-# Summon in Hydra CLI / TUI / Desktop
-hydra bonsai 2 9b "Verify the Rankine-Hugoniot shock jump relations"
-hydra agent "Inspect repository status and run deterministic verification gates"
-```
-"""
-
 
 def make_dataset_readme(file_counts: dict[str, tuple[int, float]]) -> str:
     rows_md = "\n".join(
@@ -774,64 +611,42 @@ def main() -> int:
     user_info = api.whoami()
     print(f"=== Authenticated with Hugging Face Hub as: {user_info.get('name')} ===")
 
-    # 1. Upload refreshed dataset repository first
-    dataset_files = upload_refreshed_dataset_corpus(api)
+    # 1. Stage every adapter and run the publish gate before anything is uploaded
+    gate_failures: list[str] = []
+    for spec in BONSAI2_REPOS:
+        local_dir = OUTPUT_FINETUNES_DIR / spec["slug"]
+        local_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            st_stats = require_real_trained_safetensors(
+                local_dir / "adapter_model.safetensors",
+                slug=spec["slug"],
+                expected_rank=16,
+            )
+            if spec.get("kind") == "emap":
+                prepare_alice_emap_extras(local_dir)
+            check_publish_gate(local_dir, spec["repo_id"])
+        except (PublishGateError, RuntimeError, ValueError) as err:
+            gate_failures.append(f"{spec['repo_id']}: {err}")
+            continue
+        print(
+            f"  [gate ok] {spec['repo_id']}: {st_stats['tensor_count']} tensors, "
+            f"{st_stats['nonzero_elements']:,} non-zero elements ({st_stats['total_bytes'] / 1e6:.2f} MB)"
+        )
+    if gate_failures:
+        print(f"[PUBLISH GATE] {len(gate_failures)} of {len(BONSAI2_REPOS)} repos fail; nothing was uploaded:")
+        for failure in gate_failures:
+            print(f"  - {failure}")
+        return 1
 
-    # 2. Build and upload all 16 Bonsai 2 finetunes & discrete skill adapters
+    # 2. Upload the refreshed dataset repository, then every adapter through the gate
+    dataset_files = upload_refreshed_dataset_corpus(api)
     verified_repos: dict[str, list[str]] = {DATASET_REPO_ID: dataset_files}
 
     for idx, spec in enumerate(BONSAI2_REPOS, start=1):
         repo_id = spec["repo_id"]
         slug = spec["slug"]
-        local_dir = OUTPUT_FINETUNES_DIR / slug
-        local_dir.mkdir(parents=True, exist_ok=True)
-
-        print(f"\n-------------------------------------------------------------------")
-        print(f"[{idx:02d}/{len(BONSAI2_REPOS):02d}] Building & Uploading: {repo_id}")
-        print(f"  Base Model: {spec['base_model']} | Tier: {spec['tier']}")
-        print(f"-------------------------------------------------------------------")
-
-        # a) Require real SFTTrainer-trained adapter_model.safetensors (fail closed if missing)
-        weights_path = local_dir / "adapter_model.safetensors"
-        st_stats = require_real_trained_safetensors(
-            weights_path,
-            slug=slug,
-            expected_rank=16,
-        )
-        print(
-            f"  [+] adapter_model.safetensors verified: {st_stats['tensor_count']} tensors, "
-            f"{st_stats['nonzero_elements']:,} non-zero elements ({st_stats['total_bytes'] / 1e6:.2f} MB)"
-        )
-
-        # b) Write adapter_config.json
-        config_path = local_dir / "adapter_config.json"
-        config_path.write_text(json.dumps(make_adapter_config(spec), indent=2), encoding="utf-8")
-
-        # c) Write training_metadata.json
-        meta_data = make_training_metadata(spec, st_stats)
-        meta_path = local_dir / "training_metadata.json"
-        meta_path.write_text(json.dumps(meta_data, indent=2), encoding="utf-8")
-
-        # d) If alice-emap-adapter, bundle 46,025-node emap_csr.bin, emap_csr.json, and SPEC.md
-        if spec.get("kind") == "emap":
-            prepare_alice_emap_extras(local_dir)
-            print("  [+] Bundled 46,025-node emap_csr.bin, emap_csr.json, and SPEC.md")
-
-        # e) Write README.md
-        readme_path = local_dir / "README.md"
-        readme_path.write_text(make_model_readme(spec, meta_data), encoding="utf-8")
-
-        # f) Create & upload to Hugging Face Hub
-        api.create_repo(repo_id=repo_id, repo_type="model", exist_ok=True)
-        api.upload_folder(
-            folder_path=str(local_dir),
-            repo_id=repo_id,
-            repo_type="model",
-            commit_message=f"Release {slug} ({spec['tier']}) trained on expanded 92 stacks, 369 fact tables, 151 Council books, Hydra & Socratic Antithesis",
-            ignore_patterns=["*.tmp", "*.log"],
-        )
-
-        # g) Verify remote files via list_repo_files
+        print(f"[{idx:02d}/{len(BONSAI2_REPOS):02d}] Publishing: {repo_id}")
+        publish_adapter_folder(api, OUTPUT_FINETUNES_DIR / slug, repo_id, commit_message=f"Release {slug}")
         rfiles = api.list_repo_files(repo_id=repo_id, repo_type="model")
         verified_repos[repo_id] = rfiles
         print(f"  [verified] https://huggingface.co/{repo_id} -> {rfiles}")

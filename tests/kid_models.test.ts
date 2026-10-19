@@ -14,6 +14,7 @@ import {
   KID_MODE_MODEL_ID,
   crashStepDownModel,
   findModelOption,
+  formatDownloadGB,
   getOomFallbackModel,
   getOrInitEngine,
   isModelAllowedForKid,
@@ -26,6 +27,7 @@ import {
 import { detectDevice, deviceInfoForProfile, DeviceInfo, IOS_RECOMMENDED_MODEL } from '../src/engine/device';
 import { OFFICIAL_ADAPTERS } from '../src/services/lora_loader';
 import { ModelModal } from '../src/components/ModelModal';
+import { HardwareRecommendationModal } from '../src/components/HardwareRecommendationModal';
 import {
   addProfileAtom,
   clearProfileAtoms,
@@ -315,7 +317,30 @@ describe('kid model picker UI', () => {
     expect(html).toContain('Bonsai 2 9B (Base)');
     expect(html).toContain('<span>Hugging Face</span>');
     expect(html).not.toContain('Llama 3.2 1B Instruct');
-    for (const m of AVAILABLE_MODELS) expect(html, m.label).toContain(m.label);
+    const text = html.replace(/<!-- -->/g, '');
+    for (const m of AVAILABLE_MODELS) {
+      expect(html, m.label).toContain(m.label);
+      expect(m.description, m.id).toContain(`about a ${formatDownloadGB(m.sizeMB)} GB`);
+      expect(text, m.id).toContain(`Download: ~${formatDownloadGB(m.sizeMB)} GB`);
+    }
+    expect(text).toContain('Download: ~1.06 GB');
+    expect(text).not.toContain('Download: ~1.0 GB');
+  });
+
+  it('the first-run card quotes the same decimal download as the catalog', () => {
+    const html = renderToString(createElement(HardwareRecommendationModal, {
+      isOpen: true,
+      onClose: () => {},
+      deviceInfo: null,
+      onConfirmLoad: () => {},
+      onDecline: () => {}
+    })).replace(/<!-- -->/g, '');
+    const gb = formatDownloadGB(AVAILABLE_MODELS[0].sizeMB);
+    expect(gb).toBe('1.06');
+    expect(html).toContain(`~${gb} GB download`);
+    expect(html).toContain(`about ${gb} GB`);
+    expect(html).not.toContain('~0.5 GB');
+    expect(html).not.toContain('1.0 GB');
   });
 });
 

@@ -223,6 +223,15 @@ function vramLabel(modelId: string): string {
   return mb === undefined ? 'VRAM unknown' : `~${(mb / 1000).toFixed(1)} GB VRAM`;
 }
 
+/**
+ * Download size in decimal GB, two places. Catalog sentences and the README
+ * table both use sizeMB / 1000 (1059 → 1.06). Binary GiB ( / 1024) prints 1.0
+ * for that same card and disagrees with the sentence on the card.
+ */
+export function formatDownloadGB(sizeMB: number): string {
+  return (sizeMB / 1000).toFixed(2);
+}
+
 export const AVAILABLE_MODELS: ModelOption[] = [
   // Bonsai 2 lineup — BASE weights for now (truth pass, 2026-10-17). The web app
   // serves the Qwen3.5 base builds that Bonsai 2 is made from. The EasyLM Bonsai 2

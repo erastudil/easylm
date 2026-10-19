@@ -6,6 +6,7 @@ import {
   ProgressStatus,
   resetWebGPUAndCaches,
   getModelVramMB,
+  formatDownloadGB,
   fetchAndVerifyAdapter,
   findModelOption,
   getActiveSkillAdapter,
@@ -566,7 +567,7 @@ export const ModelModal: React.FC<ModelModalProps> = ({
                     {/* Footer / Action */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.5rem', borderTop: '1px solid rgba(255, 255, 255, 0.06)', marginTop: '0.4rem', fontSize: '0.72rem' }}>
                       <span style={{ color: '#71717a' }}>
-                        Download: ~{(m.sizeMB / 1024).toFixed(1)} GB
+                        Download: ~{formatDownloadGB(m.sizeMB)} GB
                       </span>
 
                       {tooLargeForIOS ? (

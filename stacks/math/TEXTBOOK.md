@@ -2,6 +2,8 @@
 title: "math — undergrad textbook"
 date: "2026-09-13"
 status: living · undergrad · the-stacks
+level: undergrad
+floor_age: 13
 home: "stacks/math/"
 related:
   - "../physics/"

@@ -2,6 +2,8 @@
 title: "engineering — undergrad textbook"
 date: "2026-08-28"
 status: living · undergrad · foundational-textbook
+level: undergrad
+floor_age: 13
 home: "stacks/engineering/"
 related:
   - "../physics/"

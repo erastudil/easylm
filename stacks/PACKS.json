@@ -15,7 +15,9 @@
       "popper",
       "null hypothesis",
       "causation"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "computing",
@@ -36,7 +38,9 @@
       "shannon",
       "entropy",
       "information"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "software",
@@ -55,7 +59,9 @@
       "api",
       "architecture",
       "design patterns"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "security",
@@ -83,7 +89,9 @@
       "memory safety",
       "firewall",
       "opsec"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "ai_ml",
@@ -102,7 +110,9 @@
       "token",
       "llm",
       "backpropagation"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "philosophy",
@@ -121,7 +131,9 @@
       "socrates",
       "epistemology",
       "metaphysics"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "psychology",
@@ -141,7 +153,9 @@
       "psychology",
       "development",
       "piaget"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "tao_te_ching",
@@ -162,7 +176,9 @@
       "philosophy",
       "primary text",
       "classical"
-    ]
+    ],
+    "level": "read",
+    "floor_age": 13
   },
   {
     "slug": "religion",
@@ -183,7 +199,9 @@
       "sacred",
       "scripture",
       "monomyth"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "sociology",
@@ -204,7 +222,9 @@
       "anthropology",
       "society",
       "capital"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "media",
@@ -250,7 +270,9 @@
       "sovereignty",
       "democracy",
       "federalism"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "finance",
@@ -269,7 +291,9 @@
       "inflation",
       "liquidity",
       "capm"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "law",
@@ -286,7 +310,9 @@
       "torts",
       "contracts",
       "constitutional"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "language",
@@ -304,7 +330,9 @@
       "morphology",
       "pragmatics",
       "etymology"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "math",
@@ -323,7 +351,9 @@
       "eigenvalue",
       "topology",
       "derivative"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "astronomy",
@@ -343,7 +373,9 @@
       "redshift",
       "big bang",
       "astrophysics"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "physics",
@@ -361,7 +393,9 @@
       "force",
       "thermodynamics",
       "electromagnetism"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "chemistry",
@@ -379,7 +413,9 @@
       "orbital",
       "kinetics",
       "thermodynamics"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "earth_sciences",
@@ -403,7 +439,9 @@
       "fault",
       "magma",
       "geomorphology"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "biology",
@@ -421,7 +459,9 @@
       "protein",
       "natural selection",
       "mitochondria"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "health",
@@ -440,7 +480,9 @@
       "endocrine",
       "immune",
       "metabolism"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "engineering",
@@ -458,7 +500,9 @@
       "thermodynamics",
       "signals",
       "mechanics"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "agriculture",
@@ -476,7 +520,9 @@
       "photosynthesis",
       "tillage",
       "silviculture"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "business",
@@ -495,7 +541,9 @@
       "governance",
       "porter",
       "firm"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "trades",
@@ -529,7 +577,9 @@
       "mig",
       "tig",
       "metallurgy"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "art",
@@ -546,7 +596,9 @@
       "chiaroscuro",
       "modernism",
       "form"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "music",
@@ -564,7 +616,9 @@
       "cadence",
       "interval",
       "temperament"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "literature",
@@ -582,7 +636,9 @@
       "irony",
       "allegory",
       "drama"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "poetry",
@@ -602,7 +658,9 @@
       "poetics",
       "diction",
       "ode"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "history",
@@ -618,7 +676,9 @@
       "enlightenment",
       "feudalism",
       "renaissance"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   },
   {
     "slug": "geography",
@@ -636,6 +696,8 @@
       "gis",
       "demography",
       "geomorphology"
-    ]
+    ],
+    "level": "undergrad",
+    "floor_age": 13
   }
 ]

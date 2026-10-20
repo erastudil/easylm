@@ -2,6 +2,8 @@
 Title: "software — undergrad textbook"
 Date: "2026-09-13"
 Status: living · undergrad · the-stacks
+level: undergrad
+floor_age: 13
 Home: "stacks/software/"
 Related:
   - "../computing/"

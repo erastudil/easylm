@@ -5,6 +5,8 @@ import { fileURLToPath } from 'node:url';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const stacksDir = join(root, 'stacks');
 const verbose = process.argv.includes('-v');
+const noWrite = process.argv.includes('--no-write');
+const strictWarn = process.argv.includes('--strict-warn');
 
 const LEVELS = new Set(['read', 'count', 'algebra', 'hs', 'undergrad', 'grad']);
 
@@ -14,6 +16,7 @@ const KNOWN_GAPS = [
 ];
 
 const packs = JSON.parse(readFileSync(join(stacksDir, 'PACKS.json'), 'utf8'));
+const indexMd = readFileSync(join(stacksDir, 'INDEX.md'), 'utf8');
 const slugs = new Set(packs.map(p => p.slug));
 const onDisk = readdirSync(stacksDir, { withFileTypes: true })
   .filter(d => d.isDirectory()).map(d => d.name);
@@ -23,12 +26,12 @@ const fails = [];
 const warns = [];
 
 function frontMatter(md) {
-  const m = md.match(/^---\n([\s\S]*?)\n---/);
+  const m = md.replace(/^\uFEFF/, '').match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!m) return {};
   const fm = {};
-  for (const line of m[1].split('\n')) {
-    const kv = line.match(/^([a-z_]+):\s*(.+)$/);
-    if (kv) fm[kv[1]] = kv[2].trim();
+  for (const line of m[1].split(/\r?\n/)) {
+    const kv = line.match(/^([A-Za-z_]+):\s*(.+)$/);
+    if (kv) fm[kv[1].toLowerCase()] = kv[2].trim();
   }
   return fm;
 }
@@ -78,6 +81,9 @@ for (const p of packs) {
       fails.push(`${p.slug}/TEXTBOOK.md: front-matter related "../${m[1]}/" does not exist`);
     }
   }
+  if (!new RegExp(`\\|\\s*${p.slug}\\s*\\|`).test(indexMd)) {
+    fails.push(`stacks/INDEX.md is missing table row for slug "${p.slug}"`);
+  }
 
   rows.push({ dewey: p.dewey, slug: p.slug, lines, chapters, doors: urls.length, hosts, level, floor: floorAge });
 }
@@ -113,11 +119,14 @@ linesOut.push('', '## known gaps (candidates, not failures)');
 for (const g of KNOWN_GAPS) linesOut.push(`- ${g}`);
 linesOut.push('');
 
-writeFileSync(join(stacksDir, 'NIGHTLY_REPORT.md'), linesOut.join('\n'), 'utf8');
+if (!noWrite) {
+  writeFileSync(join(stacksDir, 'NIGHTLY_REPORT.md'), linesOut.join('\n'), 'utf8');
+}
 
 if (verbose) for (const r of rows) console.log(`${r.dewey.padStart(7)} ${r.slug.padEnd(14)} ${String(r.lines).padStart(4)} lines ${String(r.chapters).padStart(3)} ch ${String(r.doors).padStart(3)} doors ${r.level || '—'}`);
 for (const f of fails) console.error(`FAIL ${f}`);
 for (const w of warns) console.error(`WARN ${w}`);
 console.log(`stacks audit: ${rows.length} packs, ${fails.length} fail, ${warns.length} warn -> stacks/NIGHTLY_REPORT.md`);
-console.log(fails.length === 0 ? 'pass' : 'fail');
-process.exit(fails.length === 0 ? 0 : 1);
+const ok = fails.length === 0 && (!strictWarn || warns.length === 0);
+console.log(ok ? 'pass' : 'fail');
+process.exit(ok ? 0 : 1);

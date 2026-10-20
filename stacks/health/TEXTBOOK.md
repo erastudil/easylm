@@ -2,6 +2,8 @@
 title: "health — undergrad textbook"
 date: "2026-09-13"
 status: living · undergrad · foundational-textbook
+level: undergrad
+floor_age: 13
 home: "stacks/health/"
 related:
   - "../biology/"

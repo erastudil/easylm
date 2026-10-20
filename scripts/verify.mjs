@@ -14,6 +14,7 @@ function assert(condition, message) {
 }
 
 console.log('==> [1/6] Running prebuild compilation (Stacks and Courses)...');
+execSync('node scripts/nightly_stacks.mjs --no-write --strict-warn', { cwd: ROOT, stdio: 'inherit' });
 execSync('node scripts/compile_stacks.mjs', { cwd: ROOT, stdio: 'inherit' });
 execSync('node scripts/compile_courses.mjs', { cwd: ROOT, stdio: 'inherit' });
 assert(existsSync(resolve(ROOT, 'src/data/stacks_compiled.ts')), 'stacks_compiled.ts must exist');

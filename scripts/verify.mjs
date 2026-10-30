@@ -206,8 +206,8 @@ for (const entry of catalogEntries) {
 }
 assert(readmeContent.includes('Llama 3.2 1B Instruct'), 'README must document the kid-profile model (Llama 3.2 1B Instruct)');
 
-console.log('==> [5/6] Running kid allowlist, LoRA loader, stacks chapter, hardware modal, and adapter publish gate tests...');
-execSync('node ./node_modules/vitest/vitest.mjs run tests/kid_models.test.ts tests/stacks_chapters.test.ts tests/lora_loader.test.ts tests/hardware_recommendation_modal.test.ts', { cwd: ROOT, stdio: 'inherit' });
+console.log('==> [5/6] Running kid allowlist, LoRA loader, context budget, stacks chapter, hardware modal, and adapter publish gate tests...');
+execSync('node ./node_modules/vitest/vitest.mjs run tests/kid_models.test.ts tests/stacks_chapters.test.ts tests/lora_loader.test.ts tests/context_budget.test.ts tests/hardware_recommendation_modal.test.ts', { cwd: ROOT, stdio: 'inherit' });
 execSync(`${process.platform === 'win32' ? 'python' : 'python3'} tests/adapter_publish_gate_test.py`, { cwd: ROOT, stdio: 'inherit' });
 
 console.log('==> [6/6] Verifying TypeScript and Vite production bundle (npm run build)...');

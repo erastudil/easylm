@@ -17,7 +17,8 @@ import {
   estimateMessagesTokens,
   GpuFence,
   MIN_COMPLETION,
-  shouldRetryEngineInit
+  shouldRetryEngineInit,
+  stepDownContextWindow
 } from './context_budget';
 
 import {
@@ -1239,24 +1240,24 @@ export async function streamChatCompletion(
 ): Promise<{ fullText: string; thinking?: string; loopDetected?: boolean; loopReason?: string }> {
   const isReasoning = modelIsReasoning(modelId);
   const effectiveTemperature = isReasoning ? Math.max(0.6, temperature) : temperature;
-  const ctx = contextWindowSize || currentContextLimit || 32768;
+  let activeCtx = contextWindowSize || currentContextLimit || 32768;
 
   if (gpuFence === 'process_dead') {
     throw new Error('Unable to find a compatible GPU. Browser GPU worker is down.');
   }
 
-  const budget = budgetTurn(messages, ctx, { isReasoning });
+  let budget = budgetTurn(messages, activeCtx, { isReasoning });
   if (budget.maxTokens < MIN_COMPLETION) {
     throw new Error('CONTEXT_BUDGET: this turn does not fit the context window. Raise context in Settings or shorten the prompt.');
   }
-  const effectiveMaxTokens = Math.min(maxTokens > 0 ? maxTokens : budget.maxTokens, budget.maxTokens);
+  let effectiveMaxTokens = Math.min(maxTokens > 0 ? maxTokens : budget.maxTokens, budget.maxTokens);
 
   let attempt = 0;
   while (attempt < 2) {
     attempt++;
     let engine: MLCEngine;
     try {
-      engine = await getOrInitEngine(modelId, onProgress, contextWindowSize);
+      engine = await getOrInitEngine(modelId, onProgress, activeCtx);
     } catch (initErr: any) {
       activeEngine = null;
       currentLoadedModel = '';
@@ -1285,9 +1286,14 @@ export async function streamChatCompletion(
       initPromise = null;
 
       if (shouldRetryEngineInit(kind, attempt, gpuFence)) {
-        console.warn(`[WebLLM] Engine disposed before generation (${createErr?.message}). Retrying once.`);
+        if (kind === 'oom') {
+          activeCtx = stepDownContextWindow(activeCtx);
+          budget = budgetTurn(messages, activeCtx, { isReasoning });
+          effectiveMaxTokens = Math.min(maxTokens > 0 ? maxTokens : budget.maxTokens, budget.maxTokens);
+        }
+        console.warn(`[WebLLM] Engine ${kind} before generation (${createErr?.message}). Retrying once at ${activeCtx} ctx.`);
         if (onProgress) {
-          onProgress({ text: 'Engine was unloaded. Re-warming weights...', progress: 0.05 });
+          onProgress({ text: `Engine recovery (${kind}). Re-warming weights at ${activeCtx.toLocaleString()} ctx...`, progress: 0.05 });
         }
         continue;
       }
@@ -1333,9 +1339,14 @@ export async function streamChatCompletion(
         initPromise = null;
 
         if (shouldRetryEngineInit(kind, attempt, gpuFence) && (!fullRaw || fullRaw.length < 20)) {
-          console.warn(`[WebLLM] Stream interrupted by disposal (${err?.message}). Retrying once.`);
+          if (kind === 'oom') {
+            activeCtx = stepDownContextWindow(activeCtx);
+            budget = budgetTurn(messages, activeCtx, { isReasoning });
+            effectiveMaxTokens = Math.min(maxTokens > 0 ? maxTokens : budget.maxTokens, budget.maxTokens);
+          }
+          console.warn(`[WebLLM] Stream interrupted by ${kind} (${err?.message}). Retrying once at ${activeCtx} ctx.`);
           if (onProgress) {
-            onProgress({ text: 'Engine was unloaded mid-stream. Re-warming weights...', progress: 0.05 });
+            onProgress({ text: `Engine recovery (${kind}) mid-stream. Re-warming weights at ${activeCtx.toLocaleString()} ctx...`, progress: 0.05 });
           }
           continue;
         }
@@ -1373,7 +1384,7 @@ export async function streamChatCompletion(
           { role: 'assistant' as const, content: `<think>\n${thinking || 'Key considerations reviewed.'}\n</think>\n` },
           { role: 'user' as const, content: 'Synthesize and state your final direct, complete answer clearly now based on your reasoning above.' }
         ];
-        const synthMax = capMaxTokens(estimateMessagesTokens(synthMessages), ctx, Math.min(1500, effectiveMaxTokens));
+        const synthMax = capMaxTokens(estimateMessagesTokens(synthMessages), activeCtx, Math.min(1500, effectiveMaxTokens));
         const synthCompletion = await engine.chat.completions.create({
           messages: synthMessages,
           temperature: 0.5,

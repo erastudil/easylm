@@ -33,10 +33,12 @@ export function clipTextToTokens(text: string, maxTokens: number): string {
 export function effortCap(contextWindow: number, extendedThinking: boolean): number {
   const ctx = Math.max(1, contextWindow || 32768);
   if (extendedThinking) {
+    if (ctx >= 65536) return 8192;
     if (ctx >= 32768) return 4096;
     if (ctx >= 16384) return 2048;
     return 1024;
   }
+  if (ctx >= 65536) return 4096;
   if (ctx >= 32768) return 2048;
   if (ctx >= 16384) return 1536;
   return 1024;
@@ -186,7 +188,7 @@ export function shouldRetryEngineInit(
   if (fence === 'process_dead' || fence === 'lost') return false;
   if (kind === 'gpu_process_dead' || kind === 'device_lost') return false;
   // On OOM, allow 1 retry if context window can step down or fallback model used
-  if (kind === 'oom') return attempt === 0;
+  if (kind === 'oom') return attempt <= 1;
   return kind === 'disposed';
 }
 
@@ -196,6 +198,8 @@ export function shouldRetryEngineInit(
  */
 export function stepDownContextWindow(currentWindow: number): number {
   const w = Math.max(256, currentWindow || 4096);
+  if (w >= 131072) return 65536;
+  if (w >= 65536) return 32768;
   if (w >= 32768) return 16384;
   if (w >= 16384) return 8192;
   if (w >= 8192) return 4096;

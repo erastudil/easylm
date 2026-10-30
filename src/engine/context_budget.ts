@@ -31,7 +31,7 @@ export function clipTextToTokens(text: string, maxTokens: number): string {
 
 /** Completion effort: never the full context window. */
 export function effortCap(contextWindow: number, extendedThinking: boolean): number {
-  const ctx = Math.max(1, contextWindow || 4096);
+  const ctx = Math.max(1, contextWindow || 32768);
   if (extendedThinking) {
     if (ctx >= 32768) return 4096;
     if (ctx >= 16384) return 2048;
@@ -43,7 +43,7 @@ export function effortCap(contextWindow: number, extendedThinking: boolean): num
 }
 
 export function capMaxTokens(promptTokens: number, contextWindow: number, effort: number): number {
-  const ctx = Math.max(1, contextWindow || 4096);
+  const ctx = Math.max(1, contextWindow || 32768);
   const remaining = ctx - Math.max(0, promptTokens) - SAFETY_MARGIN;
   if (remaining <= 0) return 0;
   const want = effort > 0 ? effort : remaining;
@@ -107,7 +107,7 @@ export function budgetTurn(
   contextWindow: number,
   opts?: { extendedThinking?: boolean; isReasoning?: boolean }
 ): TurnBudget {
-  const ctx = Math.max(1, contextWindow || 4096);
+  const ctx = Math.max(1, contextWindow || 32768);
   const effort = effortCap(ctx, !!(opts?.extendedThinking || opts?.isReasoning));
   const msgs: ChatMessage[] = messages.map(m => ({ role: m.role, content: m.content }));
   let clipped = false;

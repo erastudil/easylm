@@ -17,8 +17,8 @@ export function isMobileDevice(nav: Partial<Navigator> | undefined = typeof navi
 
 /** iOS Safari ends a tab somewhere around 1.5-3 GB; models above this budget are kept off iPhone/iPad. */
 export const IOS_MODEL_BUDGET_MB = 2048;
-export const IOS_RECOMMENDED_MODEL = 'easylm-gemma-4-e2b-it';
-export const IOS_FALLBACK_MODEL = 'easylm-gemma-4-e2b-it';
+export const IOS_RECOMMENDED_MODEL = 'easylm-bonsai-2-2b';
+export const IOS_FALLBACK_MODEL = 'easylm-bonsai-2-2b';
 export const IOS_CONTEXT_LIMIT = 4096;
 
 export function fitsIOSBudget(modelId: string): boolean {
@@ -74,9 +74,9 @@ async function detectDeviceAnyProfile(): Promise<DeviceInfo> {
       isAndroid,
       hasWebGPU: false,
       osName: isIOS ? 'iOS' : isAndroid ? 'Android' : 'Desktop',
-      recommendedModel: isIOS ? IOS_RECOMMENDED_MODEL : 'easylm-gemma-4-e2b-it',
+      recommendedModel: isIOS ? IOS_RECOMMENDED_MODEL : 'easylm-bonsai-2-2b',
       hardwareTier: isIOS ? 'mobile' : 'ultralight',
-      recommendedContextLimit: isIOS ? IOS_CONTEXT_LIMIT : 8192
+      recommendedContextLimit: isIOS ? IOS_CONTEXT_LIMIT : 32768
     };
   }
 }
@@ -201,11 +201,11 @@ async function detectDeviceUnsafe(): Promise<DeviceInfo> {
     if (!isTablet || (maxMemoryGB && maxMemoryGB <= 4) || (maxBufferSizeMB && maxBufferSizeMB < 512)) {
       hardwareTier = 'ultralight';
       estimatedVRAMGB = 4;
-      recommendedContextLimit = 8192;
+      recommendedContextLimit = 32768; // 32k floor for every non-iOS device (owner ruling, 2026-10-18)
     } else {
       hardwareTier = 'standard';
       estimatedVRAMGB = 6;
-      recommendedContextLimit = 16384;
+      recommendedContextLimit = 32768;
     }
   } else {
     // Desktop or Laptop
@@ -225,14 +225,13 @@ async function detectDeviceUnsafe(): Promise<DeviceInfo> {
     }
   }
 
-  // Model recommendation (VRAM from web-llm prebuiltAppConfig or CUSTOM_MODEL_RECORDS):
-  // - Mobile (iOS) / Ultralight -> Gemma 4 E2B Instruct (~1.65 GB VRAM)
-  // - Standard / High Performance / Workstation -> Gemma 4 E4B Thinking (~3.2 GB VRAM) — default 4B workhorse
-  let recommendedModel = 'easylm-gemma-4-e4b-it';
+  // Universal starting point across all adult profiles: Bonsai 2 2B (Base).
+  // Users start on the 2B base. The picker coaches a step up to the 4B and 9B base builds.
+  let recommendedModel = 'easylm-bonsai-2-2b';
   if (hardwareTier === 'mobile') {
     recommendedModel = fitsIOSBudget(IOS_RECOMMENDED_MODEL) ? IOS_RECOMMENDED_MODEL : IOS_FALLBACK_MODEL;
   } else if (hardwareTier === 'ultralight') {
-    recommendedModel = 'easylm-gemma-4-e2b-it';
+    recommendedModel = 'easylm-bonsai-2-2b';
   }
 
   return {

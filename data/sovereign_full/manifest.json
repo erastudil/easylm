@@ -1,0 +1,41 @@
+{
+  "status": "complete",
+  "throttle_contract": {
+    "pid": 37420,
+    "logical_cpus_total": 16,
+    "pinned_cores": [
+      14,
+      15
+    ],
+    "nice_priority": 64,
+    "ionice_priority": "0",
+    "initial_rss_mb": 24.04
+  },
+  "peak_rss_mb": 43.52,
+  "elapsed_seconds": 8.41,
+  "total_unique_records": 49690,
+  "train_records": 47174,
+  "eval_records": 2516,
+  "packed_4096_train_blocks": 4162,
+  "packed_4096_eval_blocks": 218,
+  "total_characters": 73679653,
+  "approx_tokens": 18419913,
+  "track_breakdown": {
+    "stacks": 18662,
+    "GFC": 2951,
+    "personalities": 3283,
+    "hydra": 3924,
+    "progen": 5296,
+    "kidsafety": 1709,
+    "hands": 2510,
+    "security": 2771,
+    "coder": 5126,
+    "atmem": 3458
+  },
+  "files": {
+    "train": "C:\\Users\\jpm05\\Documents\\easylm\\data\\sovereign_full\\train.jsonl",
+    "eval": "C:\\Users\\jpm05\\Documents\\easylm\\data\\sovereign_full\\eval.jsonl",
+    "packed_train_4096": "C:\\Users\\jpm05\\Documents\\easylm\\data\\sovereign_full\\train_packed_4096.jsonl",
+    "packed_eval_4096": "C:\\Users\\jpm05\\Documents\\easylm\\data\\sovereign_full\\eval_packed_4096.jsonl"
+  }
+}

@@ -2,6 +2,8 @@
 title: "ai_ml — undergrad textbook"
 date: "2026-09-13"
 status: living · undergrad · the-stacks
+level: undergrad
+floor_age: 13
 home: "stacks/ai_ml/"
 related:
   - "../computing/"

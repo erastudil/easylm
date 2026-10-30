@@ -60,12 +60,33 @@ function extractUnits(textbook, dewey, slug) {
 // on a different OS produces a large content-free diff.
 const normalizeEol = (s) => s.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
 
+function extractFrontMatterMeta(textbook) {
+  const m = textbook.replace(/^\uFEFF/, '').match(/^---\n([\s\S]*?)\n---/);
+  if (!m) return {};
+  const fm = {};
+  for (const line of m[1].split('\n')) {
+    const kv = line.match(/^([A-Za-z_]+):\s*(.+)$/);
+    if (kv) fm[kv[1].toLowerCase()] = kv[2].trim();
+  }
+  return fm;
+}
+
 const compiled = packs.map((p) => {
   const dir = join(stacksDir, p.slug);
   const textbook = normalizeEol(readFileSync(join(dir, 'TEXTBOOK.md'), 'utf8'));
   const links = normalizeEol(readFileSync(join(dir, 'LINK_INDEX.md'), 'utf8'));
+  const fm = extractFrontMatterMeta(textbook);
+  const level = p.level || fm.level;
+  const floorAgeRaw = p.floor_age ?? (fm.floor_age ? Number(fm.floor_age) : undefined);
   const units = extractUnits(textbook, p.dewey, p.slug);
-  return { ...p, textbook, links, units };
+  return {
+    ...p,
+    ...(level ? { level } : {}),
+    ...(floorAgeRaw !== undefined ? { floor_age: floorAgeRaw } : {}),
+    textbook,
+    links,
+    units
+  };
 });
 
 const outStacks = join(root, 'src', 'data', 'stacks_compiled.ts');

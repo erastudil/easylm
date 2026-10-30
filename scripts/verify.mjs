@@ -14,6 +14,7 @@ function assert(condition, message) {
 }
 
 console.log('==> [1/6] Running prebuild compilation (Stacks and Courses)...');
+execSync('node scripts/nightly_stacks.mjs --no-write --strict-warn', { cwd: ROOT, stdio: 'inherit' });
 execSync('node scripts/compile_stacks.mjs', { cwd: ROOT, stdio: 'inherit' });
 execSync('node scripts/compile_courses.mjs', { cwd: ROOT, stdio: 'inherit' });
 assert(existsSync(resolve(ROOT, 'src/data/stacks_compiled.ts')), 'stacks_compiled.ts must exist');
@@ -22,21 +23,33 @@ assert(existsSync(resolve(ROOT, 'src/data/courses_compiled.ts')), 'courses_compi
 console.log('==> [2/6] Verifying model selection and cache invariants...');
 const webllmContent = readFileSync(resolve(ROOT, 'src/engine/webllm.ts'), 'utf8');
 
-// 1. Invariant: DEFAULT_MODEL_ID is the 4B Gemma fine-tune
+// 1. Invariant: DEFAULT_MODEL_ID is the Bonsai 2 2B (Base) universal default
 assert(
-  webllmContent.includes("export const DEFAULT_MODEL_ID = 'easylm-gemma-4-e4b-it';"),
-  "DEFAULT_MODEL_ID must be 'easylm-gemma-4-e4b-it'"
+  webllmContent.includes("export const DEFAULT_MODEL_ID = 'easylm-bonsai-2-2b';"),
+  "DEFAULT_MODEL_ID must be 'easylm-bonsai-2-2b'"
 );
 
-// 2. Invariant: exactly 7 fine-tuned models in AVAILABLE_MODELS
+// 1b. Invariant: Bonsai 2 WebLLM records point to verified HTTP 200 Qwen3.5-2B/4B/9B-q4f16_1-MLC endpoints
+assert(
+  webllmContent.includes("model: 'https://huggingface.co/mlc-ai/Qwen3.5-2B-q4f16_1-MLC'") &&
+    webllmContent.includes("model: 'https://huggingface.co/mlc-ai/Qwen3.5-4B-q4f16_1-MLC'") &&
+    webllmContent.includes("model: 'https://huggingface.co/mlc-ai/Qwen3.5-9B-q4f16_1-MLC'"),
+  'webllm.ts must map Bonsai 2 2B, 4B, and 9B to verified mlc-ai/Qwen3.5-* MLC endpoints'
+);
+
+// 2. Invariant: the 8 catalog models in AVAILABLE_MODELS (Bonsai 2 base 2B/4B/9B,
+// Gemma 4 E2B/E4B, Qwen 3 4B, DeepSeek R1 Distill 7B, Gemma 3 12B). The former
+// 'Bonsai 2 27B' and 'Gemma 4 26B A4B' entries served other models' weights and
+// were removed in the 2026-10-17 truth pass; they must not come back.
 const expectedModelIds = [
+  'easylm-bonsai-2-2b',
+  'easylm-bonsai-2-4b',
+  'easylm-bonsai-2-9b',
   'easylm-gemma-4-e2b-it',
   'easylm-gemma-4-e4b-it',
   'easylm-qwen3-4b-instruct',
   'easylm-deepseek-v4-distill-9b',
-  'easylm-gemma-4-12b-it',
-  'easylm-gemma-4-26b-a4b-it',
-  'easylm-bonsai-2-27b'
+  'easylm-gemma-4-12b-it'
 ];
 
 for (const id of expectedModelIds) {
@@ -65,6 +78,69 @@ for (const id of retiredModelIds) {
 
 // 4. Invariant: Alice is excluded until ready
 assert(!availableModelsBlock.includes("id: 'alice'"), "Alice must not be in AVAILABLE_MODELS until ready");
+
+// 4b. TRUTH GATE: AVAILABLE_MODELS serves the weights named in CUSTOM_MODEL_RECORDS.
+// A card may claim a fine-tune only after those weights are merged into the served
+// MLC shards or executed in the forward pass. The 2026-10-17 stub incident shipped
+// adapter claims for weights the web app never ran.
+assert(
+  !availableModelsBlock.includes('isFineTuned:'),
+  'AVAILABLE_MODELS must not claim isFineTuned'
+);
+assert(
+  !availableModelsBlock.includes('adapterRepo:') && !availableModelsBlock.includes('adapterUrl:'),
+  'AVAILABLE_MODELS must not claim an adapter'
+);
+
+// 4c. TRUTH GATE: the adapter registry lists exactly the verified set — adapters
+// whose Hugging Face repos hold real trained weights, checked 2026-10-18
+// (trainer_state.json loss curves, tensor shapes, trained weight statistics).
+// Vapor ids that never existed and the retired alice-emap-adapter stay banned.
+const loraContent = readFileSync(resolve(ROOT, 'src/services/lora_loader.ts'), 'utf8');
+const registryBlock = loraContent.slice(
+  loraContent.indexOf('export const OFFICIAL_ADAPTERS'),
+  loraContent.indexOf('export interface VerifiedAdapterState')
+);
+const registeredIds = new Set([...registryBlock.matchAll(/^ {2}'(easylm-[^']+)':/gm)].map(m => m[1]));
+const verifiedAdapterIds = new Set([
+  'easylm-bonsai-2-2b',
+  'easylm-bonsai-2-4b',
+  'easylm-bonsai-2-9b',
+  'easylm-bonsai-2-27b',
+  'easylm-hands-bonsai-2-2b',
+  'easylm-hands-bonsai-2-4b',
+  'easylm-hands-bonsai-2-9b',
+  'easylm-personalities-bonsai-2-2b',
+  'easylm-personalities-bonsai-2-4b',
+  'easylm-personalities-bonsai-2-9b',
+  'easylm-security-bonsai-2-2b',
+  'easylm-security-bonsai-2-9b',
+  'easylm-kidsafety-bonsai-2-2b',
+  'easylm-kidsafety-bonsai-2-9b',
+  'easylm-hydra-bonsai-2-9b',
+  'easylm-hands-qwen2.5-0.5b',
+  'easylm-hands-qwen2.5-3b'
+]);
+for (const id of registeredIds) {
+  assert(verifiedAdapterIds.has(id), `registered adapter ${id} is not on the verified adapter list`);
+}
+for (const id of verifiedAdapterIds) {
+  assert(registeredIds.has(id), `verified adapter ${id} is missing from the registry`);
+}
+const bannedAdapterIds = [
+  'easylm-hands-bonsai-2-27b',
+  'easylm-reasoning-bonsai-2-4b',
+  'easylm-reasoning-bonsai-2-9b',
+  'easylm-reasoning-bonsai-2-27b',
+  'easylm-coding-bonsai-2-4b',
+  'easylm-coding-bonsai-2-9b',
+  'easylm-coding-bonsai-2-27b',
+  'alice-emap-adapter'
+];
+for (const id of bannedAdapterIds) {
+  assert(!loraContent.includes(`'${id}':`), `banned adapter ${id} must not be registered in lora_loader.ts`);
+  assert(!webllmContent.includes(`adapterRepo: 'Bluebarrels/${id}'`), `banned adapter ${id} must not be claimed in webllm.ts`);
+}
 
 // 5. Invariant: cache self-healing and indexeddb retry implemented
 assert(
@@ -98,12 +174,12 @@ assert(
 console.log('==> [3/6] Verifying device recommendations...');
 const deviceContent = readFileSync(resolve(ROOT, 'src/engine/device.ts'), 'utf8');
 assert(
-  deviceContent.includes("let recommendedModel = 'easylm-gemma-4-e4b-it';"),
-  "detectDeviceUnsafe must recommend 'easylm-gemma-4-e4b-it' as default"
+  deviceContent.includes("let recommendedModel = 'easylm-bonsai-2-2b';"),
+  "detectDeviceUnsafe must recommend 'easylm-bonsai-2-2b' as default"
 );
 assert(
-  deviceContent.includes("export const IOS_RECOMMENDED_MODEL = 'easylm-gemma-4-e2b-it';"),
-  "IOS_RECOMMENDED_MODEL must be 'easylm-gemma-4-e2b-it'"
+  deviceContent.includes("export const IOS_RECOMMENDED_MODEL = 'easylm-bonsai-2-2b';"),
+  "IOS_RECOMMENDED_MODEL must be 'easylm-bonsai-2-2b'"
 );
 
 
@@ -130,8 +206,9 @@ for (const entry of catalogEntries) {
 }
 assert(readmeContent.includes('Llama 3.2 1B Instruct'), 'README must document the kid-profile model (Llama 3.2 1B Instruct)');
 
-console.log('==> [5/6] Running kid allowlist and stacks chapter tests...');
-execSync('node ./node_modules/vitest/vitest.mjs run tests/kid_models.test.ts tests/stacks_chapters.test.ts', { cwd: ROOT, stdio: 'inherit' });
+console.log('==> [5/6] Running kid allowlist, LoRA loader, stacks chapter, hardware modal, and adapter publish gate tests...');
+execSync('node ./node_modules/vitest/vitest.mjs run tests/kid_models.test.ts tests/stacks_chapters.test.ts tests/lora_loader.test.ts tests/hardware_recommendation_modal.test.ts', { cwd: ROOT, stdio: 'inherit' });
+execSync(`${process.platform === 'win32' ? 'python' : 'python3'} tests/adapter_publish_gate_test.py`, { cwd: ROOT, stdio: 'inherit' });
 
 console.log('==> [6/6] Verifying TypeScript and Vite production bundle (npm run build)...');
 execSync('npm run build', { cwd: ROOT, stdio: 'inherit' });

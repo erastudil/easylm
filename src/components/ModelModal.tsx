@@ -1,6 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { ModelOption } from '../types';
-import { modelsForProfile, registerCustomHFModel, ProgressStatus, resetWebGPUAndCaches, getModelVramMB } from '../engine/webllm';
+import {
+  modelsForProfile,
+  registerCustomHFModel,
+  ProgressStatus,
+  resetWebGPUAndCaches,
+  getModelVramMB,
+  formatDownloadGB,
+  fetchAndVerifyAdapter,
+  findModelOption,
+  getActiveSkillAdapter,
+  getAdaptersForModel,
+  getVerifiedAdapterState,
+  setActiveSkillAdapter,
+  VerifiedAdapterState
+} from '../engine/webllm';
 import { DeviceInfo, fitsIOSBudget } from '../engine/device';
 
 interface ModelModalProps {
@@ -34,6 +48,26 @@ export const ModelModal: React.FC<ModelModalProps> = ({
   const [hfError, setHfError] = useState<string | null>(null);
   const [cacheNotice, setCacheNotice] = useState<string | null>(null);
   const [isResetting, setIsResetting] = useState(false);
+  const [adapterStates, setAdapterStates] = useState<Record<string, VerifiedAdapterState>>({});
+  const [, setSkillAdapterTick] = useState(0);
+
+  useEffect(() => {
+    if (!isOpen || kidMode) return;
+    // Verification only matters for a card that claims a fine-tune. The web
+    // catalog serves base weights, so this stays quiet until one does.
+    if (!findModelOption(selectedModel)?.isFineTuned) return;
+    const active = getActiveSkillAdapter(selectedModel);
+    if (!active) return;
+    let cancelled = false;
+    fetchAndVerifyAdapter(active.id).then((st) => {
+      if (!cancelled && st) {
+        setAdapterStates(prev => ({ ...prev, [active.id]: st }));
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, selectedModel, kidMode]);
 
   const handleResetCache = async () => {
     setIsResetting(true);
@@ -200,7 +234,7 @@ export const ModelModal: React.FC<ModelModalProps> = ({
                 border: '1px solid rgba(16, 185, 129, 0.3)',
                 fontWeight: 600
               }}>
-                Recommended: {deviceInfo?.recommendedModel ? (pickerModels.find(m => m.id === deviceInfo.recommendedModel)?.label || deviceInfo.recommendedModel) : 'Gemma 4 E4B Thinking'}
+                Recommended: {deviceInfo?.recommendedModel ? (pickerModels.find(m => m.id === deviceInfo.recommendedModel)?.label || deviceInfo.recommendedModel) : 'Bonsai 2 2B (Base)'}
               </span>
             </div>
             {cacheNotice && (
@@ -208,6 +242,33 @@ export const ModelModal: React.FC<ModelModalProps> = ({
                 ✓ {cacheNotice}
               </div>
             )}
+          </div>
+        )}
+
+        {/* Bonsai 2 Progression Coaching Banner (Adult Profiles) */}
+        {!kidMode && (
+          <div style={{
+            padding: '0.65rem 0.9rem',
+            backgroundColor: 'rgba(16, 185, 129, 0.07)',
+            border: '1px solid rgba(16, 185, 129, 0.28)',
+            borderRadius: '8px',
+            marginBottom: '0.85rem',
+            fontSize: '0.74rem',
+            lineHeight: 1.45,
+            color: '#e4e4e7',
+            flexShrink: 0
+          }}>
+            <div style={{ fontWeight: 700, color: '#34d399', marginBottom: '0.25rem', fontFamily: 'var(--font-mono)' }}>
+              🌱 Level Up Your Local Model (Bonsai 2 Progression)
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(175px, 1fr))', gap: '0.35rem 0.75rem', color: '#d4d4d8' }}>
+              <div>• <strong>Start: Bonsai 2 2B (Base)</strong> — Works on every device.</div>
+              <div>• <strong>Step Up: Bonsai 2 4B (Base)</strong> — Deeper reasoning and stronger math.</div>
+              <div>• <strong>Step Up: Bonsai 2 9B (Base)</strong> — Coding and multi-step reasoning on laptops.</div>
+            </div>
+            <div style={{ marginTop: '0.25rem', color: '#a1a1aa', fontSize: '0.7rem' }}>
+              Need multimodal image &amp; vision input? Choose the <strong>Gemma 4</strong> models below.
+            </div>
           </div>
         )}
 
@@ -220,7 +281,11 @@ export const ModelModal: React.FC<ModelModalProps> = ({
             { id: '16gb', label: 'High Performance', count: pickerModels.filter(m => m.vramTier === '16gb').length },
             { id: 'finetuned', label: 'Fine-Tuned', count: pickerModels.filter(m => m.isFineTuned).length },
             { id: 'hf', label: 'Hugging Face', count: undefined }
-          ].filter(t => !(kidMode && (t.id === 'hf' || t.id === 'finetuned'))).map(t => (
+          ].filter(t => {
+            if (kidMode && (t.id === 'hf' || t.id === 'finetuned')) return false;
+            if (t.id === 'finetuned' && t.count === 0) return false;
+            return true;
+          }).map(t => (
             <button
               key={t.id}
               onClick={() => setActiveTab(t.id as any)}
@@ -426,15 +491,83 @@ export const ModelModal: React.FC<ModelModalProps> = ({
                       </div>
 
                       {/* Description */}
-                      <div style={{ fontSize: '0.74rem', color: '#a1a1aa', lineHeight: 1.45, marginBottom: '0.6rem' }}>
+                      <div style={{ fontSize: '0.74rem', color: '#a1a1aa', lineHeight: 1.45, marginBottom: '0.5rem' }}>
                         {m.description}
                       </div>
+
+                      {/* Active LoRA Adapter & Skill Selector */}
+                      {!kidMode && m.isFineTuned && (() => {
+                        const availableAdapters = getAdaptersForModel(m.id);
+                        const activeAdapter = getActiveSkillAdapter(m.id);
+                        if (!activeAdapter) return null;
+                        const verified = adapterStates[activeAdapter.id] || getVerifiedAdapterState(activeAdapter.id);
+                        return (
+                          <div
+                            onClick={(e) => e.stopPropagation()}
+                            style={{
+                              padding: '0.4rem 0.55rem',
+                              marginBottom: '0.45rem',
+                              borderRadius: '6px',
+                              backgroundColor: 'rgba(245, 158, 11, 0.08)',
+                              border: '1px solid rgba(245, 158, 11, 0.25)',
+                              fontSize: '0.68rem',
+                              fontFamily: 'var(--font-mono)',
+                              color: '#fde68a'
+                            }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.35rem', flexWrap: 'wrap' }}>
+                              <span>
+                                <strong>LoRA:</strong> {activeAdapter.repoId} (r={activeAdapter.rank}, α={activeAdapter.alpha})
+                              </span>
+                              {verified && (
+                                <span style={{ color: '#34d399' }}>
+                                  ✓ {verified.tensorCount > 0 ? `${verified.tensorCount} tensors` : 'verified'}
+                                  {verified.trainLoss !== undefined ? ` · loss ${verified.trainLoss.toFixed(2)}` : ''}
+                                </span>
+                              )}
+                            </div>
+                            {availableAdapters.length > 1 && (
+                              <div style={{ marginTop: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                                <span style={{ color: '#a1a1aa' }}>Skill:</span>
+                                <select
+                                  aria-label={`Select LoRA skill adapter for ${m.label}`}
+                                  value={activeAdapter.id}
+                                  onChange={(e) => {
+                                    const nextId = e.target.value;
+                                    setActiveSkillAdapter(m.id, nextId);
+                                    setSkillAdapterTick(t => t + 1);
+                                    fetchAndVerifyAdapter(nextId).then((st) => {
+                                      if (st) setAdapterStates(prev => ({ ...prev, [nextId]: st }));
+                                    });
+                                  }}
+                                  style={{
+                                    flex: 1,
+                                    backgroundColor: '#09090b',
+                                    color: '#fafafa',
+                                    border: '1px solid rgba(245, 158, 11, 0.35)',
+                                    borderRadius: '4px',
+                                    padding: '0.15rem 0.35rem',
+                                    fontSize: '0.66rem',
+                                    fontFamily: 'var(--font-mono)'
+                                  }}
+                                >
+                                  {availableAdapters.map(ad => (
+                                    <option key={ad.id} value={ad.id}>
+                                      {ad.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()}
                     </div>
 
                     {/* Footer / Action */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.5rem', borderTop: '1px solid rgba(255, 255, 255, 0.06)', marginTop: '0.4rem', fontSize: '0.72rem' }}>
                       <span style={{ color: '#71717a' }}>
-                        Download: ~{(m.sizeMB / 1024).toFixed(1)} GB
+                        Download: ~{formatDownloadGB(m.sizeMB)} GB
                       </span>
 
                       {tooLargeForIOS ? (
@@ -493,7 +626,7 @@ export const ModelModal: React.FC<ModelModalProps> = ({
           <div style={{ fontSize: '0.74rem', color: '#71717a', maxWidth: '520px' }}>
             💡 <strong>Guideline:</strong> {kidMode
               ? 'Llama 3.2 1B Instruct is the model for kid profiles.'
-              : 'Gemma 4 E4B Thinking is the recommended default workhorse for all systems. Gemma 4 12B Thinking is an optional deep reasoning model for ~12GB+ VRAM cards.'}
+              : 'Bonsai 2 2B (Base) is the universal starting point. Advance to Bonsai 2 4B or 9B (Base) as your tasks grow, or choose Gemma 4 for multimodal vision.'}
           </div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             {onLoadModel && (

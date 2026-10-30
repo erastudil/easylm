@@ -30,13 +30,16 @@ EasyLM dynamically detects your hardware tier and recommends the optimal model f
 
 | Model | Download | VRAM Footprint | Tier & Sweet Spot | Upstream License |
 |---|---|---|---|---|
-| **Gemma 4 E2B Instruct** | ~1.2 GB | ~1.7 GB | **Ultralight (4GB tier).** Smallest general model. Mobile and low-spec runtimes. | Apache-2.0 |
-| **Gemma 4 E4B Thinking** | ~2.4 GB | ~3.2 GB | **Default for all tiers.** Recommended workhorse. Balanced reasoning and fast throughput. | Apache-2.0 |
-| **Qwen 3 4B Instruct** | ~2.5 GB | ~3.4 GB | **8GB tier.** Structured output and Hands tool dispatch. | Apache-2.0 |
-| **DeepSeek V4 Distill 9B** | ~4.8 GB | ~5.1 GB | **8GB-16GB tier.** Heavyweight chain-of-thought reasoning for deeper analytical tasks. | See upstream repository |
-| **Bonsai 2 27B** | ~6.0 GB | ~6.8 GB | **16GB tier.** Extreme ternary quantization brings 27B reasoning to consumer GPUs. | Apache-2.0 |
-| **Gemma 4 12B Thinking** | ~7.1 GB | ~8.2 GB | **16GB tier.** High-caliber long-context intelligence. | Apache-2.0 |
-| **Gemma 4 26B A4B MoE** | ~8.8 GB | ~8.8 GB | **16GB tier.** Mixture-of-experts synthesis and code. | Apache-2.0 |
+| **Bonsai 2 2B (Base)** | ~1.06 GB | ~1.06 GB | **Universal default for all users.** The base Qwen3.5 2B weights that Bonsai 2 is built from, served as-is. The EasyLM fine-tune is still in training, so no adapter is applied yet. | Apache-2.0 |
+| **Bonsai 2 4B (Base)** | ~2.37 GB | ~2.37 GB | **Step-up.** The base Qwen3.5 4B weights that Bonsai 2 is built from, served as-is. Deeper reasoning and stronger math than the 2B. | Apache-2.0 |
+| **Bonsai 2 9B (Base)** | ~5.04 GB | ~5.04 GB | **Largest Bonsai 2 base on the web.** The base Qwen3.5 9B weights that Bonsai 2 is built from, served as-is, for coding and multi-step reasoning. | Apache-2.0 |
+| **Gemma 4 E2B Instruct** | ~2.63 GB | ~2.63 GB | **Ultralight (4GB tier).** Compact multimodal model for mobile and low-spec runtimes. | Gemma Terms |
+| **Gemma 4 E4B Thinking** | ~4.27 GB | ~4.27 GB | **8GB tier.** Multimodal dense reasoning foundation with native Thinking Mode. | Gemma Terms |
+| **Qwen 3 4B Instruct** | ~2.26 GB | ~3.43 GB | **8GB tier.** Structured output and Hands tool dispatch. | Apache-2.0 |
+| **DeepSeek R1 Distill Qwen 7B** | ~4.28 GB | ~5.11 GB | **8GB-16GB tier.** DeepSeek R1 reasoning distilled into Qwen 7B, served as the base model. | See upstream repository |
+| **Gemma 3 12B Instruct** | ~6.62 GB | ~8.2 GB | **16GB tier.** Google Gemma 3 12B instruct, served as the base model. High-caliber long-context multimodal intelligence. | Gemma Terms |
+
+The Bonsai 2 27B EasyLM fine-tune is a real trained LoRA adapter, but it is not in the web catalog: there is no web build of it yet, and this table lists only what the web app actually serves. The adapter is published for local use at [Bluebarrels/easylm-bonsai-2-27b](https://huggingface.co/Bluebarrels/easylm-bonsai-2-27b).
 
 Kid profiles do not use this catalog: they run **Llama 3.2 1B Instruct** (~0.7 GB download) and nothing else - the one model with Kid Safe A/B/C evidence on file. Fine-tuned models and adapters stay on adult profiles until they pass the same checks.
 

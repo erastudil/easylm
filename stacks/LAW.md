@@ -75,6 +75,11 @@ every pack names a **level** — the last skill the reader must already have. a 
 
 chapters inside one pack may carry `[level: …]` tags and rise through the bands. **grad content is welcome where it is feasible** — a named model, a formal statement, a door to the primary literature — but it never displaces the plain-English intuition that opens the chapter. Greene/Feynman order holds at every level.
 
-**the age floor is 13.** nothing in The Stacks targets a reader under 13; younger profiles stay on Studio family mode (Socratic, local Hands). social media and platform-health material carries `floor_age: 13` — high-school-level treatment is correct and responsible for this subject; it is a legal line (COPPA), not a developmental judgement.
+**the age floor is 13.** nothing in The Stacks is written for a reader under 13. social media and platform-health material carries `floor_age: 13` — high-school-level treatment is correct and responsible for this subject; it is a legal line (COPPA), not a developmental judgement.
 
 a pack's front matter carries `level:` and, where a hard floor applies, `floor_age:`. living packs adopt tags incrementally; the nightly audit reports packs without a level tag.
+
+**floor_age is a content label only; the app enforces nothing at runtime today.** what the code does today (2026-10-20):
+- `floor_age` is read only by `scripts/compile_stacks.mjs` (copies it into `PACKS.json` / `src/data/stacks_compiled.ts`), `scripts/nightly_stacks.mjs` (fails a pack whose `floor_age` is below 13), and `tests/stacks_chapters.test.ts` (asserts every living pack carries `floor_age >= 13`). `src/engine/stacks.ts` strips it from front matter so search ignores it.
+- nothing in `src/` compares `floor_age` to a reader's age. profiles carry no age. the `stacks` tool is on the kid tool allowlist (`src/engine/kid_tools.ts`), so a kid profile can search and read every pack.
+- runtime enforcement (an age on profiles, a filter in `execStacks`) is a child-safety product decision for Dave and bluebarrels. until it lands, user-facing copy describes `floor_age` as the level a pack is written for and makes no enforcement claim.

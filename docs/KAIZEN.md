@@ -24,7 +24,7 @@ DID:
 - .github/workflows/stacks-nightly.yml — cron 07:17 UTC daily + manual dispatch
 - 5S: removed dangling ops_5s_kaizen refs in stacks/business (TEXTBOOK + LINK_INDEX)
 NEXT: run node scripts/compile_stacks.mjs && npm test, then merge to main
-OPEN: level tags on the 32 living packs — incremental, nightly audit tracks it
+DONE: level tags (read / hs / undergrad) and floor_age: 13 populated across all 32 living packs in PACKS.json + TEXTBOOK.md frontmatter; 181 tao_te_ching added to stacks/INDEX.md; nightly_stacks.mjs enforced at 0 fail, 0 warn in scripts/verify.mjs
 ```
 
 ## the loop, nightly

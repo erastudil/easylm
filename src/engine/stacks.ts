@@ -135,7 +135,28 @@ const SUBJECT_ALIASES: Record<string, string[]> = {
   plumbing: ['trades'],
   electrician: ['trades', 'engineering'],
   carpentry: ['trades'],
-  welding: ['trades', 'engineering']
+  welding: ['trades', 'engineering'],
+  tao: ['tao_te_ching', 'philosophy', 'religion'],
+  dao: ['tao_te_ching', 'philosophy', 'religion'],
+  daoism: ['tao_te_ching', 'religion', 'philosophy'],
+  taoism: ['tao_te_ching', 'religion', 'philosophy'],
+  laozi: ['tao_te_ching', 'philosophy'],
+  laotzu: ['tao_te_ching', 'philosophy'],
+  daodejing: ['tao_te_ching'],
+  wuwei: ['tao_te_ching', 'philosophy'],
+  physics: ['physics'],
+  quantum: ['physics', 'chemistry'],
+  relativity: ['physics', 'astronomy'],
+  thermodynamics: ['physics', 'chemistry', 'engineering'],
+  mechanics: ['physics', 'engineering'],
+  chemistry: ['chemistry'],
+  molecule: ['chemistry', 'biology'],
+  molecules: ['chemistry', 'biology'],
+  atoms: ['chemistry', 'physics'],
+  periodic: ['chemistry'],
+  linguistics: ['language'],
+  grammar: ['language'],
+  syntax: ['language', 'computing']
 };
 
 export function tokenize(query: string): string[] {
@@ -283,7 +304,7 @@ function excerptChapter(body: string, terms: string[], rawPhrase: string, max = 
 
 function listCatalog(): string {
   const rows = STACKS_PACKS.map(
-    p => `• Dewey ${p.dewey} · ${p.slug} · ${p.title} (${p.category})`
+    p => `• Dewey ${p.dewey} · ${p.slug} · ${p.title} (${p.category})${p.level ? ` [level: ${p.level}]` : ''}`
   );
   return [
     '🏛️ THE STACKS — Sovereign University Library Catalog',

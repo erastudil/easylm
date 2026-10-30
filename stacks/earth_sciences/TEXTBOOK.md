@@ -2,6 +2,8 @@
 title: "earth_sciences — undergrad textbook"
 date: "2026-09-14"
 status: living · undergrad · the-stacks
+level: undergrad
+floor_age: 13
 home: "stacks/earth_sciences/"
 related:
   - "../physics/"

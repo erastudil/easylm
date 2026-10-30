@@ -2,8 +2,9 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 """EasyLM Hugging Face Hub Artifact Uploader and Staging Verifier.
 
-Uploads fine-tuned discrete LoRA adapters to the Hugging Face Model Hub,
-verifying weights, tokenizer assets, and model cards before transmission.
+Uploads fine-tuned discrete LoRA adapters to the Hugging Face Model Hub through
+`adapter_publish_gate.publish_adapter_folder`: the weights, training log, loss curve and
+eval result must sit in the folder, and the model card is generated from those files.
 """
 
 from __future__ import annotations
@@ -14,7 +15,9 @@ import logging
 import os
 from pathlib import Path
 import sys
-from typing import List, Optional
+from typing import List
+
+from adapter_publish_gate import PublishGateError, check_publish_gate, publish_adapter_folder
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("upload_to_hf")
@@ -22,7 +25,6 @@ logger = logging.getLogger("upload_to_hf")
 REQUIRED_FILES = [
     "adapter_model.safetensors",
     "adapter_config.json",
-    "README.md",
 ]
 
 OPTIONAL_FILES = [
@@ -106,7 +108,7 @@ def main() -> int:
     parser.add_argument(
         "--commit-message",
         type=str,
-        default="Upload EasyLM Hands LoRA adapter for Qwen2.5-0.5B-Instruct",
+        default="Upload EasyLM LoRA adapter",
         help="Commit message for upload",
     )
     parser.add_argument(
@@ -121,7 +123,8 @@ def main() -> int:
 
     try:
         staged_files = verify_staged_artifacts(folder_path)
-    except Exception as err:
+        check_publish_gate(folder_path, args.repo_id)
+    except (OSError, PublishGateError) as err:
         logger.error(f"Artifact verification failed: {err}")
         return 1
 
@@ -161,20 +164,14 @@ def main() -> int:
         logger.error(f"Authentication verification failed: {err}")
         return 1
 
-    logger.info(f"Ensuring repository '{args.repo_id}' exists (private={args.private})...")
+    logger.info(f"Publishing staged directory {folder_path} to {args.repo_id} through the publish gate...")
     try:
-        api.create_repo(repo_id=args.repo_id, private=args.private, exist_ok=True)
-    except Exception as err:
-        logger.error(f"Failed to create or access repository '{args.repo_id}': {err}")
-        return 1
-
-    logger.info(f"Uploading staged directory {folder_path} to {args.repo_id}...")
-    try:
-        api.upload_folder(
-            folder_path=str(folder_path),
-            repo_id=args.repo_id,
+        publish_adapter_folder(
+            api,
+            folder_path,
+            args.repo_id,
             commit_message=args.commit_message,
-            ignore_patterns=["checkpoints*", "*.tmp", "*.log"],
+            private=args.private,
         )
         logger.info(f"[SUCCESS] Upload complete: https://huggingface.co/{args.repo_id}")
     except Exception as err:

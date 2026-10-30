@@ -19,6 +19,7 @@ each pack: `stacks/<slug>/TEXTBOOK.md` + `LINK_INDEX.md`.
 | 006 | ai_ml | models, training, inference, limits |
 | 100 | philosophy | logic, ethics, mind, knowledge |
 | 150 | psychology | neural architecture, cognition, memory, behavior |
+| 181 | tao_te_ching | Tao Te Ching (道德經) — Lao Tzu · level: read · floor 13 |
 | 200 | religion | comparative religion, mythology, sacred traditions |
 | 300 | sociology | social structures, institutions, culture, anthropology |
 | 302.23 | media | feeds, recommenders, misinformation, platform health · level: hs · floor 13 |

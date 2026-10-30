@@ -14,6 +14,7 @@ import {
   KID_MODE_MODEL_ID,
   crashStepDownModel,
   findModelOption,
+  formatDownloadGB,
   getOomFallbackModel,
   getOrInitEngine,
   isModelAllowedForKid,
@@ -26,6 +27,7 @@ import {
 import { detectDevice, deviceInfoForProfile, DeviceInfo, IOS_RECOMMENDED_MODEL } from '../src/engine/device';
 import { OFFICIAL_ADAPTERS } from '../src/services/lora_loader';
 import { ModelModal } from '../src/components/ModelModal';
+import { HardwareRecommendationModal } from '../src/components/HardwareRecommendationModal';
 import {
   addProfileAtom,
   clearProfileAtoms,
@@ -181,13 +183,12 @@ describe('reasoning models and Bonsai 2 lineup', () => {
     expect(AVAILABLE_MODELS[0].id).toBe('easylm-bonsai-2-2b');
     expect(AVAILABLE_MODELS[0].isDefault).toBe(true);
     expect(AVAILABLE_MODELS[0].isRecommended).toBe(true);
-    // The Bonsai entries are base weights until real fine-tunes pass verification:
-    // no fine-tune flag and no adapter claim may ride on them.
-    for (const id of ['easylm-bonsai-2-2b', 'easylm-bonsai-2-4b', 'easylm-bonsai-2-9b']) {
-      const m = AVAILABLE_MODELS.find(x => x.id === id);
-      expect(m, id).toBeDefined();
-      expect(m!.isFineTuned, id).toBeFalsy();
-      expect(m!.adapterRepo, id).toBeUndefined();
+    // The web catalog serves base weights. No card may claim a fine-tune or an
+    // adapter until that adapter runs in the forward pass.
+    for (const m of AVAILABLE_MODELS) {
+      expect(m.isFineTuned, m.id).toBeFalsy();
+      expect(m.adapterRepo, m.id).toBeUndefined();
+      expect(m.adapterUrl, m.id).toBeUndefined();
     }
     expect(AVAILABLE_MODELS.map(m => m.id)).toEqual(
       expect.arrayContaining([
@@ -305,13 +306,41 @@ describe('kid model picker UI', () => {
     expect(badgesBefore('Gemma 4 E4B Thinking')).toContain('🧠 Think');
   });
 
-  it('adult picker keeps the catalog, the Fine-Tuned tab and the Hugging Face tab', () => {
+  it('adult picker keeps the catalog and the Hugging Face tab, and only offers models the app serves', () => {
     const html = render(false);
-    const fineTunedCount = AVAILABLE_MODELS.filter(m => m.isFineTuned).length;
-    expect(html).toMatch(new RegExp(`<span>Fine-Tuned</span><span[^>]*>${fineTunedCount}</span>`));
+    expect(html).not.toContain('<span>Fine-Tuned</span>');
+    expect(html).not.toContain('LoRA');
+    expect(html).not.toContain('Bonsai 2 27B');
+    expect(html).not.toContain('4B (1GB)');
+    expect(html).not.toContain('9B (2GB)');
+    expect(html).toContain('Bonsai 2 4B (Base)');
+    expect(html).toContain('Bonsai 2 9B (Base)');
     expect(html).toContain('<span>Hugging Face</span>');
     expect(html).not.toContain('Llama 3.2 1B Instruct');
-    for (const m of AVAILABLE_MODELS) expect(html, m.label).toContain(m.label);
+    const text = html.replace(/<!-- -->/g, '');
+    for (const m of AVAILABLE_MODELS) {
+      expect(html, m.label).toContain(m.label);
+      expect(m.description, m.id).toContain(`about a ${formatDownloadGB(m.sizeMB)} GB`);
+      expect(text, m.id).toContain(`Download: ~${formatDownloadGB(m.sizeMB)} GB`);
+    }
+    expect(text).toContain('Download: ~1.06 GB');
+    expect(text).not.toContain('Download: ~1.0 GB');
+  });
+
+  it('the first-run card quotes the same decimal download as the catalog', () => {
+    const html = renderToString(createElement(HardwareRecommendationModal, {
+      isOpen: true,
+      onClose: () => {},
+      deviceInfo: null,
+      onConfirmLoad: () => {},
+      onDecline: () => {}
+    })).replace(/<!-- -->/g, '');
+    const gb = formatDownloadGB(AVAILABLE_MODELS[0].sizeMB);
+    expect(gb).toBe('1.06');
+    expect(html).toContain(`~${gb} GB download`);
+    expect(html).toContain(`about ${gb} GB`);
+    expect(html).not.toContain('~0.5 GB');
+    expect(html).not.toContain('1.0 GB');
   });
 });
 

@@ -14,6 +14,7 @@ function assert(condition, message) {
 }
 
 console.log('==> [1/6] Running prebuild compilation (Stacks and Courses)...');
+execSync('node scripts/nightly_stacks.mjs --no-write --strict-warn', { cwd: ROOT, stdio: 'inherit' });
 execSync('node scripts/compile_stacks.mjs', { cwd: ROOT, stdio: 'inherit' });
 execSync('node scripts/compile_courses.mjs', { cwd: ROOT, stdio: 'inherit' });
 assert(existsSync(resolve(ROOT, 'src/data/stacks_compiled.ts')), 'stacks_compiled.ts must exist');
@@ -78,19 +79,18 @@ for (const id of retiredModelIds) {
 // 4. Invariant: Alice is excluded until ready
 assert(!availableModelsBlock.includes("id: 'alice'"), "Alice must not be in AVAILABLE_MODELS until ready");
 
-// 4b. TRUTH GATE (2026-10-17): a catalog entry may claim an adapter only for a
-// repo on this verified list. The 2026-10-17 stub incident shipped adapter claims
-// for synthetic placeholder weights; a new adapterRepo fails here until a human
-// adds the repo after verifying real trained weights (trainer_state.json, tensor
-// shapes matching the base architecture, sane file size).
-const verifiedAdapterRepos = new Set([
-  'easylm-gemma-4-e2b-it',
-  'easylm-gemma-4-e4b-it',
-  'easylm-qwen3-4b-instruct'
-]);
-for (const m of webllmContent.matchAll(/adapterRepo: 'Bluebarrels\/([^']+)'/g)) {
-  assert(verifiedAdapterRepos.has(m[1]), `adapterRepo ${m[1]} is not on the verified adapter list`);
-}
+// 4b. TRUTH GATE: AVAILABLE_MODELS serves the weights named in CUSTOM_MODEL_RECORDS.
+// A card may claim a fine-tune only after those weights are merged into the served
+// MLC shards or executed in the forward pass. The 2026-10-17 stub incident shipped
+// adapter claims for weights the web app never ran.
+assert(
+  !availableModelsBlock.includes('isFineTuned:'),
+  'AVAILABLE_MODELS must not claim isFineTuned'
+);
+assert(
+  !availableModelsBlock.includes('adapterRepo:') && !availableModelsBlock.includes('adapterUrl:'),
+  'AVAILABLE_MODELS must not claim an adapter'
+);
 
 // 4c. TRUTH GATE: the adapter registry lists exactly the verified set — adapters
 // whose Hugging Face repos hold real trained weights, checked 2026-10-18
@@ -206,8 +206,9 @@ for (const entry of catalogEntries) {
 }
 assert(readmeContent.includes('Llama 3.2 1B Instruct'), 'README must document the kid-profile model (Llama 3.2 1B Instruct)');
 
-console.log('==> [5/6] Running kid allowlist, LoRA loader, context budget, and stacks chapter tests...');
-execSync('node ./node_modules/vitest/vitest.mjs run tests/kid_models.test.ts tests/stacks_chapters.test.ts tests/lora_loader.test.ts tests/context_budget.test.ts', { cwd: ROOT, stdio: 'inherit' });
+console.log('==> [5/6] Running kid allowlist, LoRA loader, context budget, stacks chapter, hardware modal, and adapter publish gate tests...');
+execSync('node ./node_modules/vitest/vitest.mjs run tests/kid_models.test.ts tests/stacks_chapters.test.ts tests/lora_loader.test.ts tests/context_budget.test.ts tests/hardware_recommendation_modal.test.ts', { cwd: ROOT, stdio: 'inherit' });
+execSync(`${process.platform === 'win32' ? 'python' : 'python3'} tests/adapter_publish_gate_test.py`, { cwd: ROOT, stdio: 'inherit' });
 
 console.log('==> [6/6] Verifying TypeScript and Vite production bundle (npm run build)...');
 execSync('npm run build', { cwd: ROOT, stdio: 'inherit' });

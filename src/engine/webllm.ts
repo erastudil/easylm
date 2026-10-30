@@ -224,6 +224,15 @@ function vramLabel(modelId: string): string {
   return mb === undefined ? 'VRAM unknown' : `~${(mb / 1000).toFixed(1)} GB VRAM`;
 }
 
+/**
+ * Download size in decimal GB, two places. Catalog sentences and the README
+ * table both use sizeMB / 1000 (1059 → 1.06). Binary GiB ( / 1024) prints 1.0
+ * for that same card and disagrees with the sentence on the card.
+ */
+export function formatDownloadGB(sizeMB: number): string {
+  return (sizeMB / 1000).toFixed(2);
+}
+
 export const AVAILABLE_MODELS: ModelOption[] = [
   // Bonsai 2 lineup — BASE weights for now (truth pass, 2026-10-17). The web app
   // serves the Qwen3.5 base builds that Bonsai 2 is made from. The EasyLM Bonsai 2
@@ -259,18 +268,15 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     description: 'Largest Bonsai 2 base in the web app. The base Qwen3.5 9B weights that Bonsai 2 is built from, served as-is: about a 5.04 GB download, for coding and multi-step reasoning on standard laptops. The EasyLM fine-tune is still in training, so no adapter is applied yet.'
   },
 
-  // 4GB Tier (Ultralight / Mobile / Laptops with iGPU — Multimodal Gemma 4)
+  // Gemma 4 and Qwen 3 entries serve the upstream WebGPU builds named in
+  // CUSTOM_MODEL_RECORDS. No EasyLM adapter is merged into those shards.
   {
     id: 'easylm-gemma-4-e2b-it',
     label: 'Gemma 4 E2B Instruct',
     sizeMB: 2634,
     vramEst: vramLabel('easylm-gemma-4-e2b-it'),
     vramTier: '4gb',
-    isFineTuned: true,
-    baseModelId: 'google/gemma-4-E2B-it',
-    adapterRepo: 'Bluebarrels/easylm-gemma-4-e2b-it',
-    adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-gemma-4-e2b-it',
-    description: 'EasyLM multimodal ultralight foundation fine-tuned on the 32 sovereign academic stacks, AtMem atomic memory, and Progen syntax for mobile and low-spec runtimes.'
+    description: 'Google Gemma 4 E2B instruct, served as the upstream WebGPU build: about a 2.63 GB download. Compact multimodal model for phones and low-spec laptops.'
   },
   {
     id: 'easylm-gemma-4-e4b-it',
@@ -279,11 +285,7 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     vramEst: vramLabel('easylm-gemma-4-e4b-it'),
     vramTier: '8gb',
     isReasoning: true,
-    isFineTuned: true,
-    baseModelId: 'google/gemma-4-E4B-it',
-    adapterRepo: 'Bluebarrels/easylm-gemma-4-e4b-it',
-    adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-gemma-4-e4b-it',
-    description: 'EasyLM multimodal dense reasoning foundation with native Thinking Mode fine-tuned on academic stacks, mathematical derivations, and Hands tool execution.'
+    description: 'Google Gemma 4 E4B instruct with thinking mode, served as the upstream WebGPU build: about a 4.27 GB download.'
   },
 
   // 8GB Tier (Standard / Laptops / Balanced Workhorse & Heavyweight Reasoning)
@@ -293,11 +295,7 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     sizeMB: 2263,
     vramEst: vramLabel('easylm-qwen3-4b-instruct'),
     vramTier: '8gb',
-    isFineTuned: true,
-    baseModelId: 'Qwen/Qwen3-4B-Instruct-2507',
-    adapterRepo: 'Bluebarrels/easylm-qwen3-4b-instruct',
-    adapterUrl: 'https://huggingface.co/Bluebarrels/easylm-qwen3-4b-instruct',
-    description: 'EasyLM everyday workhorse fine-tuned for high-speed WebGPU execution, structured JSON schema generation, and Hands tool dispatch.'
+    description: 'Qwen 3 4B instruct, served as the upstream MLC build: about a 2.26 GB download. Everyday instruct model for structured answers.'
   },
   {
     id: 'easylm-deepseek-v4-distill-9b',

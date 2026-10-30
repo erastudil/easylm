@@ -2,6 +2,8 @@
 title: "tao te ching — classical foundational text"
 date: "2026-09-16"
 status: living · easylm
+level: read
+floor_age: 13
 home: "stacks/tao_te_ching/"
 related:
   - "../philosophy/"

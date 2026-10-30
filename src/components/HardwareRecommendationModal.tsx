@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { DeviceInfo } from '../engine/device';
-import { AVAILABLE_MODELS, findModelOption } from '../engine/webllm';
+import { AVAILABLE_MODELS, findModelOption, formatDownloadGB } from '../engine/webllm';
+import type { ModelOption } from '../types';
 
 export interface HardwareRecommendationModalProps {
   isOpen: boolean;
@@ -24,7 +25,8 @@ export const HardwareRecommendationModal: React.FC<HardwareRecommendationModalPr
   if (!isOpen) return null;
 
   const recModelId = deviceInfo?.recommendedModel || 'easylm-bonsai-2-2b';
-  const recModel = findModelOption(recModelId) || AVAILABLE_MODELS[0];
+  const recModel: ModelOption | undefined = findModelOption(recModelId) || AVAILABLE_MODELS[0];
+  const recDownloadGB = recModel?.sizeMB != null ? formatDownloadGB(recModel.sizeMB) : null;
 
   const handleYes = () => {
     onConfirmLoad(rememberSelection);
@@ -168,7 +170,7 @@ export const HardwareRecommendationModal: React.FC<HardwareRecommendationModalPr
                 </div>
                 <div style={{ fontSize: '0.72rem', color: '#c4b5fd', fontFamily: 'var(--font-mono)' }}>
                   {recModel?.vramEst || '~0.5 GB VRAM'}
-                  {recModel?.sizeMB ? ` · ~${Math.round((recModel.sizeMB / 1024) * 10) / 10} GB download` : ''}
+                  {recDownloadGB ? ` · ~${recDownloadGB} GB download` : ''}
                 </div>
               </div>
             </div>
@@ -192,9 +194,7 @@ export const HardwareRecommendationModal: React.FC<HardwareRecommendationModalPr
         <div style={{ fontSize: '0.88rem', color: '#e4e4e7', lineHeight: 1.55, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           <p style={{ margin: 0 }}>
             EasyLM's AI runs right here in your browser. Nothing you type is sent to a server.
-            Everyone starts on <strong>Bonsai 2 2B (~0.5 GB)</strong> for a fast one-time download of about{' '}
-            {recModel?.sizeMB ? `${Math.round((recModel.sizeMB / 1024) * 10) / 10} GB` : '0.5 GB'}{' '}
-            from Hugging Face.
+            Everyone starts on <strong>Bonsai 2 2B</strong> for a fast one-time download{recDownloadGB ? ` of about ${recDownloadGB} GB` : ''} from Hugging Face.
           </p>
           <p style={{ margin: 0, fontSize: '0.8rem', color: '#a7f3d0', backgroundColor: 'rgba(16, 185, 129, 0.08)', padding: '0.5rem 0.65rem', borderRadius: '6px', border: '1px solid rgba(16, 185, 129, 0.25)' }}>
             🌱 <strong>Level Up Anytime:</strong> Start on <strong>Bonsai 2 2B (Base)</strong>, then step up in Model Selection to <strong>Bonsai 2 4B or 9B (Base)</strong> for deeper reasoning and full coding, or <strong>Gemma 3 12B</strong> for the largest web model (plus <strong>Gemma 4</strong> for multimodal vision).

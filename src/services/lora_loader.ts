@@ -128,12 +128,15 @@ export interface AdapterMetadata {
 }
 
 const BONSAI_TARGET_MODULES = ['q_proj', 'k_proj', 'v_proj', 'o_proj', 'gate_proj', 'up_proj', 'down_proj'];
+const GEMMA_TARGET_MODULES = ['q_proj', 'k_proj', 'v_proj', 'o_proj', 'gate_proj', 'up_proj', 'down_proj'];
 
-function makeBonsaiAdapter(
+export function makeBonsaiAdapter(
   id: string,
   name: string,
   baseModel: string,
-  description: string
+  description: string,
+  rank: number = 16,
+  alpha: number = 32
 ): AdapterMetadata {
   const repoId = `Bluebarrels/${id}`;
   return {
@@ -143,8 +146,8 @@ function makeBonsaiAdapter(
     baseModel,
     targetArchitecture: 'bonsai2',
     description,
-    rank: 16,
-    alpha: 32,
+    rank,
+    alpha,
     targetModules: BONSAI_TARGET_MODULES,
     hfUrl: `https://huggingface.co/${repoId}`,
     weightsUrl: `https://huggingface.co/${repoId}/resolve/main/adapter_model.safetensors`,
@@ -152,133 +155,53 @@ function makeBonsaiAdapter(
   };
 }
 
+export function makeGemmaAdapter(
+  id: string,
+  name: string,
+  baseModel: string,
+  description: string,
+  rank: number = 16,
+  alpha: number = 32
+): AdapterMetadata {
+  const repoId = `Bluebarrels/${id}`;
+  return {
+    id,
+    name,
+    repoId,
+    baseModel,
+    targetArchitecture: 'gemma4',
+    description,
+    rank,
+    alpha,
+    targetModules: GEMMA_TARGET_MODULES,
+    hfUrl: `https://huggingface.co/${repoId}`,
+    weightsUrl: `https://huggingface.co/${repoId}/resolve/main/adapter_model.safetensors`,
+    configUrl: `https://huggingface.co/${repoId}/raw/main/adapter_config.json`
+  };
+}
+
 export const OFFICIAL_ADAPTERS: Record<string, AdapterMetadata> = {
-  // Truth pass (2026-10-18): this registry lists ONLY adapters that exist on
-  // Hugging Face and have been verified as real trained weights (trainer_state
-  // loss curves, tensor shapes matching the base, trained weight statistics).
-  // The web app serves base model weights and does not apply adapters at
-  // runtime; these adapters are published for local use with their base models.
-  // Vapor ids (reasoning-*, coding-*, hands-bonsai-2-27b) never existed and are
-  // banned by the verify.mjs truth gate.
-  'easylm-bonsai-2-2b': makeBonsaiAdapter(
-    'easylm-bonsai-2-2b',
-    'EasyLM Bonsai 2 2B Unified',
-    'prism-ml/Ternary-Bonsai-2-2B-gguf',
-    'Unified adapter for Ternary Bonsai 2 2B. Real trained weights (TRL SFTTrainer, Modal): first-pass light run, 45 steps over a small slice of the EasyLM corpus. Verified 2026-10-18. For local use with the base model.'
-  ),
-  'easylm-bonsai-2-4b': makeBonsaiAdapter(
-    'easylm-bonsai-2-4b',
-    'EasyLM Bonsai 2 4B Unified',
-    'prism-ml/Ternary-Bonsai-2-4B-gguf',
-    'Unified adapter for Ternary Bonsai 2 4B. Real trained weights (TRL SFTTrainer, Modal): first-pass light run, 45 steps over a small slice of the EasyLM corpus. Verified 2026-10-18. For local use with the base model.'
-  ),
-  'easylm-bonsai-2-9b': makeBonsaiAdapter(
-    'easylm-bonsai-2-9b',
-    'EasyLM Bonsai 2 9B Unified',
-    'prism-ml/Ternary-Bonsai-2-9B-gguf',
-    'Unified adapter for Ternary Bonsai 2 9B. Real trained weights (TRL SFTTrainer, Modal): first-pass light run, 40 steps over a small slice of the EasyLM corpus. Verified 2026-10-18. For local use with the base model.'
-  ),
-  'easylm-bonsai-2-27b': makeBonsaiAdapter(
-    'easylm-bonsai-2-27b',
-    'EasyLM Bonsai 2 27B Unified',
-    'prism-ml/Ternary-Bonsai-2-27B-gguf',
-    'Unified flagship adapter for Ternary Bonsai 2 27B. Genuine 27B weights (512 tensors, 64 layers) trained with TRL SFTTrainer on Modal; first-pass light run, 32 steps over a small slice of the EasyLM corpus. Verified 2026-10-18. (The adapter previously published under this name was a mislabeled Qwen2.5-3B adapter; it has been replaced.)'
-  ),
-  'easylm-hands-bonsai-2-2b': makeBonsaiAdapter(
-    'easylm-hands-bonsai-2-2b',
-    'EasyLM Hands Bonsai 2 2B',
-    'prism-ml/Ternary-Bonsai-2-2B-gguf',
-    'Hands tool-invocation adapter for Ternary Bonsai 2 2B. Real trained weights: first-pass run, 40 steps over the 133-conversation Hands dataset. Verified 2026-10-18. For local use.'
-  ),
-  'easylm-hands-bonsai-2-4b': makeBonsaiAdapter(
-    'easylm-hands-bonsai-2-4b',
-    'EasyLM Hands Bonsai 2 4B',
-    'prism-ml/Ternary-Bonsai-2-4B-gguf',
-    'Hands tool-invocation adapter for Ternary Bonsai 2 4B. Real trained weights: first-pass run, 40 steps over the 133-conversation Hands dataset. Verified 2026-10-18. For local use.'
-  ),
-  'easylm-hands-bonsai-2-9b': makeBonsaiAdapter(
-    'easylm-hands-bonsai-2-9b',
-    'EasyLM Hands Bonsai 2 9B',
-    'prism-ml/Ternary-Bonsai-2-9B-gguf',
-    'Hands tool-invocation adapter for Ternary Bonsai 2 9B. Real trained weights: first-pass run, 36 steps over the 133-conversation Hands dataset. Verified 2026-10-18. For local use.'
-  ),
-  'easylm-personalities-bonsai-2-2b': makeBonsaiAdapter(
-    'easylm-personalities-bonsai-2-2b',
-    'EasyLM Personalities Bonsai 2 2B',
-    'prism-ml/Ternary-Bonsai-2-2B-gguf',
-    'Personalities voice adapter for Ternary Bonsai 2 2B. Real trained weights: first-pass run, 40 steps over the 498-conversation Personalities dataset. Verified 2026-10-18. For local use.'
-  ),
-  'easylm-personalities-bonsai-2-4b': makeBonsaiAdapter(
-    'easylm-personalities-bonsai-2-4b',
-    'EasyLM Personalities Bonsai 2 4B',
-    'prism-ml/Ternary-Bonsai-2-4B-gguf',
-    'Personalities voice adapter for Ternary Bonsai 2 4B. Real trained weights: first-pass run, 40 steps over the 498-conversation Personalities dataset. Verified 2026-10-18. For local use.'
-  ),
-  'easylm-personalities-bonsai-2-9b': makeBonsaiAdapter(
-    'easylm-personalities-bonsai-2-9b',
-    'EasyLM Personalities Bonsai 2 9B',
-    'prism-ml/Ternary-Bonsai-2-9B-gguf',
-    'Personalities voice adapter for Ternary Bonsai 2 9B. Real trained weights: first-pass run, 36 steps over the 498-conversation Personalities dataset. Verified 2026-10-18. For local use.'
-  ),
-  'easylm-security-bonsai-2-2b': makeBonsaiAdapter(
-    'easylm-security-bonsai-2-2b',
-    'EasyLM Security Bonsai 2 2B',
-    'prism-ml/Ternary-Bonsai-2-2B-gguf',
-    'Security-posture adapter for Ternary Bonsai 2 2B. Real trained weights: first-pass run, 36 steps over the 35-conversation Security dataset. Verified 2026-10-18. For local use.'
-  ),
-  'easylm-security-bonsai-2-9b': makeBonsaiAdapter(
-    'easylm-security-bonsai-2-9b',
-    'EasyLM Security Bonsai 2 9B',
-    'prism-ml/Ternary-Bonsai-2-9B-gguf',
-    'Security-posture adapter for Ternary Bonsai 2 9B. Real trained weights: first-pass run, 32 steps over the 35-conversation Security dataset. Verified 2026-10-18. For local use.'
-  ),
-  'easylm-kidsafety-bonsai-2-2b': makeBonsaiAdapter(
-    'easylm-kidsafety-bonsai-2-2b',
-    'EasyLM Kid Safety Bonsai 2 2B',
-    'prism-ml/Ternary-Bonsai-2-2B-gguf',
-    'Kid-safety and Socratic-coaching adapter for Ternary Bonsai 2 2B. Real trained weights: first-pass run, 36 steps over the 35-conversation Kid Safety dataset. Verified 2026-10-18. EasyLM kid safety is enforced in app code; this adapter is not the fence. For local use.'
-  ),
-  'easylm-kidsafety-bonsai-2-9b': makeBonsaiAdapter(
-    'easylm-kidsafety-bonsai-2-9b',
-    'EasyLM Kid Safety Bonsai 2 9B',
-    'prism-ml/Ternary-Bonsai-2-9B-gguf',
-    'Kid-safety and Socratic-coaching adapter for Ternary Bonsai 2 9B. Real trained weights: first-pass run, 32 steps over the 35-conversation Kid Safety dataset. Verified 2026-10-18. EasyLM kid safety is enforced in app code; this adapter is not the fence. For local use.'
-  ),
-  'easylm-hydra-bonsai-2-9b': makeBonsaiAdapter(
-    'easylm-hydra-bonsai-2-9b',
-    'EasyLM Hydra Bonsai 2 9B',
-    'prism-ml/Ternary-Bonsai-2-9B-gguf',
-    'Hydra agent-loop adapter for Ternary Bonsai 2 9B. Real trained weights: first-pass run, 36 steps over the 168-conversation Hydra dataset. Verified 2026-10-18. For local use.'
-  ),
-  'easylm-hands-qwen2.5-0.5b': {
-    id: 'easylm-hands-qwen2.5-0.5b',
-    name: 'EasyLM Hands (Qwen2.5-0.5B-Instruct)',
-    repoId: 'Bluebarrels/easylm-hands-qwen2.5-0.5b',
-    baseModel: 'Qwen/Qwen2.5-0.5B-Instruct',
-    targetArchitecture: 'qwen2',
-    description: 'Discrete low-rank adapter specializing Qwen2.5-0.5B in structured tool invocation and parameter binding. Real trained weights, verified 2026-10-18.',
-    rank: 16,
-    alpha: 32,
-    targetModules: ['q_proj', 'k_proj', 'v_proj', 'o_proj', 'gate_proj', 'up_proj', 'down_proj'],
-    hfUrl: 'https://huggingface.co/Bluebarrels/easylm-hands-qwen2.5-0.5b',
-    weightsUrl: 'https://huggingface.co/Bluebarrels/easylm-hands-qwen2.5-0.5b/resolve/main/adapter_model.safetensors',
-    configUrl: 'https://huggingface.co/Bluebarrels/easylm-hands-qwen2.5-0.5b/raw/main/adapter_config.json'
-  },
-  'easylm-hands-qwen2.5-3b': {
-    id: 'easylm-hands-qwen2.5-3b',
-    name: 'EasyLM Hands (Qwen2.5-3B-Instruct)',
-    repoId: 'Bluebarrels/easylm-hands-qwen2.5-3b',
-    baseModel: 'Qwen/Qwen2.5-3B-Instruct',
-    targetArchitecture: 'qwen2',
-    description: 'Discrete low-rank adapter specializing Qwen2.5-3B in structured tool invocation and parameter binding. Real trained weights, verified 2026-10-18.',
-    rank: 16,
-    alpha: 32,
-    targetModules: ['q_proj', 'k_proj', 'v_proj', 'o_proj', 'gate_proj', 'up_proj', 'down_proj'],
-    hfUrl: 'https://huggingface.co/Bluebarrels/easylm-hands-qwen2.5-3b',
-    weightsUrl: 'https://huggingface.co/Bluebarrels/easylm-hands-qwen2.5-3b/resolve/main/adapter_model.safetensors',
-    configUrl: 'https://huggingface.co/Bluebarrels/easylm-hands-qwen2.5-3b/raw/main/adapter_config.json'
-  },
+  // Truth gate (2026-10-20): all prior counterfeit Bluebarrels/* repositories
+  // (smoke runs and surrogate base weights) were deleted from Hugging Face.
+  // The live web app serves base Bonsai 2 and Gemma 4 weights directly.
+  // No adapter may be added to OFFICIAL_ADAPTERS until trained across the full
+  // EasyLM corpus distribution to held-out convergence, externally inspected,
+  // and verified by scripts/adapter_publish_gate.py.
 };
+
+export function registerAdapter(meta: AdapterMetadata): void {
+  OFFICIAL_ADAPTERS[meta.id] = meta;
+}
+
+export function unregisterAdapter(id: string): void {
+  delete OFFICIAL_ADAPTERS[id];
+  verifiedAdapterCache.delete(id);
+  for (const [modelId, activeId] of activeSkillAdapterByModel.entries()) {
+    if (activeId === id) {
+      activeSkillAdapterByModel.delete(modelId);
+    }
+  }
+}
 
 export interface VerifiedAdapterState {
   adapterId: string;
@@ -330,11 +253,19 @@ export function getAdapterConfig(idOrRepo: string): AdapterMetadata | undefined 
 export function getAdaptersForModel(baseModelOrId: string): AdapterMetadata[] {
   const norm = baseModelOrId.toLowerCase();
   // Match tier suffix for easylm-bonsai-2-{2b,4b,9b,27b}
-  const tierMatch = norm.match(/bonsai-2-(2b|4b|9b|27b)/);
-  if (tierMatch) {
-    const tier = tierMatch[1];
+  const bonsaiMatch = norm.match(/bonsai-2-(2b|4b|9b|27b)/);
+  if (bonsaiMatch) {
+    const tier = bonsaiMatch[1];
     return Object.values(OFFICIAL_ADAPTERS).filter(
-      a => a.id.endsWith(`bonsai-2-${tier}`)
+      a => a.id.toLowerCase().includes(`bonsai-2-${tier}`) || a.baseModel.toLowerCase().includes(`bonsai-2-${tier}`)
+    );
+  }
+  // Match tier suffix for gemma-4-{e2b,e4b,12b}
+  const gemmaMatch = norm.match(/gemma-4-(e2b|e4b|12b)/);
+  if (gemmaMatch) {
+    const tier = gemmaMatch[1];
+    return Object.values(OFFICIAL_ADAPTERS).filter(
+      a => a.id.toLowerCase().includes(`gemma-4-${tier}`) || a.baseModel.toLowerCase().includes(`gemma-4-${tier}`)
     );
   }
   return Object.values(OFFICIAL_ADAPTERS).filter(

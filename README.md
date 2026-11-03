@@ -35,11 +35,6 @@ EasyLM dynamically detects your hardware tier and recommends the optimal model f
 | **Bonsai 2 9B (Base)** | ~5.04 GB | ~5.04 GB | **Largest Bonsai 2 base on the web.** The base Qwen3.5 9B weights that Bonsai 2 is built from, served as-is, for coding and multi-step reasoning. | Apache-2.0 |
 | **Gemma 4 E2B Instruct** | ~2.63 GB | ~2.63 GB | **Ultralight (4GB tier).** Compact multimodal model for mobile and low-spec runtimes. | Gemma Terms |
 | **Gemma 4 E4B Thinking** | ~4.27 GB | ~4.27 GB | **8GB tier.** Multimodal dense reasoning foundation with native Thinking Mode. | Gemma Terms |
-| **Qwen 3 4B Instruct** | ~2.26 GB | ~3.43 GB | **8GB tier.** Structured output and Hands tool dispatch. | Apache-2.0 |
-| **DeepSeek R1 Distill Qwen 7B** | ~4.28 GB | ~5.11 GB | **8GB-16GB tier.** DeepSeek R1 reasoning distilled into Qwen 7B, served as the base model. | See upstream repository |
-| **Gemma 3 12B Instruct** | ~6.62 GB | ~8.2 GB | **16GB tier.** Google Gemma 3 12B instruct, served as the base model. High-caliber long-context multimodal intelligence. | Gemma Terms |
-
-The Bonsai 2 27B EasyLM fine-tune is a real trained LoRA adapter, but it is not in the web catalog: there is no web build of it yet, and this table lists only what the web app actually serves. The adapter is published for local use at [Bluebarrels/easylm-bonsai-2-27b](https://huggingface.co/Bluebarrels/easylm-bonsai-2-27b).
 
 Kid profiles do not use this catalog: they run **Llama 3.2 1B Instruct** (~0.7 GB download) and nothing else - the one model with Kid Safe A/B/C evidence on file. Fine-tuned models and adapters stay on adult profiles until they pass the same checks.
 

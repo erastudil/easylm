@@ -46,6 +46,27 @@ from typing import Any, Dict, Iterator, List, Optional, Tuple
 import psutil
 
 
+# --- encoding fix (2026-10-20): lossless decode fallback -------------------
+# Reads that used errors="replace"/errors="ignore" silently destroyed any
+# byte that was not valid UTF-8 (a Windows-1252 ellipsis byte 0x85 became
+# U+FFFD in the sovereign corpus and propagated into compiled datasets).
+# The "easylm_cp1252_fallback" error handler decodes ONLY the offending
+# byte span as Windows-1252; valid UTF-8 is untouched.
+import codecs as _codecs
+
+
+def _easylm_cp1252_fallback(exc):
+    if not isinstance(exc, UnicodeDecodeError):
+        raise exc
+    bad = exc.object[exc.start:exc.end]
+    return (bad.decode("cp1252", errors="replace"), exc.end)
+
+
+_codecs.register_error("easylm_cp1252_fallback", _easylm_cp1252_fallback)
+# --- end encoding fix -------------------------------------------------------
+
+
+
 def apply_laptop_compute_budget() -> Dict[str, Any]:
     """Pin current process to Windows IDLE priority, VERYLOW I/O, and 2 logical cores."""
     proc = psutil.Process(os.getpid())
@@ -145,7 +166,7 @@ def stream_corpus_enriched() -> Iterator[Dict[str, Any]]:
     if not ce_path.exists():
         return
 
-    with open(ce_path, "r", encoding="utf-8", errors="replace") as f:
+    with open(ce_path, "r", encoding="utf-8", errors="easylm_cp1252_fallback") as f:
         for idx, line in enumerate(f):
             if idx % 50 == 0:
                 time.sleep(0.002)
@@ -241,7 +262,7 @@ def stream_stacks_textbooks() -> Iterator[Dict[str, Any]]:
     for md_file in sorted(tb_root.rglob("*.md")):
         time.sleep(0.002)
         try:
-            text = md_file.read_text(encoding="utf-8", errors="replace")
+            text = md_file.read_text(encoding="utf-8", errors="easylm_cp1252_fallback")
         except Exception:
             continue
         meta, body = clean_frontmatter(text)
@@ -287,7 +308,7 @@ def stream_council_books_zip() -> Iterator[Dict[str, Any]]:
                 continue
             time.sleep(0.002)
             try:
-                raw = z.read(name).decode("utf-8", errors="replace")
+                raw = z.read(name).decode("utf-8", errors="easylm_cp1252_fallback")
             except Exception:
                 continue
             meta, body = clean_frontmatter(raw)
@@ -325,7 +346,7 @@ def stream_easylm_ts_data() -> Iterator[Dict[str, Any]]:
     # 1. stack_facts.ts
     sf_path = data_dir / "stack_facts.ts"
     if sf_path.exists():
-        raw = sf_path.read_text(encoding="utf-8", errors="replace")
+        raw = sf_path.read_text(encoding="utf-8", errors="easylm_cp1252_fallback")
         pattern = re.compile(
             r'\{\s*"topic":\s*"([^"]+)",\s*"comment":\s*"([^"]+)",\s*"dewey":\s*"([^"]+)",\s*"door":\s*"([^"]+)",\s*"slug":\s*"([^"]+)",\s*"title":\s*"([^"]+)"\s*\}',
             re.DOTALL,
@@ -356,7 +377,7 @@ def stream_easylm_ts_data() -> Iterator[Dict[str, Any]]:
     # 2. personalities.ts
     p_path = data_dir / "personalities.ts"
     if p_path.exists():
-        raw = p_path.read_text(encoding="utf-8", errors="replace")
+        raw = p_path.read_text(encoding="utf-8", errors="easylm_cp1252_fallback")
         # Match id, name, title, category, prompt, greeting
         blocks = re.findall(
             r'id:\s*[\'"]([^\'"]+)[\'"].*?name:\s*[\'"]([^\'"]+)[\'"].*?title:\s*[\'"]([^\'"]+)[\'"].*?prompt:\s*[\'"]([^\'"]+)[\'"].*?greeting:\s*[\'"]([^\'"]+)[\'"]',
@@ -375,7 +396,7 @@ def stream_easylm_ts_data() -> Iterator[Dict[str, Any]]:
     # 3. stacks_compiled.ts (32 full StackPacks + 1,225 atomic StackUnits)
     sc_path = data_dir / "stacks_compiled.ts"
     if sc_path.exists():
-        raw = sc_path.read_text(encoding="utf-8", errors="replace")
+        raw = sc_path.read_text(encoding="utf-8", errors="easylm_cp1252_fallback")
         idx_start = raw.find("export const STACKS_PACKS: StackPack[] = [")
         if idx_start != -1:
             json_start = raw.find("= [", idx_start) + 2
@@ -433,8 +454,8 @@ def stream_easylm_ts_data() -> Iterator[Dict[str, Any]]:
     cc_path = data_dir / "courses_compiled.ts"
     ac_path = data_dir / "answers_compiled.ts"
     if cc_path.exists() and ac_path.exists():
-        cc_raw = cc_path.read_text(encoding="utf-8", errors="replace")
-        ac_raw = ac_path.read_text(encoding="utf-8", errors="replace")
+        cc_raw = cc_path.read_text(encoding="utf-8", errors="easylm_cp1252_fallback")
+        ac_raw = ac_path.read_text(encoding="utf-8", errors="easylm_cp1252_fallback")
         ak_idx = ac_raw.find("export const ANSWER_KEYS")
         pi_idx = cc_raw.find("export const PUBLIC_ITEMS")
         if ak_idx != -1 and pi_idx != -1:
@@ -496,7 +517,7 @@ def stream_easylm_ts_data() -> Iterator[Dict[str, Any]]:
     unified_dir = DOCS_ROOT / "snowgate-alice" / "rust-backend" / "data" / "unified"
     sc_jsonl = unified_dir / "stack_cards.jsonl"
     if sc_jsonl.exists():
-        with open(sc_jsonl, "r", encoding="utf-8", errors="replace") as f:
+        with open(sc_jsonl, "r", encoding="utf-8", errors="easylm_cp1252_fallback") as f:
             for idx, line in enumerate(f):
                 if idx % 50 == 0:
                     time.sleep(0.002)
@@ -559,7 +580,7 @@ def stream_logic_and_knowledge_dumps() -> Iterator[Dict[str, Any]]:
     # 1. knowledge_units_deduped.jsonl (8,900 authentic AI & engineering units)
     ku_path = dump_dir / "knowledge_units_deduped.jsonl"
     if ku_path.exists():
-        with open(ku_path, "r", encoding="utf-8", errors="replace") as f:
+        with open(ku_path, "r", encoding="utf-8", errors="easylm_cp1252_fallback") as f:
             for idx, line in enumerate(f):
                 if idx % 50 == 0:
                     time.sleep(0.002)
@@ -604,7 +625,7 @@ def stream_logic_and_knowledge_dumps() -> Iterator[Dict[str, Any]]:
         fpath = dump_dir / fname
         if not fpath.exists():
             continue
-        with open(fpath, "r", encoding="utf-8", errors="replace") as f:
+        with open(fpath, "r", encoding="utf-8", errors="easylm_cp1252_fallback") as f:
             for idx, line in enumerate(f):
                 if idx % 50 == 0:
                     time.sleep(0.002)
@@ -654,7 +675,7 @@ def stream_sovereign_genomes_and_specialist_tracks() -> Iterator[Dict[str, Any]]
         if not gf.exists():
             continue
         time.sleep(0.002)
-        text = gf.read_text(encoding="utf-8", errors="replace")
+        text = gf.read_text(encoding="utf-8", errors="easylm_cp1252_fallback")
         meta, body = clean_frontmatter(text)
         sections = re.split(r"\n(?=##\s+)", body)
         for s_idx, sec in enumerate(sections):

@@ -37,19 +37,14 @@ assert(
   'webllm.ts must map Bonsai 2 2B, 4B, and 9B to verified mlc-ai/Qwen3.5-* MLC endpoints'
 );
 
-// 2. Invariant: the 8 catalog models in AVAILABLE_MODELS (Bonsai 2 base 2B/4B/9B,
-// Gemma 4 E2B/E4B, Qwen 3 4B, DeepSeek R1 Distill 7B, Gemma 3 12B). The former
-// 'Bonsai 2 27B' and 'Gemma 4 26B A4B' entries served other models' weights and
-// were removed in the 2026-10-17 truth pass; they must not come back.
+// 2. Invariant: the 5 catalog models in AVAILABLE_MODELS (Bonsai 2 base 2B/4B/9B,
+// Gemma 4 E2B/E4B). Retired models and former counterfeit entries must not come back.
 const expectedModelIds = [
   'easylm-bonsai-2-2b',
   'easylm-bonsai-2-4b',
   'easylm-bonsai-2-9b',
   'easylm-gemma-4-e2b-it',
-  'easylm-gemma-4-e4b-it',
-  'easylm-qwen3-4b-instruct',
-  'easylm-deepseek-v4-distill-9b',
-  'easylm-gemma-4-12b-it'
+  'easylm-gemma-4-e4b-it'
 ];
 
 for (const id of expectedModelIds) {
@@ -65,7 +60,12 @@ const retiredModelIds = [
   'Mistral-7B-Instruct-v0.3-q4f16_1-MLC',
   'Qwen2.5-7B-Instruct-q4f16_1-MLC',
   'Qwen2.5-Coder-7B-Instruct-q4f16_1-MLC',
-  'gemma-2-9b-it-q4f16_1-MLC'
+  'gemma-2-9b-it-q4f16_1-MLC',
+  'easylm-qwen3-4b-instruct',
+  'easylm-deepseek-v4-distill-9b',
+  'easylm-gemma-4-12b-it',
+  'easylm-bonsai-2-27b',
+  'easylm-gemma-4-26b-a4b-it'
 ];
 
 // Check AVAILABLE_MODELS block specifically
@@ -92,41 +92,19 @@ assert(
   'AVAILABLE_MODELS must not claim an adapter'
 );
 
-// 4c. TRUTH GATE: the adapter registry lists exactly the verified set — adapters
-// whose Hugging Face repos hold real trained weights, checked 2026-10-18
-// (trainer_state.json loss curves, tensor shapes, trained weight statistics).
-// Vapor ids that never existed and the retired alice-emap-adapter stay banned.
+// 4c. TRUTH GATE: OFFICIAL_ADAPTERS must contain zero unverified or deleted
+// Hugging Face adapters until trained across the full distribution, externally
+// inspected, and verified by scripts/adapter_publish_gate.py.
 const loraContent = readFileSync(resolve(ROOT, 'src/services/lora_loader.ts'), 'utf8');
 const registryBlock = loraContent.slice(
   loraContent.indexOf('export const OFFICIAL_ADAPTERS'),
-  loraContent.indexOf('export interface VerifiedAdapterState')
+  loraContent.indexOf('export function registerAdapter')
 );
 const registeredIds = new Set([...registryBlock.matchAll(/^ {2}'(easylm-[^']+)':/gm)].map(m => m[1]));
-const verifiedAdapterIds = new Set([
-  'easylm-bonsai-2-2b',
-  'easylm-bonsai-2-4b',
-  'easylm-bonsai-2-9b',
-  'easylm-bonsai-2-27b',
-  'easylm-hands-bonsai-2-2b',
-  'easylm-hands-bonsai-2-4b',
-  'easylm-hands-bonsai-2-9b',
-  'easylm-personalities-bonsai-2-2b',
-  'easylm-personalities-bonsai-2-4b',
-  'easylm-personalities-bonsai-2-9b',
-  'easylm-security-bonsai-2-2b',
-  'easylm-security-bonsai-2-9b',
-  'easylm-kidsafety-bonsai-2-2b',
-  'easylm-kidsafety-bonsai-2-9b',
-  'easylm-hydra-bonsai-2-9b',
-  'easylm-hands-qwen2.5-0.5b',
-  'easylm-hands-qwen2.5-3b'
-]);
-for (const id of registeredIds) {
-  assert(verifiedAdapterIds.has(id), `registered adapter ${id} is not on the verified adapter list`);
-}
-for (const id of verifiedAdapterIds) {
-  assert(registeredIds.has(id), `verified adapter ${id} is missing from the registry`);
-}
+assert(
+  registeredIds.size === 0,
+  `OFFICIAL_ADAPTERS must start empty (found ${registeredIds.size} entries: ${[...registeredIds].join(', ')})`
+);
 const bannedAdapterIds = [
   'easylm-hands-bonsai-2-27b',
   'easylm-reasoning-bonsai-2-4b',
@@ -135,6 +113,8 @@ const bannedAdapterIds = [
   'easylm-coding-bonsai-2-4b',
   'easylm-coding-bonsai-2-9b',
   'easylm-coding-bonsai-2-27b',
+  'easylm-hands-qwen2.5-0.5b',
+  'easylm-hands-qwen2.5-3b',
   'alice-emap-adapter'
 ];
 for (const id of bannedAdapterIds) {

@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import {
+  OFFICIAL_ADAPTERS,
+  makeBonsaiAdapter,
+  makeGemmaAdapter,
+  registerAdapter,
+  unregisterAdapter,
   parseSafeTensorsHeader,
   applyLoRAWeights,
   getAdapterConfig,
@@ -8,6 +13,14 @@ import {
   setActiveSkillAdapter,
   fetchAndVerifyAdapter
 } from '../src/services/lora_loader';
+
+const TEST_ADAPTER_IDS = [
+  'easylm-bonsai-2-2b',
+  'easylm-hands-bonsai-2-2b',
+  'easylm-bonsai-2-9b',
+  'easylm-hydra-bonsai-2-9b',
+  'easylm-gemma-4-e4b'
+];
 
 function buildSafeTensorsBuffer(headerObj: Record<string, any>, payloadBytes: number = 64): ArrayBuffer {
   const jsonBytes = new TextEncoder().encode(JSON.stringify(headerObj));
@@ -21,8 +34,17 @@ function buildSafeTensorsBuffer(headerObj: Record<string, any>, payloadBytes: nu
 describe('EasyLM LoRA Loader & Runtime Adapter Integration', () => {
   afterEach(() => {
     vi.restoreAllMocks();
+    for (const id of TEST_ADAPTER_IDS) {
+      unregisterAdapter(id);
+    }
     setActiveSkillAdapter('easylm-bonsai-2-2b', null);
     setActiveSkillAdapter('easylm-bonsai-2-9b', null);
+    setActiveSkillAdapter('easylm-gemma-4-e4b-it', null);
+  });
+
+  it('starts with an empty OFFICIAL_ADAPTERS registry until verified adapters are published', () => {
+    expect(OFFICIAL_ADAPTERS).toEqual({});
+    expect(Object.keys(OFFICIAL_ADAPTERS)).toHaveLength(0);
   });
 
   it('parses binary SafeTensors headers and applies low-rank W + (alpha/r)*(B x A) adaptation', () => {
@@ -51,33 +73,90 @@ describe('EasyLM LoRA Loader & Runtime Adapter Integration', () => {
     expect(Array.from(adapted)).toEqual([3, 6, 2, 2]);
   });
 
-  it('resolves all Bonsai 2 discrete skill adapters for 2B, 4B, 9B, and 27B', () => {
+  it('registers local Bonsai 2 and Gemma 4 adapters and resolves them via getAdaptersForModel', () => {
+    registerAdapter(
+      makeBonsaiAdapter(
+        'easylm-bonsai-2-2b',
+        'EasyLM Bonsai 2 2B Unified',
+        'prism-ml/Ternary-Bonsai-2-2B-gguf',
+        'Unified adapter for Bonsai 2 2B.'
+      )
+    );
+    registerAdapter(
+      makeBonsaiAdapter(
+        'easylm-hands-bonsai-2-2b',
+        'EasyLM Hands Bonsai 2 2B',
+        'prism-ml/Ternary-Bonsai-2-2B-gguf',
+        'Hands adapter for Bonsai 2 2B.'
+      )
+    );
+    registerAdapter(
+      makeBonsaiAdapter(
+        'easylm-bonsai-2-9b',
+        'EasyLM Bonsai 2 9B Unified',
+        'prism-ml/Ternary-Bonsai-2-9B-gguf',
+        'Unified adapter for Bonsai 2 9B.'
+      )
+    );
+    registerAdapter(
+      makeBonsaiAdapter(
+        'easylm-hydra-bonsai-2-9b',
+        'EasyLM Hydra Bonsai 2 9B',
+        'prism-ml/Ternary-Bonsai-2-9B-gguf',
+        'Hydra adapter for Bonsai 2 9B.'
+      )
+    );
+    registerAdapter(
+      makeGemmaAdapter(
+        'easylm-gemma-4-e4b',
+        'EasyLM Gemma 4 E4B Unified',
+        'google/gemma-4-E4B-it',
+        'Unified adapter for Gemma 4 E4B.'
+      )
+    );
+
     const adapters2b = getAdaptersForModel('easylm-bonsai-2-2b');
     expect(adapters2b.map(a => a.id)).toEqual(
-      expect.arrayContaining([
-        'easylm-bonsai-2-2b',
-        'easylm-hands-bonsai-2-2b',
-        'easylm-personalities-bonsai-2-2b',
-        'easylm-security-bonsai-2-2b',
-        'easylm-kidsafety-bonsai-2-2b'
-      ])
+      expect.arrayContaining(['easylm-bonsai-2-2b', 'easylm-hands-bonsai-2-2b'])
     );
 
     const adapters9b = getAdaptersForModel('easylm-bonsai-2-9b');
     expect(adapters9b.map(a => a.id)).toEqual(
-      expect.arrayContaining([
-        'easylm-bonsai-2-9b',
-        'easylm-hands-bonsai-2-9b',
-        'easylm-personalities-bonsai-2-9b',
-        'easylm-security-bonsai-2-9b',
-        'easylm-kidsafety-bonsai-2-9b',
-        'easylm-hydra-bonsai-2-9b'
-      ])
+      expect.arrayContaining(['easylm-bonsai-2-9b', 'easylm-hydra-bonsai-2-9b'])
     );
     expect(adapters9b.map(a => a.id)).not.toContain('alice-emap-adapter');
+
+    const adaptersGemma = getAdaptersForModel('easylm-gemma-4-e4b-it');
+    expect(adaptersGemma.map(a => a.id)).toEqual(['easylm-gemma-4-e4b']);
+    expect(adaptersGemma[0].targetArchitecture).toBe('gemma4');
   });
 
   it('switches active skill adapters per model and verifies SafeTensors headers via fetchAndVerifyAdapter', async () => {
+    registerAdapter(
+      makeBonsaiAdapter(
+        'easylm-bonsai-2-2b',
+        'EasyLM Bonsai 2 2B Unified',
+        'prism-ml/Ternary-Bonsai-2-2B-gguf',
+        'Unified adapter for Bonsai 2 2B.'
+      )
+    );
+    registerAdapter(
+      makeBonsaiAdapter(
+        'easylm-bonsai-2-9b',
+        'EasyLM Bonsai 2 9B Unified',
+        'prism-ml/Ternary-Bonsai-2-9B-gguf',
+        'Unified adapter for Bonsai 2 9B.'
+      )
+    );
+    registerAdapter(
+      makeBonsaiAdapter(
+        'easylm-hydra-bonsai-2-9b',
+        'EasyLM Hydra Bonsai 2 9B',
+        'prism-ml/Ternary-Bonsai-2-9B-gguf',
+        'Hydra adapter for Bonsai 2 9B.'
+      )
+    );
+
     expect(getActiveSkillAdapter('easylm-bonsai-2-9b')?.id).toBe('easylm-bonsai-2-9b');
     setActiveSkillAdapter('easylm-bonsai-2-9b', 'easylm-hydra-bonsai-2-9b');
     expect(getActiveSkillAdapter('easylm-bonsai-2-9b')?.id).toBe('easylm-hydra-bonsai-2-9b');

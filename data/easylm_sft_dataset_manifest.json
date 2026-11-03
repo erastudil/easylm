@@ -1,0 +1,113 @@
+{
+  "schema_version": "2.0.0",
+  "families": [
+    "bonsai2",
+    "gemma4"
+  ],
+  "default_model": "easylm-bonsai-2-2b",
+  "lineup_adapter_matrix": {
+    "bonsai-2-2b": [
+      "stacks",
+      "hands",
+      "kidsafety",
+      "hydra"
+    ],
+    "bonsai-2-4b": [
+      "hydra"
+    ],
+    "bonsai-2-9b": [
+      "hydra"
+    ],
+    "bonsai-2-27b": [
+      "hydra"
+    ],
+    "gemma-4-e2b": [
+      "hydra"
+    ],
+    "gemma-4-e4b": [
+      "hydra"
+    ],
+    "gemma-4-12b": [
+      "hydra"
+    ]
+  },
+  "datasets": {
+    "adapter_stacks_chatml.jsonl": {
+      "path": "data/adapter_stacks_chatml.jsonl",
+      "conversations": 41177,
+      "bytes": 42585161,
+      "size_mb": 40.612,
+      "sha256": "8e20540dde16f2002862f1e50b0ce376b53dab0f19ebb8e9eb1bdfe86d7fa1ca"
+    },
+    "adapter_hydra_chatml.jsonl": {
+      "path": "data/adapter_hydra_chatml.jsonl",
+      "conversations": 9313,
+      "bytes": 13896420,
+      "size_mb": 13.253,
+      "sha256": "279f8e9ba086624e4e2c746498c650574d65694e1083e08ff7f822548cc9991e"
+    },
+    "adapter_personalities_chatml.jsonl": {
+      "path": "data/adapter_personalities_chatml.jsonl",
+      "conversations": 498,
+      "bytes": 1300168,
+      "size_mb": 1.24,
+      "sha256": "a824ade7c1dd0e8880b805045d5b807b65de520658968b06fb0a18dd5683b649"
+    },
+    "adapter_hands_chatml.jsonl": {
+      "path": "data/adapter_hands_chatml.jsonl",
+      "conversations": 958,
+      "bytes": 3288821,
+      "size_mb": 3.136,
+      "sha256": "bbc8b128e09d6128afa1f1c4beab345c505683984c9d7e284468dd4e3e5cb1df"
+    },
+    "adapter_tools_chatml.jsonl": {
+      "path": "data/adapter_tools_chatml.jsonl",
+      "conversations": 958,
+      "bytes": 3288821,
+      "size_mb": 3.136,
+      "sha256": "bbc8b128e09d6128afa1f1c4beab345c505683984c9d7e284468dd4e3e5cb1df"
+    },
+    "adapter_features_chatml.jsonl": {
+      "path": "data/adapter_features_chatml.jsonl",
+      "conversations": 6,
+      "bytes": 5186,
+      "size_mb": 0.005,
+      "sha256": "70749c0cebefacd26bfde17b1d93ae49b7ac0922c3fde800d7b4344c528105c9"
+    },
+    "adapter_settings_chatml.jsonl": {
+      "path": "data/adapter_settings_chatml.jsonl",
+      "conversations": 26,
+      "bytes": 144435,
+      "size_mb": 0.138,
+      "sha256": "dc168473094036c30cbef70d3312228dec2c6185968836130a18ba609b056383"
+    },
+    "adapter_security_chatml.jsonl": {
+      "path": "data/adapter_security_chatml.jsonl",
+      "conversations": 2806,
+      "bytes": 3256234,
+      "size_mb": 3.105,
+      "sha256": "2273bdca1d91ef2a88f776958b3608390ebfbf643a4d9f7dda597d00a7bd8ed2"
+    },
+    "adapter_kidsafety_chatml.jsonl": {
+      "path": "data/adapter_kidsafety_chatml.jsonl",
+      "conversations": 1744,
+      "bytes": 1704619,
+      "size_mb": 1.626,
+      "sha256": "3b932a7069c32f5b6839486fc5c15fdf9940dc727182b5b32a26d4d69ef252a0"
+    },
+    "adapter_easylm_master_chatml.jsonl": {
+      "path": "data/adapter_easylm_master_chatml.jsonl",
+      "conversations": 56504,
+      "bytes": 66038768,
+      "size_mb": 62.979,
+      "sha256": "db3933096816b95a003ff408a15795b37ebc29332594648dd550ad52e19a8665"
+    },
+    "easylm_unified_sft_chatml.jsonl": {
+      "path": "data/easylm_unified_sft_chatml.jsonl",
+      "conversations": 56504,
+      "bytes": 66038768,
+      "size_mb": 62.979,
+      "sha256": "db3933096816b95a003ff408a15795b37ebc29332594648dd550ad52e19a8665"
+    }
+  }
+}

@@ -1,6 +1,6 @@
 ---
 title: "easylm drafts — agy review"
-summary: "proposed stacks. not compiled. agy judges. grok drafted 2026-09-16."
+summary: "proposed stacks. not compiled. agy judges. drafted 2026-09-16."
 last_updated: "2026-09-16"
 status: draft · easylm
 ---

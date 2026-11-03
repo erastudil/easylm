@@ -1,0 +1,28 @@
+{
+  "workerPoolSpecs": [
+    {
+      "machineSpec": {
+        "machineType": "a2-highgpu-1g",
+        "acceleratorType": "NVIDIA_TESLA_A100",
+        "acceleratorCount": 1
+      },
+      "replicaCount": 1,
+      "containerSpec": {
+        "imageUri": "us-docker.pkg.dev/vertex-ai/training/pytorch-gpu.2-4.py310:latest",
+        "command": [
+          "/bin/bash",
+          "-c"
+        ],
+        "args": [
+          "pip install --upgrade pip && pip install 'torch==2.6.0' 'torchvision==0.21.0' 'torchaudio==2.6.0' python-json-logger 'transformers>=5.17.0' 'peft>=0.14.0' 'trl>=0.12.0' datasets accelerate bitsandbytes safetensors && mkdir -p ./data ./output && gcloud storage cp gs://bastion-510306-vault/easylm/data/*.jsonl ./data/ && gcloud storage cp gs://bastion-510306-vault/easylm/scripts/train_adapters_gcloud.py . && python3 train_adapters_gcloud.py --base-model bonsai-2-2b --adapter hydra --data-dir ./data --output-dir ./output --epochs 3 --batch-size 4 --grad-accum 4 --lr 2e-4 --max-seq-len 2048 --lora-r 16 --lora-alpha 32 --gradient-checkpointing && gcloud storage cp -r ./output/* gs://cloud-ai-platform-a75ae046-b3be-4949-bb56-de35a075764f/models/bonsai-2-2b/adapters/hydra/"
+        ]
+      }
+    }
+  ],
+  "scheduling": {
+    "strategy": "SPOT"
+  },
+  "baseOutputDirectory": {
+    "outputUriPrefix": "gs://cloud-ai-platform-a75ae046-b3be-4949-bb56-de35a075764f/jobs/hydra-bonsai-2-2b"
+  }
+}

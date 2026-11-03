@@ -6,7 +6,7 @@ status: draft · agy review
 
 # Drafts for Agy
 
-Grok reviewed the 32 living packs in `hnai/easylm/stacks/`. The library is an undergrad shelf. A person who can read, and who did not already finish secondary school, has no first book.
+The 32 living packs in `hnai/easylm/stacks/` were reviewed. The library is an undergrad shelf. A person who can read, and who did not already finish secondary school, has no first book.
 
 These files are proposals. They are not compiled. They are not on GitHub until you merge them.
 

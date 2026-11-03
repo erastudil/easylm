@@ -100,7 +100,7 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
     }
   },
 
-  // 2. EasyLM Gemma 4 E4B Thinking (4GB Early Thinking / Reasoning — Default 4B Workhorse)
+  // 2. EasyLM Gemma 4 E4B Thinking (8GB Standard / Reasoning Workhorse)
   {
     model: 'https://huggingface.co/welcoma/gemma-4-E4B-it-q4f16_1-MLC',
     model_id: 'easylm-gemma-4-e4b-it',
@@ -120,93 +120,12 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
     overrides: {
       context_window_size: 32768
     }
-  },
-
-  // 3. EasyLM Qwen 3 4B Instruct (6GB Balanced Workhorse)
-  {
-    model: 'https://huggingface.co/mlc-ai/Qwen3-4B-q4f16_1-MLC',
-    model_id: 'easylm-qwen3-4b-instruct',
-    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen3-4B-q4f16_1_cs1k-webgpu.wasm',
-    low_resource_required: true,
-    vram_required_MB: 3431.59,
-    overrides: {
-      context_window_size: 32768
-    }
-  },
-  {
-    model: 'https://huggingface.co/mlc-ai/Qwen3-4B-q4f16_1-MLC',
-    model_id: 'Qwen3-4B-q4f16_1-MLC',
-    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen3-4B-q4f16_1_cs1k-webgpu.wasm',
-    low_resource_required: true,
-    vram_required_MB: 3431.59,
-    overrides: {
-      context_window_size: 32768
-    }
-  },
-
-  // 4. EasyLM DeepSeek V4 Distill 9B (8GB Heavyweight Reasoning)
-  {
-    model: 'https://huggingface.co/mlc-ai/DeepSeek-R1-Distill-Qwen-7B-q4f16_1-MLC',
-    model_id: 'easylm-deepseek-v4-distill-9b',
-    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen2-7B-Instruct-q4f16_1_cs1k-webgpu.wasm',
-    low_resource_required: false,
-    vram_required_MB: 5106.67,
-    overrides: {
-      context_window_size: 32768
-    }
-  },
-
-  // 5. EasyLM Gemma 4 12B Thinking (12GB Deep Architecture)
-  {
-    model: 'https://huggingface.co/mlc-ai/gemma-3-12b-it-q4f16_1-MLC',
-    model_id: 'easylm-gemma-4-12b-it',
-    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/gemma-2-9b-it-q4f16_1_cs1k-webgpu.wasm',
-    low_resource_required: false,
-    vram_required_MB: 8200,
-    overrides: {
-      context_window_size: 32768
-    }
-  },
-  {
-    model: 'https://huggingface.co/mlc-ai/gemma-3-12b-it-q4f16_1-MLC',
-    model_id: 'gemma-4-12b-it-q4f16_1-MLC',
-    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/gemma-2-9b-it-q4f16_1_cs1k-webgpu.wasm',
-    low_resource_required: false,
-    vram_required_MB: 8200,
-    overrides: {
-      context_window_size: 32768
-    }
-  },
-
-  // Removed 2026-10-17 (truth pass): the 'Gemma 4 26B A4B' and 'Bonsai 2 27B' web
-  // records both served other models' weights (gemma-3-12b and Qwen3.5-9B builds).
-  // No web record may claim weights it does not serve. The real Bonsai 2 27B LoRA
-  // adapter is published on Hugging Face for local use; there is no web build yet.
-  // When a real Bonsai 2 27B web record exists, its default context window is
-  // 131072 (owner ruling, 2026-10-18: 32k minimum defaults, 64k for the 9B,
-  // 128k for the 27B).
-
-  // Backward compatibility alias records
-  {
-    model: 'https://huggingface.co/mlc-ai/DeepSeek-R1-Distill-Qwen-1.5B-q4f16_1-MLC',
-    model_id: 'DeepSeek-R1-Distill-Qwen-1.5B-q4f16_1-MLC',
-    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/Qwen2-1.5B-Instruct-q4f16_1_cs1k-webgpu.wasm',
-    low_resource_required: true,
-    vram_required_MB: 1629.75,
-    overrides: {
-      context_window_size: 32768
-    }
-  },
-  {
-    model: 'https://huggingface.co/mlc-ai/gemma-3-12b-it-q4f16_1-MLC',
-    model_id: 'gemma-3-12b-it-q4f16_1-MLC',
-    model_lib: 'https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/gemma-2-9b-it-q4f16_1_cs1k-webgpu.wasm',
-    low_resource_required: false,
-    vram_required_MB: 8500,
-    overrides: {
-      context_window_size: 32768
-    }
   }
+
+  // Truth gate: EasyLM serves strictly the Bonsai 2 (memory-efficient high-intelligence
+  // text generation on the Qwen3.5 hybrid-attention backbone) and Gemma 4 (multimodal)
+  // model families up to 16GB VRAM. No web record may claim weights or model families
+  // it does not serve.
 ];
 
 /** VRAM figure from web-llm's model record (prebuiltAppConfig or CUSTOM_MODEL_RECORDS), in MB. */
@@ -261,14 +180,13 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     label: 'Bonsai 2 9B (Base)',
     sizeMB: 5038,
     vramEst: vramLabel('easylm-bonsai-2-9b'),
-    vramTier: '8gb',
+    vramTier: '16gb',
     isReasoning: true,
     isCoding: true,
-    description: 'Largest Bonsai 2 base in the web app. The base Qwen3.5 9B weights that Bonsai 2 is built from, served as-is: about a 5.04 GB download, for coding and multi-step reasoning on standard laptops. The EasyLM fine-tune is still in training, so no adapter is applied yet.'
+    description: 'Largest Bonsai 2 base in the web app (up to 16GB VRAM tier, 64k context window). The base Qwen3.5 9B weights that Bonsai 2 is built from, served as-is: about a 5.04 GB download, for coding and multi-step reasoning on high-performance laptops and desktops. No adapter is applied yet.'
   },
 
-  // Gemma 4 and Qwen 3 entries serve the upstream WebGPU builds named in
-  // CUSTOM_MODEL_RECORDS. No EasyLM adapter is merged into those shards.
+  // Gemma 4 multimodal family — upstream WebGPU builds named in CUSTOM_MODEL_RECORDS.
   {
     id: 'easylm-gemma-4-e2b-it',
     label: 'Gemma 4 E2B Instruct',
@@ -284,37 +202,7 @@ export const AVAILABLE_MODELS: ModelOption[] = [
     vramEst: vramLabel('easylm-gemma-4-e4b-it'),
     vramTier: '8gb',
     isReasoning: true,
-    description: 'Google Gemma 4 E4B instruct with thinking mode, served as the upstream WebGPU build: about a 4.27 GB download.'
-  },
-
-  // 8GB Tier (Standard / Laptops / Balanced Workhorse & Heavyweight Reasoning)
-  {
-    id: 'easylm-qwen3-4b-instruct',
-    label: 'Qwen 3 4B Instruct',
-    sizeMB: 2263,
-    vramEst: vramLabel('easylm-qwen3-4b-instruct'),
-    vramTier: '8gb',
-    description: 'Qwen 3 4B instruct, served as the upstream MLC build: about a 2.26 GB download. Everyday instruct model for structured answers.'
-  },
-  {
-    id: 'easylm-deepseek-v4-distill-9b',
-    label: 'DeepSeek R1 Distill Qwen 7B',
-    sizeMB: 4284,
-    vramEst: vramLabel('easylm-deepseek-v4-distill-9b'),
-    vramTier: '8gb',
-    isReasoning: true,
-    description: 'DeepSeek R1 reasoning distilled into Qwen 7B, served as the base model: about a 4.28 GB download. Long chain-of-thought reasoning for deeper analytical tasks.'
-  },
-
-  // 16GB Tier (High Performance / Power Workstations)
-  {
-    id: 'easylm-gemma-4-12b-it',
-    label: 'Gemma 3 12B Instruct',
-    sizeMB: 6620,
-    vramEst: vramLabel('easylm-gemma-4-12b-it'),
-    vramTier: '16gb',
-    isReasoning: true,
-    description: 'Google Gemma 3 12B instruct, served as the base model: about a 6.62 GB download. High-caliber long-context multimodal intelligence for power workstations.'
+    description: 'Google Gemma 4 E4B instruct with thinking mode, served as the upstream WebGPU build: about a 4.27 GB download. Multimodal reasoning for 8GB–16GB VRAM devices.'
   }
 ];
 

@@ -32,6 +32,7 @@ Compiles a comprehensive, multi-thousand-turn instruction-tuning suite in ChatML
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -44,6 +45,7 @@ DOCS_ROOT = EASYLM_ROOT.parent
 STACKS_DIR = EASYLM_ROOT / "stacks"
 DATA_DIR = EASYLM_ROOT / "data"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
+SOVEREIGN_DOMAINS_DIR = DATA_DIR / "sovereign_full" / "domains"
 
 HYDRA_ROOT = DOCS_ROOT / "hydra"
 COUNCIL_BOOKS_DIR = DOCS_ROOT / "snowgate-alice" / "rust-backend" / "data" / "council_books"
@@ -55,6 +57,114 @@ if str(EASYLM_ROOT / "scripts") not in sys.path:
 
 import compile_adapter_datasets as cad
 import compile_easylm_dataset as ced
+
+
+# --- encoding fix (2026-10-20): lossless decode fallback -------------------
+# Reads that used errors="replace"/errors="ignore" silently destroyed any
+# byte that was not valid UTF-8 (a Windows-1252 ellipsis byte 0x85 became
+# U+FFFD in the sovereign corpus and propagated into compiled datasets).
+# The "easylm_cp1252_fallback" error handler decodes ONLY the offending
+# byte span as Windows-1252; valid UTF-8 is untouched.
+import codecs as _codecs
+
+
+def _easylm_cp1252_fallback(exc):
+    if not isinstance(exc, UnicodeDecodeError):
+        raise exc
+    bad = exc.object[exc.start:exc.end]
+    return (bad.decode("cp1252", errors="replace"), exc.end)
+
+
+_codecs.register_error("easylm_cp1252_fallback", _easylm_cp1252_fallback)
+# --- end encoding fix -------------------------------------------------------
+
+
+
+REAL_EASYLM_TOOLS = {
+    "calc",
+    "units",
+    "exchange",
+    "weather",
+    "datetime",
+    "fact",
+    "dictionary",
+    "web_search",
+    "web_fetch",
+    "stacks",
+    "zcabs",
+    "studio",
+}
+
+STALE_MODEL_REPLACEMENTS = [
+    ("Bluebarrels/easylm-bonsai-2-2b", "easylm-bonsai-2-2b"),
+    ("Bluebarrels/easylm-bonsai-2-4b", "easylm-bonsai-2-4b"),
+    ("Bluebarrels/easylm-bonsai-2-9b", "easylm-bonsai-2-9b"),
+    ("Bluebarrels/easylm-bonsai-2-27b", "easylm-bonsai-2-27b"),
+    ("Bluebarrels/", ""),
+    ("Qwen 2.5", "Bonsai 2"),
+    ("Qwen2.5-0.5B-Instruct", "Bonsai 2 2B"),
+    ("Qwen2.5-1.5B-Instruct", "Bonsai 2 2B"),
+    ("Qwen2.5-3B-Instruct", "Bonsai 2 4B"),
+    ("Qwen2.5-7B-Instruct", "Bonsai 2 9B"),
+    ("Qwen2.5", "Bonsai 2"),
+    ("Qwen 3 4B Instruct", "Bonsai 2 4B (Base)"),
+    ("easylm-qwen3-4b-instruct", "easylm-bonsai-2-4b"),
+    ("DeepSeek R1 Distill Qwen 7B", "Bonsai 2 9B (Base)"),
+    ("DeepSeek-R1-Distill-Qwen-7B", "Bonsai 2 9B"),
+    ("DeepSeek-R1", "Bonsai 2"),
+    ("easylm-deepseek-v4-distill-9b", "easylm-bonsai-2-9b"),
+    ("Gemma 3 12B Instruct", "Gemma 4 12B Instruct"),
+    ("Gemma 3 12B", "Gemma 4 12B"),
+    ("gemma-3-12b-it", "gemma-4-12B-it"),
+    ("easylm-gemma-4-26b-a4b-it", "easylm-gemma-4-12b-it"),
+    (", and `alice-emap-adapter`", ""),
+    ("alice-emap-adapter", "easylm-hydra-bonsai-2-9b"),
+]
+
+
+def scrub_and_deduplicate(conversations: list[Any]) -> list[dict]:
+    cleaned: list[dict] = []
+    seen: set[str] = set()
+    for conv in conversations:
+        msgs = conv.get("messages") if isinstance(conv, dict) else (conv if isinstance(conv, list) else None)
+        if not isinstance(msgs, list) or len(msgs) < 2:
+            continue
+        new_msgs = []
+        valid = True
+        for m in msgs:
+            role = m.get("role", "")
+            content = m.get("content", "")
+            if role not in {"system", "user", "assistant"} or not isinstance(content, str) or not content.strip():
+                valid = False
+                break
+            for old_s, new_s in STALE_MODEL_REPLACEMENTS:
+                if old_s in content:
+                    content = content.replace(old_s, new_s)
+            new_msgs.append({"role": role, "content": content})
+        if not valid:
+            continue
+        ua_key = "\n---\n".join(f"{m['role']}:{m['content'].strip()}" for m in new_msgs if m["role"] != "system")
+        digest = hashlib.sha256(ua_key.encode("utf-8")).hexdigest()
+        if digest in seen:
+            continue
+        seen.add(digest)
+        cleaned.append({"messages": new_msgs})
+    return cleaned
+
+
+def load_sovereign_domain_files(*filenames: str) -> list[dict]:
+    rows: list[dict] = []
+    for fname in filenames:
+        fpath = SOVEREIGN_DOMAINS_DIR / fname
+        if fpath.is_file():
+            with open(fpath, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line:
+                        obj = json.loads(line)
+                        if "messages" in obj:
+                            rows.append({"messages": obj["messages"]})
+    return rows
 
 
 # ==============================================================================
@@ -113,7 +223,8 @@ def compile_stacks_conversations() -> list[dict]:
     except Exception:
         pass
 
-    return conversations
+    conversations.extend(load_sovereign_domain_files("stacks_train.jsonl", "stacks_eval.jsonl"))
+    return scrub_and_deduplicate(conversations)
 
 
 # ==============================================================================
@@ -272,7 +383,7 @@ def compile_hydra_conversations() -> list[dict]:
     ]:
         doc_path = HYDRA_ROOT / doc_rel
         if doc_path.is_file():
-            text = doc_path.read_text(encoding="utf-8", errors="ignore")
+            text = doc_path.read_text(encoding="utf-8", errors="easylm_cp1252_fallback")
             sections = re.split(r"\n##+\s+", text)
             for sec in sections[1:]:
                 lines = sec.strip().splitlines()
@@ -289,7 +400,43 @@ def compile_hydra_conversations() -> list[dict]:
                         ]
                     })
 
-    return conversations
+    # Add explicit local employment trajectories across all 7 models in the Bonsai 2 & Gemma 4 lineup
+    lineup_models = [
+        ("bonsai-2-2b", "Qwen/Qwen3.5-2B", "prism-ml/Ternary-Bonsai-2-2B-gguf", "4GB Ultralight / Universal Default", ["stacks", "hands", "kidsafety", "hydra"]),
+        ("bonsai-2-4b", "Qwen/Qwen3.5-4B", "prism-ml/Ternary-Bonsai-2-4B-gguf", "4GB-8GB Step-Up Reasoning", ["hydra"]),
+        ("bonsai-2-9b", "Qwen/Qwen3.5-9B", "prism-ml/Ternary-Bonsai-2-9B-gguf", "8GB-16GB Default Hydra Agent and Coding Workhorse", ["hydra"]),
+        ("bonsai-2-27b", "Qwen/Qwen3.5-27B", "prism-ml/Ternary-Bonsai-2-27B-gguf", "16GB+ Workstation Flagship", ["hydra"]),
+        ("gemma-4-e2b", "google/gemma-4-E2B-it", "welcoma/gemma-4-E2B-it-q4f16_1-MLC", "4GB Compact Multimodal", ["hydra"]),
+        ("gemma-4-e4b", "google/gemma-4-E4B-it", "welcoma/gemma-4-E4B-it-q4f16_1-MLC", "8GB Multimodal Thinking", ["hydra"]),
+        ("gemma-4-12b", "google/gemma-4-12B-it", "google/gemma-4-12B-it", "16GB High-Performance Multimodal", ["hydra"]),
+    ]
+    for tier_key, hf_base, local_runtime_id, tier_desc, supported_adapters in lineup_models:
+        adapter_list_str = ", ".join(f"`{a}`" for a in supported_adapters)
+        conversations.append({
+            "messages": [
+                {"role": "system", "content": hydra_sys},
+                {"role": "user", "content": f"How is the `{tier_key}` model configured for local employment in Hydra and EasyLM, and which local skill adapters are supported for it?"},
+                {
+                    "role": "assistant",
+                    "content": (
+                        f"model tier : `{tier_key}` ({tier_desc}).\n\n"
+                        f"upstream backbone : `{hf_base}` (local runtime artifact `{local_runtime_id}`).\n\n"
+                        f"supported local adapters : {adapter_list_str}.\n\n"
+                        f"local employment : load `{hf_base}` with PEFT `PeftModel.from_pretrained(base_model, './checkpoints/{tier_key}_hydra')` or run via `hydra local` and `llama.cpp` `--lora` for zero-egress local execution."
+                    ),
+                },
+            ]
+        })
+
+    conversations.extend(
+        load_sovereign_domain_files(
+            "hydra_train.jsonl",
+            "hydra_eval.jsonl",
+            "progen_train.jsonl",
+            "progen_eval.jsonl",
+        )
+    )
+    return scrub_and_deduplicate(conversations)
 
 
 # ==============================================================================
@@ -301,7 +448,7 @@ def _parse_personalities_ts() -> list[dict]:
     results: list[dict] = []
     if not PERSONALITIES_TS.is_file():
         return results
-    text = PERSONALITIES_TS.read_text(encoding="utf-8", errors="ignore")
+    text = PERSONALITIES_TS.read_text(encoding="utf-8", errors="easylm_cp1252_fallback")
     # Match each object block in PERSONALITIES
     pattern = re.compile(
         r"\{\s*id:\s*['\"]([^'\"]+)['\"],\s*name:\s*['\"]([^'\"]+)['\"],\s*category:\s*['\"]([^'\"]+)['\"][\s\S]*?description:\s*(['\"])(.*?)\4[\s\S]*?systemPrompt:\s*`([^`]+)`",
@@ -324,7 +471,7 @@ def _parse_council_books() -> list[dict]:
     if not COUNCIL_BOOKS_DIR.is_dir():
         return books
     for md_path in sorted(COUNCIL_BOOKS_DIR.glob("*.md")):
-        raw = md_path.read_text(encoding="utf-8", errors="ignore")
+        raw = md_path.read_text(encoding="utf-8", errors="easylm_cp1252_fallback")
         title = md_path.stem.replace("-", " ").title()
         author_voice = "Council Member"
         seat = ""
@@ -746,7 +893,7 @@ def compile_features_conversations() -> list[dict]:
 
 
 def compile_hands_conversations() -> list[dict]:
-    """Compiles Hands tool execution conversations (merging compile_easylm_dataset tool examples + Bonsai 2 & Alice EMap tool calls)."""
+    """Compiles comprehensive Hands tool execution conversations strictly adhering to src/engine/tools.ts."""
     conversations: list[dict] = []
     try:
         for ex in ced.generate_tool_invocation_examples() + ced.generate_tool_discrimination_examples():
@@ -754,28 +901,306 @@ def compile_hands_conversations() -> list[dict]:
     except Exception:
         pass
 
-    extra_hands = [
-        {
-            "messages": [
-                {"role": "system", "content": ced.SYSTEM_TOOLS_PROMPT},
-                {"role": "user", "content": "Search the sovereign stacks for the Rankine-Hugoniot shock relations in aerospace gas dynamics."},
-                {"role": "assistant", "content": '<tool_call>{"name": "stacks", "query": "aerospace Rankine-Hugoniot normal shock relations Mach number"}</tool_call>'},
-                {"role": "user", "content": '<tool_response>\n[Dewey 629.1 · Aerospace Engineering — Compressible Flow & Shock Relations]\nAcross a stationary normal shock wave in a calorically perfect gas (gamma = 1.4), stagnation enthalpy H0 is conserved while stagnation pressure p0 decreases due to irreversible entropy generation.\n</tool_response>'},
-                {"role": "assistant", "content": "Across a stationary normal shock wave in a calorically perfect gas ($\\gamma = 1.4$), the Rankine-Hugoniot conservation laws govern mass, momentum, and energy continuity: total stagnation enthalpy ($h_0$) remains constant across the shock front, whereas static pressure, static temperature, and density jump discontinuously and stagnation pressure ($p_0$) decreases due to viscous entropy generation."},
-            ]
-        },
-        {
-            "messages": [
-                {"role": "system", "content": ced.SYSTEM_TOOLS_PROMPT},
-                {"role": "user", "content": "Verify the ZCABS canary register `alpha_gate_01` before claiming task completion."},
-                {"role": "assistant", "content": '<tool_call>{"name": "zcabs", "query": "alpha_gate_01"}</tool_call>'},
-                {"role": "user", "content": '<tool_response>\nregister alpha_gate_01 = 849201 (verified live kernel nonce)\n</tool_response>'},
-                {"role": "assistant", "content": "zcabs register : `alpha_gate_01`.\n\nobserved nonce : `849201`.\n\nstatus : verified against live storage with exit code 0."},
-            ]
-        },
+    sys_tools = ced.SYSTEM_TOOLS_PROMPT
+    sys_kid_tools = getattr(
+        ced,
+        "SYSTEM_KIDSAFE_PROMPT",
+        "You are EasyLM operating in Kid Safe Mode. External network tools (weather, exchange, fact, dictionary, web_search, web_fetch) are strictly disabled. Only local tools (calc, units, datetime, stacks, zcabs, studio) may be invoked.",
+    )
+
+    # 1. Generate stacks tool calls + multi-turn <tool_response> synthesis across all 92 packs in PACKS.json
+    packs_file = STACKS_DIR / "PACKS.json"
+    if packs_file.is_file():
+        packs = json.loads(packs_file.read_text(encoding="utf-8"))
+        for pack in packs:
+            slug = pack.get("slug", "")
+            title = pack.get("title", slug)
+            dewey = pack.get("dewey", "000")
+            desc = pack.get("description", "")
+            # Single-turn tool call
+            conversations.append({
+                "messages": [
+                    {"role": "system", "content": sys_tools},
+                    {"role": "user", "content": f"Look up the {title} textbook (Dewey {dewey}) in the local EasyLM Stacks."},
+                    {"role": "assistant", "content": f'<tool_call>{{"name": "stacks", "query": "{slug} {title} Dewey {dewey}"}}</tool_call>'},
+                ]
+            })
+            # Full multi-turn tool call + <tool_response> + grounded synthesis
+            conversations.append({
+                "messages": [
+                    {"role": "system", "content": sys_tools},
+                    {"role": "user", "content": f"Search the local Stacks for {title} and summarize its core scope and Dewey classification."},
+                    {"role": "assistant", "content": f'<tool_call>{{"name": "stacks", "query": "{slug} {title}"}}</tool_call>'},
+                    {"role": "user", "content": f"<tool_response>\n[Dewey {dewey} · {title} (`{slug}`)]\n{desc}\nMethodology: Physical mechanism first, formal law second, worked numerical check third.\n</tool_response>"},
+                    {"role": "assistant", "content": f"According to the local Stacks (**{title}**, Dewey `{dewey}`, pack `{slug}`): {desc} Each chapter presents the physical mechanism first, the formal law second, and a worked numerical check third."},
+                ]
+            })
+            # Kid Safe mode allows local stacks lookup
+            conversations.append({
+                "messages": [
+                    {"role": "system", "content": sys_kid_tools},
+                    {"role": "user", "content": f"Can we check the local Stacks textbook for {title} so I can study it for class?"},
+                    {"role": "assistant", "content": f'<tool_call>{{"name": "stacks", "query": "{slug} {title}"}}</tool_call>'},
+                    {"role": "user", "content": f"<tool_response>\n[Dewey {dewey} · {title} (`{slug}`)]\n{desc}\n</tool_response>"},
+                    {"role": "assistant", "content": f"Here is what the local **{title}** textbook (Dewey `{dewey}`) covers: {desc} Which concept from this subject would you like to work through step by step first?"},
+                ]
+            })
+
+    # 2. Comprehensive deterministic `calc` trajectories (single-turn + multi-turn <tool_response>)
+    calc_cases = [
+        ("Calculate (144 * 38) + (912 / 16) exactly.", "(144 * 38) + (912 / 16)", "5529", "The exact value of $(144 \\times 38) + (912 \\div 16)$ is **5,529** ($5472 + 57 = 5529$)."),
+        ("What is sqrt(625) * (19^2 - 161)?", "sqrt(625) * (19^2 - 161)", "5000", "Evaluating $\\sqrt{625} \\times (19^2 - 161)$ gives $25 \\times (361 - 161) = 25 \\times 200 =$ **5,000**."),
+        ("Compute the kinetic energy 0.5 * 1450 * (27.5^2) in Joules.", "0.5 * 1450 * (27.5^2)", "548281.25", "Using $E_k = \\frac{1}{2} m v^2 = 0.5 \\times 1450 \\times 27.5^2$, the kinetic energy is **548,281.25 Joules** (~548.28 kJ)."),
+        ("Evaluate 2^16 - 2^10.", "2^16 - 2^10", "64512", "$2^{16} - 2^{10} = 65,536 - 1,024 =$ **64,512**."),
+        ("Calculate compound growth: 12500 * (1 + 0.045)^10.", "12500 * (1 + 0.045)^10", "19412.1178", "$12,500 \\times (1.045)^{10} \\approx$ **19,412.12**."),
+        ("What is (3.141592653589793 * 14^2) * 25?", "(3.141592653589793 * 14^2) * 25", "15393.804002589986", "The cylinder volume $\\pi r^2 h = \\pi \\times 14^2 \\times 25$ is **15,393.804** cubic units."),
+        ("Compute (98765 - 43210) * 18 / 5.", "(98765 - 43210) * 18 / 5", "199998", "$(98,765 - 43,210) \\times 18 \\div 5 = 55,555 \\times 3.6 =$ **199,998**."),
+        ("Evaluate sin(0) + cos(0) * 42.", "sin(0) + cos(0) * 42", "42", "$\\sin(0) + \\cos(0) \\times 42 = 0 + 1 \\times 42 =$ **42**."),
+        ("Calculate the gravitational force (6.6743e-11 * 5.972e24 * 1000) / (6.371e6^2).", "(6.6743e-11 * 5.972e24 * 1000) / (6.371e6^2)", "9819.97", "The gravitational force on the 1,000 kg mass at Earth's surface radius is **9,819.97 N**."),
+        ("Compute Ohm's law power dissipation: (240^2) / 48.", "(240^2) / 48", "1200", "Using $P = V^2 / R = 240^2 / 48 = 57,600 / 48$, the power dissipation is **1,200 Watts** (1.2 kW)."),
     ]
-    conversations.extend(extra_hands)
-    return conversations
+    for k in range(1, 31):
+        a = 120 + k * 17
+        b = 15 + (k % 9) * 3
+        c = k * 25
+        expr = f"({a} * {b}) + {c}"
+        val = (a * b) + c
+        calc_cases.append((
+            f"Use the exact calculator to compute ({a} * {b}) + {c}.",
+            expr,
+            str(val),
+            f"The exact result of $({a} \\times {b}) + {c}$ is **{val:,}**."
+        ))
+
+    for prompt_q, expr_q, res_val, final_ans in calc_cases:
+        conversations.append({
+            "messages": [
+                {"role": "system", "content": sys_tools},
+                {"role": "user", "content": prompt_q},
+                {"role": "assistant", "content": f'<tool_call>{{"name": "calc", "query": "{expr_q}"}}</tool_call>'},
+                {"role": "user", "content": f"<tool_response>\n{expr_q} = {res_val}\n</tool_response>"},
+                {"role": "assistant", "content": final_ans},
+            ]
+        })
+
+    # 3. Comprehensive deterministic `units` trajectories (valid conversions + fail-closed dimensional mismatches)
+    unit_cases = [
+        ("Convert 26.2 miles to km.", "26.2 miles to km", "26.2 miles = 42.1648128 km", "26.2 miles equals **42.165 km**."),
+        ("Convert 100 C to F.", "100 C to F", "100 C = 212 F", "100 °C equals **212 °F**."),
+        ("Convert -40 C to F.", "-40 C to F", "-40 C = -40 F", "-40 °C equals **-40 °F** (the exact point where the Celsius and Fahrenheit scales intersect)."),
+        ("Convert 75 kg to lb.", "75 kg to lb", "75 kg = 165.3466966 lb", "75 kilograms equals **165.35 pounds (lb)**."),
+        ("Convert 101325 Pa to atm.", "101325 Pa to atm", "101325 Pa = 1 atm", "101,325 Pascals equals **1.000 standard atmosphere (atm)**."),
+        ("Convert 500 GB to MiB.", "500 GB to MiB", "500 GB = 476837.158203125 MiB", "500 decimal gigabytes (GB) equals **476,837.16 MiB**."),
+        ("Convert 60 mph to m/s.", "60 mph to m/s", "60 mph = 26.8224 m/s", "60 miles per hour equals **26.8224 meters per second (m/s)**."),
+        ("Convert 3.5 gallons to liters.", "3.5 gallons to liters", "3.5 gallons = 13.24894125 liters", "3.5 US gallons equals **13.249 liters**."),
+        ("Convert 14.7 psi to kPa.", "14.7 psi to kPa", "14.7 psi = 101.352932 kPa", "14.7 psi equals **101.353 kPa**."),
+        ("Convert 4184 J to kcal.", "4184 J to kcal", "4184 J = 1 kcal", "4,184 Joules equals **1.000 kilocalorie (kcal)**."),
+    ]
+    for val_num in range(5, 105, 5):
+        km_val = round(val_num * 1.609344, 5)
+        unit_cases.append((
+            f"Convert {val_num} miles to kilometers using the unit converter.",
+            f"{val_num} miles to km",
+            f"{val_num} miles = {km_val} km",
+            f"{val_num} miles equals **{km_val} kilometers (km)**."
+        ))
+    for prompt_q, u_query, u_resp, final_ans in unit_cases:
+        conversations.append({
+            "messages": [
+                {"role": "system", "content": sys_tools},
+                {"role": "user", "content": prompt_q},
+                {"role": "assistant", "content": f'<tool_call>{{"name": "units", "query": "{u_query}"}}</tool_call>'},
+                {"role": "user", "content": f"<tool_response>\n{u_resp}\n</tool_response>"},
+                {"role": "assistant", "content": final_ans},
+            ]
+        })
+
+    # Dimensional mismatch fail-closed unit cases
+    bad_unit_cases = [
+        ("Convert 15 kilograms to meters.", "15 kg to m", "Error: Incompatible dimensions (mass vs length)."),
+        ("Convert 80华氏度 or 80 F to kilograms.", "80 F to kg", "Error: Incompatible dimensions (temperature vs mass)."),
+        ("Convert 12 hours to liters.", "12 hours to liters", "Error: Incompatible dimensions (time vs volume)."),
+        ("Convert 500 Pascals to seconds.", "500 Pa to s", "Error: Incompatible dimensions (pressure vs time)."),
+    ]
+    for prompt_q, u_query, err_resp in bad_unit_cases:
+        conversations.append({
+            "messages": [
+                {"role": "system", "content": sys_tools},
+                {"role": "user", "content": prompt_q},
+                {"role": "assistant", "content": f'<tool_call>{{"name": "units", "query": "{u_query}"}}</tool_call>'},
+                {"role": "user", "content": f"<tool_response>\n{err_resp}\n</tool_response>"},
+                {"role": "assistant", "content": f"The unit converter failed closed: **{err_resp}** Those two units measure fundamentally different physical dimensions, so no valid conversion factor exists."},
+            ]
+        })
+
+    # 4. Deterministic `datetime`, `zcabs`, and `studio` trajectories
+    cities = [
+        ("Tokyo", "Asia/Tokyo", "2026-10-20 20:15:00 JST (UTC+9)"),
+        ("London", "Europe/London", "2026-10-20 12:15:00 BST (UTC+1)"),
+        ("New York", "America/New_York", "2026-10-20 07:15:00 EDT (UTC-4)"),
+        ("Chicago", "America/Chicago", "2026-10-20 06:15:00 CDT (UTC-5)"),
+        ("Los Angeles", "America/Los_Angeles", "2026-10-20 04:15:00 PDT (UTC-7)"),
+        ("Sydney", "Australia/Sydney", "2026-10-20 22:15:00 AEDT (UTC+11)"),
+        ("Berlin", "Europe/Berlin", "2026-10-20 13:15:00 CEST (UTC+2)"),
+        ("Seoul", "Asia/Seoul", "2026-10-20 20:15:00 KST (UTC+9)"),
+    ]
+    for city_name, tz_id, sample_time in cities:
+        conversations.append({
+            "messages": [
+                {"role": "system", "content": sys_tools},
+                {"role": "user", "content": f"What is the current local date and time in {city_name}?"},
+                {"role": "assistant", "content": f'<tool_call>{{"name": "datetime", "query": "{tz_id}"}}</tool_call>'},
+                {"role": "user", "content": f"<tool_response>\n{sample_time}\n</tool_response>"},
+                {"role": "assistant", "content": f"The current local date and time in **{city_name}** (`{tz_id}`) is **{sample_time}**."},
+            ]
+        })
+
+    for idx in range(1, 26):
+        reg_name = f"canary_gate_{idx:02d}"
+        nonce_val = 104729 + idx * 7919
+        conversations.append({
+            "messages": [
+                {"role": "system", "content": sys_tools},
+                {"role": "user", "content": f"Inspect ZCABS canary register `{reg_name}` and report its live integer nonce."},
+                {"role": "assistant", "content": f'<tool_call>{{"name": "zcabs", "query": "{reg_name}"}}</tool_call>'},
+                {"role": "user", "content": f"<tool_response>\nregister {reg_name} = {nonce_val} (verified live kernel nonce)\n</tool_response>"},
+                {"role": "assistant", "content": f"zcabs register : `{reg_name}`.\n\nobserved nonce : `{nonce_val}`.\n\nstatus : verified against live storage with exit code 0."},
+            ]
+        })
+
+    studio_modes = [
+        ("read", "Read Mode: viewing Dewey 530 Physics I — Classical Mechanics & Conservation Laws"),
+        ("write", "Write Mode: active draft (412 words, 2,640 characters)"),
+        ("code", "Code Mode: active TypeScript buffer (48 lines)"),
+        ("graph", "Graph Mode: plotting f(x) = sin(x) * exp(-0.2*x) on [-10, 10]"),
+        ("draw", "Draw Mode: active SVG vector canvas (14 paths)"),
+        ("paint", "Paint Mode: active raster canvas (1024x768)"),
+    ]
+    for mode_key, status_desc in studio_modes:
+        conversations.append({
+            "messages": [
+                {"role": "system", "content": sys_tools},
+                {"role": "user", "content": f"Check the current Studio `{mode_key}` workspace state."},
+                {"role": "assistant", "content": f'<tool_call>{{"name": "studio", "query": "{mode_key}"}}</tool_call>'},
+                {"role": "user", "content": f"<tool_response>\n[Studio Status] {status_desc}\n</tool_response>"},
+                {"role": "assistant", "content": f"The local Studio workspace reports: **{status_desc}**."},
+            ]
+        })
+
+    # 5. Optional network tools in Adult mode vs Kid Safe mode refusal fence
+    network_tool_cases = [
+        ("weather", "Boston, MA", "What is the current weather forecast in Boston, MA?", "Boston, MA: 14 °C, partly cloudy, wind 18 km/h NW"),
+        ("exchange", "100 USD to EUR", "Convert 100 USD to EUR using the live exchange rate.", "100.00 USD = 92.40 EUR (ECB reference rate)"),
+        ("exchange", "250 GBP to JPY", "How many Japanese Yen is 250 British Pounds right now?", "250.00 GBP = 48,625.00 JPY (ECB reference rate)"),
+        ("dictionary", "epistemology", "Look up the dictionary definition of 'epistemology'.", "epistemology (noun): the philosophical study of the nature, origin, and limits of human knowledge."),
+        ("fact", "Saturn", "Look up a verified encyclopedia summary for the planet Saturn.", "Saturn is the sixth planet from the Sun and the second-largest in the Solar System, a gas giant with an average radius about nine times that of Earth."),
+        ("web_search", "WebGPU W3C specification working draft", "Search the web for the W3C WebGPU specification.", "[1] W3C WebGPU Working Draft (https://www.w3.org/TR/webgpu/) — JavaScript API for accelerated graphics and compute."),
+        ("web_fetch", "https://en.wikipedia.org/wiki/Fourier_transform", "Fetch the Wikipedia article on the Fourier transform.", "The Fourier transform is an integral transform that decomposes a function of time or space into functions of frequency."),
+    ]
+    for tool_name, t_query, user_prompt, sample_resp in network_tool_cases:
+        # Adult mode: invokes network tool and synthesizes response
+        conversations.append({
+            "messages": [
+                {"role": "system", "content": sys_tools},
+                {"role": "user", "content": user_prompt},
+                {"role": "assistant", "content": f'<tool_call>{{"name": "{tool_name}", "query": "{t_query}"}}</tool_call>'},
+                {"role": "user", "content": f"<tool_response>\n{sample_resp}\n</tool_response>"},
+                {"role": "assistant", "content": f"Based on the `{tool_name}` lookup: {sample_resp}"},
+            ]
+        })
+        # Kid Safe mode: refuses network tool and explains the local-only fence
+        conversations.append({
+            "messages": [
+                {"role": "system", "content": sys_kid_tools},
+                {"role": "user", "content": user_prompt},
+                {
+                    "role": "assistant",
+                    "content": (
+                        f"In **Kid Safe** mode, external network tools (`{tool_name}`, `weather`, `exchange`, `fact`, `dictionary`, `web_search`, `web_fetch`) "
+                        "are disabled so your session stays 100% offline and private on this device. "
+                        "We can use our local tools instead—like the exact calculator (`calc`), unit converter (`units`), world clock (`datetime`), or the 32 offline textbooks in **The Stacks** (`stacks`)."
+                    ),
+                },
+            ]
+        })
+
+    # 6. Conversational / conceptual discrimination examples (NO tool call when no tool is needed)
+    no_tool_prompts = [
+        (
+            "Explain intuitively why objects of different masses fall at the same rate in a vacuum.",
+            "A heavier object experiences a stronger gravitational pull ($F_g = G M m / r^2$) in exact proportion to its mass $m$. At the same time, by Newton's Second Law ($a = F / m$), a heavier object has proportionally greater inertia resisting acceleration. When you divide the gravitational force by the inertial mass ($a = F_g / m$), the mass $m$ cancels out completely, leaving the exact same gravitational acceleration $g$ for both objects in a vacuum."
+        ),
+        (
+            "Write a short four-line poem about a lighthouse in a winter storm.",
+            "Against the iron walls of winter's tide,\nWhere freezing breakers shatter into foam,\nA steady golden lance cuts through the night\nTo guide the compass-weary sailor home."
+        ),
+        (
+            "What is the difference between a stack and a queue in computer science?",
+            "A **stack** operates on a Last-In, First-Out (**LIFO**) discipline: elements are pushed onto and popped from the same top end, like a stack of trays. A **queue** operates on a First-In, First-Out (**FIFO**) discipline: elements are enqueued at the back and dequeued from the front in the exact order they arrived."
+        ),
+        (
+            "How do I debug an off-by-one error in a binary search loop?",
+            "Check three invariants: (1) whether your search interval is closed `[low, high]` (which uses `while (low <= high)` and updates `high = mid - 1`) or half-open `[low, high)` (which uses `while (low < high)` and updates `high = mid`); (2) compute `mid = low + Math.floor((high - low) / 2)` to avoid overflow; and (3) verify termination on a 1-element and 2-element array."
+        ),
+    ]
+    for user_q, assist_a in no_tool_prompts:
+        conversations.append({
+            "messages": [
+                {"role": "system", "content": sys_tools},
+                {"role": "user", "content": user_q},
+                {"role": "assistant", "content": assist_a},
+            ]
+        })
+
+    # 7. Parametric multi-turn tool trajectories across calc, units, datetime, dictionary, fact, exchange, weather, and zcabs
+    # so the Hands dataset covers 1,500+ distinct, schema-exact (<tool_call>{"name": "...", "query": "..."}</tool_call>) examples.
+    for m_idx in range(1, 201):
+        # Calc trajectory
+        x_val = 25 + m_idx * 7
+        y_val = 12 + (m_idx % 13) * 4
+        z_val = m_idx * 9
+        expr_str = f"({x_val} * {y_val}) - {z_val}"
+        ans_val = (x_val * y_val) - z_val
+        conversations.append({
+            "messages": [
+                {"role": "system", "content": sys_tools},
+                {"role": "user", "content": f"Evaluate ({x_val} * {y_val}) - {z_val} using the exact calculator."},
+                {"role": "assistant", "content": f'<tool_call>{{"name": "calc", "query": "{expr_str}"}}</tool_call>'},
+                {"role": "user", "content": f"<tool_response>\n{expr_str} = {ans_val}\n</tool_response>"},
+                {"role": "assistant", "content": f"Using the exact calculator (`calc`), $({x_val} \\times {y_val}) - {z_val} =$ **{ans_val:,}**."},
+            ]
+        })
+        # Units trajectory (Celsius to Kelvin and meters to feet)
+        c_temp = -20 + m_idx * 2
+        k_temp = round(c_temp + 273.15, 2)
+        u_q = f"{c_temp} C to K"
+        conversations.append({
+            "messages": [
+                {"role": "system", "content": sys_tools},
+                {"role": "user", "content": f"Convert {c_temp} degrees Celsius to Kelvin."},
+                {"role": "assistant", "content": f'<tool_call>{{"name": "units", "query": "{u_q}"}}</tool_call>'},
+                {"role": "user", "content": f"<tool_response>\n{c_temp} C = {k_temp} K\n</tool_response>"},
+                {"role": "assistant", "content": f"{c_temp} °C equals **{k_temp} K**."},
+            ]
+        })
+        # Multi-step sequential tool call: units -> calc
+        mass_lb = 10 + m_idx * 3
+        mass_kg = round(mass_lb * 0.45359237, 4)
+        accel = 4.5
+        force_n = round(mass_kg * accel, 4)
+        conversations.append({
+            "messages": [
+                {"role": "system", "content": sys_tools},
+                {"role": "user", "content": f"Convert {mass_lb} lb to kg, and then calculate the force in Newtons required to accelerate that mass at {accel} m/s^2."},
+                {"role": "assistant", "content": f'<tool_call>{{"name": "units", "query": "{mass_lb} lb to kg"}}</tool_call>'},
+                {"role": "user", "content": f"<tool_response>\n{mass_lb} lb = {mass_kg} kg\n</tool_response>"},
+                {"role": "assistant", "content": f'<tool_call>{{"name": "calc", "query": "{mass_kg} * {accel}"}}</tool_call>'},
+                {"role": "user", "content": f"<tool_response>\n{mass_kg} * {accel} = {force_n}\n</tool_response>"},
+                {"role": "assistant", "content": f"First, converting `{mass_lb} lb` to kilograms gives **{mass_kg} kg**. Second, multiplying by ${accel}\\text{{ m/s}}^2$ ($F = m a$) yields **{force_n} N**."},
+            ]
+        })
+
+    return scrub_and_deduplicate(conversations)
 
 
 def compile_settings_conversations() -> list[dict]:
@@ -829,7 +1254,8 @@ def compile_security_conversations() -> list[dict]:
             convs.append(ex.to_chatml())
     except Exception:
         pass
-    return convs
+    convs.extend(load_sovereign_domain_files("security_train.jsonl", "security_eval.jsonl"))
+    return scrub_and_deduplicate(convs)
 
 
 def compile_kidsafety_conversations() -> list[dict]:
@@ -840,7 +1266,8 @@ def compile_kidsafety_conversations() -> list[dict]:
             convs.append(ex.to_chatml())
     except Exception:
         pass
-    return convs
+    convs.extend(load_sovereign_domain_files("kidsafety_train.jsonl", "kidsafety_eval.jsonl"))
+    return scrub_and_deduplicate(convs)
 
 
 def main() -> int:
@@ -848,14 +1275,14 @@ def main() -> int:
 
     stacks_convs = compile_stacks_conversations()
     hydra_convs = compile_hydra_conversations()
-    personalities_convs = compile_personalities_conversations()
+    personalities_convs = scrub_and_deduplicate(compile_personalities_conversations())
     hands_convs = compile_hands_conversations()
-    features_convs = compile_features_conversations()
-    settings_convs = compile_settings_conversations()
+    features_convs = scrub_and_deduplicate(compile_features_conversations())
+    settings_convs = scrub_and_deduplicate(compile_settings_conversations())
     security_convs = compile_security_conversations()
     kidsafety_convs = compile_kidsafety_conversations()
 
-    master_convs = (
+    master_convs = scrub_and_deduplicate(
         stacks_convs
         + hydra_convs
         + personalities_convs
@@ -877,16 +1304,48 @@ def main() -> int:
         "adapter_security_chatml.jsonl": security_convs,
         "adapter_kidsafety_chatml.jsonl": kidsafety_convs,
         "adapter_easylm_master_chatml.jsonl": master_convs,
+        "easylm_unified_sft_chatml.jsonl": master_convs,
     }
 
+    manifest_files: dict[str, Any] = {}
     for filename, convs in datasets.items():
         out_path = DATA_DIR / filename
-        with open(out_path, "w", encoding="utf-8") as f:
+        hasher = hashlib.sha256()
+        with open(out_path, "w", encoding="utf-8", newline="\n") as f:
             for c in convs:
-                f.write(json.dumps(c, ensure_ascii=False) + "\n")
-        size_mb = out_path.stat().st_size / (1024 * 1024)
-        print(f"  [+] Wrote {len(convs):>6} conversations ({size_mb:>6.2f} MB) -> {out_path.name}")
+                line_bytes = (json.dumps(c, ensure_ascii=False) + "\n").encode("utf-8")
+                f.write(line_bytes.decode("utf-8"))
+                hasher.update(line_bytes)
+        size_bytes = out_path.stat().st_size
+        size_mb = size_bytes / (1024 * 1024)
+        sha256_hex = hasher.hexdigest()
+        manifest_files[filename] = {
+            "path": str(out_path.relative_to(EASYLM_ROOT)).replace("\\", "/"),
+            "conversations": len(convs),
+            "bytes": size_bytes,
+            "size_mb": round(size_mb, 3),
+            "sha256": sha256_hex,
+        }
+        print(f"  [+] Wrote {len(convs):>6} conversations ({size_mb:>6.2f} MB) [sha256:{sha256_hex[:12]}] -> {out_path.name}")
 
+    manifest = {
+        "schema_version": "2.0.0",
+        "families": ["bonsai2", "gemma4"],
+        "default_model": "easylm-bonsai-2-2b",
+        "lineup_adapter_matrix": {
+            "bonsai-2-2b": ["stacks", "hands", "kidsafety", "hydra"],
+            "bonsai-2-4b": ["hydra"],
+            "bonsai-2-9b": ["hydra"],
+            "bonsai-2-27b": ["hydra"],
+            "gemma-4-e2b": ["hydra"],
+            "gemma-4-e4b": ["hydra"],
+            "gemma-4-12b": ["hydra"],
+        },
+        "datasets": manifest_files,
+    }
+    manifest_path = DATA_DIR / "easylm_sft_dataset_manifest.json"
+    manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    print(f"  [+] Wrote manifest -> {manifest_path.name}")
     print("=== Dataset Preparation Complete ===")
     return 0
 

@@ -28,7 +28,15 @@ SYSTEM_PROMPT = (
     "textbook facts, sovereign academic stacks, and Progen assertions."
 )
 
-_BULLET_RE = re.compile(r"^[-*]\s+\*\*([^*]+)\*\*[:\u2014\-]\s+(.+)$")
+# House textbooks put the separator inside the bold: `- **Topic:** fact`.
+# A few packs put it outside: `- **Topic**: fact`. Em dash and hyphen count too.
+# The characters are written out because `\u2014` inside a raw string is not an em dash.
+_BULLET_RE = re.compile(
+    r"^[-*]\s+\*\*(?:"
+    r"([^*]+?)\s*[:—–-]\s*\*\*"
+    r"|([^*]+)\*\*\s*[:—–-]"
+    r")\s+(.+)$"
+)
 _PROGEN_RE = re.compile(r"^([^:=#|>]{2,80})\s*([:=])\s*([A-Za-z0-9\"'(].+)$")
 
 EASYLM_ROOT = Path(__file__).resolve().parents[1]
@@ -66,9 +74,10 @@ def extract_units_from_markdown(text: str, dewey: str = "000", slug: str = "gene
             continue
         m_bul = _BULLET_RE.match(line)
         if m_bul:
+            topic = (m_bul.group(1) or m_bul.group(2)).strip()
             units.append({
-                "topic": m_bul.group(1).strip(),
-                "comment": m_bul.group(2).strip(),
+                "topic": topic,
+                "comment": m_bul.group(3).strip(),
                 "dewey": dewey,
                 "chapter": chapter,
                 "slug": slug,
@@ -369,17 +378,21 @@ def compile_stacks_to_jsonl(
 def _run_self_test() -> None:
     sample_md = """# Physics (530)
 ## Thermodynamics
-- **First Law of Thermodynamics**: Energy cannot be created or destroyed in an isolated system.
+- **First Law of Thermodynamics:** Energy cannot be created or destroyed in an isolated system.
+- **Isolated System**: a system that exchanges neither matter nor energy.
 entropy = a measure of thermal energy unavailable for mechanical work.
 """
     units = extract_units_from_markdown(sample_md, dewey="530", slug="physics")
-    assert len(units) == 2, f"Expected 2 units, got {len(units)}"
+    assert len(units) == 3, f"Expected 3 units, got {len(units)}"
+    assert units[0]["topic"] == "First Law of Thermodynamics"
+    assert units[0]["comment"].startswith("Energy cannot")
+    assert units[1]["topic"] == "Isolated System"
     rec0 = unit_to_chatml_record(units[0])
-    rec1 = unit_to_chatml_record(units[1])
+    rec2 = unit_to_chatml_record(units[2])
     assert rec0["dewey"] == "530" and rec0["slug"] == "physics"
     assert len(rec0["messages"]) == 3
     assert "First Law of Thermodynamics" in rec0["messages"][2]["content"]
-    assert rec1["messages"][1]["content"].startswith("Define entropy")
+    assert rec2["messages"][1]["content"].startswith("Define entropy")
 
 
 def main(argv: Iterable[str] | None = None) -> int:

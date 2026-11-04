@@ -96,11 +96,22 @@ assert(
 // Hugging Face adapters until trained across the full distribution, externally
 // inspected, and verified by scripts/adapter_publish_gate.py.
 const loraContent = readFileSync(resolve(ROOT, 'src/services/lora_loader.ts'), 'utf8');
-const registryBlock = loraContent.slice(
-  loraContent.indexOf('export const OFFICIAL_ADAPTERS'),
-  loraContent.indexOf('export function registerAdapter')
+const registryStart = loraContent.indexOf('export const OFFICIAL_ADAPTERS');
+assert(
+  registryStart !== -1,
+  "sentinel 'export const OFFICIAL_ADAPTERS' is missing from lora_loader.ts; OFFICIAL_ADAPTERS extraction cannot run"
 );
-const registeredIds = new Set([...registryBlock.matchAll(/^ {2}'(easylm-[^']+)':/gm)].map(m => m[1]));
+const registryEnd = loraContent.indexOf('export function registerAdapter');
+assert(
+  registryEnd !== -1,
+  "sentinel 'export function registerAdapter' is missing from lora_loader.ts; OFFICIAL_ADAPTERS extraction cannot run"
+);
+assert(
+  registryEnd > registryStart,
+  'OFFICIAL_ADAPTERS sentinels are out of order in lora_loader.ts; OFFICIAL_ADAPTERS extraction cannot run'
+);
+const registryBlock = loraContent.slice(registryStart, registryEnd);
+const registeredIds = new Set([...registryBlock.matchAll(/^\s*['"](easylm-[^'"]+)['"]\s*:/gm)].map(m => m[1]));
 assert(
   registeredIds.size === 0,
   `OFFICIAL_ADAPTERS must start empty (found ${registeredIds.size} entries: ${[...registeredIds].join(', ')})`

@@ -21,6 +21,22 @@ export const IOS_RECOMMENDED_MODEL = 'easylm-bonsai-2-2b';
 export const IOS_FALLBACK_MODEL = 'easylm-bonsai-2-2b';
 export const IOS_CONTEXT_LIMIT = 4096;
 
+/**
+ * Android platform fence (2026-11-10): an Android device reporting
+ * navigator.deviceMemory <= 4 GB cannot hold a large KV preallocation next
+ * to the OS and the page; the tab is OOM-killed mid-load (specimen: a 4 GB
+ * phone, Bonsai 2B load dying at ~97% on a saved 128k window). Same species
+ * as the iOS fence above: a platform limit, not a silent cap. When
+ * deviceMemory is unavailable we do not guess; the device is unconstrained.
+ */
+export const ANDROID_CONSTRAINED_CONTEXT_LIMIT = 32768;
+
+export function isConstrainedAndroidDevice(nav: Partial<Navigator> | undefined = typeof navigator !== 'undefined' ? navigator : undefined): boolean {
+  if (!nav || !/Android/i.test(nav.userAgent || '')) return false;
+  const dm = (nav as any).deviceMemory;
+  return typeof dm === 'number' && dm <= 4;
+}
+
 export function fitsIOSBudget(modelId: string): boolean {
   const mb = getModelVramMB(modelId);
   return mb !== undefined && mb <= IOS_MODEL_BUDGET_MB;
@@ -31,6 +47,7 @@ export interface DeviceInfo {
   isTablet: boolean;
   isIOS: boolean;
   isAndroid: boolean;
+  isConstrainedMemory: boolean;
   hasWebGPU: boolean;
   osName: string;
   recommendedModel: string;
@@ -72,6 +89,7 @@ async function detectDeviceAnyProfile(): Promise<DeviceInfo> {
       isTablet: false,
       isIOS,
       isAndroid,
+      isConstrainedMemory: isAndroid && isConstrainedAndroidDevice(),
       hasWebGPU: false,
       osName: isIOS ? 'iOS' : isAndroid ? 'Android' : 'Desktop',
       recommendedModel: isIOS ? IOS_RECOMMENDED_MODEL : 'easylm-bonsai-2-2b',
@@ -239,6 +257,7 @@ async function detectDeviceUnsafe(): Promise<DeviceInfo> {
     isTablet,
     isIOS,
     isAndroid,
+    isConstrainedMemory: isAndroid && isConstrainedAndroidDevice(),
     hasWebGPU,
     osName,
     recommendedModel,

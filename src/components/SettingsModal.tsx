@@ -963,7 +963,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               { val: 65536, label: '64k · Extended' },
               { val: 131072, label: '128k · Deep Context' },
               { val: 262144, label: '256k · Workstation Max' }
-            ].map(opt => {
+            ].filter(opt => !(deviceInfo?.isConstrainedMemory && opt.val > 32768)).map(opt => {
               const isSelected = contextLimit === opt.val;
               const isRec = opt.val === recommendedLimit;
               return (

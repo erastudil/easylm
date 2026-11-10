@@ -602,7 +602,7 @@ export const App: React.FC = () => {
       const savedLimit = localStorage.getItem('easylm_context_limit');
       if (!savedLimit && dev.recommendedContextLimit) {
         setContextLimit(dev.recommendedContextLimit);
-      } else if (dev.isIOS && savedLimit && parseInt(savedLimit, 10) > dev.recommendedContextLimit) {
+      } else if ((dev.isIOS || dev.isConstrainedMemory) && savedLimit && parseInt(savedLimit, 10) > dev.recommendedContextLimit) {
         setContextLimit(dev.recommendedContextLimit);
       }
 

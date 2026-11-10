@@ -944,10 +944,26 @@ export async function getOrInitEngine(
   // windows pass through untouched. The one exception is a sub-8k target,
   // which only the iOS platform fence sets (IOS_CONTEXT_LIMIT 4096, a hard
   // Safari memory limit), so platform limits stay exactly as requested.
-  const targetContext =
+  let targetContext =
     recOverrides?.max_history_size !== undefined && recOverrides?.context_window_size && rawTargetContext >= 8192
       ? Math.max(rawTargetContext, recOverrides.context_window_size)
       : rawTargetContext;
+
+  // Android platform fence (2026-11-10): on a constrained-memory Android
+  // device (navigator.deviceMemory <= 4 GB) a window above 32k makes the KV
+  // preallocation OOM-kill the tab — specimen: a 4 GB phone dying at ~97%
+  // while loading Bonsai 2B on a saved 128k selection. Of the same species as
+  // the iOS fence named above: a platform limit, not a silent cap; the
+  // 2026-10-18 floor ruling stands untouched on every capable device. The
+  // device test is duplicated here in three lines because device.ts imports
+  // this module and importing it back would close a cycle. When deviceMemory
+  // is unavailable we do not guess, and the fence stays off.
+  if (typeof navigator !== 'undefined' && /Android/i.test(navigator.userAgent || '')) {
+    const dm = (navigator as any).deviceMemory;
+    if (typeof dm === 'number' && dm <= 4 && targetContext > 32768) {
+      targetContext = 32768;
+    }
+  }
   const chatOpts: Record<string, number> = {
     context_window_size: targetContext,
     ...(recOverrides?.max_history_size !== undefined ? { max_history_size: recOverrides.max_history_size } : {})

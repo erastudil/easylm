@@ -363,6 +363,8 @@ export const App: React.FC = () => {
       setIsModelReady(false);
     }
     setSelectedModel(id);
+    const specTemp = findModelOption(id)?.sampling?.temperature;
+    if (specTemp !== undefined) setTemperature(specTemp);
     localStorage.setItem('easylm_selected_model', id);
   };
 
@@ -431,7 +433,7 @@ export const App: React.FC = () => {
   const [customPrompt, setCustomPrompt] = useState<string>('');
   const [toolsEnabled, setToolsEnabled] = useState<boolean>(true);
   const [extendedThinking, setExtendedThinking] = useState<boolean>(false);
-  const [temperature, setTemperature] = useState<number>(0.3);
+  const [temperature, setTemperature] = useState<number>(() => findModelOption(DEFAULT_MODEL_ID)?.sampling?.temperature ?? 0.3);
   const [searxngUrl, setSearxngUrl] = useState<string>(() => localStorage.getItem('easylm_searxng_url') || '');
   const [welcomeModalOpen, setWelcomeModalOpen] = useState(false);
   const [starterChips, setStarterChips] = useState<StarterChip[]>(() => pickRandomStarterChips(6));
@@ -968,7 +970,7 @@ export const App: React.FC = () => {
       return;
     }
 
-    // Otherwise, stream through WebLLM (Bonsai 2 2B base weights by default; the web app does not apply LoRA adapters)
+    // Otherwise, stream through WebLLM (Qwen3.5 2B weights by default; the web app does not apply LoRA adapters)
     try {
       const convoMessages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
         { role: 'system', content: systemInstruction }
@@ -1720,10 +1722,10 @@ export const App: React.FC = () => {
                 borderColor: extendedThinking ? '#8b5cf6' : 'rgba(139, 92, 246, 0.25)',
                 color: extendedThinking ? '#ffffff' : '#71717a'
               }}
-              title={extendedThinking ? 'Extended thinking active (click to turn OFF)' : 'Extended thinking disabled (click to turn ON)'}
+              title={extendedThinking ? 'Extended thinking: ON (click to turn off)' : 'Extended thinking: OFF (click to turn on)'}
             >
               <span>🧠</span>
-              <span><span className="hide-on-mobile">Think </span>{extendedThinking ? 'ON' : 'OFF'}</span>
+              <span>{extendedThinking ? 'ON' : 'OFF'}</span>
             </button>
 
             {/* Hands Toggle Button */}
@@ -1738,10 +1740,10 @@ export const App: React.FC = () => {
                 borderColor: toolsEnabled ? '#10b981' : 'rgba(139, 92, 246, 0.25)',
                 color: toolsEnabled ? '#34d399' : '#71717a'
               }}
-              title={toolsEnabled ? 'Hands active: local math/units/clock + optional network lookups (click to turn OFF)' : 'Hands disabled: offline model weights only (click to turn ON)'}
+              title={toolsEnabled ? 'Hands ON: local math/units/clock + optional network lookups (click to turn OFF)' : 'Hands OFF: offline model weights only (click to turn ON)'}
             >
-              <span>⚡</span>
-              <span><span className="hide-on-mobile">Hands </span>{toolsEnabled ? 'ON' : 'OFF'}</span>
+              <span>✋</span>
+              <span>{toolsEnabled ? 'ON' : 'OFF'}</span>
             </button>
 
             {/* Family Profile Button */}
@@ -1790,7 +1792,6 @@ export const App: React.FC = () => {
               title="Open EasyLM Guide & AI Primer"
             >
               <span>?</span>
-              <span className="hide-on-mobile"> Help</span>
             </button>
 
             {/* Public Beta Feedback Button */}
@@ -1808,7 +1809,6 @@ export const App: React.FC = () => {
               title="Send beta feedback, bug reports, and writeups to humansandai@atomicmail.io"
             >
               <span>💬</span>
-              <span className="hide-on-mobile"> Feedback</span>
             </button>
 
             {/* Credits Button */}
@@ -1826,7 +1826,6 @@ export const App: React.FC = () => {
               title="Open Credits & Open Source Attributions"
             >
               <span>📜</span>
-              <span className="hide-on-mobile"> Credits</span>
             </button>
 
             {/* Lock Vault button if encryption is active and unlocked */}
@@ -1847,7 +1846,6 @@ export const App: React.FC = () => {
                 title="Lock Sovereign Vault"
               >
                 <span>🔒</span>
-                <span className="hide-on-mobile">Lock Vault</span>
               </button>
             )}
 

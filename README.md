@@ -30,9 +30,9 @@ EasyLM dynamically detects your hardware tier and recommends the optimal model f
 
 | Model | Download | VRAM Footprint | Tier & Sweet Spot | Upstream License |
 |---|---|---|---|---|
-| **Bonsai 2 2B (Base)** | ~1.06 GB | ~1.06 GB | **Universal default for all users.** The base Qwen3.5 2B weights that Bonsai 2 is built from, served as-is. The EasyLM fine-tune is still in training, so no adapter is applied yet. | Apache-2.0 |
-| **Bonsai 2 4B (Base)** | ~2.37 GB | ~2.37 GB | **Step-up.** The base Qwen3.5 4B weights that Bonsai 2 is built from, served as-is. Deeper reasoning and stronger math than the 2B. | Apache-2.0 |
-| **Bonsai 2 9B (Base)** | ~5.04 GB | ~5.04 GB | **Largest Bonsai 2 base on the web.** The base Qwen3.5 9B weights that Bonsai 2 is built from, served as-is, for coding and multi-step reasoning. | Apache-2.0 |
+| **Qwen3.5 2B** | ~1.06 GB | ~1.06 GB | **Universal default for all users.** Qwen3.5 2B (the post-trained hybrid-thinking release), served as-is via the upstream MLC WebGPU build. No fine-tune or adapter is applied. | Apache-2.0 |
+| **Qwen3.5 4B** | ~2.37 GB | ~2.37 GB | **Step-up.** Qwen3.5 4B (the post-trained hybrid-thinking release), served as-is via the upstream MLC WebGPU build. Deeper reasoning and stronger math than the 2B. | Apache-2.0 |
+| **Qwen3.5 9B** | ~5.04 GB | ~5.04 GB | **Largest Qwen3.5 on the web.** Qwen3.5 9B (the post-trained hybrid-thinking release), served as-is via the upstream MLC WebGPU build, for coding and multi-step reasoning. | Apache-2.0 |
 | **Gemma 4 E2B Instruct** | ~2.63 GB | ~2.63 GB | **Ultralight (4GB tier).** Compact multimodal model for mobile and low-spec runtimes. | Gemma Terms |
 | **Gemma 4 E4B Thinking** | ~4.27 GB | ~4.27 GB | **8GB tier.** Multimodal dense reasoning foundation with native Thinking Mode. | Gemma Terms |
 

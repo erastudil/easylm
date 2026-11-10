@@ -326,9 +326,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
           </div>
           
-          <div style={{ marginTop: '0.5rem', textAlign: 'center', fontSize: '0.68rem', color: '#52525b', fontFamily: 'var(--font-mono)' }}>
-            100% Sovereign · WebGPU In-Browser
-          </div>
         </div>
       </aside>
 

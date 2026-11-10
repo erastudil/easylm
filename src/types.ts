@@ -47,6 +47,8 @@ export interface ModelOption {
   adapterId?: string;
   adapterUrl?: string;
   baseModelId?: string;
+  /** Vendor-spec sampling for this model; applied to every chat request. */
+  sampling?: { temperature?: number; topP?: number; topK?: number; presencePenalty?: number };
 }
 
 export interface Personality {

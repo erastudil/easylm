@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { Session, TriLakeRating } from '../types';
 import { AttachedDoc } from '../engine/family';
 import { MessageItem } from '../components/MessageItem';
@@ -70,14 +70,6 @@ export const ChatPane: React.FC<{
   const empty = !activeSession || activeSession.messages.length === 0;
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  useEffect(() => {
-    const el = textareaRef.current;
-    if (!el) return;
-    el.style.height = 'auto';
-    const nextH = Math.min(el.scrollHeight, 120);
-    el.style.height = `${Math.max(nextH, 36)}px`;
-  }, [inputPrompt]);
-
   return (
     <div className={compact ? 'chat-pane chat-pane-compact' : 'chat-pane'}>
       <div className="messages-scroll-area">
@@ -90,15 +82,13 @@ export const ChatPane: React.FC<{
               </div>
               {!compact && (
                 <p className="chat-empty-lead">
-                  Zero-Install Local WebGPU Intelligence · In-Browser Privacy · Deterministic Tools &amp; University Stacks
+                  Runs 100% locally in your browser
                 </p>
               )}
               {!modelReady && (
                 <div className="chat-empty-note">
                   <p>
-                    No AI model is loaded yet, and plenty already works: math, unit conversions,
-                    the clock, the Stacks textbooks and Learn courses. Chat answers need a
-                    one-time model download.
+                    Plenty already works offline. Chat answers need a one-time model download.
                   </p>
                   <button type="button" onClick={onLoadModel} className="btn-pill">
                     Load model
@@ -114,19 +104,12 @@ export const ChatPane: React.FC<{
                     className="btn-pill chat-chip"
                     title={chip.prompt}
                   >
-                    {compact ? (
-                      <span>{chip.label}</span>
-                    ) : (
-                      <>
-                        <span style={{ fontWeight: 600, color: '#c4b5fd' }}>{chip.label}:</span>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.74rem' }}>{chip.prompt}</span>
-                      </>
-                    )}
+                    <span>{chip.label}</span>
                   </button>
                 ))}
               </div>
-              <button type="button" onClick={onShuffleChips} className="btn-pill" title="Shuffle starter questions">
-                Shuffle
+              <button type="button" onClick={onShuffleChips} className="btn-pill" title="Shuffle starter questions" aria-label="Shuffle starter questions">
+                🔀
               </button>
               <div className="chat-empty-links">
                 <button type="button" className="chat-text-link" onClick={onOpenWelcome}>
@@ -154,7 +137,7 @@ export const ChatPane: React.FC<{
                     <span style={{ color: '#a78bfa', fontWeight: 600 }}>EasyLM</span>
                     <span>·</span>
                     <span className="animate-pulse" style={{ color: '#34d399', fontWeight: 600 }}>
-                      Processing prompt...
+                      Thinking…
                     </span>
                   </div>
                   <div className="bubble-assistant processing-bubble" style={{ minWidth: '240px', padding: '0.85rem 1.15rem' }}>
@@ -163,14 +146,6 @@ export const ChatPane: React.FC<{
                         <span className="processing-dot dot-1" />
                         <span className="processing-dot dot-2" />
                         <span className="processing-dot dot-3" />
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
-                        <span style={{ fontSize: '0.82rem', color: '#ffffff', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
-                          Processing prompt...
-                        </span>
-                        <span style={{ fontSize: '0.7rem', color: '#a1a1aa' }}>
-                          WebGPU active · calculating tokens
-                        </span>
                       </div>
                     </div>
                     <div className="processing-shimmer-line" />
@@ -184,18 +159,6 @@ export const ChatPane: React.FC<{
       </div>
 
       <div className="prompt-wrapper">
-        {isGenerating && (
-          <div className="chat-stop-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: '0.75rem' }}>
-            <div className="processing-pulse-track">
-              <div className="processing-pulse-bar" />
-              <span className="processing-pulse-text">Model is active · computing response</span>
-            </div>
-            <button type="button" className="chat-stop-btn" onClick={onStop} title="Stop generating">
-              Stop
-            </button>
-          </div>
-        )}
-
         {piiAlert && (
           <div className="chat-alert chat-alert-warn">
             <span>{piiAlert}</span>
@@ -215,7 +178,7 @@ export const ChatPane: React.FC<{
           onQuickAction={onQuickAction}
         />
 
-        <div className="floating-prompt chat-composer">
+        <div className={`floating-prompt chat-composer${isGenerating ? ' is-generating' : ''}`}>
           <button
             type="button"
             className="chat-attach"
@@ -248,18 +211,19 @@ export const ChatPane: React.FC<{
             className="chat-input"
           />
           {isGenerating ? (
-            <button type="button" className="btn-pill chat-send chat-send-stop" onClick={onStop} title="Stop">
-              Stop
+            <button type="button" className="chat-send-btn" onClick={onStop} title="Stop generating" aria-label="Stop generating">
+              ■
             </button>
           ) : (
             <button
               type="button"
-              className="btn-pill btn-pill-primary chat-send"
+              className="chat-send-btn"
               onClick={onSend}
               disabled={!inputPrompt.trim()}
               title="Send"
+              aria-label="Send"
             >
-              Send
+              ➤
             </button>
           )}
         </div>

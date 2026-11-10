@@ -43,7 +43,7 @@ export {
 export type { AdapterMetadata, VerifiedAdapterState };
 
 export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
-  // 0a. Bonsai 2 2B Base (Universal Entry Point, Qwen3.5-2B Hybrid-Attention Backbone, base weights)
+  // 0a. Qwen3.5 2B (Universal Entry Point — seated default; post-trained hybrid-thinking release)
   {
     model: 'https://huggingface.co/mlc-ai/Qwen3.5-2B-q4f16_1-MLC',
     model_id: 'easylm-bonsai-2-2b',
@@ -55,7 +55,7 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
       max_history_size: 1
     }
   },
-  // 0b. Bonsai 2 4B Base (Step-Up, Qwen3.5-4B Hybrid-Attention Backbone, base weights)
+  // 0b. Qwen3.5 4B (Step-Up; post-trained hybrid-thinking release)
   {
     model: 'https://huggingface.co/mlc-ai/Qwen3.5-4B-q4f16_1-MLC',
     model_id: 'easylm-bonsai-2-4b',
@@ -67,7 +67,7 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
       max_history_size: 1
     }
   },
-  // 0c. Bonsai 2 9B Base (Agent & Reasoning Workhorse, Qwen3.5-9B Hybrid-Attention Backbone, base weights)
+  // 0c. Qwen3.5 9B (Agent & Reasoning Workhorse; post-trained hybrid-thinking release)
   {
     model: 'https://huggingface.co/mlc-ai/Qwen3.5-9B-q4f16_1-MLC',
     model_id: 'easylm-bonsai-2-9b',
@@ -123,10 +123,9 @@ export const CUSTOM_MODEL_RECORDS: ModelRecord[] = [
     }
   }
 
-  // Truth gate: EasyLM serves strictly the Bonsai 2 (memory-efficient high-intelligence
-  // text generation on the Qwen3.5 hybrid-attention backbone) and Gemma 4 (multimodal)
-  // model families up to 16GB VRAM. No web record may claim weights or model families
-  // it does not serve.
+  // Truth gate: EasyLM serves strictly the Qwen3.5 (hybrid-thinking text generation)
+  // and Gemma 4 (multimodal) model families up to 16GB VRAM. No web record may claim
+  // weights or model families it does not serve.
 ];
 
 /** VRAM figure from web-llm's model record (prebuiltAppConfig or CUSTOM_MODEL_RECORDS), in MB. */
@@ -153,38 +152,42 @@ export function formatDownloadGB(sizeMB: number): string {
 }
 
 export const AVAILABLE_MODELS: ModelOption[] = [
-  // Bonsai 2 lineup — BASE weights for now (truth pass, 2026-10-17). The web app
-  // serves the Qwen3.5 base builds that Bonsai 2 is made from. The EasyLM Bonsai 2
-  // fine-tunes are still in training; no adapter is applied to these entries, and
-  // no entry may claim one until a real trained adapter passes verification.
+  // Qwen3.5 lineup — the served weights are Qwen's post-trained hybrid-thinking
+  // releases, served as-is via the upstream MLC builds (verified 2026-11-09: each
+  // MLC repo's tokenizer_config.json is byte-identical to the matching
+  // Qwen/Qwen3.5-* repo and differs from the -Base repos). No Bonsai weights and
+  // no adapter are served; the legacy 'easylm-bonsai-2-*' ids remain as internal
+  // keys because stored settings and the verify gate pin them.
   {
     id: 'easylm-bonsai-2-2b',
-    label: 'Bonsai 2 2B (Base)',
+    label: 'Qwen3.5 2B',
     sizeMB: 1059,
     vramEst: vramLabel('easylm-bonsai-2-2b'),
     vramTier: '4gb',
     isDefault: true,
     isRecommended: true,
-    description: 'EasyLM universal default. The base Qwen3.5 2B weights that Bonsai 2 is built from, served as-is: about a 1.06 GB download and a 32k default context window in the app. The EasyLM fine-tune for this model is still in training, so this is the plain base model for now. Works on every phone, tablet, and laptop.'
+    isReasoning: true,
+    sampling: { temperature: 1.0, topP: 0.95, topK: 20, presencePenalty: 1.5 },
+    description: 'EasyLM universal default. Qwen3.5 2B (the post-trained hybrid-thinking release), served as-is via the upstream MLC WebGPU build: about a 1.06 GB download. Sampled at the published Qwen spec (temperature 1.0, top-p 0.95, top-k 20, presence penalty 1.5). No fine-tune or adapter is applied. Works on every phone, tablet, and laptop.'
   },
   {
     id: 'easylm-bonsai-2-4b',
-    label: 'Bonsai 2 4B (Base)',
+    label: 'Qwen3.5 4B',
     sizeMB: 2367,
     vramEst: vramLabel('easylm-bonsai-2-4b'),
     vramTier: '4gb',
     isReasoning: true,
-    description: 'Step-up base model. The base Qwen3.5 4B weights that Bonsai 2 is built from, served as-is: about a 2.37 GB download. Deeper reasoning and stronger math than the 2B. The EasyLM fine-tune is still in training, so no adapter is applied yet.'
+    description: 'Step-up model. Qwen3.5 4B (the post-trained hybrid-thinking release), served as-is via the upstream MLC WebGPU build: about a 2.37 GB download. Deeper reasoning and stronger math than the 2B. No fine-tune or adapter is applied.'
   },
   {
     id: 'easylm-bonsai-2-9b',
-    label: 'Bonsai 2 9B (Base)',
+    label: 'Qwen3.5 9B',
     sizeMB: 5038,
     vramEst: vramLabel('easylm-bonsai-2-9b'),
     vramTier: '16gb',
     isReasoning: true,
     isCoding: true,
-    description: 'Largest Bonsai 2 base in the web app (up to 16GB VRAM tier, 64k context window). The base Qwen3.5 9B weights that Bonsai 2 is built from, served as-is: about a 5.04 GB download, for coding and multi-step reasoning on high-performance laptops and desktops. No adapter is applied yet.'
+    description: 'Largest Qwen3.5 in the web app (up to 16GB VRAM tier, 64k context window). Qwen3.5 9B (the post-trained hybrid-thinking release), served as-is via the upstream MLC WebGPU build: about a 5.04 GB download, for coding and multi-step reasoning on high-performance laptops and desktops. No fine-tune or adapter is applied.'
   },
 
   // Gemma 4 multimodal family — upstream WebGPU builds named in CUSTOM_MODEL_RECORDS.
@@ -216,6 +219,8 @@ export const CURATED_MODEL_IDS: ReadonlySet<string> = new Set(AVAILABLE_MODELS.m
  * Largest general model that is smaller than `modelId` (by vram_required_MB),
  * optionally capped at `maxMB`. Reasoning and coding specialists are skipped.
  * General catalog entries stay eligible; skipping them leaves no step-down.
+ * The universal default stays eligible even though it is a thinking model:
+ * it is the general fallback, not a specialist.
  */
 export function nextSmallerModel(
   modelId: string,
@@ -226,7 +231,7 @@ export function nextSmallerModel(
   const current = getModelVramMB(modelId) ?? Infinity;
   let best: { id: string; mb: number } | undefined;
   for (const m of candidates) {
-    if (m.isReasoning || m.isCoding || m.id === modelId || m.id === 'alice') continue;
+    if (((m.isReasoning || m.isCoding) && !m.isDefault) || m.id === modelId || m.id === 'alice') continue;
     if (exclude?.has(m.id)) continue;
     const mb = getModelVramMB(m.id);
     if (mb === undefined || mb >= current) continue;
@@ -1127,6 +1132,7 @@ export async function streamChatCompletion(
   contextWindowSize?: number
 ): Promise<{ fullText: string; thinking?: string; loopDetected?: boolean; loopReason?: string }> {
   const isReasoning = modelIsReasoning(modelId);
+  const vendorSampling = findModelOption(modelId)?.sampling;
   const effectiveTemperature = isReasoning ? Math.max(0.6, temperature) : temperature;
   let activeCtx = contextWindowSize || currentContextLimit || 32768;
 
@@ -1162,9 +1168,10 @@ export async function streamChatCompletion(
         temperature: effectiveTemperature,
         max_tokens: effectiveMaxTokens,
         stream: true,
-        top_p: 0.95,
+        top_p: vendorSampling?.topP ?? 0.95,
         frequency_penalty: 0.0,
-        presence_penalty: 0.0
+        presence_penalty: vendorSampling?.presencePenalty ?? 0.0,
+        ...(vendorSampling?.topK ? { top_k: vendorSampling.topK } : {})
       });
     } catch (createErr: any) {
       const kind = applyFailureFence(createErr);

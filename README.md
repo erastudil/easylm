@@ -159,7 +159,7 @@ npm install
 node scripts/compile_stacks.mjs
 node scripts/compile_courses.mjs
 
-# Run full test harness (vitest)
+# Run the verification harness (scripts/verify.mjs)
 npm test
 
 # Verify TypeScript types

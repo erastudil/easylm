@@ -272,6 +272,11 @@ export function saveAllAtoms(atoms: AtMemAtom[]): void {
   inMemoryCache = atoms;
   if (typeof window === 'undefined') return;
   const json = JSON.stringify(atoms);
+  if (isVaultEncrypted() && !isVaultUnlocked()) {
+    // Vault is locked: never fall through to the plaintext write below.
+    console.warn('AtMem: vault locked; atoms kept in memory only, not persisted.');
+    return;
+  }
   if (isVaultEncrypted() && isVaultUnlocked()) {
     void encryptPayload(json).then(encrypted => {
       try {

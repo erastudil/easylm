@@ -159,6 +159,10 @@ export async function loadAllSessionsAsync(): Promise<Session[]> {
 
 export function saveAllSessions(sessions: Session[]): SaveResult {
   const json = JSON.stringify(sessions);
+  if (isVaultEncrypted() && !isVaultUnlocked()) {
+    // Vault is locked: never fall through to the plaintext write below.
+    return { ok: false, error: 'Vault is locked. Unlock to save sessions.' };
+  }
   if (isVaultEncrypted() && isVaultUnlocked()) {
     void encryptPayload(json).then(encrypted => {
       try {
